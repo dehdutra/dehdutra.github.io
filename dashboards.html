@@ -1,1 +1,74 @@
- 
+<section id="dashboards">
+
+  <h2>Dashboards Científicos</h2>
+
+  <p class="descricao">
+    Plataformas analíticas interativas desenvolvidas para explorar modelagem espacial,
+    dinâmica do fogo, degradação florestal e impactos econômicos no Brasil.
+  </p>
+
+  <div class="botoes-dashboard">
+
+    <a class="dashboard-btn fogo"
+       href="fogo_foco.html">
+       🔥 Dashboard Fogo em Foco
+    </a>
+
+  </div>
+
+  <p class="obs">
+    O dashboard será aberto na mesma página.
+  </p>
+
+</section>
+
+<style>
+#dashboards {
+  padding: 20px 0;
+}
+
+#dashboards h2 {
+  color: #2c3e50;
+  border-bottom: 2px solid #e67e22;
+  padding-bottom: 6px;
+  margin-bottom: 20px;
+}
+
+#dashboards .descricao {
+  margin-bottom: 25px;
+  font-size: 1.05em;
+}
+
+.botoes-dashboard {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.dashboard-btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Botão principal */
+.dashboard-btn.fogo {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+}
+
+.dashboard-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.obs {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #666;
+}
+</style> 
