@@ -1,1 +1,135 @@
- 
+ <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Débora Dutra – Projetos</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; background:#f4f6f8; color:#333; }
+
+  /* Sidebar esquerda */
+  .sidebar {
+    width: 250px;
+    background:#2c3e50;
+    color:white;
+    position:fixed;
+    top:0; left:0;
+    height:100%;
+    text-align:center;
+    padding:20px;
+  }
+
+  .sidebar img {
+    width:120px; height:120px; border-radius:50%;
+    margin-bottom:15px; object-fit:cover; border:3px solid #1abc9c;
+  }
+
+  .sidebar h1 { font-size:1.6em; margin-bottom:5px; }
+  .sidebar p { margin:6px 0; font-size:0.95em; }
+  .sidebar a { color:#1abc9c; text-decoration:none; }
+  .sidebar a:hover { text-decoration:underline; }
+
+  /* Menu horizontal no topo */
+  .topnav {
+    margin-left:250px;
+    background:#2980b9;
+    overflow:hidden;
+    display:flex;
+    padding:0 20px;
+    height:50px;
+    align-items:center;
+  }
+
+  .topnav a {
+    color:white;
+    padding:14px 20px;
+    text-decoration:none;
+    font-weight:bold;
+  }
+
+  .topnav a:hover { background:#1abc9c; }
+
+  /* Conteúdo principal */
+  .main-content {
+    margin-left:250px;
+    margin-top:50px;
+    padding:40px;
+    max-width:900px;
+  }
+
+  section { margin-bottom:40px; }
+  h2 { color:#2c3e50; border-bottom:2px solid #2980b9; padding-bottom:5px; margin-bottom:15px; }
+
+  ul { margin:10px 0 20px 20px; }
+  li { margin-bottom:8px; }
+
+  footer { text-align:center; padding:20px; background:#ecf0f1; color:#666; font-size:0.9em; }
+
+  @media (max-width:768px){
+    .sidebar { width:100%; height:auto; position:relative; }
+    .topnav { margin-left:0; flex-wrap:wrap; height:auto; }
+    .main-content { margin-left:0; margin-top:0; padding:20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar esquerda -->
+<div class="sidebar">
+  <img src="lattes.png" alt="Débora Dutra">
+  <h1>Débora Dutra</h1>
+  <p>📍 São José dos Campos, SP, Brasil</p>
+  <p>🏫 Doutoranda em Sensoriamento Remoto – INPE</p>
+  <p>✉️ <a href="mailto:debora.joana@inpe.br">debora.joana@inpe.br</a></p>
+  <p>🔗 <a href="https://orcid.org/0000-0003-3748-5622" target="_blank">ORCID</a></p>
+  <p>🔗 <a href="http://lattes.cnpq.br/0607282523645907" target="_blank">Lattes</a></p>
+  <p>🔗 <a href="https://bv.fapesp.br/pt/pesquisador/714029/debora-joana-dutra" target="_blank">BV FAPESP</a></p>
+</div>
+
+<!-- Menu horizontal topo -->
+<div class="topnav">
+  <a href="index.html" target="_blank">Início</a>
+  <a href="projetos.html" target="_blank">Projetos</a>
+  <a href="publicacoes.html" target="_blank">Publicações</a>
+  <a href="dashboards.html" target="_blank">Dashboards</a>
+  <a href="zenodo.html" target="_blank">Zenodo</a>
+</div>
+
+<!-- Conteúdo principal -->
+<div class="main-content">
+  <section id="projetos">
+    <h2>Projetos de Pesquisa</h2>
+
+    <!-- Projeto 1 -->
+    <h3>2023 - 2023: Projeção da adequabilidade ao fogo em Boca do Acre-AM para o ano de 2050</h3>
+    <p><strong>Descrição:</strong> Um dos principais vetores de degradação florestal amazônica é ocasionado pelo uso do fogo para manejo agropecuário ou no processo de desmatamento, que por condições ambientais, climáticas ou por má gestão fogem do controle e tornam-se incêndios. Estes eventos combinados com a exploração madeireira e as mudanças climáticas colocam em xeque a conservação da floresta amazônica e o provimento de seus serviços ecossistêmicos. A abertura do dossel permite a entrada de radiação e aumenta a intensidade do vento, alterando o microclima local e tornando-o mais quente e seco. As mudanças climáticas causam o prolongamento da estação seca e o aumento da frequência de secas extremas, afetando diretamente a ocorrência de incêndios florestais. O objetivo desse projeto é aplicar o modelo de adequabilidade da ocorrência do fogo para gerar o diagnóstico e prognóstico das interações entre uso da terra, queimadas e incêndios florestais no período atual e futuro para Boca do Acre - Amazonia. A metodologia aplicada consiste no uso do MaxEnt via RStudio para o cálculo da superfície de adequabilidade de fogo. Utilizaremos a saída logística para analisar a aptidão equivalente a uma probabilidade de ocorrência de fogo. A adequabilidade ao fogo se dá por meio do corte do coeficientes de regularização possibilitando a identificação das regiões com ocorrência de fogo em Boca do Acre para o futuro. Esses resultados podem auxiliar na percepção da ameaça do fogo e subsidiar a criação de estratégias de mitigação e adaptação para os cenários futuros, como implementação de ações de prevenção a incêndios.</p>
+    <p><strong>Situação:</strong> Concluído; <strong>Natureza:</strong> Pesquisa.</p>
+    <p><strong>Integrantes:</strong> Débora Joana Dutra - Integrante / Liana Oighenstein Anderson - Coordenador</p>
+
+    <!-- Projeto 2 -->
+    <h3>2021 - 2024: Predição da degradação florestal como subsídio a ações para evitar as queimadas e os incêndios florestais</h3>
+    <p><strong>Descrição:</strong> A degradação florestal resulta principalmente do descontrole de queimadas que se tornam incêndios. Estes eventos combinados com a exploração madeireira e as mudanças climáticas são intensificados colocando em xeque a conservação da floresta amazônica e seus serviços ecossistêmicos. A exploração madeireira, tanto em planos de manejos autorizados como por meio de atividades ilegais, aumenta a vulnerabilidade da floresta à entrada e propagação de incêndios florestais. Isto deve-se ao aumento do material combustível decorrente de danos colaterais do processo de derrubada e arraste dos troncos. A abertura do dossel, permitindo maior entrada de radiação e aumento da intensidade do vento, altera o microclima local tornando-o mais quente e seco. As mudanças climáticas, em parte já observadas em algumas regiões da Amazônia, causam o prolongamento da estação seca e o aumento da frequência de secas extremas, afetando diretamente a ocorrência de incêndios florestais. O objetivo geral do projeto é prover um diagnóstico e prognóstico da degradação florestal, por exploração madeireira e incêndios florestais provenientes das queimadas, a fim de gerar cenários que permitam o controle preventivo de queimadas, subsidiando assim a gestão dos recursos naturais e das áreas de conservação.</p>
+    <p><strong>Situação:</strong> Concluído; <strong>Natureza:</strong> Pesquisa.</p>
+    <p><strong>Integrantes:</strong> Débora Joana Dutra - Integrante / Liana Oighenstein Anderson - Coordenador / Paulo Maurício Lima Alencastro Graça - Integrante / Luiz Eduardo Oliveira e Cruz de Aragão - Integrante / Chantelle Burton - Integrante / Aurora Miho Yanai Nascimento - Integrante / Richard Betts - Integrante / Christopher Jones - Integrante / Philip Martin Fearnside - Integrante / Ricardo Dalagnol - Integrante / Beatriz Figueiredo Cabral - Integrante / Daniel Alves Braga - Integrante</p>
+
+    <!-- Projeto 3 -->
+    <h3>2016 - 2017: Mapeamento de barragens de rejeito de mineradoras do Quadrilátero Ferrífero (MG) utilizando ferramentas de geoprocessamento</h3>
+    <p><strong>Descrição:</strong> O projeto faz parte do Programa Institucional de Bolsas de Iniciação Científica Voluntária (PICV), com o objetivo de analisar a vulnerabilidade do rompimento das barragens de rejeito que compõem o Quadrilátero Ferrífero (MG). Para isso, a equipe faz uso de técnicas de sensoriamento remoto, geoprocessamento e modelagem ambiental para mapeamento dessas regiões e análise das áreas que apresentam potencial risco de sofrerem consequências desse tipo de acidente.</p>
+    <p><strong>Situação:</strong> Concluído; <strong>Natureza:</strong> Pesquisa.</p>
+    <p><strong>Integrantes:</strong> Débora Joana Dutra - Integrante / Amanda Fortunato Genta - Integrante / Carlos Wagner Gonçalves Andrade Coelho - Coordenador</p>
+
+  </section>
+
+  <section id="contato">
+    <h2>Contato</h2>
+    <p>Para mais informações sobre projetos, entre em contato pelo email <a href="mailto:debora.joana@inpe.br">debora.joana@inpe.br</a>.</p>
+  </section>
+</div>
+
+<footer>
+  &copy; 2026 Débora Dutra – Página científica pessoal
+</footer>
+
+</body>
+</html>
