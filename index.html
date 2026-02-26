@@ -1,74 +1,117 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Débora Dutra – Cientista</title>
-  <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      margin: 0; 
-      background-color: #f4f6f8; 
-      color: #333;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Débora Dutra – Cientista</title>
+<style>
+  /* Reset básico */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f8;
+    color: #333;
+  }
+
+  /* Coluna fixa à esquerda */
+  .sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    padding: 40px 20px;
+    position: fixed;
+    height: 100%;
+  }
+
+  .sidebar h1 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+  }
+
+  .sidebar p {
+    margin: 8px 0;
+    font-size: 0.95em;
+  }
+
+  .sidebar a {
+    color: #1abc9c;
+    text-decoration: none;
+  }
+
+  .sidebar a:hover {
+    text-decoration: underline;
+  }
+
+  /* Conteúdo principal à direita */
+  .main-content {
+    margin-left: 270px; /* espaço da sidebar + margem */
+    padding: 40px;
+    max-width: 900px;
+  }
+
+  section {
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  li {
+    margin: 8px 0;
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #ecf0f1;
+    color: #666;
+    font-size: 0.9em;
+  }
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    body {
+      flex-direction: column;
     }
-    header {
-      background-color: #2c3e50;
-      color: white;
-      padding: 20px 40px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2em;
-    }
-    header p {
-      margin: 5px 0 0 0;
-      font-size: 1.1em;
-    }
-    main {
-      padding: 40px;
-      max-width: 900px;
-      margin: auto;
-    }
-    section {
-      margin-bottom: 40px;
-    }
-    h2 {
-      color: #2c3e50;
-      border-bottom: 2px solid #2980b9;
-      padding-bottom: 5px;
-    }
-    a {
-      color: #2980b9;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-    li {
-      margin: 10px 0;
-    }
-    footer {
-      text-align: center;
+    .sidebar {
+      position: relative;
+      width: 100%;
+      height: auto;
       padding: 20px;
-      background-color: #ecf0f1;
-      color: #666;
-      font-size: 0.9em;
     }
-  </style>
+    .main-content {
+      margin-left: 0;
+      padding: 20px;
+    }
+  }
+</style>
 </head>
 <body>
 
-<header>
+<!-- Coluna fixa à esquerda -->
+<div class="sidebar">
   <h1>Débora Dutra</h1>
-  <p>Cientista e pesquisadora em monitoramento ambiental e incêndios florestais</p>
-</header>
+  <p>📍 São José dos Campos, SP, Brasil</p>
+  <p>🏫 Instituto XYZ</p>
+  <p>✉️ <a href="mailto:debora@example.com">debora@example.com</a></p>
+  <p>🔗 <a href="https://orcid.org/0000-0000-0000-0000" target="_blank">ORCID</a></p>
+  <p>🔗 <a href="http://lattes.cnpq.br/0000000000000000" target="_blank">Lattes</a></p>
+</div>
 
-<main>
+<!-- Conteúdo principal -->
+<div class="main-content">
   <section id="sobre">
     <h2>Sobre mim</h2>
     <p>Sou pesquisadora dedicada a estudar o impacto de incêndios e desmatamento em florestas brasileiras. Meu trabalho combina análise espacial, modelagem e ciência de dados para fornecer informações relevantes para políticas ambientais e conservação.</p>
@@ -79,7 +122,6 @@
     <ul>
       <li><a href="dashboard/">Fogo em Foco</a> – Dashboard de monitoramento de incêndios no Brasil</li>
       <li><a href="#">Projeto 2</a> – Descrição breve do projeto 2</li>
-      <li><a href="#">Projeto 3</a> – Descrição breve do projeto 3</li>
     </ul>
   </section>
 
@@ -88,16 +130,14 @@
     <ul>
       <li><a href="#">Artigo 1 – Título da publicação</a></li>
       <li><a href="#">Artigo 2 – Título da publicação</a></li>
-      <li><a href="#">Artigo 3 – Título da publicação</a></li>
     </ul>
   </section>
 
   <section id="contato">
     <h2>Contato</h2>
-    <p>Email: <a href="mailto:debora@example.com">debora@example.com</a></p>
-    <p>LinkedIn: <a href="https://www.linkedin.com/in/dehdutra/" target="_blank">linkedin.com/in/dehdutra</a></p>
+    <p>Para perguntas ou colaborações, envie um email para <a href="mailto:debora@example.com">debora@example.com</a>.</p>
   </section>
-</main>
+</div>
 
 <footer>
   &copy; 2026 Débora Dutra – Página científica pessoal
