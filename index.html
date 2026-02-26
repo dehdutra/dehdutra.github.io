@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Débora Dutra – Cientista</title>
+<title>Débora Dutra – Página Científica</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: Arial, sans-serif; background:#f4f6f8; color:#333; }
@@ -46,8 +46,8 @@
     padding:14px 20px;
     text-decoration:none;
     font-weight:bold;
+    cursor:pointer;
   }
-
   .topnav a:hover { background:#1abc9c; }
 
   /* Conteúdo principal */
@@ -60,8 +60,8 @@
 
   section { margin-bottom:40px; }
   h2 { color:#2c3e50; border-bottom:2px solid #2980b9; padding-bottom:5px; margin-bottom:15px; }
+  h3 { margin-top:20px; color:#34495e; }
 
-  /* Listas e espaçamento */
   ul { margin:10px 0 20px 20px; }
   li { margin-bottom:8px; }
 
@@ -90,55 +90,37 @@
 
 <!-- Menu horizontal topo -->
 <div class="topnav">
-  <a href="index.html" target="_blank">Início</a>
-  <a href="projetos.html" target="_blank">Projetos</a>
-  <a href="publicacoes.html" target="_blank">Publicações</a>
-  <a href="dashboards.html" target="_blank">Dashboards</a>
-  <a href="zenodo.html" target="_blank">Zenodo</a>
+  <a onclick="carregarPagina('index.html')">Início</a>
+  <a onclick="carregarPagina('projetos.html')">Projetos</a>
+  <a onclick="carregarPagina('publicacoes.html')">Publicações</a>
+  <a onclick="carregarPagina('dashboards.html')">Dashboards</a>
+  <a onclick="carregarPagina('zenodo.html')">Zenodo</a>
 </div>
 
 <!-- Conteúdo principal -->
-<div class="main-content">
+<div class="main-content" id="conteudo">
+  <!-- Conteúdo inicial da página Início -->
   <section id="sobre">
     <h2>Sobre mim</h2>
-
-    <p><strong>Quem sou:</strong></p>
     <ul>
       <li>Doutoranda em Sensoriamento Remoto pelo INPE</li>
       <li>Mestre em Análise e Modelagem de Sistemas Ambientais (UFMG)</li>
       <li>Bacharel em Engenharia Ambiental e Sanitária (CEFET-MG)</li>
     </ul>
-
-    <p><strong>Projeto de Doutorado Atual:</strong></p>
-    <ul>
-      <li><em>THE POTENTIAL ECONOMIC LOSSES FROM FIRE IN BRAZILIAN TERRITORY</em></li>
-    </ul>
-
-    <p><strong>Especialidades:</strong></p>
-    <ul>
-      <li>Sensoriamento remoto e geoprocessamento</li>
-      <li>Modelagem ambiental e análise espacial</li>
-      <li>Ciência de dados aplicada a desmatamento e incêndios</li>
-    </ul>
-
-    <p><strong>Interesses de pesquisa:</strong></p>
-    <ul>
-      <li>Monitoramento de queimadas no Brasil</li>
-      <li>Seca em bacias hidrográficas</li>
-      <li>Degradação florestal na Amazônia</li>
-      <li>Análise de riscos ambientais e apoio a políticas públicas</li>
-    </ul>
-  </section>
-
-  <section id="contato">
-    <h2>Contato</h2>
-    <p>Para perguntas ou colaborações, envie um email para <a href="mailto:debora.joana@inpe.br">debora.joana@inpe.br</a>.</p>
+    <p>Use o menu para navegar entre Projetos, Publicações, Dashboards e Zenodo.</p>
   </section>
 </div>
 
 <footer>
   &copy; 2026 Débora Dutra – Página científica pessoal
 </footer>
+
+<script>
+function carregarPagina(pagina) {
+    const conteudo = document.getElementById("conteudo");
+    conteudo.innerHTML = `<iframe src="${pagina}" style="width:100%; height:1200px; border:none;"></iframe>`;
+}
+</script>
 
 </body>
 </html>
