@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Débora Dutra – Cientista</title>
+
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: Arial, sans-serif; background:#f4f6f8; color:#333; }
@@ -21,8 +22,11 @@
   }
 
   .sidebar img {
-    width:120px; height:120px; border-radius:50%;
-    margin-bottom:15px; object-fit:cover; border:3px solid #1abc9c;
+    width:120px; height:120px;
+    border-radius:50%;
+    margin-bottom:15px;
+    object-fit:cover;
+    border:3px solid #1abc9c;
   }
 
   .sidebar h1 { font-size:1.6em; margin-bottom:5px; }
@@ -30,15 +34,14 @@
   .sidebar a { color:#1abc9c; text-decoration:none; }
   .sidebar a:hover { text-decoration:underline; }
 
-  /* Menu horizontal topo */
+  /* Menu topo */
   .topnav {
     margin-left:250px;
     background:#2980b9;
-    overflow:hidden;
     display:flex;
-    padding:0 20px;
-    height:50px;
     align-items:center;
+    height:50px;
+    padding:0 20px;
   }
 
   .topnav a {
@@ -48,24 +51,35 @@
     font-weight:bold;
     cursor:pointer;
   }
+
   .topnav a:hover { background:#1abc9c; }
 
-  /* Conteúdo principal */
+  /* Conteúdo */
   .main-content {
     margin-left:250px;
     margin-top:50px;
     padding:40px;
     max-width:900px;
+    min-height:600px;
   }
 
-  section { margin-bottom:40px; }
-  h2 { color:#2c3e50; border-bottom:2px solid #2980b9; padding-bottom:5px; margin-bottom:15px; }
-  h3 { margin-top:20px; color:#34495e; }
+  h2 {
+    color:#2c3e50;
+    border-bottom:2px solid #2980b9;
+    padding-bottom:5px;
+    margin-bottom:15px;
+  }
 
   ul { margin:10px 0 20px 20px; }
   li { margin-bottom:8px; }
 
-  footer { text-align:center; padding:20px; background:#ecf0f1; color:#666; font-size:0.9em; }
+  footer {
+    text-align:center;
+    padding:20px;
+    background:#ecf0f1;
+    color:#666;
+    font-size:0.9em;
+  }
 
   @media (max-width:768px){
     .sidebar { width:100%; height:auto; position:relative; }
@@ -74,9 +88,10 @@
   }
 </style>
 </head>
+
 <body>
 
-<!-- Sidebar esquerda -->
+<!-- Sidebar -->
 <div class="sidebar">
   <img src="lattes.png" alt="Débora Dutra">
   <h1>Débora Dutra</h1>
@@ -88,53 +103,38 @@
   <p>🔗 <a href="https://bv.fapesp.br/pt/pesquisador/714029/debora-joana-dutra" target="_blank">BV FAPESP</a></p>
 </div>
 
-<!-- Menu horizontal topo -->
+<!-- Menu -->
 <div class="topnav">
-  <a onclick="loadPage('index-content.html')">Início</a>
+  <a onclick="loadPage('home.html')">Início</a>
   <a onclick="loadPage('projetos.html')">Projetos</a>
   <a onclick="loadPage('publicacoes.html')">Publicações</a>
   <a onclick="loadPage('dashboards.html')">Dashboards</a>
   <a onclick="loadPage('zenodo.html')">Zenodo</a>
 </div>
 
-<!-- Conteúdo principal -->
+<!-- Conteúdo Principal -->
 <div class="main-content" id="main-content">
-  <!-- Conteúdo inicial carregado -->
-  <section id="sobre">
-    <h2>Sobre mim</h2>
+  <!-- Conteúdo inicial -->
+  <h2>Sobre mim</h2>
 
-    <p><strong>Quem sou:</strong></p>
-    <ul>
-      <li>Doutoranda em Sensoriamento Remoto pelo INPE</li>
-      <li>Mestre em Análise e Modelagem de Sistemas Ambientais (UFMG)</li>
-      <li>Bacharel em Engenharia Ambiental e Sanitária (CEFET-MG)</li>
-    </ul>
+  <p><strong>Quem sou:</strong></p>
+  <ul>
+    <li>Doutoranda em Sensoriamento Remoto pelo INPE</li>
+    <li>Mestre em Análise e Modelagem de Sistemas Ambientais (UFMG)</li>
+    <li>Bacharel em Engenharia Ambiental e Sanitária (CEFET-MG)</li>
+  </ul>
 
-    <p><strong>Projeto de Doutorado Atual:</strong></p>
-    <ul>
-      <li><em>THE POTENTIAL ECONOMIC LOSSES FROM FIRE IN BRAZILIAN TERRITORY</em></li>
-    </ul>
+  <p><strong>Projeto de Doutorado Atual:</strong></p>
+  <ul>
+    <li><em>THE POTENTIAL ECONOMIC LOSSES FROM FIRE IN BRAZILIAN TERRITORY</em></li>
+  </ul>
 
-    <p><strong>Especialidades:</strong></p>
-    <ul>
-      <li>Sensoriamento remoto e geoprocessamento</li>
-      <li>Modelagem ambiental e análise espacial</li>
-      <li>Ciência de dados aplicada a desmatamento e incêndios</li>
-    </ul>
-
-    <p><strong>Interesses de pesquisa:</strong></p>
-    <ul>
-      <li>Monitoramento de queimadas no Brasil</li>
-      <li>Seca em bacias hidrográficas</li>
-      <li>Degradação florestal na Amazônia</li>
-      <li>Análise de riscos ambientais e apoio a políticas públicas</li>
-    </ul>
-  </section>
-
-  <section id="contato">
-    <h2>Contato</h2>
-    <p>Para perguntas ou colaborações, envie um email para <a href="mailto:debora.joana@inpe.br">debora.joana@inpe.br</a>.</p>
-  </section>
+  <p><strong>Especialidades:</strong></p>
+  <ul>
+    <li>Sensoriamento remoto e geoprocessamento</li>
+    <li>Modelagem ambiental e análise espacial</li>
+    <li>Ciência de dados aplicada a desmatamento e incêndios</li>
+  </ul>
 </div>
 
 <footer>
@@ -142,14 +142,22 @@
 </footer>
 
 <script>
-  // Função para carregar páginas no main-content sem recarregar a página
   function loadPage(url) {
     fetch(url)
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('main-content').innerHTML = html;
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Arquivo não encontrado: " + url);
+        }
+        return response.text();
       })
-      .catch(err => console.warn('Erro ao carregar a página:', err));
+      .then(html => {
+        document.getElementById("main-content").innerHTML = html;
+      })
+      .catch(error => {
+        document.getElementById("main-content").innerHTML =
+          "<h2>Erro</h2><p>Não foi possível carregar a página.</p>";
+        console.error(error);
+      });
   }
 </script>
 
