@@ -32,7 +32,7 @@
 
   /* Menu horizontal no topo */
   .topnav {
-    margin-left:250px; /* desloca para direita da sidebar */
+    margin-left:250px;
     background:#2980b9;
     overflow:hidden;
     display:flex;
@@ -55,19 +55,28 @@
   /* Conteúdo principal */
   .main-content {
     margin-left:250px;
-    margin-top:50px; /* espaço para o menu */
+    margin-top:50px;
     padding:40px;
     max-width:900px;
   }
 
   section { margin-bottom:40px; }
+
   h2 { color:#2c3e50; border-bottom:2px solid #2980b9; padding-bottom:5px; margin-bottom:15px; }
+
+  /* Espaçamento entre listas e itens */
+  ul { margin-bottom:20px; padding-left:20px; }
+  li { margin-bottom:8px; }
+
+  iframe { width:100%; height:600px; border:none; margin-top:20px; }
+
   footer { text-align:center; padding:20px; background:#ecf0f1; color:#666; font-size:0.9em; }
 
   @media (max-width:768px){
     .sidebar { width:100%; height:auto; position:relative; }
     .topnav { margin-left:0; flex-wrap:wrap; height:auto; }
     .main-content { margin-left:0; margin-top:0; padding:20px; }
+    iframe { height:400px; }
   }
 </style>
 </head>
@@ -90,6 +99,7 @@
   <a href="index.html">Início</a>
   <a href="projetos.html">Projetos</a>
   <a href="publicacoes.html">Publicações</a>
+  <a href="dashboards.html">Dashboards</a>
   <a href="zenodo.html">Zenodo</a>
 </div>
 
@@ -124,6 +134,13 @@
       <li>Degradação florestal na Amazônia</li>
       <li>Análise de riscos ambientais e apoio a políticas públicas</li>
     </ul>
+  </section>
+
+  <section id="dashboards">
+    <h2>Dashboards</h2>
+    <p>Aqui você pode visualizar o dashboard <strong>Fogo em Foco</strong>, que acompanha incêndios em tempo real no Brasil.</p>
+    <!-- Exemplo de iframe, altere o src para seu dashboard real -->
+    <iframe src="dashboard/index.html" title="Fogo em Foco"></iframe>
   </section>
 
   <section id="contato">
