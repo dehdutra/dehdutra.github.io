@@ -5,109 +5,77 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Débora Dutra – Cientista</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; background:#f4f6f8; color:#333; }
 
-  body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    min-height: 100vh;
-    background-color: #f4f6f8;
-    color: #333;
-  }
-
-  /* Coluna fixa à esquerda */
+  /* Sidebar esquerda */
   .sidebar {
     width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-    position: fixed;
-    height: 100%;
-    text-align: center;
+    background:#2c3e50;
+    color:white;
+    position:fixed;
+    top:0; left:0;
+    height:100%;
+    text-align:center;
+    padding:20px;
   }
 
   .sidebar img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    object-fit: cover;
-    border: 3px solid #1abc9c;
+    width:120px; height:120px; border-radius:50%;
+    margin-bottom:15px; object-fit:cover; border:3px solid #1abc9c;
   }
 
-  .sidebar h1 {
-    font-size: 1.6em;
-    margin-bottom: 5px;
+  .sidebar h1 { font-size:1.6em; margin-bottom:5px; }
+  .sidebar p { margin:6px 0; font-size:0.95em; }
+  .sidebar a { color:#1abc9c; text-decoration:none; }
+  .sidebar a:hover { text-decoration:underline; }
+
+  /* Menu horizontal no topo */
+  .topnav {
+    margin-left:250px; /* desloca para direita da sidebar */
+    background:#2980b9;
+    overflow:hidden;
+    display:flex;
+    padding:0 20px;
+    height:50px;
+    align-items:center;
   }
 
-  .sidebar p {
-    margin: 6px 0;
-    font-size: 0.95em;
+  .topnav a {
+    color:white;
+    padding:14px 20px;
+    text-decoration:none;
+    font-weight:bold;
   }
 
-  .sidebar a {
-    color: #1abc9c;
-    text-decoration: none;
+  .topnav a:hover {
+    background:#1abc9c;
   }
 
-  .sidebar a:hover {
-    text-decoration: underline;
-  }
-
-  .sidebar hr {
-    margin: 15px 0;
-    border-color: #1abc9c;
-  }
-
-  /* Conteúdo principal à direita */
+  /* Conteúdo principal */
   .main-content {
-    margin-left: 270px;
-    padding: 40px;
-    max-width: 900px;
+    margin-left:250px;
+    margin-top:50px; /* espaço para o menu */
+    padding:40px;
+    max-width:900px;
   }
 
-  section {
-    margin-bottom: 40px;
-  }
+  section { margin-bottom:40px; }
+  h2 { color:#2c3e50; border-bottom:2px solid #2980b9; padding-bottom:5px; margin-bottom:15px; }
+  footer { text-align:center; padding:20px; background:#ecf0f1; color:#666; font-size:0.9em; }
 
-  h2 {
-    color: #2c3e50;
-    border-bottom: 2px solid #2980b9;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-  }
-
-  ul {
-    list-style-type: none;
-    padding-left: 0;
-  }
-
-  li {
-    margin: 8px 0;
-  }
-
-  footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #ecf0f1;
-    color: #666;
-    font-size: 0.9em;
-  }
-
-  /* Responsivo */
-  @media (max-width: 768px) {
-    body { flex-direction: column; }
-    .sidebar { position: relative; width: 100%; height: auto; padding: 20px; }
-    .main-content { margin-left: 0; padding: 20px; }
+  @media (max-width:768px){
+    .sidebar { width:100%; height:auto; position:relative; }
+    .topnav { margin-left:0; flex-wrap:wrap; height:auto; }
+    .main-content { margin-left:0; margin-top:0; padding:20px; }
   }
 </style>
 </head>
 <body>
 
-<!-- Coluna fixa à esquerda -->
+<!-- Sidebar esquerda -->
 <div class="sidebar">
   <img src="lattes.png" alt="Débora Dutra">
-  
   <h1>Débora Dutra</h1>
   <p>📍 São José dos Campos, SP, Brasil</p>
   <p>🏫 Doutoranda em Sensoriamento Remoto – INPE</p>
@@ -115,14 +83,14 @@
   <p>🔗 <a href="https://orcid.org/0000-0003-3748-5622" target="_blank">ORCID</a></p>
   <p>🔗 <a href="http://lattes.cnpq.br/0607282523645907" target="_blank">Lattes</a></p>
   <p>🔗 <a href="https://bv.fapesp.br/pt/pesquisador/714029/debora-joana-dutra" target="_blank">BV FAPESP</a></p>
+</div>
 
-  <hr>
-
-  <!-- Menu para páginas separadas -->
-  <p><a href="index.html">Início</a></p>
-  <p><a href="projetos.html">Projetos</a></p>
-  <p><a href="publicacoes.html">Publicações</a></p>
-  <p><a href="zenodo.html">Zenodo</a></p>
+<!-- Menu horizontal topo -->
+<div class="topnav">
+  <a href="index.html">Início</a>
+  <a href="projetos.html">Projetos</a>
+  <a href="publicacoes.html">Publicações</a>
+  <a href="zenodo.html">Zenodo</a>
 </div>
 
 <!-- Conteúdo principal -->
@@ -130,9 +98,7 @@
   <section id="sobre">
     <h2>Sobre mim</h2>
     <p><strong>Quem sou:</strong> Doutoranda em Sensoriamento Remoto pelo INPE, Mestre em Análise e Modelagem de Sistemas Ambientais (UFMG) e Bacharel em Engenharia Ambiental e Sanitária (CEFET-MG).</p>
-    
     <p><strong>Especialidades:</strong> Sensoriamento remoto, geoprocessamento, modelagem ambiental, análise espacial e ciência de dados aplicada a desmatamento e incêndios.</p>
-    
     <p><strong>Interesses de pesquisa:</strong> Monitoramento de queimadas, seca em bacias hidrográficas, degradação florestal na Amazônia e análise de riscos ambientais para apoio a políticas públicas.</p>
   </section>
 
