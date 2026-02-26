@@ -30,7 +30,7 @@
   .sidebar a { color:#1abc9c; text-decoration:none; }
   .sidebar a:hover { text-decoration:underline; }
 
-  /* Menu horizontal no topo */
+  /* Menu horizontal topo */
   .topnav {
     margin-left:250px;
     background:#2980b9;
@@ -90,15 +90,16 @@
 
 <!-- Menu horizontal topo -->
 <div class="topnav">
-  <a href="index.html">Início</a>
-  <a href="projetos.html" target="_blank">Projetos</a>
-  <a href="publicacoes.html" target="_blank">Publicações</a>
-  <a href="dashboards.html" target="_blank">Dashboards</a>
-  <a href="zenodo.html" target="_blank">Zenodo</a>
+  <a onclick="loadPage('index-content.html')">Início</a>
+  <a onclick="loadPage('projetos.html')">Projetos</a>
+  <a onclick="loadPage('publicacoes.html')">Publicações</a>
+  <a onclick="loadPage('dashboards.html')">Dashboards</a>
+  <a onclick="loadPage('zenodo.html')">Zenodo</a>
 </div>
 
 <!-- Conteúdo principal -->
-<div class="main-content">
+<div class="main-content" id="main-content">
+  <!-- Conteúdo inicial carregado -->
   <section id="sobre">
     <h2>Sobre mim</h2>
 
@@ -139,6 +140,18 @@
 <footer>
   &copy; 2026 Débora Dutra – Página científica pessoal
 </footer>
+
+<script>
+  // Função para carregar páginas no main-content sem recarregar a página
+  function loadPage(url) {
+    fetch(url)
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('main-content').innerHTML = html;
+      })
+      .catch(err => console.warn('Erro ao carregar a página:', err));
+  }
+</script>
 
 </body>
 </html>
