@@ -1,13 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Fogo em Foco</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🔥 Fogo em Foco</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  padding: 15px 25px;
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+#map {
+  width: 100%;
+  height: 92vh;
+}
+</style>
 </head>
+
 <body>
 
-<h1>🔥 Dashboard Fogo em Foco</h1>
-<p>Se você está vendo isso, o link funcionou.</p>
+<header>
+🔥 Dashboard — Fogo em Foco
+</header>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Criar mapa centralizado no mundo
+var map = L.map('map').setView([0, 0], 2);
+
+// Camada OpenStreetMap
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+</script>
 
 </body>
 </html>
