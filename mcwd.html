@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🔥 Fogo em Foco</title>
+<title>Maximum Cumulative Water Deficit</title>
 
 <!-- Leaflet CSS -->
+
 <link rel="stylesheet"
  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
@@ -17,7 +19,7 @@ body {
 }
 
 header {
-  background: linear-gradient(135deg, #e67e22, #d35400);
+  background: linear-gradient(135deg, #3498db, #21618c);
   color: white;
   padding: 15px 25px;
   font-size: 1.3em;
@@ -29,24 +31,26 @@ header {
   height: 92vh;
 }
 </style>
+
 </head>
 
 <body>
 
 <header>
-🔥 Dashboard — Fogo em Foco
+Maximum Cumulative Water Deficit
 </header>
 
 <div id="map"></div>
 
 <!-- Leaflet JS -->
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-// Criar mapa centralizado no mundo
+// Create map centered on the world
 var map = L.map('map').setView([0, 0], 2);
 
-// Camada OpenStreetMap
+// OpenStreetMap base layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
