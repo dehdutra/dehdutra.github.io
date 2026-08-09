@@ -2,58 +2,319 @@
 
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Maximum Cumulative Water Deficit</title>
 
-<!-- Leaflet CSS -->
+<!-- =========================================================
+     LEAFLET CSS
+========================================================= -->
 
 <link rel="stylesheet"
- href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
+
+/* =========================================================
+   BODY
+========================================================= */
+
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+    margin: 0;
+    font-family: Arial, sans-serif;
 }
+
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 header {
-  background: linear-gradient(135deg, #3498db, #21618c);
-  color: white;
-  padding: 15px 25px;
-  font-size: 1.3em;
-  font-weight: bold;
+    background: linear-gradient(135deg, #3498db, #21618c);
+    color: white;
+    padding: 15px 25px;
+    font-size: 1.3em;
+    font-weight: bold;
 }
 
+
+/* =========================================================
+   MAP
+========================================================= */
+
 #map {
-  width: 100%;
-  height: 92vh;
+    width: 100%;
+    height: 92vh;
 }
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+.estado {
+    fill-color: #d6eaf8;
+    color: #555;
+    weight: 1;
+    opacity: 1;
+    fill-opacity: 0.7;
+}
+
+
+/* =========================================================
+   ESTADO AO PASSAR O MOUSE
+========================================================= */
+
+.estado-hover {
+    fill-color: #3498db;
+    fill-opacity: 0.9;
+    weight: 2;
+    color: #21618c;
+}
+
 </style>
 
 </head>
 
 <body>
 
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
 <header>
-Maximum Cumulative Water Deficit
+    Maximum Cumulative Water Deficit
 </header>
+
+<!-- =========================================================
+     MAPA
+========================================================= -->
 
 <div id="map"></div>
 
-<!-- Leaflet JS -->
+<!-- =========================================================
+     LEAFLET JS
+========================================================= -->
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-// Create map centered on the world
-var map = L.map('map').setView([0, 0], 2);
 
-// OpenStreetMap base layer
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+
+// ============================================================
+// CRIAR MAPA
+// ============================================================
+
+// Centro aproximado do Brasil
+var map = L.map('map').setView([-14.2, -51.9], 4);
+
+
+// ============================================================
+// OPEN STREET MAP
+// ============================================================
+
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution: '&copy; OpenStreetMap contributors'
+    }
+).addTo(map);
+
+
+// ============================================================
+// ESTILO DOS ESTADOS
+// ============================================================
+
+function estiloEstado(feature) {
+
+    return {
+
+        fillColor: '#d6eaf8',
+
+        color: '#555',
+
+        weight: 1,
+
+        opacity: 1,
+
+        fillOpacity: 0.7
+
+    };
+
+}
+
+
+// ============================================================
+// DESTACAR ESTADO AO PASSAR O MOUSE
+// ============================================================
+
+function destacarEstado(e) {
+
+    var layer = e.target;
+
+    layer.setStyle({
+
+        fillColor: '#3498db',
+
+        color: '#21618c',
+
+        weight: 2,
+
+        fillOpacity: 0.9
+
+    });
+
+    // Trazer o estado para frente
+    layer.bringToFront();
+
+}
+
+
+// ============================================================
+// REMOVER DESTAQUE
+// ============================================================
+
+function removerDestaque(e) {
+
+    estadosLayer.resetStyle(e.target);
+
+}
+
+
+// ============================================================
+// CLIQUE NO ESTADO
+// ============================================================
+
+function clicarEstado(e) {
+
+    var layer = e.target;
+
+    // Recuperar informações do GeoJSON
+    var nomeEstado = layer.feature.properties.nome;
+
+    var siglaEstado = layer.feature.properties.sigla;
+
+
+    // Zoom para o estado
+    map.fitBounds(
+        layer.getBounds(),
+        {
+            padding: [20, 20]
+        }
+    );
+
+
+    // Popup
+    layer.bindPopup(
+
+        '<div style="text-align:center;">' +
+
+        '<strong style="font-size:16px;">' +
+        nomeEstado +
+        '</strong>' +
+
+        '<br>' +
+
+        '<span style="font-size:13px;">' +
+        'UF: ' + siglaEstado +
+        '</span>' +
+
+        '<br><br>' +
+
+        '<span>' +
+        'Maximum Cumulative Water Deficit' +
+        '</span>' +
+
+        '</div>'
+
+    ).openPopup();
+
+}
+
+
+// ============================================================
+// CONFIGURAR CADA ESTADO
+// ============================================================
+
+function configurarEstado(feature, layer) {
+
+    layer.on({
+
+        mouseover: destacarEstado,
+
+        mouseout: removerDestaque,
+
+        click: clicarEstado
+
+    });
+
+}
+
+
+// ============================================================
+// VARIÁVEL PARA A CAMADA DOS ESTADOS
+// ============================================================
+
+var estadosLayer;
+
+
+// ============================================================
+// CARREGAR GEOJSON
+// ============================================================
+
+fetch('estados_simplificado.geojson')
+
+    .then(function(response) {
+
+        if (!response.ok) {
+
+            throw new Error(
+                'Não foi possível carregar estados_simplificado.geojson'
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        // Criar camada GeoJSON
+        estadosLayer = L.geoJSON(
+
+            data,
+
+            {
+
+                style: estiloEstado,
+
+                onEachFeature: configurarEstado
+
+            }
+
+        ).addTo(map);
+
+
+        // Ajustar o mapa aos estados brasileiros
+        map.fitBounds(
+            estadosLayer.getBounds()
+        );
+
+    })
+
+    .catch(function(error) {
+
+        console.error(
+            'Erro ao carregar o GeoJSON:',
+            error
+        );
+
+    });
+
+
 </script>
 
 </body>
