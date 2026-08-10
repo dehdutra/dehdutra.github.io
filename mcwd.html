@@ -121,7 +121,7 @@ header {
 
 
 /* =========================================================
-   MAPA
+   MAPA PRINCIPAL
 ========================================================= */
 
 #map {
@@ -433,6 +433,155 @@ header {
 
 
 /* =========================================================
+   PAINEL DE ESTATÍSTICAS
+========================================================= */
+
+#statsPanel {
+
+    position: fixed;
+
+    z-index: 9997;
+
+    right: 20px;
+
+    bottom: 20px;
+
+    width: 270px;
+
+    background: rgba(
+        255,
+        255,
+        255,
+        0.97
+    );
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 4px 18px
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   TÍTULO DO PAINEL
+========================================================= */
+
+.stats-title {
+
+    background: linear-gradient(
+        135deg,
+        #3498db,
+        #21618c
+    );
+
+    color: white;
+
+    padding: 10px 13px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================================================
+   MINI MAPA
+========================================================= */
+
+#miniMap {
+
+    width: 100%;
+
+    height: 125px;
+
+    background: #eaf2f8;
+
+}
+
+
+/* =========================================================
+   ESTATÍSTICAS
+========================================================= */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    border-top:
+        1px solid #eeeeee;
+
+}
+
+
+.stat-item {
+
+    text-align: center;
+
+    padding: 10px 3px;
+
+}
+
+
+.stat-item:not(:last-child) {
+
+    border-right:
+        1px solid #eeeeee;
+
+}
+
+
+.stat-number {
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    color: #21618c;
+
+}
+
+
+.stat-label {
+
+    margin-top: 3px;
+
+    font-size: 10px;
+
+    color: #777;
+
+}
+
+
+.stats-update {
+
+    text-align: center;
+
+    font-size: 9px;
+
+    color: #999;
+
+    padding: 6px;
+
+    border-top:
+        1px solid #eeeeee;
+
+}
+
+
+/* =========================================================
    RESPONSIVO
 ========================================================= */
 
@@ -461,6 +610,17 @@ header {
         font-size: 12px;
 
         padding: 7px 10px;
+
+    }
+
+
+    #statsPanel {
+
+        width: 230px;
+
+        right: 10px;
+
+        bottom: 10px;
 
     }
 
@@ -530,7 +690,7 @@ header {
 
 
 <!-- =========================================================
-     MAPA
+     MAPA PRINCIPAL
 ========================================================= -->
 
 <div id="map"></div>
@@ -680,11 +840,6 @@ header {
             </span>
 
 
-            <!--
-                Quando você fizer o upload do arquivo,
-                troque "biomas.geojson" pelo nome correto.
-            -->
-
             <a
                 class="download-btn"
                 href="biomas.geojson"
@@ -797,6 +952,109 @@ header {
 
 
 <!-- =========================================================
+     PAINEL DE ESTATÍSTICAS
+========================================================= -->
+
+<div id="statsPanel">
+
+
+    <div class="stats-title">
+
+        🌎 Product access
+
+    </div>
+
+
+    <!-- MINI MAPA -->
+
+    <div id="miniMap"></div>
+
+
+    <!-- ESTATÍSTICAS -->
+
+    <div class="stats-grid">
+
+
+        <div class="stat-item">
+
+
+            <div
+                class="stat-number"
+                id="countriesCount">
+
+                18
+
+            </div>
+
+
+            <div class="stat-label">
+
+                Countries
+
+            </div>
+
+
+        </div>
+
+
+        <div class="stat-item">
+
+
+            <div
+                class="stat-number"
+                id="visitsCount">
+
+                3,842
+
+            </div>
+
+
+            <div class="stat-label">
+
+                Visits
+
+            </div>
+
+
+        </div>
+
+
+        <div class="stat-item">
+
+
+            <div
+                class="stat-number"
+                id="downloadsCount">
+
+                1,247
+
+            </div>
+
+
+            <div class="stat-label">
+
+                Downloads
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div class="stats-update">
+
+        Updated automatically
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
      LEAFLET JS
 ========================================================= -->
 
@@ -809,7 +1067,7 @@ header {
 
 
 // ============================================================
-// CRIAR MAPA
+// MAPA PRINCIPAL
 // ============================================================
 
 var map = L.map('map').setView(
@@ -1076,6 +1334,7 @@ fetch(
         console.error(
 
             'Erro ao carregar o GeoJSON:',
+
             error
 
         );
@@ -1086,7 +1345,7 @@ fetch(
 
 
 // ============================================================
-// ABRIR / FECHAR PAINEL DE CAMADAS
+// ABRIR / FECHAR CAMADAS
 // ============================================================
 
 function abrirCamadas() {
@@ -1189,8 +1448,6 @@ function alternarBiomas() {
 
     if (checkbox.checked) {
 
-
-        // Se ainda não carregou o arquivo
 
         if (biomasLayer === null) {
 
@@ -1430,7 +1687,257 @@ function copiarCitacao() {
 
 
 // ============================================================
-// FECHAR MODAIS AO CLICAR FORA
+// MINI MAPA-MÚNDI
+// ============================================================
+
+var miniMap = L.map(
+
+    'miniMap',
+
+    {
+
+        zoomControl: false,
+
+        attributionControl: false,
+
+        dragging: false,
+
+        scrollWheelZoom: false,
+
+        doubleClickZoom: false,
+
+        boxZoom: false,
+
+        keyboard: false,
+
+        touchZoom: false
+
+    }
+
+).setView(
+
+    [20, 0],
+
+    1
+
+);
+
+
+// ============================================================
+// MAPA BASE DO MINI MAPA
+// ============================================================
+
+L.tileLayer(
+
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
+    {
+
+        attribution:
+            '&copy; OpenStreetMap contributors'
+
+    }
+
+).addTo(miniMap);
+
+
+// ============================================================
+// PAÍSES QUE ACESSARAM
+// ============================================================
+//
+// Futuramente estes dados podem vir de uma API.
+// Por enquanto são exemplos.
+//
+
+var paisesAcessados = [
+
+    "Brazil",
+
+    "United States",
+
+    "United Kingdom",
+
+    "Germany",
+
+    "France"
+
+];
+
+
+// ============================================================
+// CARREGAR PAÍSES NO MINI MAPA
+// ============================================================
+
+fetch(
+
+    'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson'
+
+)
+
+.then(
+
+    function(response) {
+
+        return response.json();
+
+    }
+
+)
+
+.then(
+
+    function(data) {
+
+
+        L.geoJSON(
+
+            data,
+
+            {
+
+
+                // --------------------------------------------
+                // ESTILO DOS PAÍSES
+                // --------------------------------------------
+
+                style: function(feature) {
+
+
+                    var nome =
+                        feature.properties.ADMIN ||
+                        feature.properties.name;
+
+
+                    var acessou =
+                        paisesAcessados.includes(
+                            nome
+                        );
+
+
+                    return {
+
+                        fillColor:
+                            acessou
+                            ? '#3498db'
+                            : '#e5e7e9',
+
+                        color: '#ffffff',
+
+                        weight: 0.5,
+
+                        fillOpacity:
+                            acessou
+                            ? 0.8
+                            : 0.6
+
+                    };
+
+                },
+
+
+                // --------------------------------------------
+                // INTERAÇÃO
+                // --------------------------------------------
+
+                onEachFeature:
+                    function(
+                        feature,
+                        layer
+                    ) {
+
+
+                        var nome =
+                            feature.properties.ADMIN ||
+                            feature.properties.name;
+
+
+                        if (
+                            paisesAcessados.includes(
+                                nome
+                            )
+                        ) {
+
+
+                            layer.bindTooltip(
+
+                                nome,
+
+                                {
+
+                                    direction:
+                                        'top',
+
+                                    sticky:
+                                        true
+
+                                }
+
+                            );
+
+
+                            layer.on({
+
+                                mouseover:
+                                    function(e) {
+
+                                        e.target.setStyle({
+
+                                            weight: 1.5,
+
+                                            fillOpacity: 1
+
+                                        });
+
+                                    },
+
+
+                                mouseout:
+                                    function(e) {
+
+                                        e.target.setStyle({
+
+                                            weight: 0.5,
+
+                                            fillOpacity: 0.8
+
+                                        });
+
+                                    }
+
+                            });
+
+                        }
+
+                    }
+
+            }
+
+        ).addTo(miniMap);
+
+    }
+
+)
+
+.catch(
+
+    function(error) {
+
+
+        console.error(
+
+            'Erro ao carregar mapa de países:',
+
+            error
+
+        );
+
+    }
+
+);
+
+
+// ============================================================
+// FECHAR PAINÉIS AO CLICAR FORA
 // ============================================================
 
 window.addEventListener(
@@ -1458,9 +1965,9 @@ window.addEventListener(
             );
 
 
-        // -------------------------
+        // ----------------------------------------------------
         // MODAL CITAÇÃO
-        // -------------------------
+        // ----------------------------------------------------
 
         if (
 
@@ -1475,9 +1982,9 @@ window.addEventListener(
         }
 
 
-        // -------------------------
+        // ----------------------------------------------------
         // MODAL DOWNLOADS
-        // -------------------------
+        // ----------------------------------------------------
 
         if (
 
@@ -1492,9 +1999,9 @@ window.addEventListener(
         }
 
 
-        // -------------------------
-        // PAINEL DE CAMADAS
-        // -------------------------
+        // ----------------------------------------------------
+        // PAINEL CAMADAS
+        // ----------------------------------------------------
 
         var clicouBotao =
             event.target.closest(
@@ -1528,9 +2035,10 @@ window.addEventListener(
 
 );
 
-
 </script>
+
 
 </body>
 
 </html>
+
