@@ -134,42 +134,6 @@ header {
 
 
 /* =========================================================
-   ESTADOS
-========================================================= */
-
-.estado {
-
-    fill-color: #d6eaf8;
-
-    color: #555;
-
-    weight: 1;
-
-    opacity: 1;
-
-    fill-opacity: 0.7;
-
-}
-
-
-/* =========================================================
-   ESTADO AO PASSAR O MOUSE
-========================================================= */
-
-.estado-hover {
-
-    fill-color: #3498db;
-
-    fill-opacity: 0.9;
-
-    weight: 2;
-
-    color: #21618c;
-
-}
-
-
-/* =========================================================
    PAINEL DE CAMADAS
 ========================================================= */
 
@@ -253,7 +217,7 @@ header {
 
 
 /* =========================================================
-   MODAL
+   MODAIS
 ========================================================= */
 
 .modal {
@@ -284,7 +248,7 @@ header {
 
 
 /* =========================================================
-   CONTEÚDO DO MODAL
+   CONTEÚDO DOS MODAIS
 ========================================================= */
 
 .modal-content {
@@ -316,7 +280,7 @@ header {
 
 
 /* =========================================================
-   TÍTULO DO MODAL
+   TÍTULO
 ========================================================= */
 
 .modal-content h2 {
@@ -588,9 +552,12 @@ header {
     </h3>
 
 
-    <!-- ESTADOS -->
+    <!-- =====================================================
+         ESTADOS
+    ====================================================== -->
 
     <div class="layer-item">
+
 
         <input
             type="checkbox"
@@ -598,83 +565,36 @@ header {
             checked
             onchange="alternarEstados()">
 
+
         <label for="checkEstados">
 
             Estados
 
         </label>
 
-    </div>
-
-
-    <!-- MUNICÍPIOS -->
-
-    <div class="layer-item">
-
-        <input
-            type="checkbox"
-            id="checkMunicipios"
-            onchange="alternarMunicipios()">
-
-        <label for="checkMunicipios">
-
-            Municípios
-
-        </label>
 
     </div>
 
 
-    <!-- ÁREAS PROTEGIDAS -->
+    <!-- =====================================================
+         BIOMAS
+    ====================================================== -->
 
     <div class="layer-item">
 
-        <input
-            type="checkbox"
-            id="checkAreasProtegidas"
-            onchange="alternarAreasProtegidas()">
-
-        <label for="checkAreasProtegidas">
-
-            Áreas Protegidas
-
-        </label>
-
-    </div>
-
-
-    <!-- TERRAS INDÍGENAS -->
-
-    <div class="layer-item">
 
         <input
             type="checkbox"
-            id="checkTerrasIndigenas"
-            onchange="alternarTerrasIndigenas()">
-
-        <label for="checkTerrasIndigenas">
-
-            Terras Indígenas
-
-        </label>
-
-    </div>
+            id="checkBiomas"
+            onchange="alternarBiomas()">
 
 
-    <!-- OUTRA CAMADA -->
+        <label for="checkBiomas">
 
-    <div class="layer-item">
-
-        <input
-            type="checkbox"
-            id="checkOutraCamada"
-            onchange="alternarOutraCamada()">
-
-        <label for="checkOutraCamada">
-
-            Outra camada
+            Biomas
 
         </label>
+
 
     </div>
 
@@ -721,7 +641,7 @@ header {
 
         <!-- =================================================
              ESTADOS
-        ================================================= -->
+        ================================================== -->
 
         <div class="download-item">
 
@@ -747,76 +667,27 @@ header {
 
 
         <!-- =================================================
-             MUNICÍPIOS
-        ================================================= -->
+             BIOMAS
+        ================================================== -->
 
         <div class="download-item">
 
 
             <span class="download-name">
 
-                Municípios
+                Biomas brasileiros
 
             </span>
 
 
-            <a
-                class="download-btn"
-                href="municipios.geojson"
-                download>
-
-                GeoJSON
-
-            </a>
-
-
-        </div>
-
-
-        <!-- =================================================
-             ÁREAS PROTEGIDAS
-        ================================================= -->
-
-        <div class="download-item">
-
-
-            <span class="download-name">
-
-                Áreas Protegidas
-
-            </span>
-
+            <!--
+                Quando você fizer o upload do arquivo,
+                troque "biomas.geojson" pelo nome correto.
+            -->
 
             <a
                 class="download-btn"
-                href="areas_protegidas.geojson"
-                download>
-
-                GeoJSON
-
-            </a>
-
-
-        </div>
-
-
-        <!-- =================================================
-             TERRAS INDÍGENAS
-        ================================================= -->
-
-        <div class="download-item">
-
-
-            <span class="download-name">
-
-                Terras Indígenas
-
-            </span>
-
-
-            <a
-                class="download-btn"
-                href="terras_indigenas.geojson"
+                href="biomas.geojson"
                 download>
 
                 GeoJSON
@@ -929,7 +800,9 @@ header {
      LEAFLET JS
 ========================================================= -->
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
 
 
 <script>
@@ -964,6 +837,15 @@ L.tileLayer(
     }
 
 ).addTo(map);
+
+
+// ============================================================
+// VARIÁVEIS DAS CAMADAS
+// ============================================================
+
+var estadosLayer = null;
+
+var biomasLayer = null;
 
 
 // ============================================================
@@ -1097,7 +979,7 @@ function clicarEstado(e) {
 
 
 // ============================================================
-// CONFIGURAR ESTADO
+// CONFIGURAR ESTADOS
 // ============================================================
 
 function configurarEstado(
@@ -1122,21 +1004,6 @@ function configurarEstado(
 
 
 // ============================================================
-// VARIÁVEIS DAS CAMADAS
-// ============================================================
-
-var estadosLayer = null;
-
-var municipiosLayer = null;
-
-var areasProtegidasLayer = null;
-
-var terrasIndigenasLayer = null;
-
-var outraCamada = null;
-
-
-// ============================================================
 // CARREGAR ESTADOS
 // ============================================================
 
@@ -1146,70 +1013,80 @@ fetch(
 
 )
 
-.then(function(response) {
+.then(
+
+    function(response) {
 
 
-    if (!response.ok) {
+        if (!response.ok) {
 
-        throw new Error(
+            throw new Error(
 
-            'Não foi possível carregar ' +
-            'estados_simplificado.geojson'
+                'Não foi possível carregar ' +
+                'estados_simplificado.geojson'
+
+            );
+
+        }
+
+
+        return response.json();
+
+    }
+
+)
+
+.then(
+
+    function(data) {
+
+
+        estadosLayer = L.geoJSON(
+
+            data,
+
+            {
+
+                style:
+                    estiloEstado,
+
+                onEachFeature:
+                    configurarEstado
+
+            }
+
+        ).addTo(map);
+
+
+        map.fitBounds(
+
+            estadosLayer.getBounds()
 
         );
 
     }
 
+)
 
-    return response.json();
+.catch(
 
-})
-
-
-.then(function(data) {
+    function(error) {
 
 
-    estadosLayer = L.geoJSON(
+        console.error(
 
-        data,
+            'Erro ao carregar o GeoJSON:',
+            error
 
-        {
+        );
 
-            style: estiloEstado,
+    }
 
-            onEachFeature:
-                configurarEstado
-
-        }
-
-    ).addTo(map);
-
-
-    map.fitBounds(
-
-        estadosLayer.getBounds()
-
-    );
-
-})
-
-
-.catch(function(error) {
-
-
-    console.error(
-
-        'Erro ao carregar o GeoJSON:',
-
-        error
-
-    );
-
-});
+);
 
 
 // ============================================================
-// ABRIR / FECHAR CAMADAS
+// ABRIR / FECHAR PAINEL DE CAMADAS
 // ============================================================
 
 function abrirCamadas() {
@@ -1222,8 +1099,10 @@ function abrirCamadas() {
 
 
     if (
+
         painel.style.display ===
         'block'
+
     ) {
 
         painel.style.display =
@@ -1242,7 +1121,7 @@ function abrirCamadas() {
 
 
 // ============================================================
-// ESTADOS
+// ATIVAR / DESATIVAR ESTADOS
 // ============================================================
 
 function alternarEstados() {
@@ -1254,16 +1133,16 @@ function alternarEstados() {
         );
 
 
-    if (
-        checkbox.checked
-    ) {
+    if (checkbox.checked) {
 
 
         if (
+
             estadosLayer &&
             !map.hasLayer(
                 estadosLayer
             )
+
         ) {
 
             estadosLayer.addTo(map);
@@ -1276,10 +1155,12 @@ function alternarEstados() {
 
 
         if (
+
             estadosLayer &&
             map.hasLayer(
                 estadosLayer
             )
+
         ) {
 
             map.removeLayer(
@@ -1294,87 +1175,117 @@ function alternarEstados() {
 
 
 // ============================================================
-// MUNICÍPIOS
+// ATIVAR / DESATIVAR BIOMAS
 // ============================================================
 
-function alternarMunicipios() {
+function alternarBiomas() {
 
 
     var checkbox =
         document.getElementById(
-            'checkMunicipios'
+            'checkBiomas'
         );
 
 
-    if (
-        checkbox.checked
-    ) {
+    if (checkbox.checked) {
 
 
-        if (
-            municipiosLayer === null
-        ) {
+        // Se ainda não carregou o arquivo
+
+        if (biomasLayer === null) {
 
 
             fetch(
-                'municipios.geojson'
+
+                'biomas.geojson'
+
             )
 
             .then(
+
                 function(response) {
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+
+                            'Arquivo de biomas ainda não disponível.'
+
+                        );
+
+                    }
+
 
                     return response.json();
 
                 }
+
             )
 
             .then(
+
                 function(data) {
 
 
-                    municipiosLayer =
-                        L.geoJSON(
+                    biomasLayer = L.geoJSON(
 
-                            data,
+                        data,
 
-                            {
+                        {
 
-                                style: {
+                            style: {
 
-                                    color: '#888',
+                                color: '#2c3e50',
 
-                                    weight: 0.5,
+                                weight: 1,
 
-                                    fillOpacity: 0.05
-
-                                }
+                                fillOpacity: 0.05
 
                             }
 
-                        ).addTo(map);
+                        }
+
+                    ).addTo(map);
 
                 }
+
             )
 
             .catch(
+
                 function(error) {
 
+
                     console.error(
-                        'Erro ao carregar municípios:',
+
+                        'Erro ao carregar biomas:',
+
                         error
+
                     );
+
+
+                    alert(
+
+                        'O arquivo de biomas ainda não foi disponibilizado.'
+
+                    );
+
 
                     checkbox.checked =
                         false;
 
                 }
+
             );
 
         }
 
         else {
 
-            municipiosLayer.addTo(map);
+
+            biomasLayer.addTo(map);
 
         }
 
@@ -1384,270 +1295,16 @@ function alternarMunicipios() {
 
 
         if (
-            municipiosLayer
-        ) {
 
-            map.removeLayer(
-                municipiosLayer
-            );
-
-        }
-
-    }
-
-}
-
-
-// ============================================================
-// ÁREAS PROTEGIDAS
-// ============================================================
-
-function alternarAreasProtegidas() {
-
-
-    var checkbox =
-        document.getElementById(
-            'checkAreasProtegidas'
-        );
-
-
-    if (
-        checkbox.checked
-    ) {
-
-
-        if (
-            areasProtegidasLayer === null
-        ) {
-
-
-            fetch(
-                'areas_protegidas.geojson'
-            )
-
-            .then(
-                function(response) {
-
-                    return response.json();
-
-                }
-            )
-
-            .then(
-                function(data) {
-
-
-                    areasProtegidasLayer =
-                        L.geoJSON(
-
-                            data,
-
-                            {
-
-                                style: {
-
-                                    color: '#27ae60',
-
-                                    weight: 1,
-
-                                    fillOpacity: 0.15
-
-                                }
-
-                            }
-
-                        ).addTo(map);
-
-                }
-            )
-
-            .catch(
-                function(error) {
-
-                    console.error(
-                        'Erro ao carregar áreas protegidas:',
-                        error
-                    );
-
-                    checkbox.checked =
-                        false;
-
-                }
-            );
-
-        }
-
-        else {
-
-            areasProtegidasLayer.addTo(map);
-
-        }
-
-    }
-
-    else {
-
-
-        if (
-            areasProtegidasLayer
-        ) {
-
-            map.removeLayer(
-                areasProtegidasLayer
-            );
-
-        }
-
-    }
-
-}
-
-
-// ============================================================
-// TERRAS INDÍGENAS
-// ============================================================
-
-function alternarTerrasIndigenas() {
-
-
-    var checkbox =
-        document.getElementById(
-            'checkTerrasIndigenas'
-        );
-
-
-    if (
-        checkbox.checked
-    ) {
-
-
-        if (
-            terrasIndigenasLayer === null
-        ) {
-
-
-            fetch(
-                'terras_indigenas.geojson'
-            )
-
-            .then(
-                function(response) {
-
-                    return response.json();
-
-                }
-            )
-
-            .then(
-                function(data) {
-
-
-                    terrasIndigenasLayer =
-                        L.geoJSON(
-
-                            data,
-
-                            {
-
-                                style: {
-
-                                    color: '#8e44ad',
-
-                                    weight: 1,
-
-                                    fillOpacity: 0.15
-
-                                }
-
-                            }
-
-                        ).addTo(map);
-
-                }
-            )
-
-            .catch(
-                function(error) {
-
-                    console.error(
-                        'Erro ao carregar terras indígenas:',
-                        error
-                    );
-
-                    checkbox.checked =
-                        false;
-
-                }
-            );
-
-        }
-
-        else {
-
-            terrasIndigenasLayer.addTo(map);
-
-        }
-
-    }
-
-    else {
-
-
-        if (
-            terrasIndigenasLayer
-        ) {
-
-            map.removeLayer(
-                terrasIndigenasLayer
-            );
-
-        }
-
-    }
-
-}
-
-
-// ============================================================
-// OUTRA CAMADA
-// ============================================================
-
-function alternarOutraCamada() {
-
-
-    var checkbox =
-        document.getElementById(
-            'checkOutraCamada'
-        );
-
-
-    if (
-        checkbox.checked
-    ) {
-
-
-        if (
-            outraCamada !== null
-        ) {
-
-            outraCamada.addTo(map);
-
-        }
-
-    }
-
-    else {
-
-
-        if (
-            outraCamada !== null &&
+            biomasLayer &&
             map.hasLayer(
-                outraCamada
+                biomasLayer
             )
+
         ) {
 
             map.removeLayer(
-                outraCamada
+                biomasLayer
             );
 
         }
@@ -1743,7 +1400,9 @@ function copiarCitacao() {
 
 
             alert(
+
                 'Citação copiada para a área de transferência!'
+
             );
 
 
@@ -1757,7 +1416,9 @@ function copiarCitacao() {
 
 
             alert(
+
                 'Não foi possível copiar automaticamente.'
+
             );
 
 
@@ -1769,7 +1430,7 @@ function copiarCitacao() {
 
 
 // ============================================================
-// FECHAR PAINÉIS AO CLICAR FORA
+// FECHAR MODAIS AO CLICAR FORA
 // ============================================================
 
 window.addEventListener(
@@ -1797,19 +1458,15 @@ window.addEventListener(
             );
 
 
-        var botaoCamadas =
-            event.target.closest(
-                '.header-btn'
-            );
-
-
         // -------------------------
         // MODAL CITAÇÃO
         // -------------------------
 
         if (
+
             event.target ===
             modalCitacao
+
         ) {
 
             modalCitacao.style.display =
@@ -1819,12 +1476,14 @@ window.addEventListener(
 
 
         // -------------------------
-        // MODAL DOWNLOAD
+        // MODAL DOWNLOADS
         // -------------------------
 
         if (
+
             event.target ===
             modalDownloads
+
         ) {
 
             modalDownloads.style.display =
@@ -1836,6 +1495,12 @@ window.addEventListener(
         // -------------------------
         // PAINEL DE CAMADAS
         // -------------------------
+
+        var clicouBotao =
+            event.target.closest(
+                '.header-btn'
+            );
+
 
         if (
 
@@ -1850,7 +1515,7 @@ window.addEventListener(
 
             &&
 
-            !botaoCamadas
+            !clicouBotao
 
         ) {
 
@@ -1862,6 +1527,7 @@ window.addEventListener(
     }
 
 );
+
 
 </script>
 
