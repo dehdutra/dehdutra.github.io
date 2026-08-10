@@ -1,12 +1,17 @@
+```html
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>Maximum Cumulative Water Deficit</title>
+
 
 <!-- =========================================================
      LEAFLET CSS
@@ -15,6 +20,7 @@
 <link rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
+
 <style>
 
 /* =========================================================
@@ -22,8 +28,11 @@
 ========================================================= */
 
 body {
+
     margin: 0;
+
     font-family: Arial, sans-serif;
+
 }
 
 
@@ -32,51 +41,96 @@ body {
 ========================================================= */
 
 header {
-    background: linear-gradient(135deg, #3498db, #21618c);
+
+    background: linear-gradient(
+        135deg,
+        #3498db,
+        #21618c
+    );
+
     color: white;
+
     padding: 15px 25px;
+
     font-size: 1.3em;
+
     font-weight: bold;
 
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
+
 }
 
 
 /* =========================================================
-   BOTÃO COMO CITAR
+   BOTÕES DO HEADER
 ========================================================= */
 
-.citar-btn {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+.header-buttons {
+
+    display: flex;
+
+    gap: 8px;
+
+    align-items: center;
+
+}
+
+
+.header-btn {
+
+    background: rgba(
+        255,
+        255,
+        255,
+        0.15
+    );
+
+    border: 1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.7
+        );
+
     color: white;
 
-    padding: 8px 15px;
+    padding: 8px 14px;
+
     border-radius: 6px;
 
     font-size: 14px;
-    font-weight: normal;
 
     cursor: pointer;
 
     transition: all 0.2s ease;
+
 }
 
-.citar-btn:hover {
+
+.header-btn:hover {
+
     background: white;
+
     color: #21618c;
+
 }
 
 
 /* =========================================================
-   MAP
+   MAPA
 ========================================================= */
 
 #map {
+
     width: 100%;
+
     height: 92vh;
+
 }
 
 
@@ -85,11 +139,17 @@ header {
 ========================================================= */
 
 .estado {
+
     fill-color: #d6eaf8;
+
     color: #555;
+
     weight: 1;
+
     opacity: 1;
+
     fill-opacity: 0.7;
+
 }
 
 
@@ -98,15 +158,103 @@ header {
 ========================================================= */
 
 .estado-hover {
+
     fill-color: #3498db;
+
     fill-opacity: 0.9;
+
     weight: 2;
+
     color: #21618c;
+
 }
 
 
 /* =========================================================
-   MODAL - COMO CITAR
+   PAINEL DE CAMADAS
+========================================================= */
+
+.layers-panel {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 9998;
+
+    top: 75px;
+
+    right: 20px;
+
+    width: 280px;
+
+    background: white;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 4px 18px
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
+
+    padding: 18px;
+
+}
+
+
+.layers-panel h3 {
+
+    margin-top: 0;
+
+    margin-bottom: 15px;
+
+    color: #21618c;
+
+}
+
+
+.layer-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 9px 4px;
+
+    border-bottom:
+        1px solid #eeeeee;
+
+    font-size: 14px;
+
+}
+
+
+.layer-item:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.layer-item input {
+
+    width: 16px;
+
+    height: 16px;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   MODAL
 ========================================================= */
 
 .modal {
@@ -118,12 +266,20 @@ header {
     z-index: 9999;
 
     left: 0;
+
     top: 0;
 
     width: 100%;
+
     height: 100%;
 
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color:
+        rgba(
+            0,
+            0,
+            0,
+            0.5
+        );
 
 }
 
@@ -137,15 +293,23 @@ header {
     background-color: white;
 
     width: 90%;
+
     max-width: 650px;
 
-    margin: 10% auto;
+    margin: 8% auto;
 
     padding: 25px;
 
     border-radius: 10px;
 
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    box-shadow:
+        0 5px 20px
+        rgba(
+            0,
+            0,
+            0,
+            0.3
+        );
 
     position: relative;
 
@@ -166,25 +330,6 @@ header {
 
 
 /* =========================================================
-   TEXTO DA CITAÇÃO
-========================================================= */
-
-.citacao {
-
-    background: #f4f6f7;
-
-    border-left: 4px solid #3498db;
-
-    padding: 15px;
-
-    line-height: 1.6;
-
-    font-size: 14px;
-
-}
-
-
-/* =========================================================
    BOTÃO FECHAR
 ========================================================= */
 
@@ -193,7 +338,8 @@ header {
     position: absolute;
 
     right: 18px;
-    top: 12px;
+
+    top: 10px;
 
     font-size: 28px;
 
@@ -205,9 +351,30 @@ header {
 
 }
 
+
 .fechar:hover {
 
     color: #21618c;
+
+}
+
+
+/* =========================================================
+   CITAÇÃO
+========================================================= */
+
+.citacao {
+
+    background: #f4f6f7;
+
+    border-left:
+        4px solid #3498db;
+
+    padding: 15px;
+
+    line-height: 1.6;
+
+    font-size: 14px;
 
 }
 
@@ -234,15 +401,112 @@ header {
 
 }
 
+
 .copiar-btn:hover {
 
     background: #21618c;
 
 }
 
+
+/* =========================================================
+   DOWNLOADS
+========================================================= */
+
+.download-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 12px;
+
+    margin-bottom: 8px;
+
+    background: #f4f6f7;
+
+    border-radius: 6px;
+
+}
+
+
+.download-name {
+
+    font-size: 14px;
+
+    color: #333;
+
+}
+
+
+.download-btn {
+
+    background: #3498db;
+
+    color: white;
+
+    border: none;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+}
+
+
+.download-btn:hover {
+
+    background: #21618c;
+
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 700px) {
+
+    header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+    }
+
+
+    .header-buttons {
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .header-btn {
+
+        font-size: 12px;
+
+        padding: 7px 10px;
+
+    }
+
+}
+
 </style>
 
 </head>
+
 
 <body>
 
@@ -253,17 +517,51 @@ header {
 
 <header>
 
+
     <div>
+
         Maximum Cumulative Water Deficit
+
     </div>
 
-    <button
-        class="citar-btn"
-        onclick="abrirCitacao()">
 
-        Como citar o produto
+    <div class="header-buttons">
 
-    </button>
+
+        <!-- CAMADAS -->
+
+        <button
+            class="header-btn"
+            onclick="abrirCamadas()">
+
+            ☰ Camadas
+
+        </button>
+
+
+        <!-- DOWNLOAD -->
+
+        <button
+            class="header-btn"
+            onclick="abrirDownloads()">
+
+            ↓ Dados
+
+        </button>
+
+
+        <!-- COMO CITAR -->
+
+        <button
+            class="header-btn"
+            onclick="abrirCitacao()">
+
+            Como citar o produto
+
+        </button>
+
+
+    </div>
 
 </header>
 
@@ -276,12 +574,289 @@ header {
 
 
 <!-- =========================================================
+     PAINEL DE CAMADAS
+========================================================= -->
+
+<div
+    id="layersPanel"
+    class="layers-panel">
+
+
+    <h3>
+
+        Camadas
+
+    </h3>
+
+
+    <!-- ESTADOS -->
+
+    <div class="layer-item">
+
+        <input
+            type="checkbox"
+            id="checkEstados"
+            checked
+            onchange="alternarEstados()">
+
+        <label for="checkEstados">
+
+            Estados
+
+        </label>
+
+    </div>
+
+
+    <!-- MUNICÍPIOS -->
+
+    <div class="layer-item">
+
+        <input
+            type="checkbox"
+            id="checkMunicipios"
+            onchange="alternarMunicipios()">
+
+        <label for="checkMunicipios">
+
+            Municípios
+
+        </label>
+
+    </div>
+
+
+    <!-- ÁREAS PROTEGIDAS -->
+
+    <div class="layer-item">
+
+        <input
+            type="checkbox"
+            id="checkAreasProtegidas"
+            onchange="alternarAreasProtegidas()">
+
+        <label for="checkAreasProtegidas">
+
+            Áreas Protegidas
+
+        </label>
+
+    </div>
+
+
+    <!-- TERRAS INDÍGENAS -->
+
+    <div class="layer-item">
+
+        <input
+            type="checkbox"
+            id="checkTerrasIndigenas"
+            onchange="alternarTerrasIndigenas()">
+
+        <label for="checkTerrasIndigenas">
+
+            Terras Indígenas
+
+        </label>
+
+    </div>
+
+
+    <!-- OUTRA CAMADA -->
+
+    <div class="layer-item">
+
+        <input
+            type="checkbox"
+            id="checkOutraCamada"
+            onchange="alternarOutraCamada()">
+
+        <label for="checkOutraCamada">
+
+            Outra camada
+
+        </label>
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     MODAL DE DOWNLOADS
+========================================================= -->
+
+<div
+    id="modalDownloads"
+    class="modal">
+
+
+    <div class="modal-content">
+
+
+        <span
+            class="fechar"
+            onclick="fecharDownloads()">
+
+            &times;
+
+        </span>
+
+
+        <h2>
+
+            Dados para download
+
+        </h2>
+
+
+        <p>
+
+            Os dados utilizados no produto estão
+            disponíveis para download nos formatos
+            apresentados abaixo.
+
+        </p>
+
+
+        <!-- =================================================
+             ESTADOS
+        ================================================= -->
+
+        <div class="download-item">
+
+
+            <span class="download-name">
+
+                Estados brasileiros
+
+            </span>
+
+
+            <a
+                class="download-btn"
+                href="estados_simplificado.geojson"
+                download>
+
+                GeoJSON
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================================
+             MUNICÍPIOS
+        ================================================= -->
+
+        <div class="download-item">
+
+
+            <span class="download-name">
+
+                Municípios
+
+            </span>
+
+
+            <a
+                class="download-btn"
+                href="municipios.geojson"
+                download>
+
+                GeoJSON
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================================
+             ÁREAS PROTEGIDAS
+        ================================================= -->
+
+        <div class="download-item">
+
+
+            <span class="download-name">
+
+                Áreas Protegidas
+
+            </span>
+
+
+            <a
+                class="download-btn"
+                href="areas_protegidas.geojson"
+                download>
+
+                GeoJSON
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================================
+             TERRAS INDÍGENAS
+        ================================================= -->
+
+        <div class="download-item">
+
+
+            <span class="download-name">
+
+                Terras Indígenas
+
+            </span>
+
+
+            <a
+                class="download-btn"
+                href="terras_indigenas.geojson"
+                download>
+
+                GeoJSON
+
+            </a>
+
+
+        </div>
+
+
+        <p
+            style="
+            font-size:12px;
+            color:#777;
+            margin-top:18px;
+            ">
+
+            Outros conjuntos de dados poderão ser
+            adicionados posteriormente.
+
+        </p>
+
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
      MODAL - COMO CITAR
 ========================================================= -->
 
-<div id="modalCitacao" class="modal">
+<div
+    id="modalCitacao"
+    class="modal">
+
 
     <div class="modal-content">
+
 
         <span
             class="fechar"
@@ -293,14 +868,19 @@ header {
 
 
         <h2>
+
             Como citar o produto
+
         </h2>
 
 
         <p>
-            Caso utilize este produto em trabalhos científicos,
-            relatórios, apresentações ou outras publicações,
-            recomendamos utilizar a seguinte referência:
+
+            Caso utilize este produto em trabalhos
+            científicos, relatórios, apresentações
+            ou outras publicações, recomendamos
+            utilizar a seguinte referência:
+
         </p>
 
 
@@ -310,7 +890,8 @@ header {
 
             Dutra, D. J., et al. (2026).
             Maximum Cumulative Water Deficit.
-            Instituto Nacional de Pesquisas Espaciais (INPE).
+            Instituto Nacional de Pesquisas Espaciais
+            (INPE).
             Disponível em: [inserir URL do produto].
             Acesso em: [inserir data de acesso].
 
@@ -326,13 +907,19 @@ header {
         </button>
 
 
-        <p style="font-size: 12px; color: #777; margin-top: 15px;">
+        <p
+            style="
+            font-size:12px;
+            color:#777;
+            margin-top:15px;
+            ">
 
             Para informações adicionais sobre os dados,
             metodologia e desenvolvimento do produto,
             consulte a documentação associada.
 
         </p>
+
 
     </div>
 
@@ -345,6 +932,7 @@ header {
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+
 <script>
 
 
@@ -353,8 +941,11 @@ header {
 // ============================================================
 
 var map = L.map('map').setView(
+
     [-14.2, -51.9],
+
     4
+
 );
 
 
@@ -363,10 +954,16 @@ var map = L.map('map').setView(
 // ============================================================
 
 L.tileLayer(
+
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
     {
-        attribution: '&copy; OpenStreetMap contributors'
+
+        attribution:
+            '&copy; OpenStreetMap contributors'
+
     }
+
 ).addTo(map);
 
 
@@ -394,12 +991,13 @@ function estiloEstado(feature) {
 
 
 // ============================================================
-// DESTACAR ESTADO AO PASSAR O MOUSE
+// DESTACAR ESTADO
 // ============================================================
 
 function destacarEstado(e) {
 
     var layer = e.target;
+
 
     layer.setStyle({
 
@@ -413,6 +1011,7 @@ function destacarEstado(e) {
 
     });
 
+
     layer.bringToFront();
 
 }
@@ -424,7 +1023,11 @@ function destacarEstado(e) {
 
 function removerDestaque(e) {
 
-    estadosLayer.resetStyle(e.target);
+    estadosLayer.resetStyle(
+
+        e.target
+
+    );
 
 }
 
@@ -438,46 +1041,53 @@ function clicarEstado(e) {
     var layer = e.target;
 
 
-    // Recuperar informações do GeoJSON
-
     var nomeEstado =
         layer.feature.properties.nome;
+
 
     var siglaEstado =
         layer.feature.properties.sigla;
 
 
-    // Zoom para o estado
-
     map.fitBounds(
+
         layer.getBounds(),
+
         {
+
             padding: [20, 20]
+
         }
+
     );
 
-
-    // Popup
 
     layer.bindPopup(
 
         '<div style="text-align:center;">' +
 
         '<strong style="font-size:16px;">' +
+
         nomeEstado +
+
         '</strong>' +
 
         '<br>' +
 
         '<span style="font-size:13px;">' +
+
         'UF: ' +
+
         siglaEstado +
+
         '</span>' +
 
         '<br><br>' +
 
         '<span>' +
+
         'Maximum Cumulative Water Deficit' +
+
         '</span>' +
 
         '</div>'
@@ -488,10 +1098,16 @@ function clicarEstado(e) {
 
 
 // ============================================================
-// CONFIGURAR CADA ESTADO
+// CONFIGURAR ESTADO
 // ============================================================
 
-function configurarEstado(feature, layer) {
+function configurarEstado(
+
+    feature,
+
+    layer
+
+) {
 
     layer.on({
 
@@ -507,107 +1123,599 @@ function configurarEstado(feature, layer) {
 
 
 // ============================================================
-// VARIÁVEL PARA A CAMADA DOS ESTADOS
+// VARIÁVEIS DAS CAMADAS
 // ============================================================
 
-var estadosLayer;
+var estadosLayer = null;
+
+var municipiosLayer = null;
+
+var areasProtegidasLayer = null;
+
+var terrasIndigenasLayer = null;
+
+var outraCamada = null;
 
 
 // ============================================================
-// CARREGAR GEOJSON
+// CARREGAR ESTADOS
 // ============================================================
 
-fetch('estados_simplificado.geojson')
+fetch(
 
-    .then(function(response) {
+    'estados_simplificado.geojson'
 
-        if (!response.ok) {
+)
 
-            throw new Error(
-                'Não foi possível carregar estados_simplificado.geojson'
+.then(function(response) {
+
+
+    if (!response.ok) {
+
+        throw new Error(
+
+            'Não foi possível carregar ' +
+            'estados_simplificado.geojson'
+
+        );
+
+    }
+
+
+    return response.json();
+
+})
+
+
+.then(function(data) {
+
+
+    estadosLayer = L.geoJSON(
+
+        data,
+
+        {
+
+            style: estiloEstado,
+
+            onEachFeature:
+                configurarEstado
+
+        }
+
+    ).addTo(map);
+
+
+    map.fitBounds(
+
+        estadosLayer.getBounds()
+
+    );
+
+})
+
+
+.catch(function(error) {
+
+
+    console.error(
+
+        'Erro ao carregar o GeoJSON:',
+
+        error
+
+    );
+
+});
+
+
+// ============================================================
+// ABRIR / FECHAR CAMADAS
+// ============================================================
+
+function abrirCamadas() {
+
+
+    var painel =
+        document.getElementById(
+            'layersPanel'
+        );
+
+
+    if (
+        painel.style.display ===
+        'block'
+    ) {
+
+        painel.style.display =
+            'none';
+
+    }
+
+    else {
+
+        painel.style.display =
+            'block';
+
+    }
+
+}
+
+
+// ============================================================
+// ESTADOS
+// ============================================================
+
+function alternarEstados() {
+
+
+    var checkbox =
+        document.getElementById(
+            'checkEstados'
+        );
+
+
+    if (
+        checkbox.checked
+    ) {
+
+
+        if (
+            estadosLayer &&
+            !map.hasLayer(
+                estadosLayer
+            )
+        ) {
+
+            estadosLayer.addTo(map);
+
+        }
+
+    }
+
+    else {
+
+
+        if (
+            estadosLayer &&
+            map.hasLayer(
+                estadosLayer
+            )
+        ) {
+
+            map.removeLayer(
+                estadosLayer
             );
 
         }
 
-        return response.json();
+    }
 
-    })
-
-    .then(function(data) {
-
-        estadosLayer = L.geoJSON(
-
-            data,
-
-            {
-
-                style: estiloEstado,
-
-                onEachFeature: configurarEstado
-
-            }
-
-        ).addTo(map);
-
-
-        map.fitBounds(
-            estadosLayer.getBounds()
-        );
-
-    })
-
-    .catch(function(error) {
-
-        console.error(
-            'Erro ao carregar o GeoJSON:',
-            error
-        );
-
-    });
+}
 
 
 // ============================================================
-// ABRIR JANELA "COMO CITAR"
+// MUNICÍPIOS
+// ============================================================
+
+function alternarMunicipios() {
+
+
+    var checkbox =
+        document.getElementById(
+            'checkMunicipios'
+        );
+
+
+    if (
+        checkbox.checked
+    ) {
+
+
+        if (
+            municipiosLayer === null
+        ) {
+
+
+            fetch(
+                'municipios.geojson'
+            )
+
+            .then(
+                function(response) {
+
+                    return response.json();
+
+                }
+            )
+
+            .then(
+                function(data) {
+
+
+                    municipiosLayer =
+                        L.geoJSON(
+
+                            data,
+
+                            {
+
+                                style: {
+
+                                    color: '#888',
+
+                                    weight: 0.5,
+
+                                    fillOpacity: 0.05
+
+                                }
+
+                            }
+
+                        ).addTo(map);
+
+                }
+            )
+
+            .catch(
+                function(error) {
+
+                    console.error(
+                        'Erro ao carregar municípios:',
+                        error
+                    );
+
+                    checkbox.checked =
+                        false;
+
+                }
+            );
+
+        }
+
+        else {
+
+            municipiosLayer.addTo(map);
+
+        }
+
+    }
+
+    else {
+
+
+        if (
+            municipiosLayer
+        ) {
+
+            map.removeLayer(
+                municipiosLayer
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// ÁREAS PROTEGIDAS
+// ============================================================
+
+function alternarAreasProtegidas() {
+
+
+    var checkbox =
+        document.getElementById(
+            'checkAreasProtegidas'
+        );
+
+
+    if (
+        checkbox.checked
+    ) {
+
+
+        if (
+            areasProtegidasLayer === null
+        ) {
+
+
+            fetch(
+                'areas_protegidas.geojson'
+            )
+
+            .then(
+                function(response) {
+
+                    return response.json();
+
+                }
+            )
+
+            .then(
+                function(data) {
+
+
+                    areasProtegidasLayer =
+                        L.geoJSON(
+
+                            data,
+
+                            {
+
+                                style: {
+
+                                    color: '#27ae60',
+
+                                    weight: 1,
+
+                                    fillOpacity: 0.15
+
+                                }
+
+                            }
+
+                        ).addTo(map);
+
+                }
+            )
+
+            .catch(
+                function(error) {
+
+                    console.error(
+                        'Erro ao carregar áreas protegidas:',
+                        error
+                    );
+
+                    checkbox.checked =
+                        false;
+
+                }
+            );
+
+        }
+
+        else {
+
+            areasProtegidasLayer.addTo(map);
+
+        }
+
+    }
+
+    else {
+
+
+        if (
+            areasProtegidasLayer
+        ) {
+
+            map.removeLayer(
+                areasProtegidasLayer
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// TERRAS INDÍGENAS
+// ============================================================
+
+function alternarTerrasIndigenas() {
+
+
+    var checkbox =
+        document.getElementById(
+            'checkTerrasIndigenas'
+        );
+
+
+    if (
+        checkbox.checked
+    ) {
+
+
+        if (
+            terrasIndigenasLayer === null
+        ) {
+
+
+            fetch(
+                'terras_indigenas.geojson'
+            )
+
+            .then(
+                function(response) {
+
+                    return response.json();
+
+                }
+            )
+
+            .then(
+                function(data) {
+
+
+                    terrasIndigenasLayer =
+                        L.geoJSON(
+
+                            data,
+
+                            {
+
+                                style: {
+
+                                    color: '#8e44ad',
+
+                                    weight: 1,
+
+                                    fillOpacity: 0.15
+
+                                }
+
+                            }
+
+                        ).addTo(map);
+
+                }
+            )
+
+            .catch(
+                function(error) {
+
+                    console.error(
+                        'Erro ao carregar terras indígenas:',
+                        error
+                    );
+
+                    checkbox.checked =
+                        false;
+
+                }
+            );
+
+        }
+
+        else {
+
+            terrasIndigenasLayer.addTo(map);
+
+        }
+
+    }
+
+    else {
+
+
+        if (
+            terrasIndigenasLayer
+        ) {
+
+            map.removeLayer(
+                terrasIndigenasLayer
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// OUTRA CAMADA
+// ============================================================
+
+function alternarOutraCamada() {
+
+
+    var checkbox =
+        document.getElementById(
+            'checkOutraCamada'
+        );
+
+
+    if (
+        checkbox.checked
+    ) {
+
+
+        if (
+            outraCamada !== null
+        ) {
+
+            outraCamada.addTo(map);
+
+        }
+
+    }
+
+    else {
+
+
+        if (
+            outraCamada !== null &&
+            map.hasLayer(
+                outraCamada
+            )
+        ) {
+
+            map.removeLayer(
+                outraCamada
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// ABRIR DOWNLOADS
+// ============================================================
+
+function abrirDownloads() {
+
+
+    document.getElementById(
+        'modalDownloads'
+    ).style.display =
+        'block';
+
+}
+
+
+// ============================================================
+// FECHAR DOWNLOADS
+// ============================================================
+
+function fecharDownloads() {
+
+
+    document.getElementById(
+        'modalDownloads'
+    ).style.display =
+        'none';
+
+}
+
+
+// ============================================================
+// ABRIR CITAÇÃO
 // ============================================================
 
 function abrirCitacao() {
 
+
     document.getElementById(
         'modalCitacao'
-    ).style.display = 'block';
+    ).style.display =
+        'block';
 
 }
 
 
 // ============================================================
-// FECHAR JANELA
+// FECHAR CITAÇÃO
 // ============================================================
 
 function fecharCitacao() {
 
+
     document.getElementById(
         'modalCitacao'
-    ).style.display = 'none';
+    ).style.display =
+        'none';
 
 }
-
-
-// ============================================================
-// FECHAR AO CLICAR FORA DA JANELA
-// ============================================================
-
-window.onclick = function(event) {
-
-    var modal =
-        document.getElementById('modalCitacao');
-
-    if (event.target === modal) {
-
-        modal.style.display = 'none';
-
-    }
-
-};
 
 
 // ============================================================
@@ -616,34 +1724,149 @@ window.onclick = function(event) {
 
 function copiarCitacao() {
 
+
     var texto =
+
         document.getElementById(
             'textoCitacao'
         ).innerText;
 
 
-    navigator.clipboard.writeText(texto)
+    navigator.clipboard.writeText(
 
-        .then(function() {
+        texto
+
+    )
+
+    .then(
+
+        function() {
+
 
             alert(
                 'Citação copiada para a área de transferência!'
             );
 
-        })
 
-        .catch(function() {
+        }
+
+    )
+
+    .catch(
+
+        function() {
+
 
             alert(
                 'Não foi possível copiar automaticamente.'
             );
 
-        });
+
+        }
+
+    );
 
 }
+
+
+// ============================================================
+// FECHAR PAINÉIS AO CLICAR FORA
+// ============================================================
+
+window.addEventListener(
+
+    'click',
+
+    function(event) {
+
+
+        var modalCitacao =
+            document.getElementById(
+                'modalCitacao'
+            );
+
+
+        var modalDownloads =
+            document.getElementById(
+                'modalDownloads'
+            );
+
+
+        var layersPanel =
+            document.getElementById(
+                'layersPanel'
+            );
+
+
+        var botaoCamadas =
+            event.target.closest(
+                '.header-btn'
+            );
+
+
+        // -------------------------
+        // MODAL CITAÇÃO
+        // -------------------------
+
+        if (
+            event.target ===
+            modalCitacao
+        ) {
+
+            modalCitacao.style.display =
+                'none';
+
+        }
+
+
+        // -------------------------
+        // MODAL DOWNLOAD
+        // -------------------------
+
+        if (
+            event.target ===
+            modalDownloads
+        ) {
+
+            modalDownloads.style.display =
+                'none';
+
+        }
+
+
+        // -------------------------
+        // PAINEL DE CAMADAS
+        // -------------------------
+
+        if (
+
+            layersPanel.style.display ===
+            'block'
+
+            &&
+
+            !layersPanel.contains(
+                event.target
+            )
+
+            &&
+
+            !botaoCamadas
+
+        ) {
+
+            layersPanel.style.display =
+                'none';
+
+        }
+
+    }
+
+);
 
 </script>
 
 </body>
-</html>
 
+</html>
+```
