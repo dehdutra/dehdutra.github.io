@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Ranqueamento de Área Queimada no Brasil</title>
+    <title>Ranqueamento da Área Queimada no Brasil</title>
 
 
     <!-- ==========================================================
@@ -273,6 +273,8 @@
 
             transition:
                 all 0.18s ease;
+
+            white-space: nowrap;
 
         }
 
@@ -995,6 +997,8 @@
 
             gap: 12px;
 
+            min-width: 0;
+
         }
 
 
@@ -1015,6 +1019,8 @@
                 #fef3f2;
 
             font-size: 19px;
+
+            flex-shrink: 0;
 
         }
 
@@ -1066,6 +1072,8 @@
 
             transition:
                 all 0.15s ease;
+
+            flex-shrink: 0;
 
         }
 
@@ -1637,7 +1645,7 @@
         </div>
 
         <div id="loading-titulo">
-            Ranqueamento de Área Queimada
+            Ranqueamento da Área Queimada
         </div>
 
         <div id="loading-texto">
@@ -1674,7 +1682,7 @@
         <div id="titulo-area">
 
             <h1 id="titulo">
-                Ranqueamento de Área Queimada no Brasil
+                Ranqueamento da Área Queimada no Brasil
             </h1>
 
             <div id="subtitulo">
@@ -1688,22 +1696,37 @@
 
     <div id="acoes-header">
 
+        <!-- ==================================================
+             BOTÃO PRINCIPAL
+        =================================================== -->
+
         <button
             class="header-btn"
             onclick="abrirRanking()"
-            title="Abrir ranking de área queimada"
+            title="Visualizar o gráfico e o ranking da área queimada por estados e biomas"
         >
+
             <span>📊</span>
-            <span>Ranking</span>
+
+            <span>
+                Gráfico de Área Queimada
+            </span>
+
         </button>
 
 
         <button
             class="header-btn"
             onclick="abrirCitacao()"
+            title="Ver fonte e referência dos dados"
         >
+
             <span>📚</span>
-            <span>Citar</span>
+
+            <span>
+                Citar
+            </span>
+
         </button>
 
     </div>
@@ -1822,7 +1845,7 @@
 <div id="legenda">
 
     <div id="legenda-header">
-        Ranking da área queimada
+        Classificação da área queimada
     </div>
 
     <div id="legenda-corpo">
@@ -2044,7 +2067,7 @@
 
 
 <!-- ==========================================================
-     MODAL RANKING
+     MODAL RANKING / GRÁFICO
 =========================================================== -->
 
 <div
@@ -2067,12 +2090,11 @@
                 <div>
 
                     <h2>
-                        Ranqueamento de área queimada
+                        Ranking e Gráfico de Área Queimada
                     </h2>
 
                     <div id="ranking-subtitulo">
-                        Ordenação decrescente da área queimada
-                        no período analisado
+                        Ordenação decrescente da área queimada por estados e biomas no período analisado
                     </div>
 
                 </div>
@@ -2083,6 +2105,7 @@
             <button
                 id="fechar-ranking"
                 onclick="fecharRanking()"
+                title="Fechar"
             >
                 ×
             </button>
@@ -2527,10 +2550,6 @@ function obterSiglaEstado(feature) {
         feature?.properties || {};
 
 
-    // --------------------------------------------------------
-    // Campos específicos de UF
-    // --------------------------------------------------------
-
     const candidatosUF = [
 
         props.SIGLA_UF,
@@ -2581,10 +2600,6 @@ function obterSiglaEstado(feature) {
 
     }
 
-
-    // --------------------------------------------------------
-    // Campos com nome do estado
-    // --------------------------------------------------------
 
     const candidatosNome = [
 
@@ -4468,7 +4483,7 @@ async function inicializar() {
 
         100,
 
-        "Dashboard de área queimada pronto."
+        "Ranqueamento da área queimada pronto."
 
     );
 
