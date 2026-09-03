@@ -3,358 +3,498 @@
 
 <head>
 
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-  <title>Ranking de Área Queimada 2024/2025</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
+    <title>Dashboard de Área Queimada</title>
 
-  <!-- ===================================================== -->
-  <!-- LEAFLET -->
-  <!-- ===================================================== -->
+    <!-- ==========================================================
+         LEAFLET
+    =========================================================== -->
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  >
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-  </script>
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
 
 
-  <!-- ===================================================== -->
-  <!-- ESTILO -->
-  <!-- ===================================================== -->
+    <!-- ==========================================================
+         ESTILO
+    =========================================================== -->
 
-  <style>
+    <style>
 
-    body {
+        body {
 
-      margin: 0;
+            margin: 0;
 
-      font-family: Arial, sans-serif;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
-      background: #f5f5f5;
+            background: #f4f6f8;
 
-    }
+            color: #222;
 
+        }
 
-    h2 {
 
-      margin: 20px;
+        /* ======================================================
+           MAPA
+        ====================================================== */
 
-    }
+        #mapa {
 
+            width: 100%;
 
-    /* ===================================================== */
-    /* MAPA */
-    /* ===================================================== */
+            height: 650px;
 
-    #mapa {
+            border-bottom:
+                1px solid #ccc;
 
-      width: 100%;
+        }
 
-      height: 700px;
 
-    }
+        /* ======================================================
+           PAINEL DE RELATÓRIO
+        ====================================================== */
 
+        #painel-relatorio {
 
-    /* ===================================================== */
-    /* LEGENDA */
-    /* ===================================================== */
+            width: 100%;
 
-    .legenda-ranking {
+            box-sizing: border-box;
 
-      background: white;
+            padding: 25px;
 
-      padding: 12px;
+            background: white;
 
-      border-radius: 8px;
+            border-top:
+                1px solid #ddd;
 
-      box-shadow:
-        0 2px 8px rgba(0,0,0,0.25);
+        }
 
-      line-height: 18px;
 
-      font-size: 12px;
+        #painel-relatorio h3 {
 
-    }
+            margin-top: 0;
 
+            margin-bottom: 20px;
 
-    .legenda-ranking h4 {
+            font-size: 22px;
 
-      margin:
-        0 0 8px 0;
+        }
 
-      font-size: 14px;
 
-    }
+        /* ======================================================
+           SELETORES
+        ====================================================== */
 
+        .seletor-relatorio {
 
-    .item-legenda {
+            display: flex;
 
-      display: flex;
+            flex-wrap: wrap;
 
-      align-items: center;
+            gap: 15px;
 
-      margin: 3px 0;
+            margin-bottom: 15px;
 
-    }
+            align-items: center;
 
+        }
 
-    .cor-legenda {
 
-      width: 22px;
+        .seletor-relatorio label {
 
-      height: 14px;
+            font-weight: bold;
 
-      margin-right: 7px;
+        }
 
-      border: 1px solid #777;
 
-    }
+        .seletor-relatorio select {
 
+            min-width: 280px;
 
-    /* ===================================================== */
-    /* PAINEL DE RELATÓRIO */
-    /* ===================================================== */
+            padding: 10px;
 
-    #painel-relatorio {
+            border:
+                1px solid #bbb;
 
-      width: calc(100% - 40px);
+            border-radius: 5px;
 
-      margin: 20px;
+            background: white;
 
-      background: white;
+            font-size: 14px;
 
-      border-radius: 10px;
+        }
 
-      box-shadow:
-        0 2px 10px rgba(0,0,0,0.15);
 
-      padding: 20px;
+        .seletor-relatorio select:focus {
 
-      box-sizing: border-box;
+            outline: none;
 
-    }
+            border-color: #555;
 
+        }
 
-    #painel-relatorio h3 {
 
-      margin-top: 0;
+        /* ======================================================
+           MENSAGEM
+        ====================================================== */
 
-      margin-bottom: 15px;
+        .mensagem-relatorio {
 
-      font-size: 21px;
+            padding: 20px;
 
-    }
+            background: #f5f5f5;
 
+            border-radius: 6px;
 
-    /* ===================================================== */
-    /* SELETORES */
-    /* ===================================================== */
+            color: #666;
 
-    .selecao-relatorio {
+            margin-top: 20px;
 
-      display: flex;
+        }
 
-      flex-wrap: wrap;
 
-      gap: 15px;
+        /* ======================================================
+           CABEÇALHO DO RELATÓRIO
+        ====================================================== */
 
-      margin-bottom: 20px;
+        .cabecalho-relatorio {
 
-    }
+            margin-top: 25px;
 
+            padding: 20px;
 
-    .campo-selecao {
+            border-radius: 8px;
 
-      flex: 1;
+            background: #f5f5f5;
 
-      min-width: 250px;
+            border-left:
+                6px solid #555;
 
-    }
+        }
 
 
-    .campo-selecao label {
+        .cabecalho-relatorio h4 {
 
-      display: block;
+            margin:
+                0 0 10px 0;
 
-      font-weight: bold;
+            font-size: 23px;
 
-      margin-bottom: 7px;
+        }
 
-      color: #444;
 
-    }
+        .cabecalho-relatorio p {
 
+            margin: 5px 0;
 
-    .campo-selecao select {
+        }
 
-      width: 100%;
 
-      padding: 10px;
+        /* ======================================================
+           CARTÕES
+        ====================================================== */
 
-      border: 1px solid #bbb;
+        .resumo-relatorio {
 
-      border-radius: 6px;
+            display: flex;
 
-      background: white;
+            flex-wrap: wrap;
 
-      font-size: 14px;
+            gap: 15px;
 
-    }
+            margin-top: 20px;
 
+        }
 
-    /* ===================================================== */
-    /* CABEÇALHO DO POLÍGONO */
-    /* ===================================================== */
 
-    .cabecalho-poligono {
+        .cartao-resumo {
 
-      margin-top: 20px;
+            flex: 1;
 
-      margin-bottom: 15px;
+            min-width: 180px;
 
-      padding: 15px;
+            padding: 18px;
 
-      background: #f5f5f5;
+            background: white;
 
-      border-left: 5px solid #7f0000;
+            border:
+                1px solid #ddd;
 
-      border-radius: 5px;
+            border-radius: 8px;
 
-    }
+            box-shadow:
+                0 1px 4px rgba(0,0,0,0.08);
 
+        }
 
-    .cabecalho-poligono h4 {
 
-      margin: 0 0 5px 0;
+        .cartao-resumo .titulo {
 
-      font-size: 19px;
+            font-size: 13px;
 
-    }
+            color: #777;
 
+            margin-bottom: 8px;
 
-    .cabecalho-poligono span {
+        }
 
-      color: #666;
 
-      font-size: 13px;
+        .cartao-resumo .valor {
 
-    }
+            font-size: 21px;
 
+            font-weight: bold;
 
-    /* ===================================================== */
-    /* TABELA DE ATRIBUTOS */
-    /* ===================================================== */
+        }
 
-    .tabela-atributos {
 
-      width: 100%;
+        /* ======================================================
+           RANKING
+        ====================================================== */
 
-      border-collapse: collapse;
+        .ranking {
 
-      margin-top: 10px;
+            display: inline-block;
 
-    }
+            padding: 6px 12px;
 
+            border-radius: 5px;
 
-    .tabela-atributos th {
+            font-weight: bold;
 
-      width: 35%;
+            color: white;
 
-      background: #eeeeee;
+        }
 
-      padding: 10px;
 
-      text-align: left;
+        .ranking-1,
+        .ranking-2,
+        .ranking-3 {
 
-      border: 1px solid #ddd;
+            background: #b30000;
 
-      font-size: 13px;
+        }
 
-    }
 
+        .ranking-4,
+        .ranking-5 {
 
-    .tabela-atributos td {
+            background: #ef6548;
 
-      padding: 10px;
+        }
 
-      border: 1px solid #ddd;
 
-      font-size: 13px;
+        .ranking-6-18 {
 
-      word-break: break-word;
+            background: #999;
 
-    }
+        }
 
 
-    .tabela-atributos tr:hover {
+        .ranking-19,
+        .ranking-20 {
 
-      background: #f8f8f8;
+            background: #9ecae1;
 
-    }
+            color: #222;
 
+        }
 
-    /* ===================================================== */
-    /* RANKING */
-    /* ===================================================== */
 
-    .ranking-destaque {
+        .ranking-21,
+        .ranking-22 {
 
-      font-weight: bold;
+            background: #4292c6;
 
-      font-size: 16px;
+        }
 
-    }
 
+        .ranking-23,
+        .ranking-24 {
 
-    /* ===================================================== */
-    /* MENSAGEM */
-    /* ===================================================== */
+            background: #084594;
 
-    .mensagem-relatorio {
+        }
 
-      padding: 20px;
 
-      background: #f7f7f7;
+        /* ======================================================
+           TABELA DE INFORMAÇÕES
+        ====================================================== */
 
-      border-radius: 8px;
+        .tabela-relatorio {
 
-      color: #555;
+            width: 100%;
 
-    }
+            border-collapse:
+                collapse;
 
+            margin-top: 25px;
 
-    /* ===================================================== */
-    /* BOTÃO LIMPAR */
-    /* ===================================================== */
+            background: white;
 
-    .botao-limpar {
+        }
 
-      margin-top: 10px;
 
-      padding: 8px 14px;
+        .tabela-relatorio th {
 
-      border: 1px solid #aaa;
+            text-align: left;
 
-      background: white;
+            padding: 12px;
 
-      border-radius: 5px;
+            background: #eeeeee;
 
-      cursor: pointer;
+            border:
+                1px solid #ddd;
 
-    }
+            width: 35%;
 
+        }
 
-    .botao-limpar:hover {
 
-      background: #eeeeee;
+        .tabela-relatorio td {
 
-    }
+            padding: 12px;
 
-  </style>
+            border:
+                1px solid #ddd;
+
+            word-break: break-word;
+
+        }
+
+
+        .tabela-relatorio tr:hover {
+
+            background: #f8f8f8;
+
+        }
+
+
+        /* ======================================================
+           GRÁFICO
+        ====================================================== */
+
+        #area-grafico {
+
+            margin-top: 30px;
+
+            padding: 20px;
+
+            background: white;
+
+            border:
+                1px solid #ddd;
+
+            border-radius: 8px;
+
+        }
+
+
+        #area-grafico h4 {
+
+            margin-top: 0;
+
+        }
+
+
+        #grafico-area {
+
+            width: 100%;
+
+            max-width: 850px;
+
+            height: 300px;
+
+        }
+
+
+        /* ======================================================
+           LEGENDA
+        ====================================================== */
+
+        .legenda-ranking {
+
+            background: white;
+
+            padding: 12px;
+
+            line-height: 18px;
+
+            color: #333;
+
+            box-shadow:
+                0 0 8px rgba(0,0,0,0.2);
+
+            border-radius: 5px;
+
+        }
+
+
+        .legenda-ranking div {
+
+            display: flex;
+
+            align-items: center;
+
+        }
+
+
+        .legenda-ranking i {
+
+            width: 18px;
+
+            height: 18px;
+
+            margin-right: 7px;
+
+            display: inline-block;
+
+        }
+
+
+        /* ======================================================
+           RESPONSIVO
+        ====================================================== */
+
+        @media(max-width: 700px) {
+
+            #mapa {
+
+                height: 500px;
+
+            }
+
+
+            .seletor-relatorio {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+
+            .seletor-relatorio select {
+
+                width: 100%;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -362,125 +502,113 @@
 <body>
 
 
-<h2>
-  Ranking de Área Queimada 2024/2025
-</h2>
-
-
-<!-- ===================================================== -->
-<!-- MAPA -->
-<!-- ===================================================== -->
+<!-- ==========================================================
+     MAPA
+=========================================================== -->
 
 <div id="mapa"></div>
 
 
-<!-- ===================================================== -->
-<!-- PAINEL DE RELATÓRIO -->
-<!-- ===================================================== -->
+<!-- ==========================================================
+     RELATÓRIO
+=========================================================== -->
 
 <div id="painel-relatorio">
 
-  <h3>
-    Relatório
-  </h3>
+    <h3>
+        Relatório
+    </h3>
 
 
-  <!-- =================================================== -->
-  <!-- SELEÇÃO -->
-  <!-- =================================================== -->
+    <!-- CAMADA -->
 
-  <div class="selecao-relatorio">
+    <div class="seletor-relatorio">
 
+        <label for="seletor-camada">
 
-    <div class="campo-selecao">
+            Selecione a camada:
 
-      <label for="seletor-camada">
-
-        Selecione a camada
-
-      </label>
+        </label>
 
 
-      <select id="seletor-camada">
+        <select id="seletor-camada">
 
-        <option value="">
+            <option value="">
 
-          Selecione...
+                Selecione uma camada...
 
-        </option>
+            </option>
 
-        <option value="Estados">
+            <option value="Estados">
 
-          Estados
+                Estados
 
-        </option>
+            </option>
 
-        <option value="Biomas">
+            <option value="Biomas">
 
-          Biomas
+                Biomas
 
-        </option>
+            </option>
 
-        <option value="Terras Indígenas">
+            <option value="Terras Indígenas">
 
-          Terras Indígenas
+                Terras Indígenas
 
-        </option>
+            </option>
 
-        <option value="Unidades de Conservação">
+            <option value="Unidades de Conservação">
 
-          Unidades de Conservação
+                Unidades de Conservação
 
-        </option>
+            </option>
 
-      </select>
+        </select>
 
     </div>
 
+
+    <!-- ENTIDADE -->
 
     <div
-      class="campo-selecao"
-      id="campo-poligono"
-      style="display:none;"
+        class="seletor-relatorio"
+        id="container-entidade"
+        style="display:none;"
     >
 
-      <label for="seletor-poligono">
+        <label for="seletor-entidade">
 
-        Selecione o polígono
+            Selecione:
 
-      </label>
+        </label>
 
 
-      <select id="seletor-poligono">
+        <select id="seletor-entidade">
 
-        <option value="">
+            <option value="">
 
-          Selecione...
+                Selecione...
 
-        </option>
+            </option>
 
-      </select>
+        </select>
 
     </div>
 
 
-  </div>
+    <!-- CONTEÚDO -->
 
+    <div
+        id="conteudo-relatorio"
+        class="mensagem-relatorio"
+    >
 
-  <!-- =================================================== -->
-  <!-- CONTEÚDO -->
-  <!-- =================================================== -->
+        Selecione uma camada para gerar o relatório.
 
-  <div
-    id="conteudo-relatorio"
-    class="mensagem-relatorio"
-  >
-
-    Selecione uma camada para começar.
-
-  </div>
+    </div>
 
 </div>
+
 
 
 <script>
@@ -491,653 +619,736 @@
 // ============================================================
 
 const mapa = L.map("mapa").setView(
-
-  [-14.2, -51.9],
-
-  4
-
+    [-14.2, -51.9],
+    4
 );
 
 
-// ============================================================
-// 2. MAPA BASE
-// ============================================================
-
 L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
 
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        attribution:
+            "&copy; OpenStreetMap contributors",
 
-  {
+        maxZoom: 18
 
-    attribution:
-      "&copy; OpenStreetMap contributors"
-
-  }
-
+    }
 ).addTo(mapa);
 
 
+
 // ============================================================
-// 3. ARQUIVOS DOS ESTADOS
+// 2. ARQUIVOS
 // ============================================================
 
 const arquivosEstados = [
 
-  "estados_2024_01.geojson",
+    "estados_2024_01.geojson",
 
-  "estados_2024_02.geojson",
+    "estados_2024_02.geojson",
 
-  "estados_2024_03.geojson"
+    "estados_2024_03.geojson"
 
 ];
 
-
-// ============================================================
-// 4. ARQUIVOS DOS BIOMAS
-// ============================================================
 
 const arquivosBiomas = [
 
-  "biomas_2024_01.geojson",
+    "biomas_2024_01.geojson",
 
-  "biomas_2024_02.geojson",
+    "biomas_2024_02.geojson",
 
-  "biomas_2024_03.geojson",
+    "biomas_2024_03.geojson",
 
-  "biomas_2024_04.geojson",
+    "biomas_2024_04.geojson",
 
-  "biomas_2024_05.geojson"
+    "biomas_2024_05.geojson"
 
 ];
 
-
-// ============================================================
-// 5. ARQUIVOS DAS TERRAS INDÍGENAS
-// ============================================================
 
 const arquivosTI = [
 
-  "terras_indigenas_2024_01.geojson",
+    "terras_indigenas_2024_01.geojson",
 
-  "terras_indigenas_2024_02.geojson",
+    "terras_indigenas_2024_02.geojson",
 
-  "terras_indigenas_2024_03.geojson",
+    "terras_indigenas_2024_03.geojson",
 
-  "terras_indigenas_2024_04.geojson"
+    "terras_indigenas_2024_04.geojson"
 
 ];
 
-
-// ============================================================
-// 6. ARQUIVOS DAS UNIDADES DE CONSERVAÇÃO
-// ============================================================
 
 const arquivosUC = [
 
-  "unidades_conservacao_2024_01.geojson",
+    "unidades_conservacao_2024_01.geojson",
 
-  "unidades_conservacao_2024_02.geojson",
+    "unidades_conservacao_2024_02.geojson",
 
-  "unidades_conservacao_2024_03.geojson",
+    "unidades_conservacao_2024_03.geojson",
 
-  "unidades_conservacao_2024_04.geojson"
+    "unidades_conservacao_2024_04.geojson"
 
 ];
 
 
+
 // ============================================================
-// 7. CARREGAR ARQUIVOS
+// 3. CARREGAR ARQUIVOS
 // ============================================================
 
 async function carregarArquivos(
 
-  listaArquivos,
+    listaArquivos,
 
-  nomeCamada
+    somenteBrasil = false
 
 ) {
 
-
-  console.log("");
-
-  console.log(
-    "======================================"
-  );
-
-  console.log(
-    "CARREGANDO:",
-    nomeCamada
-  );
-
-  console.log(
-    "======================================"
-  );
+    let todasFeatures = [];
 
 
-  let features = [];
+    for (
+
+        const arquivo of listaArquivos
+
+    ) {
+
+        try {
+
+            console.log(
+                "Carregando:",
+                arquivo
+            );
 
 
-  for (
-
-    const arquivo of listaArquivos
-
-  ) {
+            const resposta =
+                await fetch(arquivo);
 
 
-    try {
+            if (!resposta.ok) {
+
+                throw new Error(
+                    `Erro HTTP ${resposta.status}`
+                );
+
+            }
 
 
-      console.log(
-
-        "Tentando:",
-
-        arquivo
-
-      );
+            const dados =
+                await resposta.json();
 
 
-      const response =
-
-        await fetch(arquivo);
-
-
-      if (!response.ok) {
-
-        throw new Error(
-
-          "HTTP " +
-
-          response.status
-
-        );
-
-      }
+            let features =
+                dados.features || [];
 
 
-      const geojson =
+            // ==================================================
+            // FILTRO SOMENTE BRASIL
+            // ==================================================
 
-        await response.json();
+            if (somenteBrasil) {
 
+                features =
+                    features.filter(
+                        feature => {
 
-      if (
-
-        !geojson ||
-
-        !Array.isArray(
-
-          geojson.features
-
-        )
-
-      ) {
-
-        throw new Error(
-
-          "GeoJSON inválido."
-
-        );
-
-      }
+                            const p =
+                                feature.properties || {};
 
 
-      features =
+                            const valoresPais = [
 
-        features.concat(
+                                p.NAME_0,
 
-          geojson.features
+                                p.name_0,
 
-        );
+                                p.Name_0,
 
+                                p.COUNTRY,
 
-      console.log(
+                                p.Country,
 
-        "OK:",
+                                p.country,
 
-        arquivo,
+                                p.PAIS,
 
-        "→",
+                                p.Pais,
 
-        geojson.features.length,
+                                p.pais
 
-        "feições"
-
-      );
-
-
-    }
-
-    catch (erro) {
+                            ];
 
 
-      console.error(
+                            return valoresPais.some(
 
-        "ERRO:",
+                                valor =>
 
-        arquivo,
+                                    valor !== null &&
 
-        erro
+                                    valor !== undefined &&
 
-      );
+                                    String(valor)
+                                        .trim()
+                                        .toLowerCase() ===
+                                        "brasil"
+
+                            );
+
+                        }
+
+                    );
+
+            }
+
+
+            todasFeatures.push(
+                ...features
+            );
+
+
+        } catch (erro) {
+
+            console.error(
+
+                `Erro ao carregar ${arquivo}:`,
+
+                erro
+
+            );
+
+        }
 
     }
 
-  }
 
+    return {
 
-  return {
+        type: "FeatureCollection",
 
-    type:
-      "FeatureCollection",
+        features: todasFeatures
 
-    features:
-      features
-
-  };
+    };
 
 }
 
 
+
 // ============================================================
-// 8. OBTER RANKING
+// 4. RANKING
 // ============================================================
 
 function obterRanking(feature) {
 
-
-  const p =
-
-    feature.properties || {};
+    const p =
+        feature.properties || {};
 
 
-  // ----------------------------------------------------------
-  // TI / UC
-  // ----------------------------------------------------------
+    const camposRanking = [
 
-  if (
+        "Rank_Category",
 
-    p["Rank_Category"] !== undefined &&
+        "Burned Area Rank",
 
-    p["Rank_Category"] !== null &&
+        "Burned_Area_Rank",
 
-    p["Rank_Category"] !== ""
+        "Ranking",
 
-  ) {
+        "ranking",
 
+        "Rank",
 
-    const valor =
+        "rank"
 
-      Number(
-
-        p["Rank_Category"]
-
-      );
+    ];
 
 
-    if (
+    for (
 
-      Number.isFinite(valor)
+        const campo of camposRanking
 
     ) {
 
-      return valor;
+        if (
+
+            p[campo] !== undefined &&
+
+            p[campo] !== null &&
+
+            p[campo] !== ""
+
+        ) {
+
+            const valor =
+                Number(p[campo]);
+
+
+            if (
+
+                Number.isFinite(valor)
+
+            ) {
+
+                return valor;
+
+            }
+
+        }
 
     }
 
-  }
 
-
-  // ----------------------------------------------------------
-  // ESTADOS / BIOMAS
-  // ----------------------------------------------------------
-
-  if (
-
-    p["Burned Area Rank"] !== undefined &&
-
-    p["Burned Area Rank"] !== null &&
-
-    p["Burned Area Rank"] !== ""
-
-  ) {
-
-
-    const valor =
-
-      Number(
-
-        p["Burned Area Rank"]
-
-      );
-
-
-    if (
-
-      Number.isFinite(valor)
-
-    ) {
-
-      return valor;
-
-    }
-
-  }
-
-
-  // ----------------------------------------------------------
-  // ALTERNATIVAS
-  // ----------------------------------------------------------
-
-  const possibilidades = [
-
-    "Burned_Area_Rank",
-
-    "Burned Area Rank ",
-
-    "burned_area_rank",
-
-    "Rank",
-
-    "rank",
-
-    "Ranking",
-
-    "ranking"
-
-  ];
-
-
-  for (
-
-    const campo of possibilidades
-
-  ) {
-
-
-    if (
-
-      p[campo] !== undefined &&
-
-      p[campo] !== null &&
-
-      p[campo] !== ""
-
-    ) {
-
-
-      const valor =
-
-        Number(
-
-          p[campo]
-
-        );
-
-
-      if (
-
-        Number.isFinite(valor)
-
-      ) {
-
-        return valor;
-
-      }
-
-    }
-
-  }
-
-
-  return null;
+    return null;
 
 }
 
 
-// ============================================================
-// 9. CORES DO RANKING
-// ============================================================
-
-function corRanking(rank) {
-
-
-  const r =
-
-    Number(rank);
-
-
-  if (
-
-    !Number.isFinite(r)
-
-  ) {
-
-    return "#ffffff";
-
-  }
-
-
-  if (r === 1) {
-
-    return "#7f0000";
-
-  }
-
-
-  if (r === 2) {
-
-    return "#b30000";
-
-  }
-
-
-  if (r === 3) {
-
-    return "#d7301f";
-
-  }
-
-
-  if (r === 4) {
-
-    return "#ef6548";
-
-  }
-
-
-  if (r === 5) {
-
-    return "#fdae61";
-
-  }
-
-
-  if (
-
-    r >= 6 &&
-
-    r <= 18
-
-  ) {
-
-    return "#bdbdbd";
-
-  }
-
-
-  if (r === 19) {
-
-    return "#c6dbef";
-
-  }
-
-
-  if (r === 20) {
-
-    return "#9ecae1";
-
-  }
-
-
-  if (r === 21) {
-
-    return "#6baed6";
-
-  }
-
-
-  if (r === 22) {
-
-    return "#4292c6";
-
-  }
-
-
-  if (r === 23) {
-
-    return "#2171b5";
-
-  }
-
-
-  if (r === 24) {
-
-    return "#084594";
-
-  }
-
-
-  return "#ffffff";
-
-}
-
 
 // ============================================================
-// 10. ESTILO
-// ============================================================
-
-function estiloPorRanking(feature) {
-
-
-  const rank =
-
-    obterRanking(feature);
-
-
-  return {
-
-    color:
-      "#555555",
-
-    weight:
-      1,
-
-    fillColor:
-      corRanking(rank),
-
-    fillOpacity:
-      0.70
-
-  };
-
-}
-
-
-// ============================================================
-// 11. NOME DO POLÍGONO
+// 5. NOME
 // ============================================================
 
 function obterNome(feature) {
 
-
-  const p =
-
-    feature.properties || {};
+    const p =
+        feature.properties || {};
 
 
-  const campos = [
+    const camposNome = [
 
-    "region_nam",
+        "region_nam",
 
-    "reigon_nam",
+        "reigon_nam",
 
-    "Region Name",
+        "Region Name",
 
-    "NAME_1",
+        "NAME_1",
 
-    "NM_ESTADO",
+        "NM_ESTADO",
 
-    "NM_UF",
+        "NM_UF",
 
-    "NAME",
+        "NAME",
 
-    "nome",
+        "nome",
 
-    "Nome",
+        "Nome",
 
-    "name",
+        "name",
 
-    "NAME_0",
+        "NAME_0",
 
-    "Region"
+        "Region"
 
-  ];
-
-
-  for (
-
-    const campo of campos
-
-  ) {
+    ];
 
 
-    if (
+    for (
 
-      p[campo] !== undefined &&
-
-      p[campo] !== null &&
-
-      p[campo] !== ""
+        const campo of camposNome
 
     ) {
 
-      return String(
+        if (
 
-        p[campo]
+            p[campo] !== undefined &&
 
-      );
+            p[campo] !== null &&
+
+            String(p[campo]).trim() !== ""
+
+        ) {
+
+            return String(
+                p[campo]
+            );
+
+        }
 
     }
 
-  }
 
-
-  return "Polígono";
+    return "Sem nome";
 
 }
 
 
+
 // ============================================================
-// 12. GRUPOS DAS CAMADAS
+// 6. ÁREA QUEIMADA
+// ============================================================
+
+function obterArea(feature) {
+
+    const p =
+        feature.properties || {};
+
+
+    const camposArea = [
+
+        "Burned Area (km^2)",
+
+        "Burned_Area_km2",
+
+        "Burned Area",
+
+        "burned_area",
+
+        "area_queimada",
+
+        "Area Queimada"
+
+    ];
+
+
+    for (
+
+        const campo of camposArea
+
+    ) {
+
+        if (
+
+            p[campo] !== undefined &&
+
+            p[campo] !== null &&
+
+            p[campo] !== ""
+
+        ) {
+
+            const valor =
+                Number(p[campo]);
+
+
+            if (
+                Number.isFinite(valor)
+            ) {
+
+                return valor;
+
+            }
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+
+// ============================================================
+// 7. CORES DO RANKING
+// ============================================================
+
+function corRanking(rank) {
+
+    if (
+        rank === null ||
+        rank === undefined
+    ) {
+
+        return "#cccccc";
+
+    }
+
+
+    rank = Number(rank);
+
+
+    if (rank === 1)
+        return "#7f0000";
+
+
+    if (rank === 2)
+        return "#b30000";
+
+
+    if (rank === 3)
+        return "#d7301f";
+
+
+    if (rank === 4)
+        return "#ef6548";
+
+
+    if (rank === 5)
+        return "#fdae61";
+
+
+    if (
+        rank >= 6 &&
+        rank <= 18
+    )
+
+        return "#bdbdbd";
+
+
+    if (rank === 19)
+        return "#c6dbef";
+
+
+    if (rank === 20)
+        return "#9ecae1";
+
+
+    if (rank === 21)
+        return "#6baed6";
+
+
+    if (rank === 22)
+        return "#4292c6";
+
+
+    if (rank === 23)
+        return "#2171b5";
+
+
+    if (rank === 24)
+        return "#084594";
+
+
+    return "#cccccc";
+
+}
+
+
+
+// ============================================================
+// 8. ESTILO
+// ============================================================
+
+function estiloPorRanking(feature) {
+
+    const rank =
+        obterRanking(feature);
+
+
+    return {
+
+        fillColor:
+            corRanking(rank),
+
+        weight: 1,
+
+        opacity: 1,
+
+        color: "#555",
+
+        fillOpacity: 0.75
+
+    };
+
+}
+
+
+
+// ============================================================
+// 9. ESCAPAR HTML
+// ============================================================
+
+function escaparHTML(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(valor)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+// ============================================================
+// 10. FORMATAÇÃO
+// ============================================================
+
+function formatarValor(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+
+        return "Não disponível";
+
+    }
+
+
+    if (
+        typeof valor === "number"
+    ) {
+
+        return valor.toLocaleString(
+            "pt-BR",
+            {
+
+                maximumFractionDigits: 4
+
+            }
+        );
+
+    }
+
+
+    if (
+        typeof valor === "boolean"
+    ) {
+
+        return valor
+            ? "Sim"
+            : "Não";
+
+    }
+
+
+    if (
+        typeof valor === "object"
+    ) {
+
+        return JSON.stringify(
+            valor
+        );
+
+    }
+
+
+    return String(valor);
+
+}
+
+
+
+// ============================================================
+// 11. POPUP DO MAPA
+// ============================================================
+
+function popupRanking(
+
+    feature,
+
+    layer
+
+) {
+
+    const nome =
+        obterNome(feature);
+
+
+    const rank =
+        obterRanking(feature);
+
+
+    const area =
+        obterArea(feature);
+
+
+    let html = `
+
+        <strong>
+            ${escaparHTML(nome)}
+        </strong>
+
+        <br><br>
+
+    `;
+
+
+    if (
+        rank !== null
+    ) {
+
+        html += `
+
+            <b>Ranking:</b>
+            ${rank}
+
+            <br>
+
+        `;
+
+    }
+
+
+    if (
+        area !== null
+    ) {
+
+        html += `
+
+            <b>Área queimada:</b>
+            ${formatarValor(area)}
+            km²
+
+        `;
+
+    }
+
+
+    layer.bindPopup(
+        html
+    );
+
+}
+
+
+
+// ============================================================
+// 12. GRUPOS
 // ============================================================
 
 const grupoEstados =
-
-  L.layerGroup();
+    L.layerGroup();
 
 
 const grupoBiomas =
-
-  L.layerGroup();
+    L.layerGroup();
 
 
 const grupoTI =
-
-  L.layerGroup();
+    L.layerGroup();
 
 
 const grupoUC =
+    L.layerGroup();
 
-  L.layerGroup();
 
 
 // ============================================================
@@ -1153,315 +1364,189 @@ let dadosTI = null;
 let dadosUC = null;
 
 
+
 // ============================================================
-// 14. CRIAR CAMADA GEOJSON
+// 14. CRIAR CAMADA
 // ============================================================
 
-function criarCamada(
+function criarCamada(data) {
 
-  data,
+    return L.geoJSON(
 
-  nomeCamada
+        data,
 
-) {
+        {
 
+            style:
+                estiloPorRanking,
 
-  return L.geoJSON(
-
-    data,
-
-    {
-
-      style:
-
-        estiloPorRanking,
-
-
-      onEachFeature:
-
-        function(
-
-          feature,
-
-          layer
-
-        ) {
-
-
-          // -----------------------------------------------
-          // CLICK NO POLÍGONO
-          // -----------------------------------------------
-
-          layer.on(
-
-            "click",
-
-            function() {
-
-
-              mostrarRelatorio(
-
-                feature,
-
-                nomeCamada
-
-              );
-
-
-              selecionarPoligonoNoRelatorio(
-
-                feature,
-
-                nomeCamada
-
-              );
-
-
-              // -------------------------------------------
-              // POPUP
-              // -------------------------------------------
-
-              const nome =
-
-                obterNome(feature);
-
-
-              const rank =
-
-                obterRanking(feature);
-
-
-              let texto =
-
-                "<strong>" +
-
-                nome +
-
-                "</strong><br><br>";
-
-
-              if (
-
-                Number.isFinite(rank)
-
-              ) {
-
-                texto +=
-
-                  "<strong>Ranking:</strong> " +
-
-                  rank +
-
-                  "º";
-
-              }
-
-
-              layer.bindPopup(
-
-                texto
-
-              );
-
-            }
-
-          );
+            onEachFeature:
+                popupRanking
 
         }
 
-    }
-
-  );
+    );
 
 }
 
 
-// ============================================================
-// 15. ESTADOS
-// ============================================================
-
-carregarArquivos(
-
-  arquivosEstados,
-
-  "Estados"
-
-)
-
-.then(data => {
-
-
-  dadosEstados =
-
-    data;
-
-
-  const camada =
-
-    criarCamada(
-
-      data,
-
-      "Estados"
-
-    );
-
-
-  grupoEstados.addLayer(
-
-    camada
-
-  );
-
-
-  console.log(
-
-    "✓ ESTADOS PRONTOS"
-
-  );
-
-});
-
 
 // ============================================================
-// 16. BIOMAS
+// 15. CARREGAR ESTADOS
 // ============================================================
 
 carregarArquivos(
 
-  arquivosBiomas,
+    arquivosEstados,
 
-  "Biomas"
+    true
 
-)
+).then(
 
-.then(data => {
+    data => {
 
-
-  dadosBiomas =
-
-    data;
+        dadosEstados =
+            data;
 
 
-  const camada =
-
-    criarCamada(
-
-      data,
-
-      "Biomas"
-
-    );
+        const camada =
+            criarCamada(data);
 
 
-  grupoBiomas.addLayer(
-
-    camada
-
-  );
+        camada.addTo(
+            grupoEstados
+        );
 
 
-  console.log(
+        console.log(
 
-    "✓ BIOMAS PRONTOS"
+            "Estados somente Brasil:",
 
-  );
+            data.features.length
 
-});
+        );
+
+    }
+
+);
+
 
 
 // ============================================================
-// 17. TERRAS INDÍGENAS
+// 16. CARREGAR BIOMAS
 // ============================================================
 
 carregarArquivos(
 
-  arquivosTI,
+    arquivosBiomas
 
-  "Terras Indígenas"
+).then(
 
-)
+    data => {
 
-.then(data => {
-
-
-  dadosTI =
-
-    data;
+        dadosBiomas =
+            data;
 
 
-  const camada =
-
-    criarCamada(
-
-      data,
-
-      "Terras Indígenas"
-
-    );
+        const camada =
+            criarCamada(data);
 
 
-  grupoTI.addLayer(
-
-    camada
-
-  );
+        camada.addTo(
+            grupoBiomas
+        );
 
 
-  console.log(
+        console.log(
 
-    "✓ TERRAS INDÍGENAS PRONTAS"
+            "Biomas:",
 
-  );
+            data.features.length
 
-});
+        );
+
+    }
+
+);
+
 
 
 // ============================================================
-// 18. UNIDADES DE CONSERVAÇÃO
+// 17. CARREGAR TI
 // ============================================================
 
 carregarArquivos(
 
-  arquivosUC,
+    arquivosTI
 
-  "Unidades de Conservação"
+).then(
 
-)
+    data => {
 
-.then(data => {
-
-
-  dadosUC =
-
-    data;
+        dadosTI =
+            data;
 
 
-  const camada =
-
-    criarCamada(
-
-      data,
-
-      "Unidades de Conservação"
-
-    );
+        const camada =
+            criarCamada(data);
 
 
-  grupoUC.addLayer(
-
-    camada
-
-  );
+        camada.addTo(
+            grupoTI
+        );
 
 
-  console.log(
+        console.log(
 
-    "✓ UNIDADES DE CONSERVAÇÃO PRONTAS"
+            "Terras Indígenas:",
 
-  );
+            data.features.length
 
-});
+        );
+
+    }
+
+);
+
+
+
+// ============================================================
+// 18. CARREGAR UC
+// ============================================================
+
+carregarArquivos(
+
+    arquivosUC
+
+).then(
+
+    data => {
+
+        dadosUC =
+            data;
+
+
+        const camada =
+            criarCamada(data);
+
+
+        camada.addTo(
+            grupoUC
+        );
+
+
+        console.log(
+
+            "Unidades de Conservação:",
+
+            data.features.length
+
+        );
+
+    }
+
+);
+
 
 
 // ============================================================
@@ -1470,1167 +1555,1577 @@ carregarArquivos(
 
 const controleCamadas = {
 
+    "Estados":
+        grupoEstados,
 
-  "Estados":
+    "Biomas":
+        grupoBiomas,
 
-    grupoEstados,
+    "Terras Indígenas":
+        grupoTI,
 
-
-  "Biomas":
-
-    grupoBiomas,
-
-
-  "Terras Indígenas":
-
-    grupoTI,
-
-
-  "Unidades de Conservação":
-
-    grupoUC
+    "Unidades de Conservação":
+        grupoUC
 
 };
 
 
 L.control.layers(
 
-  null,
+    null,
 
-  controleCamadas,
+    controleCamadas,
 
-  {
+    {
 
-    collapsed:
-      false
+        collapsed: false
 
-  }
+    }
 
 ).addTo(mapa);
 
 
-// ============================================================
-// 20. DADOS DA CAMADA
-// ============================================================
-
-function obterDadosDaCamada(
-
-  nomeCamada
-
-) {
-
-
-  if (
-
-    nomeCamada === "Estados"
-
-  ) {
-
-    return dadosEstados;
-
-  }
-
-
-  if (
-
-    nomeCamada === "Biomas"
-
-  ) {
-
-    return dadosBiomas;
-
-  }
-
-
-  if (
-
-    nomeCamada === "Terras Indígenas"
-
-  ) {
-
-    return dadosTI;
-
-  }
-
-
-  if (
-
-    nomeCamada === "Unidades de Conservação"
-
-  ) {
-
-    return dadosUC;
-
-  }
-
-
-  return null;
-
-}
-
 
 // ============================================================
-// 21. SELECIONAR CAMADA NO RELATÓRIO
-// ============================================================
-
-document
-
-  .getElementById(
-
-    "seletor-camada"
-
-  )
-
-  .addEventListener(
-
-    "change",
-
-    function() {
-
-
-      const nomeCamada =
-
-        this.value;
-
-
-      const seletorPoligono =
-
-        document.getElementById(
-
-          "seletor-poligono"
-
-        );
-
-
-      const campoPoligono =
-
-        document.getElementById(
-
-          "campo-poligono"
-
-        );
-
-
-      const painel =
-
-        document.getElementById(
-
-          "conteudo-relatorio"
-
-        );
-
-
-      // ------------------------------------------------------
-      // NENHUMA CAMADA
-      // ------------------------------------------------------
-
-      if (
-
-        !nomeCamada
-
-      ) {
-
-
-        campoPoligono.style.display =
-
-          "none";
-
-
-        painel.innerHTML = `
-
-          <div class="mensagem-relatorio">
-
-            Selecione uma camada para começar.
-
-          </div>
-
-        `;
-
-
-        return;
-
-      }
-
-
-      const dados =
-
-        obterDadosDaCamada(
-
-          nomeCamada
-
-        );
-
-
-      // ------------------------------------------------------
-      // DADOS AINDA NÃO CARREGADOS
-      // ------------------------------------------------------
-
-      if (!dados) {
-
-
-        campoPoligono.style.display =
-
-          "none";
-
-
-        painel.innerHTML = `
-
-          <div class="mensagem-relatorio">
-
-            Os dados de
-
-            <strong>${nomeCamada}</strong>
-
-            ainda estão sendo carregados.
-
-            Aguarde alguns segundos.
-
-          </div>
-
-        `;
-
-
-        return;
-
-      }
-
-
-      // ------------------------------------------------------
-      // LIMPAR SELETOR
-      // ------------------------------------------------------
-
-      seletorPoligono.innerHTML = `
-
-        <option value="">
-
-          Selecione um polígono...
-
-        </option>
-
-      `;
-
-
-      // ------------------------------------------------------
-      // CRIAR LISTA
-      // ------------------------------------------------------
-
-      dados.features.forEach(
-
-        function(
-
-          feature,
-
-          indice
-
-        ) {
-
-
-          const option =
-
-            document.createElement(
-
-              "option"
-
-            );
-
-
-          option.value =
-
-            indice;
-
-
-          const nome =
-
-            obterNome(feature);
-
-
-          const rank =
-
-            obterRanking(feature);
-
-
-          if (
-
-            Number.isFinite(rank)
-
-          ) {
-
-
-            option.textContent =
-
-              nome +
-
-              " — Ranking " +
-
-              rank +
-
-              "º";
-
-
-          } else {
-
-
-            option.textContent =
-
-              nome;
-
-          }
-
-
-          seletorPoligono.appendChild(
-
-            option
-
-          );
-
-        }
-
-      );
-
-
-      campoPoligono.style.display =
-
-        "block";
-
-
-      painel.innerHTML = `
-
-        <div class="mensagem-relatorio">
-
-          Agora selecione o polígono que deseja
-
-          consultar.
-
-        </div>
-
-      `;
-
-    }
-
-  );
-
-
-// ============================================================
-// 22. SELECIONAR POLÍGONO
-// ============================================================
-
-document
-
-  .getElementById(
-
-    "seletor-poligono"
-
-  )
-
-  .addEventListener(
-
-    "change",
-
-    function() {
-
-
-      const nomeCamada =
-
-        document
-
-          .getElementById(
-
-            "seletor-camada"
-
-          )
-
-          .value;
-
-
-      const indice =
-
-        Number(
-
-          this.value
-
-        );
-
-
-      if (
-
-        !nomeCamada ||
-
-        !Number.isInteger(indice)
-
-      ) {
-
-        return;
-
-      }
-
-
-      const dados =
-
-        obterDadosDaCamada(
-
-          nomeCamada
-
-        );
-
-
-      if (
-
-        !dados ||
-
-        !dados.features[indice]
-
-      ) {
-
-        return;
-
-      }
-
-
-      const feature =
-
-        dados.features[indice];
-
-
-      mostrarRelatorio(
-
-        feature,
-
-        nomeCamada
-
-      );
-
-    }
-
-  );
-
-
-// ============================================================
-// 23. MOSTRAR RELATÓRIO
-// ============================================================
-
-function mostrarRelatorio(
-
-  feature,
-
-  nomeCamada
-
-) {
-
-
-  const painel =
-
-    document.getElementById(
-
-      "conteudo-relatorio"
-
-    );
-
-
-  const propriedades =
-
-    feature.properties || {};
-
-
-  const nome =
-
-    obterNome(feature);
-
-
-  const rank =
-
-    obterRanking(feature);
-
-
-  // ----------------------------------------------------------
-  // CABEÇALHO
-  // ----------------------------------------------------------
-
-  let html = `
-
-    <div class="cabecalho-poligono">
-
-      <h4>
-
-        ${nome}
-
-      </h4>
-
-      <span>
-
-        Camada: ${nomeCamada}
-
-      </span>
-
-    </div>
-
-  `;
-
-
-  // ----------------------------------------------------------
-  // TABELA
-  // ----------------------------------------------------------
-
-  const campos =
-
-    Object.keys(
-
-      propriedades
-
-    );
-
-
-  if (
-
-    campos.length === 0
-
-  ) {
-
-
-    html += `
-
-      <div class="mensagem-relatorio">
-
-        Este polígono não possui atributos
-
-        disponíveis.
-
-      </div>
-
-    `;
-
-
-    painel.innerHTML =
-
-      html;
-
-
-    return;
-
-  }
-
-
-  html += `
-
-    <table class="tabela-atributos">
-
-      <thead>
-
-        <tr>
-
-          <th>
-
-            Campo
-
-          </th>
-
-          <th>
-
-            Informação
-
-          </th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-  `;
-
-
-  campos.forEach(
-
-    function(campo) {
-
-
-      let valor =
-
-        propriedades[campo];
-
-
-      // ------------------------------------------------------
-      // VALOR NULO
-      // ------------------------------------------------------
-
-      if (
-
-        valor === null ||
-
-        valor === undefined ||
-
-        valor === ""
-
-      ) {
-
-        valor =
-
-          "Não informado";
-
-      }
-
-
-      // ------------------------------------------------------
-      // OBJETOS / ARRAYS
-      // ------------------------------------------------------
-
-      else if (
-
-        typeof valor ===
-
-        "object"
-
-      ) {
-
-        valor =
-
-          JSON.stringify(
-
-            valor
-
-          );
-
-      }
-
-
-      // ------------------------------------------------------
-      // RANKING
-      // ------------------------------------------------------
-
-      if (
-
-        campo ===
-
-        "Rank_Category"
-
-        ||
-
-        campo ===
-
-        "Burned Area Rank"
-
-      ) {
-
-
-        if (
-
-          Number.isFinite(
-
-            Number(valor)
-
-          )
-
-        ) {
-
-
-          valor = `
-
-            <span class="ranking-destaque">
-
-              ${valor}º
-
-            </span>
-
-          `;
-
-        }
-
-      }
-
-
-      html += `
-
-        <tr>
-
-          <th>
-
-            ${campo}
-
-          </th>
-
-          <td>
-
-            ${valor}
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }
-
-  );
-
-
-  html += `
-
-      </tbody>
-
-    </table>
-
-  `;
-
-
-  painel.innerHTML =
-
-    html;
-
-}
-
-
-// ============================================================
-// 24. SELECIONAR POLÍGONO NO RELATÓRIO
-// ============================================================
-
-function selecionarPoligonoNoRelatorio(
-
-  feature,
-
-  nomeCamada
-
-) {
-
-
-  const seletorCamada =
-
-    document.getElementById(
-
-      "seletor-camada"
-
-    );
-
-
-  const seletorPoligono =
-
-    document.getElementById(
-
-      "seletor-poligono"
-
-    );
-
-
-  const campoPoligono =
-
-    document.getElementById(
-
-      "campo-poligono"
-
-    );
-
-
-  // ----------------------------------------------------------
-  // SELECIONAR CAMADA
-  // ----------------------------------------------------------
-
-  seletorCamada.value =
-
-    nomeCamada;
-
-
-  // ----------------------------------------------------------
-  // OBTER DADOS
-  // ----------------------------------------------------------
-
-  const dados =
-
-    obterDadosDaCamada(
-
-      nomeCamada
-
-    );
-
-
-  if (!dados) {
-
-    return;
-
-  }
-
-
-  // ----------------------------------------------------------
-  // MOSTRAR CAMPO
-  // ----------------------------------------------------------
-
-  campoPoligono.style.display =
-
-    "block";
-
-
-  // ----------------------------------------------------------
-  // PROCURAR FEATURE
-  // ----------------------------------------------------------
-
-  let indiceEncontrado =
-
-    -1;
-
-
-  dados.features.forEach(
-
-    function(
-
-      f,
-
-      indice
-
-    ) {
-
-
-      if (
-
-        f === feature
-
-      ) {
-
-        indiceEncontrado =
-
-          indice;
-
-      }
-
-    }
-
-  );
-
-
-  // ----------------------------------------------------------
-  // RECRIAR LISTA
-  // ----------------------------------------------------------
-
-  seletorPoligono.innerHTML = `
-
-    <option value="">
-
-      Selecione um polígono...
-
-    </option>
-
-  `;
-
-
-  dados.features.forEach(
-
-    function(
-
-      f,
-
-      indice
-
-    ) {
-
-
-      const option =
-
-        document.createElement(
-
-          "option"
-
-        );
-
-
-      option.value =
-
-        indice;
-
-
-      const nome =
-
-        obterNome(f);
-
-
-      const rank =
-
-        obterRanking(f);
-
-
-      option.textContent =
-
-        Number.isFinite(rank)
-
-          ?
-
-          nome +
-
-          " — Ranking " +
-
-          rank +
-
-          "º"
-
-          :
-
-          nome;
-
-
-      seletorPoligono.appendChild(
-
-        option
-
-      );
-
-    }
-
-  );
-
-
-  if (
-
-    indiceEncontrado >= 0
-
-  ) {
-
-
-    seletorPoligono.value =
-
-      indiceEncontrado;
-
-  }
-
-}
-
-
-// ============================================================
-// 25. LEGENDA
+// 20. LEGENDA
 // ============================================================
 
 const legenda =
+    L.control({
 
-  L.control({
+        position:
+            "bottomright"
 
-    position:
-      "bottomright"
-
-  });
+    });
 
 
 legenda.onAdd =
+    function() {
 
-  function() {
+        const div =
+            L.DomUtil.create(
+                "div",
+                "legenda-ranking"
+            );
 
 
-    const div =
+        div.innerHTML = `
 
-      L.DomUtil.create(
+            <strong>
+                Ranking de Área Queimada
+            </strong>
 
-        "div",
+            <br>
 
-        "legenda-ranking"
+            <div>
+                <i style="background:#7f0000"></i>
+                1
+            </div>
 
-      );
+            <div>
+                <i style="background:#b30000"></i>
+                2
+            </div>
 
+            <div>
+                <i style="background:#d7301f"></i>
+                3
+            </div>
 
-    div.innerHTML =
+            <div>
+                <i style="background:#ef6548"></i>
+                4
+            </div>
 
-      "<h4>Ranking de área queimada</h4>";
+            <div>
+                <i style="background:#fdae61"></i>
+                5
+            </div>
 
+            <div>
+                <i style="background:#bdbdbd"></i>
+                6–18
+            </div>
 
-    div.innerHTML +=
+            <div>
+                <i style="background:#c6dbef"></i>
+                19
+            </div>
 
-      itemLegenda(
+            <div>
+                <i style="background:#9ecae1"></i>
+                20
+            </div>
 
-        "#7f0000",
+            <div>
+                <i style="background:#6baed6"></i>
+                21
+            </div>
 
-        "1º"
+            <div>
+                <i style="background:#4292c6"></i>
+                22
+            </div>
 
-      );
+            <div>
+                <i style="background:#2171b5"></i>
+                23
+            </div>
 
+            <div>
+                <i style="background:#084594"></i>
+                24
+            </div>
 
-    div.innerHTML +=
+        `;
 
-      itemLegenda(
 
-        "#b30000",
+        return div;
 
-        "2º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#d7301f",
-
-        "3º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#ef6548",
-
-        "4º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#fdae61",
-
-        "5º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#bdbdbd",
-
-        "6º–18º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#c6dbef",
-
-        "19º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#9ecae1",
-
-        "20º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#6baed6",
-
-        "21º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#4292c6",
-
-        "22º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#2171b5",
-
-        "23º"
-
-      );
-
-
-    div.innerHTML +=
-
-      itemLegenda(
-
-        "#084594",
-
-        "24º"
-
-      );
-
-
-    return div;
-
-  };
+    };
 
 
 legenda.addTo(mapa);
 
 
+
 // ============================================================
-// 26. ITEM DA LEGENDA
+// 21. REFERÊNCIAS DAS CAMADAS
 // ============================================================
 
-function itemLegenda(
+function obterDadosDaCamada(
 
-  cor,
-
-  texto
+    nomeCamada
 
 ) {
 
+    if (
+        nomeCamada ===
+        "Estados"
+    )
 
-  return `
+        return dadosEstados;
 
-    <div class="item-legenda">
 
-      <span
+    if (
+        nomeCamada ===
+        "Biomas"
+    )
 
-        class="cor-legenda"
+        return dadosBiomas;
 
-        style="background:${cor};">
 
-      </span>
+    if (
+        nomeCamada ===
+        "Terras Indígenas"
+    )
 
-      <span>
+        return dadosTI;
 
-        ${texto}
 
-      </span>
+    if (
+        nomeCamada ===
+        "Unidades de Conservação"
+    )
 
-    </div>
+        return dadosUC;
 
-  `;
+
+    return null;
 
 }
 
 
+
 // ============================================================
-// 27. INÍCIO
+// 22. GRUPO DA CAMADA
 // ============================================================
 
-console.log("");
+function obterGrupoDaCamada(
 
-console.log(
+    nomeCamada
 
-  "=========================================="
+) {
 
-);
+    if (
+        nomeCamada ===
+        "Estados"
+    )
 
-console.log(
+        return grupoEstados;
 
-  "DASHBOARD DE FOGO"
 
-);
+    if (
+        nomeCamada ===
+        "Biomas"
+    )
 
-console.log(
+        return grupoBiomas;
 
-  "Relatório interativo"
 
-);
+    if (
+        nomeCamada ===
+        "Terras Indígenas"
+    )
 
-console.log(
+        return grupoTI;
 
-  "=========================================="
 
-);
+    if (
+        nomeCamada ===
+        "Unidades de Conservação"
+    )
+
+        return grupoUC;
+
+
+    return null;
+
+}
+
+
+
+// ============================================================
+// 23. ID DA FEIÇÃO
+// ============================================================
+
+function obterIdentificador(
+
+    feature
+
+) {
+
+    const p =
+        feature.properties || {};
+
+
+    const campos = [
+
+        "terrai_cod",
+
+        "Cnuc",
+
+        "region_id",
+
+        "NAME_1",
+
+        "NM_ESTADO",
+
+        "ID",
+
+        "id"
+
+    ];
+
+
+    for (
+        const campo of campos
+    ) {
+
+        if (
+
+            p[campo] !== undefined &&
+
+            p[campo] !== null &&
+
+            p[campo] !== ""
+
+        ) {
+
+            return String(
+                p[campo]
+            );
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+
+// ============================================================
+// 24. EVENTO: SELEÇÃO DA CAMADA
+// ============================================================
+
+document
+    .getElementById(
+        "seletor-camada"
+    )
+    .addEventListener(
+
+        "change",
+
+        function() {
+
+            const nomeCamada =
+                this.value;
+
+
+            const seletorEntidade =
+                document.getElementById(
+                    "seletor-entidade"
+                );
+
+
+            const container =
+                document.getElementById(
+                    "container-entidade"
+                );
+
+
+            const conteudo =
+                document.getElementById(
+                    "conteudo-relatorio"
+                );
+
+
+            // --------------------------------------------------
+            // LIMPAR
+            // --------------------------------------------------
+
+            seletorEntidade.innerHTML = `
+
+                <option value="">
+
+                    Selecione...
+
+                </option>
+
+            `;
+
+
+            container.style.display =
+                "none";
+
+
+            conteudo.className =
+                "mensagem-relatorio";
+
+
+            conteudo.innerHTML =
+
+                "Selecione uma camada para gerar o relatório.";
+
+
+            if (!nomeCamada) {
+
+                return;
+
+            }
+
+
+            const dados =
+                obterDadosDaCamada(
+                    nomeCamada
+                );
+
+
+            // --------------------------------------------------
+            // DADOS AINDA CARREGANDO
+            // --------------------------------------------------
+
+            if (!dados) {
+
+                conteudo.innerHTML = `
+
+                    Carregando os dados de
+                    <strong>
+                        ${escaparHTML(nomeCamada)}
+                    </strong>...
+
+                `;
+
+                // Tenta novamente depois de um pequeno intervalo
+
+                setTimeout(
+                    () => {
+
+                        document
+                            .getElementById(
+                                "seletor-camada"
+                            )
+                            .dispatchEvent(
+                                new Event(
+                                    "change"
+                                )
+                            );
+
+                    },
+                    800
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !dados.features ||
+                dados.features.length === 0
+            ) {
+
+                conteudo.innerHTML = `
+
+                    Não existem dados disponíveis
+                    para esta camada.
+
+                `;
+
+                return;
+
+            }
+
+
+            // --------------------------------------------------
+            // MOSTRAR CAMADA NO MAPA
+            // --------------------------------------------------
+
+            const grupo =
+                obterGrupoDaCamada(
+                    nomeCamada
+                );
+
+
+            if (
+                grupo &&
+                !mapa.hasLayer(grupo)
+            ) {
+
+                grupo.addTo(mapa);
+
+            }
+
+
+            // --------------------------------------------------
+            // PREENCHER ENTIDADES
+            // --------------------------------------------------
+
+            dados.features.forEach(
+
+                (
+                    feature,
+                    index
+                ) => {
+
+                    const nome =
+                        obterNome(feature);
+
+
+                    const identificador =
+                        obterIdentificador(
+                            feature
+                        );
+
+
+                    let texto =
+                        nome;
+
+
+                    // Evita opções exatamente iguais
+
+                    if (identificador) {
+
+                        texto +=
+                            ` — ${identificador}`;
+
+                    }
+
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        index;
+
+
+                    option.textContent =
+                        texto;
+
+
+                    seletorEntidade
+                        .appendChild(
+                            option
+                        );
+
+                }
+
+            );
+
+
+            container.style.display =
+                "flex";
+
+
+            conteudo.innerHTML = `
+
+                Agora selecione
+                o item que deseja consultar.
+
+            `;
+
+        }
+
+    );
+
+
+
+// ============================================================
+// 25. EVENTO: SELEÇÃO DA ENTIDADE
+// ============================================================
+
+document
+    .getElementById(
+        "seletor-entidade"
+    )
+    .addEventListener(
+
+        "change",
+
+        function() {
+
+            const nomeCamada =
+
+                document
+                    .getElementById(
+                        "seletor-camada"
+                    )
+                    .value;
+
+
+            const indice =
+                Number(this.value);
+
+
+            const conteudo =
+                document.getElementById(
+                    "conteudo-relatorio"
+                );
+
+
+            if (
+                !nomeCamada ||
+                this.value === ""
+            ) {
+
+                conteudo.innerHTML = `
+
+                    Selecione um item
+                    para visualizar o relatório.
+
+                `;
+
+                return;
+
+            }
+
+
+            const dados =
+                obterDadosDaCamada(
+                    nomeCamada
+                );
+
+
+            if (
+                !dados ||
+                !dados.features[indice]
+            ) {
+
+                conteudo.innerHTML = `
+
+                    Não foi possível localizar
+                    o item selecionado.
+
+                `;
+
+                return;
+
+            }
+
+
+            const feature =
+                dados.features[indice];
+
+
+            gerarRelatorio(
+
+                feature,
+
+                nomeCamada
+
+            );
+
+
+            // --------------------------------------------------
+            // CENTRALIZAR NO ITEM
+            // --------------------------------------------------
+
+            try {
+
+                const geo =
+                    L.geoJSON(
+                        feature
+                    );
+
+
+                const bounds =
+                    geo.getBounds();
+
+
+                if (
+                    bounds &&
+                    bounds.isValid()
+                ) {
+
+                    mapa.fitBounds(
+                        bounds,
+                        {
+
+                            padding:
+                                [30, 30],
+
+                            maxZoom:
+                                8
+
+                        }
+                    );
+
+                }
+
+            } catch (erro) {
+
+                console.warn(
+                    "Não foi possível centralizar:",
+                    erro
+                );
+
+            }
+
+        }
+
+    );
+
+
+
+// ============================================================
+// 26. GERAR RELATÓRIO
+// ============================================================
+
+function gerarRelatorio(
+
+    feature,
+
+    nomeCamada
+
+) {
+
+    const conteudo =
+        document.getElementById(
+            "conteudo-relatorio"
+        );
+
+
+    const p =
+        feature.properties || {};
+
+
+    const nome =
+        obterNome(feature);
+
+
+    const rank =
+        obterRanking(feature);
+
+
+    const area =
+        obterArea(feature);
+
+
+    // ========================================================
+    // CABEÇALHO
+    // ========================================================
+
+    let html = `
+
+        <div class="cabecalho-relatorio">
+
+            <h4>
+                ${escaparHTML(nome)}
+            </h4>
+
+            <p>
+                <strong>Camada:</strong>
+                ${escaparHTML(nomeCamada)}
+            </p>
+
+        </div>
+
+    `;
+
+
+    // ========================================================
+    // CARTÕES
+    // ========================================================
+
+    html += `
+
+        <div class="resumo-relatorio">
+
+    `;
+
+
+    // Nome
+
+    html += `
+
+        <div class="cartao-resumo">
+
+            <div class="titulo">
+                Área selecionada
+            </div>
+
+            <div class="valor">
+
+                ${escaparHTML(nome)}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    // Ranking
+
+    if (
+        rank !== null
+    ) {
+
+        let classeRanking =
+            "ranking-6-18";
+
+
+        if (
+            rank >= 1 &&
+            rank <= 5
+        ) {
+
+            classeRanking =
+                `ranking-${rank}`;
+
+        }
+
+
+        else if (
+            rank >= 19
+        ) {
+
+            classeRanking =
+                `ranking-${rank}`;
+
+        }
+
+
+        html += `
+
+            <div class="cartao-resumo">
+
+                <div class="titulo">
+                    Ranking
+                </div>
+
+                <div class="valor">
+
+                    <span
+                        class="ranking ${classeRanking}"
+                    >
+
+                        ${rank}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    // Área
+
+    if (
+        area !== null
+    ) {
+
+        html += `
+
+            <div class="cartao-resumo">
+
+                <div class="titulo">
+                    Área queimada
+                </div>
+
+                <div class="valor">
+
+                    ${formatarValor(area)}
+                    km²
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+
+    // ========================================================
+    // INFORMAÇÕES RELEVANTES
+    // ========================================================
+
+    html += `
+
+        <h4
+            style="
+                margin-top:30px;
+                margin-bottom:10px;
+            "
+        >
+
+            Informações
+
+        </h4>
+
+        <table
+            class="tabela-relatorio"
+        >
+
+            <tbody>
+
+    `;
+
+
+    // --------------------------------------------------------
+    // CAMPOS QUE NÃO DEVEM APARECER
+    // --------------------------------------------------------
+
+    const camposIgnorar = [
+
+        "geometry",
+
+        "shape",
+
+        "Shape_Area",
+
+        "Shape_Length",
+
+        "OBJECTID",
+
+        "FID",
+
+        "id"
+
+    ];
+
+
+    // --------------------------------------------------------
+    // CAMPOS TÉCNICOS ESPECÍFICOS
+    // --------------------------------------------------------
+
+    const camposTecnicos = [
+
+        "region_id"
+
+    ];
+
+
+    // --------------------------------------------------------
+    // CAMPOS RELEVANTES
+    // --------------------------------------------------------
+
+    const camposPreferenciais = [
+
+        // Nome
+
+        "region_nam",
+
+        "reigon_nam",
+
+        "Region Name",
+
+        "NAME_1",
+
+        "NM_ESTADO",
+
+        "NM_UF",
+
+        "NAME",
+
+        "nome",
+
+        "Nome",
+
+        "name",
+
+        // Ranking
+
+        "Rank_Category",
+
+        "Burned Area Rank",
+
+        "Burned_Area_Rank",
+
+        "Ranking",
+
+        "ranking",
+
+        "Rank",
+
+        "rank",
+
+        // Área
+
+        "Burned Area (km^2)",
+
+        "Burned_Area_km2",
+
+        "Burned Area",
+
+        "burned_area",
+
+        "area_queimada",
+
+        "Area Queimada",
+
+        // Região
+
+        "region_des",
+
+        "Region",
+
+        // Identificadores úteis
+
+        "terrai_cod",
+
+        "Cnuc"
+
+    ];
+
+
+    // ========================================================
+    // PRIMEIRO: CAMPOS PREFERENCIAIS
+    // ========================================================
+
+    const camposAdicionados =
+        new Set();
+
+
+    camposPreferenciais.forEach(
+
+        campo => {
+
+            if (
+
+                Object.prototype
+                    .hasOwnProperty
+                    .call(
+                        p,
+                        campo
+                    )
+
+            ) {
+
+                if (
+                    camposIgnorar
+                        .includes(campo)
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    camposTecnicos
+                        .includes(campo)
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    camposAdicionados
+                        .has(campo)
+                ) {
+
+                    return;
+
+                }
+
+
+                camposAdicionados
+                    .add(campo);
+
+
+                let valor =
+                    formatarValor(
+                        p[campo]
+                    );
+
+
+                // Ranking
+
+                if (
+
+                    [
+                        "Rank_Category",
+
+                        "Burned Area Rank",
+
+                        "Burned_Area_Rank",
+
+                        "Ranking",
+
+                        "ranking",
+
+                        "Rank",
+
+                        "rank"
+
+                    ].includes(campo)
+
+                ) {
+
+                    const r =
+                        Number(
+                            p[campo]
+                        );
+
+
+                    if (
+                        Number.isFinite(r)
+                    ) {
+
+                        let classe =
+                            "ranking-6-18";
+
+
+                        if (
+                            r >= 1 &&
+                            r <= 5
+                        ) {
+
+                            classe =
+                                `ranking-${r}`;
+
+                        }
+
+                        else if (
+                            r >= 19
+                        ) {
+
+                            classe =
+                                `ranking-${r}`;
+
+                        }
+
+
+                        valor = `
+
+                            <span
+                                class="
+                                    ranking
+                                    ${classe}
+                                "
+                            >
+
+                                ${r}
+
+                            </span>
+
+                        `;
+
+                    }
+
+                }
+
+
+                html += `
+
+                    <tr>
+
+                        <th>
+                            ${escaparHTML(campo)}
+                        </th>
+
+                        <td>
+                            ${valor}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+        }
+
+    );
+
+
+
+    // ========================================================
+    // CAMPOS ADICIONAIS
+    // ========================================================
+
+    /*
+       Aqui entram outros campos que não são técnicos.
+       Assim não perdemos uma informação importante caso
+       apareça futuramente no GeoJSON.
+    */
+
+    Object.keys(p).forEach(
+
+        campo => {
+
+            if (
+                camposAdicionados
+                    .has(campo)
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                camposIgnorar
+                    .includes(campo)
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                camposTecnicos
+                    .includes(campo)
+            ) {
+
+                return;
+
+            }
+
+
+            const valor =
+                formatarValor(
+                    p[campo]
+                );
+
+
+            // Ignora objetos enormes
+
+            if (
+                valor.length > 500
+            ) {
+
+                return;
+
+            }
+
+
+            camposAdicionados
+                .add(campo);
+
+
+            html += `
+
+                <tr>
+
+                    <th>
+                        ${escaparHTML(campo)}
+                    </th>
+
+                    <td>
+                        ${escaparHTML(valor)}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    );
+
+
+    html += `
+
+            </tbody>
+
+        </table>
+
+    `;
+
+
+
+    // ========================================================
+    // GRÁFICO
+    // ========================================================
+
+    /*
+       O gráfico somente aparece quando existe
+       Área Queimada.
+
+       Assim evitamos gráficos sem significado para
+       TI e UC quando essas camadas não possuem
+       campo de área.
+    */
+
+    if (
+        area !== null
+    ) {
+
+        html += `
+
+            <div id="area-grafico">
+
+                <h4>
+                    Área Queimada
+                </h4>
+
+                <canvas
+                    id="grafico-area"
+                ></canvas>
+
+            </div>
+
+        `;
+
+    }
+
+
+    conteudo.className =
+        "";
+
+
+    conteudo.innerHTML =
+        html;
+
+
+    // ========================================================
+    // CRIAR GRÁFICO
+    // ========================================================
+
+    if (
+        area !== null
+    ) {
+
+        criarGraficoArea(
+
+            nome,
+
+            area,
+
+            rank
+
+        );
+
+    }
+
+}
+
+
+
+// ============================================================
+// 27. GRÁFICO DE ÁREA
+// ============================================================
+
+function criarGraficoArea(
+
+    nome,
+
+    area,
+
+    rank
+
+) {
+
+    const canvas =
+        document.getElementById(
+            "grafico-area"
+        );
+
+
+    if (!canvas) {
+
+        return;
+
+    }
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    const largura =
+        canvas.clientWidth ||
+        800;
+
+
+    const altura =
+        canvas.clientHeight ||
+        300;
+
+
+    canvas.width =
+        largura;
+
+
+    canvas.height =
+        altura;
+
+
+    // ========================================================
+    // CONFIGURAÇÕES
+    // ========================================================
+
+    const margemEsquerda = 80;
+
+    const margemDireita = 30;
+
+    const margemSuperior = 40;
+
+    const margemInferior = 60;
+
+
+    const larguraGrafico =
+
+        largura -
+        margemEsquerda -
+        margemDireita;
+
+
+    const alturaGrafico =
+
+        altura -
+        margemSuperior -
+        margemInferior;
+
+
+    // ========================================================
+    // FUNDO
+    // ========================================================
+
+    ctx.clearRect(
+        0,
+        0,
+        largura,
+        altura
+    );
+
+
+    // ========================================================
+    // VALOR MÁXIMO
+    // ========================================================
+
+    const maximo =
+        area > 0
+            ? area
+            : 1;
+
+
+    // ========================================================
+    // EIXOS
+    // ========================================================
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+
+        margemEsquerda,
+
+        margemSuperior
+
+    );
+
+
+    ctx.lineTo(
+
+        margemEsquerda,
+
+        margemSuperior +
+        alturaGrafico
+
+    );
+
+
+    ctx.lineTo(
+
+        margemEsquerda +
+        larguraGrafico,
+
+        margemSuperior +
+        alturaGrafico
+
+    );
+
+
+    ctx.strokeStyle =
+        "#777";
+
+
+    ctx.lineWidth = 1;
+
+
+    ctx.stroke();
+
+
+    // ========================================================
+    // BARRA
+    // ========================================================
+
+    const larguraBarra =
+        Math.min(
+            180,
+            larguraGrafico * 0.4
+        );
+
+
+    const alturaBarra =
+
+        (
+            area /
+            maximo
+        ) *
+        alturaGrafico;
+
+
+    const x =
+
+        margemEsquerda +
+        (
+            larguraGrafico -
+            larguraBarra
+        ) / 2;
+
+
+    const y =
+
+        margemSuperior +
+        alturaGrafico -
+        alturaBarra;
+
+
+    let corBarra =
+        "#777";
+
+
+    if (
+        rank !== null
+    ) {
+
+        corBarra =
+            corRanking(rank);
+
+    }
+
+
+    ctx.fillStyle =
+        corBarra;
+
+
+    ctx.fillRect(
+
+        x,
+
+        y,
+
+        larguraBarra,
+
+        alturaBarra
+
+    );
+
+
+    // ========================================================
+    // VALOR
+    // ========================================================
+
+    ctx.fillStyle =
+        "#222";
+
+
+    ctx.font =
+        "bold 15px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.fillText(
+
+        `${formatarValor(area)} km²`,
+
+        x +
+        larguraBarra / 2,
+
+        Math.max(
+            y - 10,
+            20
+        )
+
+    );
+
+
+    // ========================================================
+    // NOME
+    // ========================================================
+
+    ctx.font =
+        "14px Arial";
+
+
+    ctx.fillText(
+
+        nome.length > 25
+            ? nome.substring(0, 25) + "..."
+            : nome,
+
+        x +
+        larguraBarra / 2,
+
+        margemSuperior +
+        alturaGrafico +
+        30
+
+    );
+
+}
+
 
 </script>
 
