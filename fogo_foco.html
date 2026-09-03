@@ -1416,9 +1416,9 @@
     <script>
 
         /* ======================================================
-           ARQUIVOS
+           CONFIGURAÇÃO DOS ARQUIVOS
            
-           TODOS ESTÃO NA MESMA PASTA DO index.html
+           OS ARQUIVOS ESTÃO NA MESMA PASTA DO index.html
         ====================================================== */
 
         const arquivosEstados = [
@@ -1431,6 +1431,14 @@
 
         ];
 
+
+        /*
+         * OS CINCO ARQUIVOS DE BIOMAS
+         *
+         * IMPORTANTE:
+         * os nomes devem ser exatamente iguais aos arquivos
+         * existentes no GitHub.
+         */
 
         const arquivosBiomas = [
 
@@ -1491,8 +1499,8 @@
         /* ======================================================
            GRUPOS DAS CAMADAS
 
-           AJUSTE PRINCIPAL:
-           FeatureGroup possui getBounds().
+           IMPORTANTE:
+           usamos FeatureGroup porque ele possui getBounds().
         ====================================================== */
 
         const grupoEstados =
@@ -1534,6 +1542,7 @@
                     /[\u0300-\u036f]/g,
                     ""
                 );
+
         }
 
 
@@ -1550,40 +1559,27 @@
             const campos = [
 
                 "region_nam",
-
                 "Region Name",
-
                 "NAME_1",
-
                 "NM_ESTADO",
-
                 "NM_UF",
-
                 "NAME",
-
                 "nome",
-
                 "Nome",
-
                 "name",
-
                 "NAME_0",
-
                 "Region",
-
                 "Bioma",
-
                 "bioma",
-
                 "BIOMA",
-
                 "name_1",
-
                 "NOME",
-
                 "NOME_BIOMA",
-
-                "nome_bioma"
+                "nome_bioma",
+                "NOME_BI",
+                "BIOMA_NOME",
+                "NM_BIOMA",
+                "NAME_BIOMA"
 
             ];
 
@@ -1661,7 +1657,11 @@
 
                 "rank_cat",
 
-                "ranking_area_queimada"
+                "ranking_area_queimada",
+
+                "Rank_Category_1",
+
+                "Rank_Category_2"
 
             ];
 
@@ -1680,19 +1680,49 @@
 
                 ) {
 
+                    let valor =
+                        props[campo];
+
+
+                    /*
+                     * Se vier como texto no formato
+                     * "Rank 1", "1º", etc., tenta
+                     * extrair o número.
+                     */
+
+                    if (
+                        typeof valor === "string"
+                    ) {
+
+                        const encontrado =
+                            valor.match(
+                                /-?\d+(?:[.,]\d+)?/
+                            );
+
+
+                        if (
+                            encontrado
+                        ) {
+
+                            valor =
+                                encontrado[0];
+
+                        }
+
+                    }
+
+
                     const numero =
                         Number(
 
-                            String(
-                                props[campo]
-                            )
+                            String(valor)
 
-                            .replace(
-                                ",",
-                                "."
-                            )
+                                .replace(
+                                    ",",
+                                    "."
+                                )
 
-                            .trim()
+                                .trim()
 
                         );
 
@@ -1744,7 +1774,11 @@
 
                 "AREA_KM2",
 
-                "AREA_QUEIMADA"
+                "AREA_QUEIMADA",
+
+                "Burned_Area",
+
+                "burnedArea"
 
             ];
 
@@ -1842,6 +1876,16 @@
 
 
             if (
+                ranking === null ||
+                ranking === undefined
+            ) {
+
+                return "#8f8f8f";
+
+            }
+
+
+            if (
 
                 ranking >= 6 &&
 
@@ -1861,6 +1905,7 @@
                 "#bdbdbd"
 
             );
+
         }
 
 
@@ -1868,38 +1913,80 @@
            ESTILO
         ====================================================== */
 
-        function estiloPorRanking(feature) {
+        function estiloPorRanking(
+            feature,
+            tipo = "estados"
+        ) {
 
             const ranking =
                 obterRanking(feature);
+
+
+            const temRanking =
+                Number.isFinite(
+                    ranking
+                );
+
+
+            const escuro =
+                document.body.classList.contains(
+                    "tema-escuro"
+                );
 
 
             return {
 
                 color:
 
-                    document.body.classList.contains(
-                        "tema-escuro"
-                    )
+                    escuro
 
                         ? "#d0d7de"
 
                         : "#555",
 
                 weight:
-                    1.5,
+
+                    tipo === "biomas"
+
+                        ? 2
+
+                        : 1.5,
 
                 opacity:
                     1,
 
                 fillColor:
-                    corRanking(
-                        ranking
-                    ),
+
+                    temRanking
+
+                        ? corRanking(
+                            ranking
+                        )
+
+                        : (
+                            tipo === "biomas"
+
+                                ? "#969696"
+
+                                : "#bdbdbd"
+                        ),
 
                 fillOpacity:
-                    0.78
+
+                    temRanking
+
+                        ? 0.78
+
+                        : (
+                            tipo === "biomas"
+
+                                ? 0.50
+
+                                : 0.35
+                        )
+
             };
+
         }
 
 
@@ -1935,6 +2022,7 @@
                     /'/g,
                     "&#039;"
                 );
+
         }
 
 
@@ -1987,6 +2075,7 @@
                 " km²"
 
             );
+
         }
 
 
@@ -2056,6 +2145,7 @@
                     </div>
 
                 `;
+
             }
 
 
@@ -2101,6 +2191,7 @@
                 </div>
 
             `;
+
         }
 
 
@@ -2129,9 +2220,172 @@
 
 
         /* ======================================================
-           CARREGAR ARQUIVOS GEOJSON
+           CONVERTER GEOJSON PARA FEATURES
+           
+           Aceita:
+           - FeatureCollection
+           - Feature
+           - GeometryCollection
+           - Polygon
+           - MultiPolygon
+           - outras geometrias
+        ====================================================== */
 
-           CARREGA TODOS OS ARQUIVOS E JUNTA AS FEATURES.
+        function extrairFeaturesGeoJSON(
+            dados
+        ) {
+
+            if (
+                !dados
+            ) {
+
+                return [];
+
+            }
+
+
+            /* ==========================================
+               FEATURE COLLECTION
+            ========================================== */
+
+            if (
+
+                dados.type ===
+                "FeatureCollection"
+
+            ) {
+
+                return Array.isArray(
+                    dados.features
+                )
+
+                    ? dados.features
+
+                    : [];
+
+            }
+
+
+            /* ==========================================
+               FEATURE ÚNICA
+            ========================================== */
+
+            if (
+
+                dados.type ===
+                "Feature"
+
+            ) {
+
+                return [
+                    dados
+                ];
+
+            }
+
+
+            /* ==========================================
+               GEOMETRY COLLECTION
+            ========================================== */
+
+            if (
+
+                dados.type ===
+                "GeometryCollection"
+
+            ) {
+
+                if (
+                    !Array.isArray(
+                        dados.geometries
+                    )
+                ) {
+
+                    return [];
+
+                }
+
+
+                return dados.geometries.map(
+
+                    function(geometry) {
+
+                        return {
+
+                            type:
+                                "Feature",
+
+                            properties:
+                                {},
+
+                            geometry:
+                                geometry
+
+                        };
+
+                    }
+
+                );
+
+            }
+
+
+            /* ==========================================
+               GEOMETRIA DIRETA
+            ========================================== */
+
+            const geometriasAceitas = [
+
+                "Point",
+
+                "MultiPoint",
+
+                "LineString",
+
+                "MultiLineString",
+
+                "Polygon",
+
+                "MultiPolygon"
+
+            ];
+
+
+            if (
+
+                geometriasAceitas.includes(
+                    dados.type
+                )
+
+            ) {
+
+                return [
+
+                    {
+
+                        type:
+                            "Feature",
+
+                        properties:
+                            {},
+
+                        geometry:
+                            dados
+
+                    }
+
+                ];
+
+            }
+
+
+            return [];
+
+        }
+
+
+        /* ======================================================
+           CARREGAR ARQUIVOS GEOJSON
         ====================================================== */
 
         async function carregarArquivos(
@@ -2145,6 +2399,7 @@
 
 
             console.log("");
+
             console.log(
                 "======================================"
             );
@@ -2192,55 +2447,55 @@
 
                         throw new Error(
 
-                            `HTTP ${resposta.status} ${resposta.statusText}`
+                            `HTTP ${resposta.status} - ${resposta.statusText}`
 
                         );
 
                     }
 
 
-                    const dados =
-                        await resposta.json();
+                    /*
+                     * Tenta converter para JSON.
+                     *
+                     * Se o nome do arquivo estiver errado,
+                     * o GitHub pode devolver uma página HTML.
+                     */
 
+                    let dados;
 
-                    if (
-                        !dados
-                    ) {
+                    try {
+
+                        dados =
+                            await resposta.json();
+
+                    }
+
+                    catch (erroJSON) {
 
                         throw new Error(
-                            "Arquivo vazio."
+
+                            "O arquivo retornado não é um JSON/GeoJSON válido. " +
+
+                            "Verifique o nome do arquivo e se ele está realmente no GitHub."
+
                         );
 
                     }
 
 
-                    if (
-
-                        dados.type !==
-                        "FeatureCollection"
-
-                    ) {
-
-                        throw new Error(
-
-                            `Tipo GeoJSON encontrado: ${dados.type || "desconhecido"}. Esperado: FeatureCollection.`
-
+                    const novasFeatures =
+                        extrairFeaturesGeoJSON(
+                            dados
                         );
 
-                    }
-
 
                     if (
-
-                        !Array.isArray(
-                            dados.features
-                        )
-
+                        novasFeatures.length === 0
                     ) {
 
                         throw new Error(
 
-                            "O GeoJSON não possui uma lista de features válida."
+                            `Nenhuma feature encontrada. Tipo detectado: ${dados.type || "desconhecido"}.`
 
                         );
 
@@ -2248,13 +2503,13 @@
 
 
                     features.push(
-                        ...dados.features
+                        ...novasFeatures
                     );
 
 
                     console.log(
 
-                        `✓ ${arquivo}: ${dados.features.length} features`
+                        `✓ ${arquivo}: ${novasFeatures.length} features`
 
                     );
 
@@ -2265,7 +2520,7 @@
 
                     console.error(
 
-                        `✗ Erro em ${arquivo}:`,
+                        `✗ ERRO EM ${arquivo}:`,
 
                         erro
 
@@ -2288,45 +2543,33 @@
 
 
             console.log("");
+
             console.log(
                 "TOTAL DE FEATURES:",
                 features.length
             );
 
 
+            /*
+             * Se algum arquivo falhou, mostra no console
+             * mas mantém os arquivos que foram carregados.
+             *
+             * Isso é importante para os 5 blocos de biomas:
+             * um arquivo com problema não impede os outros
+             * quatro de aparecerem.
+             */
+
             if (
                 erros.length > 0
             ) {
 
-                console.table(
-                    erros
+                console.warn(
+                    "Arquivos com erro:"
                 );
 
 
-                throw new Error(
-
-                    "Erro ao carregar os arquivos de " +
-
-                    tipo +
-
-                    ":\n\n" +
-
+                console.table(
                     erros
-
-                        .map(
-
-                            item =>
-
-                                item.arquivo +
-
-                                " → " +
-
-                                item.erro
-
-                        )
-
-                        .join("\n")
-
                 );
 
             }
@@ -2338,11 +2581,11 @@
 
                 throw new Error(
 
-                    "Nenhuma feature encontrada nos arquivos de " +
+                    "Nenhum arquivo de " +
 
                     tipo +
 
-                    "."
+                    " foi carregado com sucesso."
 
                 );
 
@@ -2355,7 +2598,10 @@
                     "FeatureCollection",
 
                 features:
-                    features
+                    features,
+
+                erros:
+                    erros
 
             };
 
@@ -2387,26 +2633,13 @@
                         style:
                             function(feature) {
 
-                                const estilo =
-                                    estiloPorRanking(
-                                        feature
-                                    );
+                                return estiloPorRanking(
 
+                                    feature,
 
-                                if (
-                                    tipo === "biomas"
-                                ) {
+                                    tipo
 
-                                    estilo.weight =
-                                        2;
-
-                                    estilo.fillOpacity =
-                                        0.82;
-
-                                }
-
-
-                                return estilo;
+                                );
 
                             },
 
@@ -2423,10 +2656,6 @@
                                 );
 
 
-                                /* ==========================
-                                   EFEITO AO PASSAR O MOUSE
-                                ========================== */
-
                                 layer.on({
 
                                     mouseover:
@@ -2435,23 +2664,30 @@
                                             event.target.setStyle({
 
                                                 weight:
+
                                                     tipo === "biomas"
+
                                                         ? 3
+
                                                         : 2.5,
 
                                                 color:
                                                     "#111",
 
                                                 fillOpacity:
-                                                    0.9
+                                                    0.90
 
                                             });
 
 
                                             if (
+
                                                 !L.Browser.ie &&
+
                                                 !L.Browser.opera &&
+
                                                 !L.Browser.edge
+
                                             ) {
 
                                                 event.target.bringToFront();
@@ -2479,6 +2715,11 @@
                 );
 
 
+            /*
+             * IMPORTANTE:
+             * A camada GeoJSON é adicionada ao FeatureGroup.
+             */
+
             camada.addTo(
                 grupo
             );
@@ -2486,16 +2727,21 @@
 
             console.log(
 
-                `✓ Camada ${tipo} criada com`,
+                `✓ Camada ${tipo} criada.`
 
-                camada.getLayers().length,
+            );
 
-                "features"
+
+            console.log(
+
+                `✓ Features na camada:`,
+                camada.getLayers().length
 
             );
 
 
             return camada;
+
         }
 
 
@@ -2546,16 +2792,37 @@
         async function carregarBiomas() {
 
             console.log("");
+
             console.log(
                 "######################################"
             );
 
             console.log(
-                "INICIANDO CARREGAMENTO DOS BIOMAS"
+                "INICIANDO CARREGAMENTO DOS 5 BLOCOS DE BIOMAS"
             );
 
             console.log(
                 "######################################"
+            );
+
+
+            console.log(
+                "Arquivos previstos:"
+            );
+
+
+            arquivosBiomas.forEach(
+
+                function(arquivo, indice) {
+
+                    console.log(
+
+                        `${indice + 1}. ${arquivo}`
+
+                    );
+
+                }
+
             );
 
 
@@ -2573,6 +2840,20 @@
                 "Features de biomas recebidas:",
                 dados.features.length
             );
+
+
+            if (
+                dados.erros &&
+                dados.erros.length > 0
+            ) {
+
+                console.warn(
+
+                    `Foram carregados ${arquivosBiomas.length - dados.erros.length} de ${arquivosBiomas.length} arquivos de biomas.`
+
+                );
+
+            }
 
 
             criarCamadaGeoJSON(
@@ -2606,8 +2887,6 @@
 
         /* ======================================================
            AJUSTAR MAPA PARA CAMADA
-
-           FeatureGroup.getBounds() funciona corretamente.
         ====================================================== */
 
         function ajustarMapaParaCamada(
@@ -2646,7 +2925,14 @@
                     grupo.getBounds();
 
 
+                console.log(
+                    "Bounds:",
+                    bounds
+                );
+
+
                 if (
+                    bounds &&
                     bounds.isValid()
                 ) {
 
@@ -2663,7 +2949,10 @@
                                 [30, 80],
 
                             maxZoom:
-                                6
+                                6,
+
+                            animate:
+                                true
 
                         }
 
@@ -2699,9 +2988,6 @@
 
         /* ======================================================
            SELECIONAR CAMADA
-
-           AQUI ESTÁ O AJUSTE PRINCIPAL PARA A TROCA
-           ENTRE ESTADOS E BIOMAS.
         ====================================================== */
 
         function selecionarCamada(
@@ -2709,6 +2995,7 @@
         ) {
 
             console.log("");
+
             console.log(
                 "======================================"
             );
@@ -2723,9 +3010,10 @@
                 tipo;
 
 
-            /* ==========================================
-               REMOVE AS DUAS CAMADAS
-            ========================================== */
+            /*
+             * Remove as duas camadas antes
+             * de adicionar a escolhida.
+             */
 
             if (
                 mapa.hasLayer(
@@ -2808,8 +3096,20 @@
                             : "States";
 
 
-                ajustarMapaParaCamada(
-                    grupoEstados
+                setTimeout(
+
+                    function() {
+
+                        mapa.invalidateSize();
+
+                        ajustarMapaParaCamada(
+                            grupoEstados
+                        );
+
+                    },
+
+                    100
+
                 );
 
             }
@@ -2828,17 +3128,21 @@
                 );
 
 
+                const quantidade =
+                    grupoBiomas.getLayers().length;
+
+
                 console.log(
 
                     "Número de camadas de biomas:",
 
-                    grupoBiomas.getLayers().length
+                    quantidade
 
                 );
 
 
                 if (
-                    grupoBiomas.getLayers().length === 0
+                    quantidade === 0
                 ) {
 
                     console.error(
@@ -2848,7 +3152,9 @@
 
                     alert(
 
-                        "Os arquivos de biomas não possuem features carregadas."
+                        "Os arquivos de biomas não foram carregados.\n\n" +
+
+                        "Abra F12 → Console para verificar qual arquivo apresentou erro."
 
                     );
 
@@ -2900,8 +3206,20 @@
                             : "Biomes";
 
 
-                ajustarMapaParaCamada(
-                    grupoBiomas
+                setTimeout(
+
+                    function() {
+
+                        mapa.invalidateSize();
+
+                        ajustarMapaParaCamada(
+                            grupoBiomas
+                        );
+
+                    },
+
+                    100
+
                 );
 
             }
@@ -3122,7 +3440,8 @@
         function atualizarEstilosCamadas() {
 
             function atualizarGrupo(
-                grupo
+                grupo,
+                tipo
             ) {
 
                 grupo.eachLayer(
@@ -3151,7 +3470,9 @@
 
                                             estiloPorRanking(
 
-                                                subLayer.feature
+                                                subLayer.feature,
+
+                                                tipo
 
                                             )
 
@@ -3173,12 +3494,14 @@
 
 
             atualizarGrupo(
-                grupoEstados
+                grupoEstados,
+                "estados"
             );
 
 
             atualizarGrupo(
-                grupoBiomas
+                grupoBiomas,
+                "biomas"
             );
 
         }
@@ -3778,6 +4101,7 @@
         async function inicializar() {
 
             console.log("");
+
             console.log(
                 "=========================================="
             );
@@ -3791,142 +4115,212 @@
             );
 
 
+            /*
+             * IMPORTANTE:
+             * Estados e biomas são carregados separadamente.
+             *
+             * Assim, se um dos blocos de biomas tiver problema,
+             * os estados continuam funcionando.
+             */
+
+            let erroEstados =
+                null;
+
+            let erroBiomas =
+                null;
+
+
+            /* ==========================================
+               ESTADOS
+            ========================================== */
+
+            console.log(
+                "1/4 - Carregando Estados..."
+            );
+
+
             try {
 
-                /* ==========================================
-                   ESTADOS
-                ========================================== */
-
-                console.log(
-                    "1/4 - Carregando Estados..."
-                );
-
-
                 await carregarEstados();
-
 
                 console.log(
                     "✓ Estados:",
                     grupoEstados.getLayers().length
                 );
 
+            }
 
-                /* ==========================================
-                   BIOMAS
-                ========================================== */
+            catch (erro) {
 
-                console.log(
-                    "2/4 - Carregando Biomas..."
+                erroEstados =
+                    erro;
+
+                console.error(
+                    "Erro nos Estados:",
+                    erro
                 );
 
+            }
+
+
+            /* ==========================================
+               BIOMAS
+            ========================================== */
+
+            console.log(
+                "2/4 - Carregando os 5 blocos de Biomas..."
+            );
+
+
+            try {
 
                 await carregarBiomas();
-
 
                 console.log(
                     "✓ Biomas:",
                     grupoBiomas.getLayers().length
                 );
 
+            }
 
-                /* ==========================================
-                   LEGENDA
-                ========================================== */
+            catch (erro) {
 
-                console.log(
-                    "3/4 - Criando legenda..."
+                erroBiomas =
+                    erro;
+
+                console.error(
+                    "Erro nos Biomas:",
+                    erro
                 );
 
+            }
 
-                criarLegenda();
+
+            /* ==========================================
+               LEGENDA
+            ========================================== */
+
+            console.log(
+                "3/4 - Criando legenda..."
+            );
 
 
-                /* ==========================================
-                   CAMADA INICIAL
-                ========================================== */
+            criarLegenda();
 
-                console.log(
-                    "4/4 - Ativando Estados..."
-                );
 
+            /* ==========================================
+               CAMADA INICIAL
+            ========================================== */
+
+            console.log(
+                "4/4 - Ativando Estados..."
+            );
+
+
+            if (
+                grupoEstados.getLayers().length > 0
+            ) {
 
                 selecionarCamada(
                     "estados"
                 );
 
+            }
 
-                /* ==========================================
-                   IDIOMA
-                ========================================== */
+            else if (
+                grupoBiomas.getLayers().length > 0
+            ) {
 
-                mudarIdioma(
-                    "pt"
+                selecionarCamada(
+                    "biomas"
                 );
-
-
-                /* ==========================================
-                   TEMA
-                ========================================== */
-
-                atualizarIconeTema();
-
-
-                console.log("");
-                console.log(
-                    "=========================================="
-                );
-
-                console.log(
-                    "✓ DASHBOARD INICIALIZADO"
-                );
-
-                console.log(
-                    "Estados:",
-                    grupoEstados.getLayers().length
-                );
-
-                console.log(
-                    "Biomas:",
-                    grupoBiomas.getLayers().length
-                );
-
-                console.log(
-                    "=========================================="
-                );
-
 
             }
 
 
-            catch (erro) {
+            /* ==========================================
+               IDIOMA
+            ========================================== */
 
-                console.error("");
-                console.error(
-                    "=========================================="
+            mudarIdioma(
+                "pt"
+            );
+
+
+            /* ==========================================
+               TEMA
+            ========================================== */
+
+            atualizarIconeTema();
+
+
+            /* ==========================================
+               RESUMO
+            ========================================== */
+
+            console.log("");
+
+            console.log(
+                "=========================================="
+            );
+
+            console.log(
+                "RESULTADO DO CARREGAMENTO"
+            );
+
+            console.log(
+                "=========================================="
+            );
+
+            console.log(
+                "Estados:",
+                grupoEstados.getLayers().length
+            );
+
+            console.log(
+                "Biomas:",
+                grupoBiomas.getLayers().length
+            );
+
+
+            if (
+                erroBiomas
+            ) {
+
+                console.warn(
+                    "ATENÇÃO: houve erro no carregamento dos biomas."
                 );
 
-                console.error(
-                    "ERRO FATAL"
+                console.warn(
+                    erroBiomas
                 );
 
-                console.error(
-                    erro
-                );
+            }
 
-                console.error(
-                    "=========================================="
-                );
 
+            console.log(
+                "=========================================="
+            );
+
+
+            /*
+             * Mostra alerta somente se nenhum grupo
+             * conseguiu carregar.
+             */
+
+            if (
+
+                grupoEstados.getLayers().length === 0 &&
+
+                grupoBiomas.getLayers().length === 0
+
+            ) {
 
                 alert(
 
-                    "Erro ao carregar os dados geográficos.\n\n" +
+                    "Não foi possível carregar os dados geográficos.\n\n" +
 
-                    erro.message +
-
-                    "\n\n" +
-
-                    "Verifique se os nomes dos arquivos GeoJSON estão exatamente iguais aos nomes configurados no código."
+                    "Abra o Console do navegador (F12) para verificar os arquivos."
 
                 );
 
