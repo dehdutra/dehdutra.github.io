@@ -1,247 +1,163 @@
-<!-- fogo_foco.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-<h2>Teste do mapa</h2>
+<head>
 
-<p>
-  Teste de carregamento dos polígonos dos estados.
-</p>
+  <meta charset="UTF-8">
 
-<div style="
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
-">
+  <title>Teste - Estados</title>
 
-  <h3>Estados 2024</h3>
+  <!-- Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 
-  <div
-    id="mapa"
-    style="
-      width:100%;
-      height:600px;
-      border-radius:8px;
-    "
-  ></div>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
 
+</head>
+
+<body>
+
+<h2>Teste dos Estados</h2>
+
+<div
+  id="mapa"
+  style="
+    width:100%;
+    height:600px;
+  ">
 </div>
-
-
-<!-- ============================================================
-     LEAFLET
-     ============================================================ -->
-
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
 
 
 <script>
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+// ============================================================
+// 1. CRIAR MAPA
+// ============================================================
 
-    console.log("INICIANDO MAPA");
-
-
-    /* ========================================================
-       1. CRIAR MAPA
-       ======================================================== */
-
-    const mapa =
-      L.map("mapa").setView(
-        [-14.2, -51.9],
-        4
-      );
+const mapa = L.map("mapa").setView(
+  [-14.2, -51.9],
+  4
+);
 
 
-    /* ========================================================
-       2. MAPA BASE
-       ======================================================== */
+// ============================================================
+// 2. MAPA BASE
+// ============================================================
 
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        attribution:
-          "&copy; OpenStreetMap contributors"
-      }
-    ).addTo(mapa);
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    attribution:
+      "&copy; OpenStreetMap contributors"
+  }
+).addTo(mapa);
 
 
-    /* ========================================================
-       3. ARQUIVO
-       ======================================================== */
+// ============================================================
+// 3. CARREGAR GEOJSON
+// ============================================================
 
-    const arquivo =
-      "dashboard_data/estados_2024_01.geojson";
+fetch("estados_2024_01.geojson")
 
+  .then(response => {
 
     console.log(
-      "Tentando carregar:",
-      arquivo
+      "Status do arquivo:",
+      response.status
+    );
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Erro HTTP " + response.status
+      );
+
+    }
+
+    return response.json();
+
+  })
+
+  .then(data => {
+
+    console.log(
+      "GeoJSON carregado:",
+      data
+    );
+
+    console.log(
+      "Número de feições:",
+      data.features.length
     );
 
 
-    /* ========================================================
-       4. CARREGAR GEOJSON
-       ======================================================== */
+    // ========================================================
+    // 4. CRIAR POLÍGONOS
+    // ========================================================
 
-    fetch(arquivo)
+    const camada = L.geoJSON(
+      data,
+      {
 
-      .then(
-        function (resposta) {
+        style: {
 
-          console.log(
-            "Resposta HTTP:",
-            resposta.status
-          );
+          color: "#000000",
 
+          weight: 2,
 
-          if (!resposta.ok) {
+          fillColor: "#ff0000",
 
-            throw new Error(
-              "Erro HTTP " +
-              resposta.status
-            );
-
-          }
-
-
-          return resposta.json();
+          fillOpacity: 0.6
 
         }
-      )
 
-      .then(
-        function (dados) {
-
-          console.log(
-            "GeoJSON carregado:"
-          );
-
-          console.log(dados);
+      }
+    );
 
 
-          console.log(
-            "Número de feições:",
-            dados.features.length
-          );
+    // ========================================================
+    // 5. ADICIONAR AO MAPA
+    // ========================================================
+
+    camada.addTo(mapa);
 
 
-          /* ==================================================
-             5. ADICIONAR POLÍGONOS
-             ================================================== */
+    // ========================================================
+    // 6. AJUSTAR ZOOM
+    // ========================================================
 
-          const camada =
-            L.geoJSON(
-              dados,
-              {
+    if (
+      camada.getBounds().isValid()
+    ) {
 
-                style:
-                  function () {
-
-                    return {
-
-                      color: "#000000",
-
-                      weight: 2,
-
-                      fillColor: "#ff0000",
-
-                      fillOpacity: 0.6
-
-                    };
-
-                  }
-
-              }
-            );
-
-
-          camada.addTo(mapa);
-
-
-          /* ==================================================
-             6. AJUSTAR EXTENSÃO
-             ================================================== */
-
-          const limites =
-            camada.getBounds();
-
-
-          console.log(
-            "Limites:",
-            limites
-          );
-
-
-          if (
-            limites.isValid()
-          ) {
-
-            mapa.fitBounds(
-              limites
-            );
-
-          }
-
-
-          console.log(
-            "POLÍGONOS ADICIONADOS!"
-          );
-
-        }
-      )
-
-      .catch(
-        function (erro) {
-
-          console.error(
-            "ERRO AO CARREGAR GEOJSON:",
-            erro
-          );
-
-
-          const mensagem =
-            document.createElement(
-              "div"
-            );
-
-
-          mensagem.style.cssText = `
-            background:#f8d7da;
-            color:#721c24;
-            padding:15px;
-            margin-top:15px;
-            border-radius:8px;
-            font-family:Arial;
-          `;
-
-
-          mensagem.innerHTML = `
-            <strong>Erro ao carregar o GeoJSON</strong><br><br>
-            ${erro.message}
-            <br><br>
-            Verifique o console do navegador.
-          `;
-
-
-          document
-            .getElementById("mapa")
-            .parentNode
-            .appendChild(mensagem);
-
-        }
+      mapa.fitBounds(
+        camada.getBounds()
       );
 
-  }
+    }
 
-);
+
+    console.log(
+      "POLÍGONOS CARREGADOS!"
+    );
+
+  })
+
+  .catch(error => {
+
+    console.error(
+      "ERRO AO CARREGAR GEOJSON:",
+      error
+    );
+
+  });
 
 </script>
+
+</body>
+
+</html>
