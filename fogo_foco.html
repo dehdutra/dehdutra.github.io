@@ -54,6 +54,63 @@
 
     }
 
+
+    /* ===================================================== */
+    /* LEGENDA */
+    /* ===================================================== */
+
+    .legenda-ranking {
+
+      background: white;
+
+      padding: 12px;
+
+      border-radius: 8px;
+
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.25);
+
+      line-height: 18px;
+
+      font-size: 12px;
+
+    }
+
+
+    .legenda-ranking h4 {
+
+      margin:
+
+        0 0 8px 0;
+
+      font-size: 14px;
+
+    }
+
+
+    .item-legenda {
+
+      display: flex;
+
+      align-items: center;
+
+      margin: 3px 0;
+
+    }
+
+
+    .cor-legenda {
+
+      width: 22px;
+
+      height: 14px;
+
+      margin-right: 7px;
+
+      border: 1px solid #777;
+
+    }
+
   </style>
 
 </head>
@@ -177,7 +234,7 @@ const arquivosUC = [
 
 
 // ============================================================
-// 7. FUNÇÃO PARA CARREGAR OS ARQUIVOS
+// 7. FUNÇÃO PARA CARREGAR VÁRIOS ARQUIVOS
 // ============================================================
 
 async function carregarArquivos(
@@ -188,22 +245,18 @@ async function carregarArquivos(
 
 ) {
 
-
   console.log(
     "======================================"
   );
 
-
   console.log(
-
     "Carregando:",
     nomeCamada
-
   );
 
 
   // ----------------------------------------------------------
-  // CARREGAR TODOS OS ARQUIVOS
+  // CARREGAR ARQUIVOS
   // ----------------------------------------------------------
 
   const resultados = await Promise.all(
@@ -255,7 +308,7 @@ async function carregarArquivos(
 
 
   // ----------------------------------------------------------
-  // JUNTAR TODAS AS FEATURES
+  // JUNTAR FEATURES
   // ----------------------------------------------------------
 
   let features = [];
@@ -280,7 +333,6 @@ async function carregarArquivos(
 
       ) {
 
-
         features =
 
           features.concat(
@@ -297,7 +349,7 @@ async function carregarArquivos(
 
 
   // ----------------------------------------------------------
-  // CRIAR FEATURE COLLECTION FINAL
+  // FEATURE COLLECTION FINAL
   // ----------------------------------------------------------
 
   const resultadoFinal = {
@@ -308,10 +360,6 @@ async function carregarArquivos(
 
   };
 
-
-  // ----------------------------------------------------------
-  // CONTAGEM
-  // ----------------------------------------------------------
 
   console.log(
 
@@ -326,90 +374,203 @@ async function carregarArquivos(
   );
 
 
-  console.log(
-
-    "Arquivos utilizados:",
-
-    listaArquivos.length
-
-  );
-
-
   return resultadoFinal;
 
 }
 
 
 // ============================================================
-// 8. ESTILO DOS ESTADOS
+// 8. ESCALA DE CORES DO RANKING
 // ============================================================
 
-const estiloEstados = {
+function corRanking(rank) {
 
-  color: "#000000",
 
-  weight: 1.5,
+  // ----------------------------------------------------------
+  // Converter para número
+  // ----------------------------------------------------------
 
-  fillColor: "#e74c3c",
+  const r = Number(rank);
 
-  fillOpacity: 0.25
 
-};
+  // ----------------------------------------------------------
+  // Sem ranking
+  // ----------------------------------------------------------
+
+  if (
+
+    !Number.isFinite(r)
+
+  ) {
+
+    return "#ffffff";
+
+  }
+
+
+  // ==========================================================
+  // 1º A 5º
+  // VERMELHO → AMARELO
+  // ==========================================================
+
+  if (r === 1) {
+
+    return "#7f0000";
+
+  }
+
+
+  if (r === 2) {
+
+    return "#b30000";
+
+  }
+
+
+  if (r === 3) {
+
+    return "#d7301f";
+
+  }
+
+
+  if (r === 4) {
+
+    return "#ef6548";
+
+  }
+
+
+  if (r === 5) {
+
+    return "#fdae61";
+
+  }
+
+
+  // ==========================================================
+  // 6º A 18º
+  // CINZA
+  // ==========================================================
+
+  if (
+
+    r >= 6 &&
+
+    r <= 18
+
+  ) {
+
+    return "#bdbdbd";
+
+  }
+
+
+  // ==========================================================
+  // 19º A 24º
+  // AZUL CLARO → AZUL ESCURO
+  // ==========================================================
+
+  if (r === 19) {
+
+    return "#c6dbef";
+
+  }
+
+
+  if (r === 20) {
+
+    return "#9ecae1";
+
+  }
+
+
+  if (r === 21) {
+
+    return "#6baed6";
+
+  }
+
+
+  if (r === 22) {
+
+    return "#4292c6";
+
+  }
+
+
+  if (r === 23) {
+
+    return "#2171b5";
+
+  }
+
+
+  if (r === 24) {
+
+    return "#084594";
+
+  }
+
+
+  // ----------------------------------------------------------
+  // Caso exista ranking fora da faixa
+  // ----------------------------------------------------------
+
+  return "#ffffff";
+
+}
 
 
 // ============================================================
-// 9. ESTILO DOS BIOMAS
+// 9. ESTILO BASE DAS FEATURES
 // ============================================================
 
-const estiloBiomas = {
+function estiloPorRanking(
 
-  color: "#008000",
+  feature
 
-  weight: 2,
-
-  fillColor: "#2ecc71",
-
-  fillOpacity: 0.20
-
-};
+) {
 
 
-// ============================================================
-// 10. ESTILO DAS TERRAS INDÍGENAS
-// ============================================================
+  // ----------------------------------------------------------
+  // Pegar ranking
+  // ----------------------------------------------------------
 
-const estiloTI = {
+  const propriedades =
 
-  color: "#8e44ad",
-
-  weight: 1.5,
-
-  fillColor: "#9b59b6",
-
-  fillOpacity: 0.20
-
-};
+    feature.properties || {};
 
 
-// ============================================================
-// 11. ESTILO DAS UNIDADES DE CONSERVAÇÃO
-// ============================================================
+  const rank =
 
-const estiloUC = {
+    propriedades[
+      "Burned Area Rank"
+    ];
 
-  color: "#2980b9",
 
-  weight: 1.5,
+  const cor =
 
-  fillColor: "#3498db",
+    corRanking(rank);
 
-  fillOpacity: 0.20
 
-};
+  return {
+
+    color: "#555555",
+
+    weight: 1,
+
+    fillColor: cor,
+
+    fillOpacity: 0.70
+
+  };
+
+}
 
 
 // ============================================================
-// 12. GRUPOS DAS CAMADAS
+// 10. GRUPOS DAS CAMADAS
 // ============================================================
 
 const grupoEstados =
@@ -433,7 +594,7 @@ const grupoUC =
 
 
 // ============================================================
-// 13. VARIÁVEIS PARA GUARDAR OS GEOJSON
+// 11. DADOS CARREGADOS
 // ============================================================
 
 let dadosEstados = null;
@@ -446,7 +607,110 @@ let dadosUC = null;
 
 
 // ============================================================
-// 14. CARREGAR ESTADOS
+// 12. FUNÇÃO PARA MOSTRAR POPUP
+// ============================================================
+
+function popupRanking(
+
+  feature,
+
+  layer
+
+) {
+
+
+  const p =
+
+    feature.properties || {};
+
+
+  const rank =
+
+    p["Burned Area Rank"];
+
+
+  const area =
+
+    p["Burned Area (km^2)"];
+
+
+  const nome =
+
+    p["Region Name"] ||
+
+    p["region_nam"] ||
+
+    p["NAME_1"] ||
+
+    p["NM_ESTADO"] ||
+
+    "Região";
+
+
+  let texto =
+
+    "<strong>" +
+
+    nome +
+
+    "</strong><br><br>";
+
+
+  if (
+
+    rank !== undefined &&
+
+    rank !== null
+
+  ) {
+
+    texto +=
+
+      "<strong>Ranking:</strong> " +
+
+      rank +
+
+      "º<br>";
+
+  }
+
+
+  if (
+
+    area !== undefined &&
+
+    area !== null
+
+  ) {
+
+    texto +=
+
+      "<strong>Área queimada:</strong> " +
+
+      Number(area).toLocaleString(
+
+        "pt-BR",
+
+        {
+
+          maximumFractionDigits: 2
+
+        }
+
+      ) +
+
+      " km²";
+
+  }
+
+
+  layer.bindPopup(texto);
+
+}
+
+
+// ============================================================
+// 13. CARREGAR ESTADOS
 // ============================================================
 
 carregarArquivos(
@@ -473,7 +737,12 @@ carregarArquivos(
 
         style:
 
-          estiloEstados
+          estiloPorRanking,
+
+
+        onEachFeature:
+
+          popupRanking
 
       }
 
@@ -489,7 +758,7 @@ carregarArquivos(
 
   console.log(
 
-    "Estados adicionados ao mapa."
+    "Estados adicionados."
 
   );
 
@@ -510,7 +779,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 15. CARREGAR BIOMAS
+// 14. CARREGAR BIOMAS
 // ============================================================
 
 carregarArquivos(
@@ -537,7 +806,12 @@ carregarArquivos(
 
         style:
 
-          estiloBiomas
+          estiloPorRanking,
+
+
+        onEachFeature:
+
+          popupRanking
 
       }
 
@@ -553,7 +827,7 @@ carregarArquivos(
 
   console.log(
 
-    "Biomas adicionados ao mapa."
+    "Biomas adicionados."
 
   );
 
@@ -574,7 +848,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 16. CARREGAR TERRAS INDÍGENAS
+// 15. CARREGAR TERRAS INDÍGENAS
 // ============================================================
 
 carregarArquivos(
@@ -601,7 +875,12 @@ carregarArquivos(
 
         style:
 
-          estiloTI
+          estiloPorRanking,
+
+
+        onEachFeature:
+
+          popupRanking
 
       }
 
@@ -617,7 +896,7 @@ carregarArquivos(
 
   console.log(
 
-    "Terras Indígenas adicionadas ao mapa."
+    "Terras Indígenas adicionadas."
 
   );
 
@@ -638,7 +917,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 17. CARREGAR UNIDADES DE CONSERVAÇÃO
+// 16. CARREGAR UNIDADES DE CONSERVAÇÃO
 // ============================================================
 
 carregarArquivos(
@@ -665,7 +944,12 @@ carregarArquivos(
 
         style:
 
-          estiloUC
+          estiloPorRanking,
+
+
+        onEachFeature:
+
+          popupRanking
 
       }
 
@@ -681,7 +965,7 @@ carregarArquivos(
 
   console.log(
 
-    "Unidades de Conservação adicionadas ao mapa."
+    "Unidades de Conservação adicionadas."
 
   );
 
@@ -702,7 +986,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 18. CONTROLE DE CAMADAS
+// 17. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas = {
@@ -731,7 +1015,7 @@ const controleCamadas = {
 
 
 // ============================================================
-// 19. ADICIONAR CONTROLE AO MAPA
+// 18. ADICIONAR CONTROLE
 // ============================================================
 
 L.control.layers(
@@ -750,7 +1034,247 @@ L.control.layers(
 
 
 // ============================================================
-// 20. MENSAGEM INICIAL
+// 19. LEGENDA
+// ============================================================
+
+const legenda =
+
+  L.control({
+
+    position: "bottomright"
+
+  });
+
+
+legenda.onAdd =
+
+  function() {
+
+
+    const div =
+
+      L.DomUtil.create(
+
+        "div",
+
+        "legenda-ranking"
+
+      );
+
+
+    div.innerHTML =
+
+      "<h4>Ranking de área queimada</h4>";
+
+
+    // --------------------------------------------------------
+    // 1º
+    // --------------------------------------------------------
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#7f0000",
+
+        "1º"
+
+      );
+
+
+    // --------------------------------------------------------
+    // 2º
+    // --------------------------------------------------------
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#b30000",
+
+        "2º"
+
+      );
+
+
+    // --------------------------------------------------------
+    // 3º
+    // --------------------------------------------------------
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#d7301f",
+
+        "3º"
+
+      );
+
+
+    // --------------------------------------------------------
+    // 4º
+    // --------------------------------------------------------
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#ef6548",
+
+        "4º"
+
+      );
+
+
+    // --------------------------------------------------------
+    // 5º
+    // --------------------------------------------------------
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#fdae61",
+
+        "5º"
+
+      );
+
+
+    // --------------------------------------------------------
+    // CINZA
+    // --------------------------------------------------------
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#bdbdbd",
+
+        "6º–18º"
+
+      );
+
+
+    // --------------------------------------------------------
+    // AZUIS
+    // --------------------------------------------------------
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#c6dbef",
+
+        "19º"
+
+      );
+
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#9ecae1",
+
+        "20º"
+
+      );
+
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#6baed6",
+
+        "21º"
+
+      );
+
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#4292c6",
+
+        "22º"
+
+      );
+
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#2171b5",
+
+        "23º"
+
+      );
+
+
+    div.innerHTML +=
+
+      itemLegenda(
+
+        "#084594",
+
+        "24º"
+
+      );
+
+
+    return div;
+
+  };
+
+
+// ============================================================
+// 20. FUNÇÃO DA LEGENDA
+// ============================================================
+
+function itemLegenda(
+
+  cor,
+
+  texto
+
+) {
+
+
+  return `
+
+    <div class="item-legenda">
+
+      <span
+
+        class="cor-legenda"
+
+        style="background:${cor};">
+
+      </span>
+
+      <span>${texto}</span>
+
+    </div>
+
+  `;
+
+}
+
+
+// ============================================================
+// 21. ADICIONAR LEGENDA AO MAPA
+// ============================================================
+
+legenda.addTo(mapa);
+
+
+// ============================================================
+// 22. MENSAGEM NO CONSOLE
 // ============================================================
 
 console.log(
@@ -769,7 +1293,14 @@ console.log(
 
 console.log(
 
-  "Carregando Regional Layers..."
+  "Escala de ranking ativada."
+
+);
+
+
+console.log(
+
+  "Todas as Regional Layers usam a mesma escala."
 
 );
 
