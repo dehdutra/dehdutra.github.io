@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title> Ranqueamento de Área Queimada no Brasil</title>
+    <title>Ranqueamento de Área Queimada no Brasil</title>
 
 
     <!-- ==========================================================
@@ -177,7 +177,7 @@
 
             color: white;
 
-            font-size: 22px;
+            font-size: 20px;
 
             box-shadow:
                 0 5px 14px
@@ -704,7 +704,7 @@
 
             color: white;
 
-            font-size: 25px;
+            font-size: 22px;
 
         }
 
@@ -1014,7 +1014,7 @@
             background:
                 #fef3f2;
 
-            font-size: 20px;
+            font-size: 19px;
 
         }
 
@@ -1438,7 +1438,7 @@
                 width: 36px;
                 height: 36px;
 
-                font-size: 19px;
+                font-size: 17px;
 
             }
 
@@ -1633,11 +1633,11 @@
     <div id="loading-card">
 
         <div id="loading-logo">
-            🔥
+            📊
         </div>
 
         <div id="loading-titulo">
-            Fogo em Foco
+            Ranqueamento de Área Queimada
         </div>
 
         <div id="loading-texto">
@@ -1668,18 +1668,17 @@
     <div id="marca">
 
         <div id="icone-fogo">
-            🔥
+            📊
         </div>
 
         <div id="titulo-area">
 
             <h1 id="titulo">
-                Fogo em Foco
+                Ranqueamento de Área Queimada no Brasil
             </h1>
 
             <div id="subtitulo">
-                Diagnóstico dos incêndios e da área queimada no Brasil
-                | 2024–2025
+                Distribuição e classificação da área queimada por estados e biomas | 2024–2025
             </div>
 
         </div>
@@ -1728,11 +1727,11 @@
     <div id="painel-topo">
 
         <h2 id="painel-titulo">
-            Informações gerais
+            Área queimada no Brasil
         </h2>
 
         <p id="painel-descricao">
-            Área queimada no Brasil com visualização
+            Distribuição espacial e ranqueamento da área queimada
             por estados e biomas.
         </p>
 
@@ -1823,7 +1822,7 @@
 <div id="legenda">
 
     <div id="legenda-header">
-        Área queimada
+        Ranking da área queimada
     </div>
 
     <div id="legenda-corpo">
@@ -1996,6 +1995,23 @@
             <p>
 
                 <strong>
+                    Produto
+                </strong>
+
+            </p>
+
+            <p>
+
+                Ranqueamento e espacialização da área queimada
+                no Brasil, com organização dos resultados por
+                estados e biomas.
+
+            </p>
+
+
+            <p>
+
+                <strong>
                     Referência
                 </strong>
 
@@ -2051,7 +2067,7 @@
                 <div>
 
                     <h2>
-                        Ranking de área queimada
+                        Ranqueamento de área queimada
                     </h2>
 
                     <div id="ranking-subtitulo">
@@ -2143,7 +2159,7 @@
                 <div class="ranking-resumo-card">
 
                     <div class="ranking-resumo-label">
-                        Unidades
+                        Unidades ranqueadas
                     </div>
 
                     <div
@@ -2405,7 +2421,9 @@ function normalizarTexto(texto) {
 
         .toUpperCase()
 
-        .trim();
+        .trim()
+
+        .replace(/\s+/g, " ");
 
 }
 
@@ -2480,9 +2498,6 @@ const ESTADOS_BRASIL = {
 const NOME_ESTADO_PARA_SIGLA = {};
 
 
-// Criar automaticamente correspondência
-// entre nome completo e sigla.
-
 Object.entries(
     ESTADOS_BRASIL
 ).forEach(
@@ -2513,7 +2528,7 @@ function obterSiglaEstado(feature) {
 
 
     // --------------------------------------------------------
-    // Primeiro procura campos específicos de UF
+    // Campos específicos de UF
     // --------------------------------------------------------
 
     const candidatosUF = [
@@ -2568,7 +2583,7 @@ function obterSiglaEstado(feature) {
 
 
     // --------------------------------------------------------
-    // Depois procura pelo nome
+    // Campos com nome do estado
     // --------------------------------------------------------
 
     const candidatosNome = [
@@ -3139,7 +3154,7 @@ function mostrarPopup(
             ">
                 ${
                     tipo === "estados"
-                        ? "Estado"
+                        ? "Estado brasileiro"
                         : "Bioma"
                 }
             </div>
@@ -3457,6 +3472,7 @@ async function carregarTodosDados() {
 
                 }
 
+
                 catch (erro) {
 
                     console.error(
@@ -3730,10 +3746,10 @@ function construirRankings(resultados) {
                     feature => {
 
                         /*
-                         * FILTRO PRINCIPAL:
+                         * FILTRO:
                          *
-                         * Só entra no ranking se a feição
-                         * corresponder a uma das 27 UFs
+                         * Só entram no ranking as
+                         * 27 unidades federativas
                          * oficiais do Brasil.
                          */
 
@@ -3779,18 +3795,6 @@ function construirRankings(resultados) {
 
                         }
 
-
-                        /*
-                         * A chave é a SIGLA.
-                         *
-                         * Isso impede que:
-                         *
-                         * "Pará"
-                         * "PARÁ"
-                         * "PA"
-                         *
-                         * sejam tratados como três estados.
-                         */
 
                         const chave =
                             sigla;
@@ -3986,31 +3990,13 @@ function construirRankings(resultados) {
 
 
     console.log(
-        "=========================================="
-    );
-
-    console.log(
-        "RANKING DE ESTADOS DO BRASIL"
-    );
-
-    console.log(
-        "Quantidade:",
-        dadosRankingEstados.length
-    );
-
-    console.table(
+        "Ranking de área queimada - Estados:",
         dadosRankingEstados
     );
 
-    console.log(
-        "=========================================="
-    );
 
     console.log(
-        "RANKING DE BIOMAS"
-    );
-
-    console.table(
+        "Ranking de área queimada - Biomas:",
         dadosRankingBiomas
     );
 
@@ -4160,10 +4146,12 @@ function mostrarRanking(tipo) {
         vazio.style.display =
             "block";
 
+
         atualizarResumo(
             [],
             tipo
         );
+
 
         return;
 
@@ -4412,7 +4400,7 @@ async function inicializar() {
 
         96,
 
-        "Organizando camadas..."
+        "Organizando classificação da área queimada..."
 
     );
 
@@ -4480,7 +4468,7 @@ async function inicializar() {
 
         100,
 
-        "Dashboard pronto."
+        "Dashboard de área queimada pronto."
 
     );
 
