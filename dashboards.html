@@ -3,71 +3,192 @@
   <h2>Dashboards Científicos</h2>
 
   <p class="descricao">
-   Plataformas analíticas interativas desenvolvidas para explorar déficit hídrico no Brasil.
+    Plataformas analíticas interativas desenvolvidas para explorar
+    informações ambientais e processos relacionados às mudanças
+    ambientais no Brasil.
   </p>
+
 
   <div class="botoes-dashboard">
 
-    <a class="dashboard-btn fogo"
-       href="mcwd.html">
-       💧 Dashboard MCWD
+
+    <!-- =====================================================
+         DASHBOARD MCWD
+    ====================================================== -->
+
+    <a
+      class="dashboard-btn mcwd"
+      href="mcwd.html"
+    >
+      💧 Dashboard MCWD
     </a>
+
+
+    <!-- =====================================================
+         DASHBOARD FOGO E FOCOS
+    ====================================================== -->
+
+    <a
+      class="dashboard-btn fogo"
+      href="fogo_foco.html"
+    >
+      🔥 Dashboard Fogo e Focos
+    </a>
+
 
   </div>
 
+
   <p class="obs">
-    O dashboard será aberto em uma nova página.
+    Os dashboards serão abertos em uma nova página.
   </p>
 
 </section>
 
+
+
 <style>
+
+/* =========================================================
+   SEÇÃO
+========================================================= */
+
 #dashboards {
+
   padding: 40px 0;
+
 }
+
 
 #dashboards h2 {
+
   color: #2c3e50;
-  border-bottom: 2px solid #e67e22;
+
+  border-bottom: 2px solid #2980b9;
+
   padding-bottom: 6px;
+
   margin-bottom: 20px;
+
 }
+
 
 #dashboards .descricao {
+
   margin-bottom: 25px;
+
   font-size: 1.05em;
+
+  line-height: 1.6;
+
 }
+
+
+
+/* =========================================================
+   BOTÕES
+========================================================= */
 
 .botoes-dashboard {
+
   display: flex;
+
   gap: 20px;
+
   flex-wrap: wrap;
+
 }
+
 
 .dashboard-btn {
+
   display: inline-block;
+
   padding: 14px 26px;
+
   border-radius: 10px;
+
   text-decoration: none;
+
   font-weight: 600;
+
   transition: all 0.25s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.08);
+
   font-size: 1.05em;
+
 }
+
+
+
+/* =========================================================
+   MCWD
+========================================================= */
+
+.dashboard-btn.mcwd {
+
+  background:
+    linear-gradient(
+      135deg,
+      #3498db,
+      #21618c
+    );
+
+  color: white;
+
+}
+
+
+
+/* =========================================================
+   FOGO E FOCOS
+========================================================= */
 
 .dashboard-btn.fogo {
-  background: linear-gradient(135deg, #e67e22, #d35400);
+
+  background:
+    linear-gradient(
+      135deg,
+      #e67e22,
+      #d35400
+    );
+
   color: white;
+
 }
+
+
+
+/* =========================================================
+   HOVER
+========================================================= */
 
 .dashboard-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.15);
+
 }
 
+
+
+/* =========================================================
+   OBSERVAÇÃO
+========================================================= */
+
 .obs {
+
   margin-top: 20px;
+
   font-size: 0.9em;
+
   color: #666;
+
 }
+
 </style>
