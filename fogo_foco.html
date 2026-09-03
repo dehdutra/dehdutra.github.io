@@ -35,35 +35,26 @@
 
         :root {
 
-            --bg:
-                #f4f6f8;
+            --bg: #f4f6f8;
 
-            --panel:
-                rgba(255,255,255,0.97);
+            --panel: rgba(255,255,255,0.97);
 
-            --panel-solid:
-                #ffffff;
+            --panel-solid: #ffffff;
 
-            --text:
-                #1f2933;
+            --text: #1f2933;
 
-            --text-secondary:
-                #667085;
+            --text-secondary: #667085;
 
-            --border:
-                #e4e7ec;
+            --border: #e4e7ec;
 
-            --accent:
-                #b42318;
+            --accent: #b42318;
 
-            --accent-dark:
-                #7a271a;
+            --accent-dark: #7a271a;
 
             --shadow:
                 0 8px 30px rgba(16,24,40,0.12);
 
-            --radius:
-                12px;
+            --radius: 12px;
 
         }
 
@@ -315,7 +306,7 @@
 
 
         /* ======================================================
-           PAINEL INFORMAÇÕES
+           PAINEL DE INFORMAÇÕES
         ====================================================== */
 
         #painel-info {
@@ -326,7 +317,7 @@
 
             left: 22px;
 
-            width: 310px;
+            width: 325px;
 
             z-index: 1000;
 
@@ -431,6 +422,17 @@
 
             color:
                 #344054;
+
+        }
+
+
+        .info-source {
+
+            color:
+                #7f0000;
+
+            font-weight:
+                750;
 
         }
 
@@ -559,7 +561,7 @@
 
 
         /* ======================================================
-           MANAGE LAYERS
+           CONTROLE DE CAMADAS
         ====================================================== */
 
         .leaflet-control-layers {
@@ -1426,7 +1428,7 @@
 
 
         /* ======================================================
-           NOVO PAINEL DE INFORMAÇÕES DO POLÍGONO
+           PAINEL DO POLÍGONO
         ====================================================== */
 
         #painel-vetor {
@@ -1779,7 +1781,7 @@
 
                 left: 10px;
 
-                width: 260px;
+                width: 285px;
 
             }
 
@@ -1878,7 +1880,7 @@
                     calc(100% - 20px);
 
                 max-width:
-                    280px;
+                    290px;
 
             }
 
@@ -2033,7 +2035,11 @@
             </h1>
 
             <div id="subtitulo">
-                Distribuição e classificação da área queimada por estados e biomas | 2024–2025
+
+                State of Wildfire Brasil |
+                Distribuição e classificação da área queimada
+                por estados e biomas | 2024–2025
+
             </div>
 
         </div>
@@ -2043,14 +2049,10 @@
 
     <div id="acoes-header">
 
-        <!-- ==================================================
-             BOTÃO PRINCIPAL
-        =================================================== -->
-
         <button
             class="header-btn"
             onclick="abrirRanking()"
-            title="Visualizar o gráfico e o ranking da área queimada por estados e biomas"
+            title="Visualizar o gráfico e o ranking da área queimada"
         >
 
             <span>📊</span>
@@ -2089,7 +2091,7 @@
 
 
 <!-- ==========================================================
-     PAINEL DE INFORMAÇÕES
+     PAINEL PRINCIPAL DE INFORMAÇÕES
 =========================================================== -->
 
 <section id="painel-info">
@@ -2101,8 +2103,10 @@
         </h2>
 
         <p id="painel-descricao">
-            Distribuição espacial e ranqueamento da área queimada
-            por estados e biomas.
+
+            Distribuição espacial e ranqueamento da área
+            queimada por estados e biomas.
+
         </p>
 
     </div>
@@ -2110,10 +2114,32 @@
 
     <div id="painel-corpo">
 
+
+        <!-- ==================================================
+             FONTE PRINCIPAL
+        =================================================== -->
+
         <div class="info-item">
 
             <div class="info-label">
                 Fonte
+            </div>
+
+            <div class="info-value info-source">
+                State of Wildfire Brasil
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             DADOS ESPACIAIS
+        =================================================== -->
+
+        <div class="info-item">
+
+            <div class="info-label">
+                Dados
             </div>
 
             <div class="info-value">
@@ -2122,6 +2148,10 @@
 
         </div>
 
+
+        <!-- ==================================================
+             PERÍODO
+        =================================================== -->
 
         <div class="info-item">
 
@@ -2136,6 +2166,10 @@
         </div>
 
 
+        <!-- ==================================================
+             COMPARAÇÃO
+        =================================================== -->
+
         <div class="info-item">
 
             <div class="info-label">
@@ -2149,18 +2183,26 @@
         </div>
 
 
+        <!-- ==================================================
+             PRODUTO
+        =================================================== -->
+
         <div class="info-item">
 
             <div class="info-label">
-                Unidade
+                Produto
             </div>
 
             <div class="info-value">
-                Área queimada (km²)
+                Ranqueamento da área queimada
             </div>
 
         </div>
 
+
+        <!-- ==================================================
+             ESCALA
+        =================================================== -->
 
         <div class="info-item">
 
@@ -2205,7 +2247,6 @@
             1º
         </div>
 
-
         <div class="legenda-item">
             <span
                 class="legenda-cor"
@@ -2213,7 +2254,6 @@
             ></span>
             2º
         </div>
-
 
         <div class="legenda-item">
             <span
@@ -2223,7 +2263,6 @@
             3º
         </div>
 
-
         <div class="legenda-item">
             <span
                 class="legenda-cor"
@@ -2231,7 +2270,6 @@
             ></span>
             4º
         </div>
-
 
         <div class="legenda-item">
             <span
@@ -2241,7 +2279,6 @@
             5º
         </div>
 
-
         <div class="legenda-item">
             <span
                 class="legenda-cor"
@@ -2249,7 +2286,6 @@
             ></span>
             19º–20º
         </div>
-
 
         <div class="legenda-item">
             <span
@@ -2259,7 +2295,6 @@
             20º
         </div>
 
-
         <div class="legenda-item">
             <span
                 class="legenda-cor"
@@ -2267,7 +2302,6 @@
             ></span>
             21º
         </div>
-
 
         <div class="legenda-item">
             <span
@@ -2277,7 +2311,6 @@
             22º
         </div>
 
-
         <div class="legenda-item">
             <span
                 class="legenda-cor"
@@ -2285,7 +2318,6 @@
             ></span>
             23º
         </div>
-
 
         <div class="legenda-item">
             <span
@@ -2330,7 +2362,10 @@
         <button
             id="painel-vetor-seta"
             type="button"
-            onclick="event.stopPropagation(); alternarPainelVetor();"
+            onclick="
+                event.stopPropagation();
+                alternarPainelVetor();
+            "
             title="Abrir informações"
         >
             ▲
@@ -2355,18 +2390,14 @@
         </div>
 
 
-        <div id="vetor-informacoes">
-
-            <!-- Os dados serão inseridos pelo JavaScript -->
-
-        </div>
+        <div id="vetor-informacoes"></div>
 
 
-        <div
-            id="painel-vetor-vazio"
-        >
+        <div id="painel-vetor-vazio">
+
             Selecione um polígono no mapa para consultar
             os indicadores disponíveis no vetor.
+
         </div>
 
     </div>
@@ -2385,6 +2416,7 @@
 >
 
     <div id="modal-card">
+
 
         <div id="modal-header">
 
@@ -2598,7 +2630,7 @@
 
 
 <!-- ==========================================================
-     MODAL RANKING / GRÁFICO
+     MODAL RANKING
 =========================================================== -->
 
 <div
@@ -2625,7 +2657,10 @@
                     </h2>
 
                     <div id="ranking-subtitulo">
-                        Ordenação decrescente da área queimada por estados e biomas no período analisado
+
+                        Ordenação decrescente da área queimada
+                        por estados e biomas no período analisado
+
                     </div>
 
                 </div>
@@ -2792,7 +2827,7 @@ L.tileLayer(
 
 
 // ============================================================
-// 2. GRUPOS DE CAMADAS
+// 2. GRUPOS
 // ============================================================
 
 const grupoEstados =
@@ -2865,7 +2900,7 @@ const coresRanking = {
 
 
 // ============================================================
-// 5. PROPRIEDADE
+// 5. OBTER PROPRIEDADE
 // ============================================================
 
 function obterPropriedade(
@@ -2983,7 +3018,7 @@ function normalizarTexto(texto) {
 
 
 // ============================================================
-// 8. ESTADOS OFICIAIS DO BRASIL
+// 8. ESTADOS
 // ============================================================
 
 const ESTADOS_BRASIL = {
@@ -3045,10 +3080,6 @@ const ESTADOS_BRASIL = {
 };
 
 
-// ============================================================
-// 9. MAPA DE NOMES DOS ESTADOS
-// ============================================================
-
 const NOME_ESTADO_PARA_SIGLA = {};
 
 
@@ -3072,7 +3103,7 @@ Object.entries(
 
 
 // ============================================================
-// 10. IDENTIFICAR SIGLA DO ESTADO
+// 9. SIGLA DO ESTADO
 // ============================================================
 
 function obterSiglaEstado(feature) {
@@ -3197,7 +3228,7 @@ function obterSiglaEstado(feature) {
 
 
 // ============================================================
-// 11. VERIFICAR SE É ESTADO BRASILEIRO
+// 10. VERIFICAR ESTADO
 // ============================================================
 
 function ehEstadoDoBrasil(feature) {
@@ -3209,15 +3240,18 @@ function ehEstadoDoBrasil(feature) {
 
 
     return (
+
         sigla !== null &&
+
         ESTADOS_BRASIL[sigla] !== undefined
+
     );
 
 }
 
 
 // ============================================================
-// 12. NOME PADRONIZADO DO ESTADO
+// 11. NOME PADRONIZADO
 // ============================================================
 
 function obterNomeEstadoPadronizado(feature) {
@@ -3245,7 +3279,7 @@ function obterNomeEstadoPadronizado(feature) {
 
 
 // ============================================================
-// 13. RANKING ORIGINAL DA FEIÇÃO
+// 12. RANKING
 // ============================================================
 
 function obterRanking(feature) {
@@ -3317,7 +3351,7 @@ function obterRanking(feature) {
 
 
 // ============================================================
-// 14. ÁREA
+// 13. ÁREA
 // ============================================================
 
 function obterArea(feature) {
@@ -3384,7 +3418,7 @@ function obterArea(feature) {
 
 
 // ============================================================
-// 15. ESTILO
+// 14. ESTILO
 // ============================================================
 
 function estiloFeature(
@@ -3441,7 +3475,7 @@ function estiloFeature(
 
 
 // ============================================================
-// 16. NORMALIZAR GEOJSON
+// 15. NORMALIZAR GEOJSON
 // ============================================================
 
 function normalizarGeoJSON(dados) {
@@ -3534,7 +3568,7 @@ function normalizarGeoJSON(dados) {
 
 
 // ============================================================
-// 17. CRIAR CAMADA
+// 16. CRIAR CAMADA
 // ============================================================
 
 function criarCamada(
@@ -3642,7 +3676,7 @@ function criarCamada(
 
 
 // ============================================================
-// 18. POPUP
+// 17. POPUP
 // ============================================================
 
 function mostrarPopup(
@@ -3768,7 +3802,7 @@ function mostrarPopup(
 
 
 // ============================================================
-// 19. CAMPOS DO VETOR
+// 18. CAMPOS DO VETOR
 // ============================================================
 
 const CAMPOS_VETOR = [
@@ -3984,7 +4018,7 @@ const CAMPOS_VETOR = [
 
 
 // ============================================================
-// 20. LOCALIZAR VALOR DE UM CAMPO
+// 19. VALOR DO CAMPO
 // ============================================================
 
 function obterValorCampoVetor(
@@ -4013,75 +4047,113 @@ function obterValorCampoVetor(
     const variantes = {
 
         "Burned Area (km^2)": [
+
             "Burned Area (km²)",
+
             "Burned Area (km2)",
+
             "Burned_Area_km2"
+
         ],
 
         "Burned Area Fraction (%)": [
+
             "Burned Area Fraction",
+
             "Burned_Area_Fraction"
+
         ],
 
         "Burned Area Rank": [
+
             "Burned_Area_Rank",
+
             "Rank_Category"
+
         ],
 
         "Burned Area Fraction Rank": [
+
             "Burned_Area_Fraction_Rank"
+
         ],
 
         "Burned Area Percentile": [
+
             "Burned_Area_Percentile"
+
         ],
 
         "Burned Area Fraction Percentile": [
+
             "Burned_Area_Fraction_Percentile"
+
         ],
 
         "Burned Area Mean Annual (km^2)": [
+
             "Burned_Area_Mean_Annual_km2"
+
         ],
 
         "Burned Area StDev Annual (km^2)": [
+
             "Burned_Area_StDev_Annual_km2"
+
         ],
 
         "Burned Area Fraction Mean Annual (%)": [
+
             "Burned_Area_Fraction_Mean_Annual"
+
         ],
 
         "Burned Area Fraction StDev Annual (%)": [
+
             "Burned_Area_Fraction_StDev_Annual"
+
         ],
 
         "Burned Area Anomaly (%)": [
+
             "Burned_Area_Anomaly"
+
         ],
 
         "Burned Area Fraction Anomaly (%)": [
+
             "Burned_Area_Fraction_Anomaly"
+
         ],
 
         "Burned Area Anomaly (Standard Deviations)": [
+
             "Burned_Area_Anomaly_Standard_Deviations"
+
         ],
 
         "Burned Area Fraction Anomaly (Standard Deviations)": [
+
             "Burned_Area_Fraction_Anomaly_Standard_Deviations"
+
         ],
 
         "Month with Peak in Burned Area Anomaly": [
+
             "Month_with_Peak_in_Burned_Area_Anomaly"
+
         ],
 
         "Months Prior to Peak with Above-Average Burned Area": [
+
             "Months_Prior_to_Peak_with_Above_Average_Burned_Area"
+
         ],
 
         "Months After Peak with Above-Average Burned Area": [
+
             "Months_After_Peak_with_Above_Average_Burned_Area"
+
         ]
 
     };
@@ -4114,7 +4186,7 @@ function obterValorCampoVetor(
 
 
 // ============================================================
-// 21. FORMATAR VALOR DOS CAMPOS
+// 20. FORMATAR CAMPO
 // ============================================================
 
 function formatarValorCampo(
@@ -4158,7 +4230,7 @@ function formatarValorCampo(
 
 
 // ============================================================
-// 22. ATUALIZAR PAINEL DO VETOR
+// 21. ATUALIZAR PAINEL VETOR
 // ============================================================
 
 function atualizarPainelVetor(
@@ -4360,10 +4432,6 @@ function atualizarPainelVetor(
     }
 
 
-    // =========================================================
-    // ABRE AUTOMATICAMENTE O PAINEL AO CLICAR NO POLÍGONO
-    // =========================================================
-
     painel.classList.remove(
         "recolhido"
     );
@@ -4380,7 +4448,7 @@ function atualizarPainelVetor(
 
 
 // ============================================================
-// 23. ABRIR / FECHAR PAINEL DO VETOR
+// 22. ALTERNAR PAINEL VETOR
 // ============================================================
 
 function alternarPainelVetor() {
@@ -4431,7 +4499,7 @@ function alternarPainelVetor() {
 
 
 // ============================================================
-// 24. FORMATAR NÚMEROS
+// 23. FORMATAR NÚMERO
 // ============================================================
 
 function formatarNumero(valor) {
@@ -4456,7 +4524,7 @@ function formatarNumero(valor) {
 
 
 // ============================================================
-// 25. ATUALIZAR LOADING
+// 24. LOADING
 // ============================================================
 
 function atualizarLoading(
@@ -4500,7 +4568,7 @@ function atualizarLoading(
 
 
 // ============================================================
-// 26. CARREGAR UM ARQUIVO
+// 25. CARREGAR ARQUIVO
 // ============================================================
 
 async function carregarArquivo(
@@ -4593,7 +4661,7 @@ async function carregarArquivo(
 
 
 // ============================================================
-// 27. CARREGAMENTO PARALELO
+// 26. CARREGAR TODOS OS DADOS
 // ============================================================
 
 async function carregarTodosDados() {
@@ -4708,7 +4776,7 @@ async function carregarTodosDados() {
                             arquivos.length
                         ) * 100,
 
-                        `Processando dados espaciais...`
+                        "Processando dados espaciais..."
 
                     );
 
@@ -4739,19 +4807,15 @@ async function carregarTodosDados() {
         );
 
 
-    const resultados =
-        await Promise.all(
-            promessas
-        );
-
-
-    return resultados;
+    return await Promise.all(
+        promessas
+    );
 
 }
 
 
 // ============================================================
-// 28. CONTROLE DE CAMADAS
+// 27. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas =
@@ -4783,7 +4847,7 @@ const controleCamadas =
 
 
 // ============================================================
-// 29. AJUSTAR MAPA
+// 28. AJUSTAR MAPA
 // ============================================================
 
 function ajustarMapa() {
@@ -4868,7 +4932,7 @@ function ajustarMapa() {
 
 
 // ============================================================
-// 30. ABRIR CITAÇÃO
+// 29. ABRIR CITAÇÃO
 // ============================================================
 
 function abrirCitacao() {
@@ -4885,7 +4949,7 @@ function abrirCitacao() {
 
 
 // ============================================================
-// 31. FECHAR CITAÇÃO
+// 30. FECHAR CITAÇÃO
 // ============================================================
 
 function fecharCitacao() {
@@ -4916,7 +4980,7 @@ function fecharModalFora(event) {
 
 
 // ============================================================
-// 32. DADOS PARA RANKING
+// 31. DADOS RANKING
 // ============================================================
 
 let dadosRankingEstados = [];
@@ -4925,7 +4989,7 @@ let dadosRankingBiomas = [];
 
 
 // ============================================================
-// 33. CONSTRUIR RANKINGS
+// 32. CONSTRUIR RANKINGS
 // ============================================================
 
 function construirRankings(resultados) {
@@ -4950,10 +5014,6 @@ function construirRankings(resultados) {
             }
 
 
-            // =================================================
-            // ESTADOS
-            // =================================================
-
             if (
                 resultado.tipo ===
                 "estados"
@@ -4962,14 +5022,6 @@ function construirRankings(resultados) {
                 resultado.features.forEach(
 
                     feature => {
-
-                        /*
-                         * FILTRO:
-                         *
-                         * Só entram no ranking as
-                         * 27 unidades federativas
-                         * oficiais do Brasil.
-                         */
 
                         if (
                             !ehEstadoDoBrasil(
@@ -5014,19 +5066,15 @@ function construirRankings(resultados) {
                         }
 
 
-                        const chave =
-                            sigla;
-
-
                         if (
                             !estados.has(
-                                chave
+                                sigla
                             )
                         ) {
 
                             estados.set(
 
-                                chave,
+                                sigla,
 
                                 {
 
@@ -5047,7 +5095,7 @@ function construirRankings(resultados) {
 
 
                         estados.get(
-                            chave
+                            sigla
                         ).area +=
                             Number(area);
 
@@ -5057,10 +5105,6 @@ function construirRankings(resultados) {
 
             }
 
-
-            // =================================================
-            // BIOMAS
-            // =================================================
 
             else {
 
@@ -5143,50 +5187,28 @@ function construirRankings(resultados) {
     );
 
 
-    // ========================================================
-    // RANKING DOS ESTADOS
-    // ========================================================
-
     dadosRankingEstados =
         Array
             .from(
                 estados.values()
-            )
-            .filter(
-
-                item =>
-                    Number.isFinite(
-                        item.area
-                    ) &&
-                    item.area >= 0
-
             )
             .sort(
 
                 (a, b) =>
                     b.area - a.area
 
+            )
+            .slice(
+                0,
+                27
             );
 
-
-    // ========================================================
-    // RANKING DOS BIOMAS
-    // ========================================================
 
     dadosRankingBiomas =
         Array
             .from(
                 biomas.values()
             )
-            .filter(
-
-                item =>
-                    Number.isFinite(
-                        item.area
-                    ) &&
-                    item.area >= 0
-
-            )
             .sort(
 
                 (a, b) =>
@@ -5195,26 +5217,14 @@ function construirRankings(resultados) {
             );
 
 
-    // ========================================================
-    // GARANTIA ABSOLUTA:
-    // NO MÁXIMO 27 ESTADOS
-    // ========================================================
-
-    dadosRankingEstados =
-        dadosRankingEstados.slice(
-            0,
-            27
-        );
-
-
     console.log(
-        "Ranking de área queimada - Estados:",
+        "Ranking Estados:",
         dadosRankingEstados
     );
 
 
     console.log(
-        "Ranking de área queimada - Biomas:",
+        "Ranking Biomas:",
         dadosRankingBiomas
     );
 
@@ -5222,7 +5232,7 @@ function construirRankings(resultados) {
 
 
 // ============================================================
-// 34. ABRIR RANKING
+// 33. ABRIR RANKING
 // ============================================================
 
 function abrirRanking() {
@@ -5244,7 +5254,7 @@ function abrirRanking() {
 
 
 // ============================================================
-// 35. FECHAR RANKING
+// 34. FECHAR RANKING
 // ============================================================
 
 function fecharRanking() {
@@ -5259,10 +5269,6 @@ function fecharRanking() {
 
 }
 
-
-// ============================================================
-// 36. FECHAR AO CLICAR FORA
-// ============================================================
 
 function fecharRankingFora(event) {
 
@@ -5279,7 +5285,7 @@ function fecharRankingFora(event) {
 
 
 // ============================================================
-// 37. MOSTRAR RANKING
+// 35. MOSTRAR RANKING
 // ============================================================
 
 function mostrarRanking(tipo) {
@@ -5311,10 +5317,6 @@ function mostrarRanking(tipo) {
     let dados = [];
 
 
-    // ========================================================
-    // ESTADOS
-    // ========================================================
-
     if (
         tipo === "estados"
     ) {
@@ -5331,11 +5333,6 @@ function mostrarRanking(tipo) {
         );
 
     }
-
-
-    // ========================================================
-    // BIOMAS
-    // ========================================================
 
     else {
 
@@ -5420,9 +5417,7 @@ function mostrarRanking(tipo) {
             div.innerHTML = `
 
                 <div class="ranking-posicao">
-
                     ${posicao}
-
                 </div>
 
 
@@ -5430,9 +5425,7 @@ function mostrarRanking(tipo) {
                     class="ranking-nome"
                     title="${escaparHTML(item.nome)}"
                 >
-
                     ${escaparHTML(item.nome)}
-
                 </div>
 
 
@@ -5473,7 +5466,7 @@ function mostrarRanking(tipo) {
 
 
 // ============================================================
-// 38. RESUMO DO RANKING
+// 36. RESUMO
 // ============================================================
 
 function atualizarResumo(
@@ -5534,7 +5527,7 @@ function atualizarResumo(
 
 
 // ============================================================
-// 39. PROTEÇÃO CONTRA HTML
+// 37. ESCAPAR HTML
 // ============================================================
 
 function escaparHTML(texto) {
@@ -5570,7 +5563,7 @@ function escaparHTML(texto) {
 
 
 // ============================================================
-// 40. ESC
+// 38. ESC
 // ============================================================
 
 document.addEventListener(
@@ -5596,7 +5589,7 @@ document.addEventListener(
 
 
 // ============================================================
-// 41. INICIALIZAÇÃO
+// 39. INICIALIZAÇÃO
 // ============================================================
 
 async function inicializar() {
@@ -5623,18 +5616,10 @@ async function inicializar() {
     );
 
 
-    // ========================================================
-    // CONSTRÓI RANKINGS
-    // ========================================================
-
     construirRankings(
         resultados
     );
 
-
-    // ========================================================
-    // ESTADOS NO MAPA
-    // ========================================================
 
     if (
         grupoEstados.getLayers().length > 0
@@ -5647,10 +5632,6 @@ async function inicializar() {
     }
 
 
-    // ========================================================
-    // BIOMAS NO MAPA
-    // ========================================================
-
     if (
         grupoBiomas.getLayers().length > 0
     ) {
@@ -5662,25 +5643,13 @@ async function inicializar() {
     }
 
 
-    // ========================================================
-    // CONTROLE DE CAMADAS
-    // ========================================================
-
     controleCamadas.addTo(
         map
     );
 
 
-    // ========================================================
-    // AJUSTA MAPA
-    // ========================================================
-
     ajustarMapa();
 
-
-    // ========================================================
-    // FINALIZA LOADING
-    // ========================================================
 
     atualizarLoading(
 
@@ -5713,7 +5682,7 @@ async function inicializar() {
 
 
 // ============================================================
-// 42. EXECUTAR
+// 40. EXECUTAR
 // ============================================================
 
 window.addEventListener(
