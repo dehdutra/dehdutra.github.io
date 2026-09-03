@@ -59,17 +59,17 @@
 
             --primaria-hover: #a30000;
 
-            --mapa-filtro: none;
-
             --popup-bg: #ffffff;
 
             --popup-texto: #1f2933;
 
-            --controle-bg: rgba(255,255,255,0.96);
+            --controle-bg:
+                rgba(255,255,255,0.96);
 
             --controle-texto: #222;
 
-            --legenda-bg: rgba(255,255,255,0.97);
+            --legenda-bg:
+                rgba(255,255,255,0.97);
 
             --legenda-texto: #333;
 
@@ -104,20 +104,17 @@
 
             --primaria-hover: #ef6548;
 
-            --mapa-filtro:
-                brightness(0.82)
-                contrast(1.05)
-                saturate(0.85);
-
             --popup-bg: #1c242d;
 
             --popup-texto: #f2f4f7;
 
-            --controle-bg: rgba(25,32,40,0.96);
+            --controle-bg:
+                rgba(25,32,40,0.96);
 
             --controle-texto: #f2f4f7;
 
-            --legenda-bg: rgba(25,32,40,0.97);
+            --legenda-bg:
+                rgba(25,32,40,0.97);
 
             --legenda-texto: #f2f4f7;
 
@@ -129,9 +126,7 @@
         ====================================================== */
 
         * {
-
             box-sizing: border-box;
-
         }
 
 
@@ -169,9 +164,7 @@
 
 
         body {
-
             overflow: hidden;
-
         }
 
 
@@ -200,10 +193,10 @@
             width:
                 calc(100% - 36px);
 
-            max-width: 900px;
+            max-width: 1050px;
 
             padding:
-                16px 20px;
+                14px 18px;
 
             background:
                 var(--controle-bg);
@@ -302,21 +295,41 @@
 
 
         /* ======================================================
-           BOTÃO TEMA
+           AÇÕES DO CABEÇALHO
         ====================================================== */
 
-        #botao-tema {
+        .cabecalho-acoes {
 
-            width: 40px;
+            display: flex;
 
-            height: 40px;
+            align-items: center;
+
+            gap: 7px;
 
             flex-shrink: 0;
+
+        }
+
+
+        .botao-cabecalho {
+
+            height: 38px;
+
+            padding:
+                0 12px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
 
             border:
                 1px solid var(--borda);
 
-            border-radius: 9px;
+            border-radius: 8px;
 
             background:
                 var(--bg-painel-secundario);
@@ -326,13 +339,9 @@
 
             cursor: pointer;
 
-            font-size: 18px;
+            font-size: 12px;
 
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
+            font-weight: 600;
 
             transition:
                 all 0.2s ease;
@@ -340,7 +349,7 @@
         }
 
 
-        #botao-tema:hover {
+        .botao-cabecalho:hover {
 
             background:
                 var(--primaria);
@@ -352,6 +361,86 @@
 
             transform:
                 translateY(-1px);
+
+        }
+
+
+        #botao-tema {
+
+            width: 38px;
+
+            padding: 0;
+
+            font-size: 17px;
+
+        }
+
+
+        .seletor-idioma {
+
+            display: flex;
+
+            align-items: center;
+
+            height: 38px;
+
+            padding: 3px;
+
+            border:
+                1px solid var(--borda);
+
+            border-radius: 8px;
+
+            background:
+                var(--bg-painel-secundario);
+
+        }
+
+
+        .idioma {
+
+            border: none;
+
+            background: transparent;
+
+            color:
+                var(--texto-secundario);
+
+            height: 30px;
+
+            min-width: 35px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            transition:
+                all 0.2s ease;
+
+        }
+
+
+        .idioma.ativo {
+
+            background:
+                var(--primaria);
+
+            color: white;
+
+        }
+
+
+        .idioma:hover:not(.ativo) {
+
+            color:
+                var(--texto-principal);
+
+            background:
+                var(--borda);
 
         }
 
@@ -385,7 +474,9 @@
         .leaflet-tile-pane {
 
             filter:
-                var(--mapa-filtro);
+                brightness(0.72)
+                contrast(1.05)
+                saturate(0.85);
 
         }
 
@@ -429,22 +520,7 @@
                 12px 14px !important;
 
             min-width:
-                150px;
-
-        }
-
-
-        .leaflet-control-layers-list {
-
-            margin: 0;
-
-        }
-
-
-        .leaflet-control-layers-base {
-
-            color:
-                var(--controle-texto);
+                155px;
 
         }
 
@@ -555,7 +631,7 @@
                 12px;
 
             min-width:
-                155px;
+                165px;
 
             backdrop-filter:
                 blur(10px);
@@ -642,9 +718,6 @@
 
             border-radius:
                 3px;
-
-            box-sizing:
-                border-box;
 
         }
 
@@ -754,7 +827,7 @@
 
 
         /* ======================================================
-           INDICADOR INFORMATIVO
+           PAINEL INFORMATIVO
         ====================================================== */
 
         #painel-info {
@@ -806,7 +879,398 @@
 
 
         /* ======================================================
-           ESCONDER ATRIBUIÇÃO COM VISUAL MAIS LIMPO
+           PAINEL SOBRE / COMO CITAR
+        ====================================================== */
+
+        #painel-citacao {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 3000;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(15, 23, 42, 0.48);
+
+            backdrop-filter:
+                blur(4px);
+
+            -webkit-backdrop-filter:
+                blur(4px);
+
+        }
+
+
+        #painel-citacao.aberto {
+
+            display: flex;
+
+        }
+
+
+        .janela-citacao {
+
+            width:
+                min(760px, 100%);
+
+            max-height:
+                calc(100vh - 40px);
+
+            overflow-y:
+                auto;
+
+            background:
+                var(--bg-painel);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                14px;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,0.28);
+
+            color:
+                var(--texto-principal);
+
+            animation:
+                aparecerPainel 0.2s ease;
+
+        }
+
+
+        @keyframes aparecerPainel {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(8px)
+                    scale(0.985);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+
+        .citacao-cabecalho {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding:
+                20px 22px;
+
+            border-bottom:
+                1px solid var(--borda);
+
+        }
+
+
+        .citacao-cabecalho h2 {
+
+            margin: 0;
+
+            font-size:
+                20px;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .citacao-cabecalho p {
+
+            margin:
+                4px 0 0;
+
+            font-size:
+                12px;
+
+            color:
+                var(--texto-secundario);
+
+        }
+
+
+        #fechar-citacao {
+
+            width: 34px;
+
+            height: 34px;
+
+            border:
+                1px solid var(--borda);
+
+            border-radius: 8px;
+
+            background:
+                var(--bg-painel-secundario);
+
+            color:
+                var(--texto-principal);
+
+            cursor: pointer;
+
+            font-size: 20px;
+
+            line-height: 1;
+
+        }
+
+
+        #fechar-citacao:hover {
+
+            background:
+                var(--primaria);
+
+            color: white;
+
+            border-color:
+                var(--primaria);
+
+        }
+
+
+        .citacao-conteudo {
+
+            padding:
+                22px;
+
+        }
+
+
+        .bloco-institucional {
+
+            margin-bottom:
+                22px;
+
+        }
+
+
+        .bloco-institucional:last-child {
+
+            margin-bottom: 0;
+
+        }
+
+
+        .bloco-institucional h3 {
+
+            margin:
+                0 0 8px;
+
+            font-size:
+                14px;
+
+            font-weight:
+                700;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .bloco-institucional p {
+
+            margin:
+                0;
+
+            color:
+                var(--texto-secundario);
+
+            font-size:
+                13px;
+
+            line-height:
+                1.65;
+
+        }
+
+
+        .autores {
+
+            padding:
+                14px 16px;
+
+            background:
+                var(--bg-painel-secundario);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                9px;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .citacao-box {
+
+            position: relative;
+
+            padding:
+                16px 48px 16px 16px;
+
+            background:
+                var(--bg-painel-secundario);
+
+            border:
+                1px solid var(--borda);
+
+            border-left:
+                4px solid var(--primaria);
+
+            border-radius:
+                9px;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+
+            color:
+                var(--texto-principal);
+
+            word-break:
+                break-word;
+
+        }
+
+
+        .botao-copiar {
+
+            position: absolute;
+
+            top: 10px;
+
+            right: 10px;
+
+            width: 32px;
+
+            height: 32px;
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                7px;
+
+            background:
+                var(--bg-painel);
+
+            color:
+                var(--texto-principal);
+
+            cursor: pointer;
+
+            font-size:
+                14px;
+
+        }
+
+
+        .botao-copiar:hover {
+
+            background:
+                var(--primaria);
+
+            color: white;
+
+            border-color:
+                var(--primaria);
+
+        }
+
+
+        .link-referencia {
+
+            display:
+                inline-block;
+
+            margin-top:
+                8px;
+
+            color:
+                var(--primaria);
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+
+            text-decoration:
+                none;
+
+            word-break:
+                break-all;
+
+        }
+
+
+        .link-referencia:hover {
+
+            text-decoration:
+                underline;
+
+        }
+
+
+        .aviso-copia {
+
+            margin-top:
+                8px;
+
+            font-size:
+                11px;
+
+            color:
+                var(--texto-secundario);
+
+        }
+
+
+        /* ======================================================
+           ATRIBUIÇÃO
         ====================================================== */
 
         .leaflet-control-attribution {
@@ -847,7 +1311,9 @@
                     calc(100% - 20px);
 
                 padding:
-                    12px 14px;
+                    10px 12px;
+
+                gap: 10px;
 
             }
 
@@ -865,23 +1331,71 @@
 
             .titulo-principal {
 
-                font-size: 16px;
+                font-size:
+                    15px;
 
             }
 
 
             .subtitulo {
 
-                font-size: 10px;
+                font-size:
+                    9px;
+
+            }
+
+
+            .cabecalho-acoes {
+
+                gap: 4px;
+
+            }
+
+
+            .botao-cabecalho {
+
+                height: 34px;
+
+                padding:
+                    0 8px;
+
+                font-size:
+                    10px;
+
+            }
+
+
+            .botao-sobre-texto {
+
+                display: none;
 
             }
 
 
             #botao-tema {
 
-                width: 36px;
+                width: 34px;
 
-                height: 36px;
+                padding: 0;
+
+            }
+
+
+            .seletor-idioma {
+
+                height: 34px;
+
+            }
+
+
+            .idioma {
+
+                height: 27px;
+
+                min-width: 29px;
+
+                font-size:
+                    10px;
 
             }
 
@@ -889,7 +1403,7 @@
             .leaflet-control-layers {
 
                 margin-top:
-                    75px !important;
+                    70px !important;
 
             }
 
@@ -910,12 +1424,38 @@
 
             #painel-info {
 
-                left: 10px;
+                left:
+                    10px;
 
-                bottom: 15px;
+                bottom:
+                    15px;
 
                 max-width:
                     220px;
+
+            }
+
+
+            .citacao-conteudo {
+
+                padding:
+                    16px;
+
+            }
+
+
+            .citacao-cabecalho {
+
+                padding:
+                    16px;
+
+            }
+
+
+            .citacao-cabecalho h2 {
+
+                font-size:
+                    17px;
 
             }
 
@@ -935,7 +1475,9 @@
 
 <div id="cabecalho">
 
+
     <div class="cabecalho-titulo">
+
 
         <div class="icone-dashboard">
 
@@ -946,17 +1488,19 @@
 
         <div>
 
-            <h1 class="titulo-principal">
-
+            <h1
+                class="titulo-principal"
+                id="titulo-dashboard"
+            >
                 Dashboard de Área Queimada
-
             </h1>
 
 
-            <div class="subtitulo">
-
+            <div
+                class="subtitulo"
+                id="subtitulo-dashboard"
+            >
                 Distribuição espacial do ranking de área queimada
-
             </div>
 
         </div>
@@ -964,18 +1508,70 @@
     </div>
 
 
-    <button
-        id="botao-tema"
-        title="Alternar modo claro/escuro"
-        aria-label="Alternar modo claro/escuro"
-    >
+    <div class="cabecalho-acoes">
 
-        🌙
 
-    </button>
+        <!-- IDIOMA -->
+
+        <div
+            class="seletor-idioma"
+            title="Selecionar idioma"
+        >
+
+            <button
+                class="idioma ativo"
+                id="idioma-pt"
+                onclick="mudarIdioma('pt')"
+            >
+                PT
+            </button>
+
+            <button
+                class="idioma"
+                id="idioma-en"
+                onclick="mudarIdioma('en')"
+            >
+                EN
+            </button>
+
+        </div>
+
+
+        <!-- SOBRE / CITAR -->
+
+        <button
+            class="botao-cabecalho"
+            id="botao-citacao"
+            onclick="abrirCitacao()"
+            title="Sobre e como citar"
+        >
+
+            <span>ⓘ</span>
+
+            <span
+                class="botao-sobre-texto"
+                id="texto-botao-citacao"
+            >
+                Sobre / Como citar
+            </span>
+
+        </button>
+
+
+        <!-- TEMA -->
+
+        <button
+            id="botao-tema"
+            class="botao-cabecalho"
+            title="Alternar modo claro/escuro"
+            aria-label="Alternar modo claro/escuro"
+        >
+            🌙
+        </button>
+
+    </div>
 
 </div>
-
 
 
 <!-- ==========================================================
@@ -985,19 +1581,260 @@
 <div id="mapa"></div>
 
 
-
 <!-- ==========================================================
      PAINEL INFORMATIVO
 =========================================================== -->
 
 <div id="painel-info">
 
-    <strong>Visualização:</strong>
+    <strong id="texto-visualizacao">
+        Visualização:
+    </strong>
 
-    Estados e Biomas
+    <span id="texto-camadas">
+        Estados e Biomas
+    </span>
 
 </div>
 
+
+<!-- ==========================================================
+     PAINEL SOBRE / COMO CITAR
+=========================================================== -->
+
+<div
+    id="painel-citacao"
+    onclick="fecharCitacaoFora(event)"
+>
+
+
+    <div
+        class="janela-citacao"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-citacao"
+    >
+
+
+        <!-- CABEÇALHO DO PAINEL -->
+
+        <div class="citacao-cabecalho">
+
+            <div>
+
+                <h2 id="titulo-citacao">
+                    Sobre o dashboard
+                </h2>
+
+                <p id="subtitulo-citacao">
+                    Informações sobre autoria, projeto e referência
+                </p>
+
+            </div>
+
+
+            <button
+                id="fechar-citacao"
+                onclick="fecharCitacao()"
+                title="Fechar"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- CONTEÚDO -->
+
+        <div class="citacao-conteudo">
+
+
+            <!-- AUTORES -->
+
+            <div class="bloco-institucional">
+
+                <h3 id="titulo-autores">
+                    Autoria
+                </h3>
+
+
+                <div class="autores">
+
+                    <strong>
+                        Débora J. Dutra
+                    </strong><sup>1*</sup>,
+                    Igor José Malfetoni Ferreira<sup>1</sup>,
+                    Zevir A. Cipriano Júnior<sup>2</sup>,
+                    Leonardo Congro<sup>3</sup>,
+                    Pedro Noronha<sup>4</sup>,
+                    Francisco Carlos Santos de Freitas Filho<sup>5</sup>
+                    and
+                    Liana O. Anderson<sup>1,6</sup>.
+
+                </div>
+
+            </div>
+
+
+            <!-- ASSOCIAÇÃO -->
+
+            <div class="bloco-institucional">
+
+                <h3 id="titulo-projeto">
+                    Projeto associado
+                </h3>
+
+
+                <p id="texto-projeto">
+
+                    Este dashboard está associado ao trabalho da
+                    <strong>REDE BRASA DE PESQUISA</strong>,
+                    desenvolvido no contexto do diagnóstico dos
+                    incêndios no Brasil em 2024–2025.
+
+                </p>
+
+            </div>
+
+
+            <!-- CITAÇÃO DO TRABALHO -->
+
+            <div class="bloco-institucional">
+
+                <h3 id="titulo-trabalho">
+
+                    Trabalho de referência
+
+                </h3>
+
+
+                <div
+                    class="citacao-box"
+                    id="citacao-trabalho"
+                >
+
+                    Dutra, D. J. et al.
+                    <strong>
+                        Fogo em Foco: diagnóstico dos incêndios no Brasil em 2024-2025.
+                    </strong>
+                    São José dos Campos: INPE, 2025. 92 p.
+
+                </div>
+
+            </div>
+
+
+            <!-- COMO CITAR -->
+
+            <div class="bloco-institucional">
+
+                <h3 id="titulo-como-citar">
+                    Como citar o dashboard
+                </h3>
+
+
+                <div
+                    class="citacao-box"
+                    id="citacao-dashboard"
+                >
+
+                    <button
+                        class="botao-copiar"
+                        onclick="copiarCitacao()"
+                        title="Copiar citação"
+                    >
+                        ⧉
+                    </button>
+
+
+                    <span id="texto-citacao-dashboard">
+
+                        Dutra, D. J.; Ferreira, I. J. M.;
+                        Cipriano Júnior, Z. A.; Congro, L.;
+                        Noronha, P.; Freitas Filho, F. C. S.;
+                        Anderson, L. O. Dashboard de Área Queimada.
+                        REDE BRASA DE PESQUISA, 2026.
+
+                    </span>
+
+
+                </div>
+
+
+                <div
+                    class="aviso-copia"
+                    id="aviso-copia"
+                >
+                    Clique no ícone para copiar a referência.
+                </div>
+
+            </div>
+
+
+            <!-- REFERÊNCIA COMPLETA -->
+
+            <div class="bloco-institucional">
+
+                <h3 id="titulo-referencia">
+                    Referência do trabalho associado
+                </h3>
+
+
+                <p>
+
+                    <span id="texto-referencia">
+
+                        Dutra, D. J. et al.
+                        Fogo em Foco: diagnóstico dos incêndios no Brasil em 2024-2025.
+                        São José dos Campos: INPE, 2025. 92 p.
+                        URI: upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE.
+
+                    </span>
+
+
+                    <br>
+
+
+                    <a
+                        class="link-referencia"
+                        href="http://bibdigital.sid.inpe.br/col/sid.inpe.br/bibdigital@80/2006/04.07.15.50.13/doc/upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE?ibiurl.backgroundlanguage=pt-BR"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        id="link-referencia"
+                    >
+                        Acessar publicação no INPE
+                    </a>
+
+                </p>
+
+            </div>
+
+
+            <!-- CRÉDITOS -->
+
+            <div class="bloco-institucional">
+
+                <h3 id="titulo-creditos">
+                    Créditos
+                </h3>
+
+
+                <p id="texto-creditos">
+
+                    Dashboard desenvolvido para visualização
+                    espacial de informações de área queimada
+                    no Brasil.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <script>
@@ -1007,14 +1844,11 @@
 // 1. MAPA
 // ============================================================
 
-const mapa = L.map("mapa").setView(
-
-    [-14.2, -51.9],
-
-    4
-
-);
-
+const mapa =
+    L.map("mapa").setView(
+        [-14.2, -51.9],
+        4
+    );
 
 
 // ============================================================
@@ -1023,23 +1857,17 @@ const mapa = L.map("mapa").setView(
 
 const camadaBase =
     L.tileLayer(
-
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
         {
-
             attribution:
                 "&copy; OpenStreetMap contributors",
 
             maxZoom: 18
-
         }
-
     );
 
 
 camadaBase.addTo(mapa);
-
 
 
 // ============================================================
@@ -1055,7 +1883,6 @@ const arquivosEstados = [
     "estados_2024_03.geojson"
 
 ];
-
 
 
 // ============================================================
@@ -1077,7 +1904,6 @@ const arquivosBiomas = [
 ];
 
 
-
 // ============================================================
 // 5. NORMALIZAR TEXTO
 // ============================================================
@@ -1085,11 +1911,8 @@ const arquivosBiomas = [
 function normalizarTexto(valor) {
 
     if (
-
         valor === null ||
-
         valor === undefined
-
     ) {
 
         return "";
@@ -1098,23 +1921,15 @@ function normalizarTexto(valor) {
 
 
     return String(valor)
-
         .trim()
-
         .toLowerCase()
-
         .normalize("NFD")
-
         .replace(
-
             /[\u0300-\u036f]/g,
-
             ""
-
         );
 
 }
-
 
 
 // ============================================================
@@ -1155,9 +1970,7 @@ function obterNome(feature) {
 
 
     for (
-
         const campo of camposNome
-
     ) {
 
         if (
@@ -1184,7 +1997,6 @@ function obterNome(feature) {
 }
 
 
-
 // ============================================================
 // 7. VERIFICAR SE É BRASIL
 // ============================================================
@@ -1201,9 +2013,7 @@ function ehBrasil(feature) {
             campo => {
 
                 const campoNormalizado =
-
                     normalizarTexto(campo)
-
                         .replace(
                             /[^a-z0-9]/g,
                             ""
@@ -1225,9 +2035,7 @@ function ehBrasil(feature) {
                     "nomedopais"
 
                 ].includes(
-
                     campoNormalizado
-
                 );
 
             }
@@ -1240,24 +2048,18 @@ function ehBrasil(feature) {
     ) {
 
         for (
-
             const campo of camposPais
-
         ) {
 
             const pais =
-
                 normalizarTexto(
                     p[campo]
                 );
 
 
             if (
-
                 pais === "brazil" ||
-
                 pais === "brasil"
-
             ) {
 
                 return true;
@@ -1342,7 +2144,6 @@ function ehBrasil(feature) {
 }
 
 
-
 // ============================================================
 // 8. OBTER RANKING
 // ============================================================
@@ -1373,9 +2174,7 @@ function obterRanking(feature) {
 
 
     for (
-
         const campo of camposRanking
-
     ) {
 
         if (
@@ -1389,7 +2188,6 @@ function obterRanking(feature) {
         ) {
 
             const valor =
-
                 Number(
                     p[campo]
                 );
@@ -1411,7 +2209,6 @@ function obterRanking(feature) {
     return null;
 
 }
-
 
 
 // ============================================================
@@ -1442,9 +2239,7 @@ function obterArea(feature) {
 
 
     for (
-
         const campo of camposArea
-
     ) {
 
         if (
@@ -1458,7 +2253,6 @@ function obterArea(feature) {
         ) {
 
             const valor =
-
                 Number(
                     p[campo]
                 );
@@ -1482,7 +2276,6 @@ function obterArea(feature) {
 }
 
 
-
 // ============================================================
 // 10. CORES DO RANKING
 // ============================================================
@@ -1490,11 +2283,8 @@ function obterArea(feature) {
 function corRanking(rank) {
 
     if (
-
         rank === null ||
-
         rank === undefined
-
     ) {
 
         return "#cccccc";
@@ -1527,11 +2317,8 @@ function corRanking(rank) {
 
 
     if (
-
         rank >= 6 &&
-
         rank <= 18
-
     )
 
         return "#bdbdbd";
@@ -1566,7 +2353,6 @@ function corRanking(rank) {
 }
 
 
-
 // ============================================================
 // 11. ESTILO DOS POLÍGONOS
 // ============================================================
@@ -1588,7 +2374,9 @@ function estiloPorRanking(feature) {
 
         color:
             document.body.classList.contains("tema-escuro")
+
                 ? "#b8c0c8"
+
                 : "#555",
 
         fillOpacity: 0.78
@@ -1598,7 +2386,6 @@ function estiloPorRanking(feature) {
 }
 
 
-
 // ============================================================
 // 12. ESCAPAR HTML
 // ============================================================
@@ -1606,11 +2393,8 @@ function estiloPorRanking(feature) {
 function escaparHTML(valor) {
 
     if (
-
         valor === null ||
-
         valor === undefined
-
     ) {
 
         return "";
@@ -1648,7 +2432,6 @@ function escaparHTML(valor) {
 }
 
 
-
 // ============================================================
 // 13. FORMATAÇÃO DA ÁREA
 // ============================================================
@@ -1661,7 +2444,9 @@ function formatarArea(valor) {
 
         valor === undefined ||
 
-        !Number.isFinite(Number(valor))
+        !Number.isFinite(
+            Number(valor)
+        )
 
     ) {
 
@@ -1685,7 +2470,6 @@ function formatarArea(valor) {
     );
 
 }
-
 
 
 // ============================================================
@@ -1732,17 +2516,11 @@ function popupRanking(
             <div class="popup-linha">
 
                 <span class="popup-label">
-
                     Ranking
-
                 </span>
 
-                <br>
-
                 <span class="popup-valor">
-
                     ${rank}º lugar
-
                 </span>
 
             </div>
@@ -1761,17 +2539,11 @@ function popupRanking(
             <div class="popup-linha">
 
                 <span class="popup-label">
-
                     Área queimada
-
                 </span>
 
-                <br>
-
                 <span class="popup-valor">
-
                     ${formatarArea(area)} km²
-
                 </span>
 
             </div>
@@ -1788,7 +2560,6 @@ function popupRanking(
 }
 
 
-
 // ============================================================
 // 15. GRUPOS DAS CAMADAS
 // ============================================================
@@ -1799,7 +2570,6 @@ const grupoEstados =
 
 const grupoBiomas =
     L.layerGroup();
-
 
 
 // ============================================================
@@ -1818,19 +2588,14 @@ async function carregarArquivos(
 
 
     for (
-
         const arquivo of listaArquivos
-
     ) {
 
         try {
 
             console.log(
-
                 "Carregando:",
-
                 arquivo
-
             );
 
 
@@ -1843,9 +2608,7 @@ async function carregarArquivos(
             if (!resposta.ok) {
 
                 throw new Error(
-
                     `Erro HTTP ${resposta.status}`
-
                 );
 
             }
@@ -1860,15 +2623,9 @@ async function carregarArquivos(
 
 
             console.log(
-
                 `${arquivo}: ${features.length} feições`
-
             );
 
-
-            // ==================================================
-            // FILTRO BRASIL
-            // ==================================================
 
             if (somenteBrasil) {
 
@@ -1894,17 +2651,8 @@ async function carregarArquivos(
             }
 
 
-            /*
-               Não removemos duplicados.
-
-               Os arquivos podem representar
-               partes espaciais da camada.
-            */
-
             todasFeatures.push(
-
                 ...features
-
             );
 
         }
@@ -1946,7 +2694,6 @@ async function carregarArquivos(
 }
 
 
-
 // ============================================================
 // 17. CRIAR CAMADA GEOJSON
 // ============================================================
@@ -1970,7 +2717,6 @@ function criarCamada(data) {
     );
 
 }
-
 
 
 // ============================================================
@@ -2002,38 +2748,18 @@ carregarArquivos(
 
 
         console.log(
-
-            "================================"
-
-        );
-
-
-        console.log(
-
             "ESTADOS CARREGADOS"
-
         );
 
 
         console.log(
-
             "Total:",
-
             data.features.length
-
-        );
-
-
-        console.log(
-
-            "================================"
-
         );
 
     }
 
 );
-
 
 
 // ============================================================
@@ -2060,38 +2786,18 @@ carregarArquivos(
 
 
         console.log(
-
-            "================================"
-
-        );
-
-
-        console.log(
-
             "BIOMAS CARREGADOS"
-
         );
 
 
         console.log(
-
             "Total:",
-
             data.features.length
-
-        );
-
-
-        console.log(
-
-            "================================"
-
         );
 
     }
 
 );
-
 
 
 // ============================================================
@@ -2117,12 +2823,12 @@ L.control.layers(
 
     {
 
-        collapsed: false
+        collapsed:
+            false
 
     }
 
 ).addTo(mapa);
-
 
 
 // ============================================================
@@ -2130,6 +2836,7 @@ L.control.layers(
 // ============================================================
 
 const legenda =
+
     L.control({
 
         position:
@@ -2138,8 +2845,8 @@ const legenda =
     });
 
 
-
 legenda.onAdd =
+
     function() {
 
         const div =
@@ -2154,118 +2861,83 @@ legenda.onAdd =
 
         div.innerHTML = `
 
-            <div class="legenda-titulo">
-
+            <div
+                class="legenda-titulo"
+                id="titulo-legenda"
+            >
                 Ranking de Área Queimada
-
             </div>
 
 
             <div>
-
                 <i style="background:#7f0000"></i>
-
                 1
-
             </div>
 
 
             <div>
-
                 <i style="background:#b30000"></i>
-
                 2
-
             </div>
 
 
             <div>
-
                 <i style="background:#d7301f"></i>
-
                 3
-
             </div>
 
 
             <div>
-
                 <i style="background:#ef6548"></i>
-
                 4
-
             </div>
 
 
             <div>
-
                 <i style="background:#fdae61"></i>
-
                 5
-
             </div>
 
 
             <div>
-
                 <i style="background:#bdbdbd"></i>
-
                 6–18
-
             </div>
 
 
             <div>
-
                 <i style="background:#c6dbef"></i>
-
                 19
-
             </div>
 
 
             <div>
-
                 <i style="background:#9ecae1"></i>
-
                 20
-
             </div>
 
 
             <div>
-
                 <i style="background:#6baed6"></i>
-
                 21
-
             </div>
 
 
             <div>
-
                 <i style="background:#4292c6"></i>
-
                 22
-
             </div>
 
 
             <div>
-
                 <i style="background:#2171b5"></i>
-
                 23
-
             </div>
 
 
             <div>
-
                 <i style="background:#084594"></i>
-
                 24
-
             </div>
 
         `;
@@ -2277,7 +2949,6 @@ legenda.onAdd =
 
 
 legenda.addTo(mapa);
-
 
 
 // ============================================================
@@ -2298,12 +2969,12 @@ L.DomEvent.disableScrollPropagation(
 );
 
 
-
 // ============================================================
 // 23. CONTROLE DO MOUSE NAS CAMADAS
 // ============================================================
 
 const controle =
+
     document.querySelector(
 
         ".leaflet-control-layers"
@@ -2317,6 +2988,7 @@ if (controle) {
         controle
     );
 
+
     L.DomEvent.disableScrollPropagation(
         controle
     );
@@ -2324,24 +2996,77 @@ if (controle) {
 }
 
 
+// ============================================================
+// 24. ATUALIZAR ESTILO DAS CAMADAS
+// ============================================================
+
+function atualizarEstilosCamadas() {
+
+    function atualizarRecursivo(layer) {
+
+        if (
+
+            layer.feature &&
+
+            layer.setStyle
+
+        ) {
+
+            layer.setStyle(
+
+                estiloPorRanking(
+                    layer.feature
+                )
+
+            );
+
+        }
+
+
+        if (
+            layer.eachLayer
+        ) {
+
+            layer.eachLayer(
+                atualizarRecursivo
+            );
+
+        }
+
+    }
+
+
+    atualizarRecursivo(
+        grupoEstados
+    );
+
+
+    atualizarRecursivo(
+        grupoBiomas
+    );
+
+}
+
 
 // ============================================================
-// 24. TEMA CLARO / ESCURO
+// 25. TEMA CLARO / ESCURO
 // ============================================================
 
 const botaoTema =
+
     document.getElementById(
         "botao-tema"
     );
 
 
-
 function atualizarIconeTema() {
 
     if (
+
         document.body.classList.contains(
             "tema-escuro"
         )
+
     ) {
 
         botaoTema.textContent =
@@ -2365,7 +3090,6 @@ function atualizarIconeTema() {
 }
 
 
-
 botaoTema.addEventListener(
 
     "click",
@@ -2373,102 +3097,75 @@ botaoTema.addEventListener(
     function() {
 
         document.body.classList.toggle(
-
             "tema-escuro"
-
         );
 
 
         atualizarIconeTema();
 
 
-        /*
-           Atualiza a borda dos polígonos
-           depois da troca de tema.
-        */
+        atualizarEstilosCamadas();
 
-        if (mapa.hasLayer(grupoEstados)) {
+    }
 
-            grupoEstados.eachLayer(
-
-                camada => {
-
-                    if (
-                        camada.eachLayer
-                    ) {
-
-                        camada.eachLayer(
-
-                            layer => {
-
-                                if (
-                                    layer.setStyle
-                                ) {
-
-                                    layer.setStyle(
-
-                                        estiloPorRanking(
-
-                                            layer.feature
-
-                                        )
-
-                                    );
-
-                                }
-
-                            }
-
-                        );
-
-                    }
-
-                }
-
-            );
-
-        }
+);
 
 
-        if (mapa.hasLayer(grupoBiomas)) {
+// ============================================================
+// 26. PAINEL DE CITAÇÃO
+// ============================================================
 
-            grupoBiomas.eachLayer(
+function abrirCitacao() {
 
-                camada => {
+    document
+        .getElementById(
+            "painel-citacao"
+        )
+        .classList.add(
+            "aberto"
+        );
 
-                    if (
-                        camada.eachLayer
-                    ) {
+}
 
-                        camada.eachLayer(
 
-                            layer => {
+function fecharCitacao() {
 
-                                if (
-                                    layer.setStyle
-                                ) {
+    document
+        .getElementById(
+            "painel-citacao"
+        )
+        .classList.remove(
+            "aberto"
+        );
 
-                                    layer.setStyle(
+}
 
-                                        estiloPorRanking(
 
-                                            layer.feature
+function fecharCitacaoFora(event) {
 
-                                        )
+    if (
+        event.target.id ===
+        "painel-citacao"
+    ) {
 
-                                    );
+        fecharCitacao();
 
-                                }
+    }
 
-                            }
+}
 
-                        );
 
-                    }
+document.addEventListener(
 
-                }
+    "keydown",
 
-            );
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            fecharCitacao();
 
         }
 
@@ -2477,13 +3174,352 @@ botaoTema.addEventListener(
 );
 
 
+// ============================================================
+// 27. COPIAR CITAÇÃO
+// ============================================================
+
+function copiarCitacao() {
+
+    const elemento =
+
+        document.getElementById(
+            "texto-citacao-dashboard"
+        );
+
+
+    const texto =
+        elemento.innerText;
+
+
+    navigator.clipboard.writeText(
+        texto
+    )
+    .then(
+
+        function() {
+
+            const aviso =
+
+                document.getElementById(
+                    "aviso-copia"
+                );
+
+
+            const textoOriginal =
+                aviso.textContent;
+
+
+            aviso.textContent =
+                idiomaAtual === "pt"
+
+                    ? "✓ Referência copiada."
+
+                    : "✓ Reference copied.";
+
+
+            setTimeout(
+
+                function() {
+
+                    aviso.textContent =
+                        textoOriginal;
+
+                },
+
+                2500
+
+            );
+
+        }
+
+    );
+
+}
+
 
 // ============================================================
-// 25. INICIALIZAÇÃO DO TEMA
+// 28. IDIOMAS
+// ============================================================
+
+let idiomaAtual = "pt";
+
+
+const textos = {
+
+    pt: {
+
+        titulo:
+            "Dashboard de Área Queimada",
+
+        subtitulo:
+            "Distribuição espacial do ranking de área queimada",
+
+        citacao:
+            "Sobre / Como citar",
+
+        visualizacao:
+            "Visualização:",
+
+        camadas:
+            "Estados e Biomas",
+
+        legenda:
+            "Ranking de Área Queimada",
+
+        tituloCitacao:
+            "Sobre o dashboard",
+
+        subtituloCitacao:
+            "Informações sobre autoria, projeto e referência",
+
+        autores:
+            "Autoria",
+
+        projeto:
+            "Projeto associado",
+
+        textoProjeto:
+            "Este dashboard está associado ao trabalho da <strong>REDE BRASA DE PESQUISA</strong>, desenvolvido no contexto do diagnóstico dos incêndios no Brasil em 2024–2025.",
+
+        trabalho:
+            "Trabalho de referência",
+
+        comoCitar:
+            "Como citar o dashboard",
+
+        referencia:
+            "Referência do trabalho associado",
+
+        creditos:
+            "Créditos",
+
+        textoCreditos:
+            "Dashboard desenvolvido para visualização espacial de informações de área queimada no Brasil.",
+
+        link:
+            "Acessar publicação no INPE",
+
+        aviso:
+            "Clique no ícone para copiar a referência."
+
+    },
+
+
+    en: {
+
+        titulo:
+            "Burned Area Dashboard",
+
+        subtitulo:
+            "Spatial distribution of the burned area ranking",
+
+        citacao:
+            "About / Cite",
+
+        visualizacao:
+            "Visualization:",
+
+        camadas:
+            "States and Biomes",
+
+        legenda:
+            "Burned Area Ranking",
+
+        tituloCitacao:
+            "About the dashboard",
+
+        subtituloCitacao:
+            "Authorship, project and reference information",
+
+        autores:
+            "Authorship",
+
+        projeto:
+            "Associated project",
+
+        textoProjeto:
+            "This dashboard is associated with the work of the <strong>REDE BRASA DE PESQUISA</strong>, developed in the context of the assessment of fires in Brazil in 2024–2025.",
+
+        trabalho:
+            "Reference work",
+
+        comoCitar:
+            "How to cite the dashboard",
+
+        referencia:
+            "Reference for the associated work",
+
+        creditos:
+            "Credits",
+
+        textoCreditos:
+            "Dashboard developed for the spatial visualization of burned area information in Brazil.",
+
+        link:
+            "Access publication at INPE",
+
+        aviso:
+            "Click the icon to copy the reference."
+
+    }
+
+};
+
+
+function mudarIdioma(novoIdioma) {
+
+    idiomaAtual =
+        novoIdioma;
+
+
+    const t =
+        textos[novoIdioma];
+
+
+    document.documentElement.lang =
+        novoIdioma === "pt"
+            ? "pt-BR"
+            : "en";
+
+
+    document.title =
+        t.titulo;
+
+
+    document.getElementById(
+        "titulo-dashboard"
+    ).textContent =
+        t.titulo;
+
+
+    document.getElementById(
+        "subtitulo-dashboard"
+    ).textContent =
+        t.subtitulo;
+
+
+    document.getElementById(
+        "texto-botao-citacao"
+    ).textContent =
+        t.citacao;
+
+
+    document.getElementById(
+        "texto-visualizacao"
+    ).textContent =
+        t.visualizacao;
+
+
+    document.getElementById(
+        "texto-camadas"
+    ).textContent =
+        t.camadas;
+
+
+    document.getElementById(
+        "titulo-legenda"
+    ).textContent =
+        t.legenda;
+
+
+    document.getElementById(
+        "titulo-citacao"
+    ).textContent =
+        t.tituloCitacao;
+
+
+    document.getElementById(
+        "subtitulo-citacao"
+    ).textContent =
+        t.subtituloCitacao;
+
+
+    document.getElementById(
+        "titulo-autores"
+    ).textContent =
+        t.autores;
+
+
+    document.getElementById(
+        "titulo-projeto"
+    ).textContent =
+        t.projeto;
+
+
+    document.getElementById(
+        "texto-projeto"
+    ).innerHTML =
+        t.textoProjeto;
+
+
+    document.getElementById(
+        "titulo-trabalho"
+    ).textContent =
+        t.trabalho;
+
+
+    document.getElementById(
+        "titulo-como-citar"
+    ).textContent =
+        t.comoCitar;
+
+
+    document.getElementById(
+        "titulo-referencia"
+    ).textContent =
+        t.referencia;
+
+
+    document.getElementById(
+        "titulo-creditos"
+    ).textContent =
+        t.creditos;
+
+
+    document.getElementById(
+        "texto-creditos"
+    ).textContent =
+        t.textoCreditos;
+
+
+    document.getElementById(
+        "link-referencia"
+    ).textContent =
+        t.link;
+
+
+    document.getElementById(
+        "aviso-copia"
+    ).textContent =
+        t.aviso;
+
+
+    document.getElementById(
+        "idioma-pt"
+    ).classList.toggle(
+        "ativo",
+        novoIdioma === "pt"
+    );
+
+
+    document.getElementById(
+        "idioma-en"
+    ).classList.toggle(
+        "ativo",
+        novoIdioma === "en"
+    );
+
+}
+
+
+// ============================================================
+// 29. INICIALIZAÇÃO
 // ============================================================
 
 atualizarIconeTema();
 
+
+mudarIdioma("pt");
 
 
 </script>
