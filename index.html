@@ -214,7 +214,7 @@ li {
 
 
 /* =========================================================
-   CARDS DO DASHBOARD
+   CARDS DOS DASHBOARDS
 ========================================================= */
 
 .dashboard-grid {
@@ -499,6 +499,7 @@ footer {
     <a
       href="https://orcid.org/0000-0003-3748-5622"
       target="_blank"
+      rel="noopener noreferrer"
     >
       ORCID
     </a>
@@ -510,6 +511,7 @@ footer {
     <a
       href="http://lattes.cnpq.br/0607282523645907"
       target="_blank"
+      rel="noopener noreferrer"
     >
       Lattes
     </a>
@@ -521,6 +523,7 @@ footer {
     <a
       href="https://bv.fapesp.br/pt/pesquisador/714029/debora-joana-dutra"
       target="_blank"
+      rel="noopener noreferrer"
     >
       BV FAPESP
     </a>
@@ -553,9 +556,13 @@ footer {
   </a>
 
 
-  <!-- NOVO DASHBOARD -->
+  <!-- =====================================================
+       DASHBOARDS
+       NÃO ABRE O FOGO DIRETAMENTE.
+       ABRE A PÁGINA DE SELEÇÃO.
+  ====================================================== -->
 
-  <a onclick="loadPage('fogo_foco.html')">
+  <a onclick="loadPage('dashboards.html')">
     Dashboards
   </a>
 
@@ -696,12 +703,21 @@ footer {
 <script>
 
 
+/* =========================================================
+   FUNÇÃO PRINCIPAL PARA CARREGAR PÁGINAS
+========================================================= */
+
 function loadPage(url) {
 
+  const mainContent =
+    document.getElementById("main-content");
 
-  /* Mostra carregamento */
 
-  document.getElementById("main-content").innerHTML = `
+  /* -------------------------------------------------------
+     Mostra carregamento
+  ------------------------------------------------------- */
+
+  mainContent.innerHTML = `
 
     <div class="loading">
 
@@ -712,13 +728,14 @@ function loadPage(url) {
   `;
 
 
-  /* Busca a página */
+  /* -------------------------------------------------------
+     Busca a página
+  ------------------------------------------------------- */
 
   fetch(url)
 
 
     .then(response => {
-
 
       if (!response.ok) {
 
@@ -728,7 +745,6 @@ function loadPage(url) {
 
       }
 
-
       return response.text();
 
     })
@@ -737,19 +753,98 @@ function loadPage(url) {
     .then(html => {
 
 
-      /*
-       * Insere o conteúdo da página
-       * dentro do conteúdo principal
-       */
+      /* ---------------------------------------------------
+         Cria um elemento temporário para separar
+         HTML e scripts
+      --------------------------------------------------- */
 
-      document.getElementById(
-        "main-content"
-      ).innerHTML = html;
+      const temp =
+        document.createElement("div");
 
 
-      /*
-       * Volta para o topo da página
-       */
+      temp.innerHTML = html;
+
+
+      /* ---------------------------------------------------
+         Remove scripts do HTML antes de inserir
+      --------------------------------------------------- */
+
+      const scripts =
+        Array.from(
+          temp.querySelectorAll("script")
+        );
+
+
+      scripts.forEach(script => {
+
+        script.remove();
+
+      });
+
+
+      /* ---------------------------------------------------
+         Insere o HTML da página
+      --------------------------------------------------- */
+
+      mainContent.innerHTML =
+        temp.innerHTML;
+
+
+      /* ---------------------------------------------------
+         Executa novamente os scripts encontrados
+      --------------------------------------------------- */
+
+      scripts.forEach(oldScript => {
+
+
+        const newScript =
+          document.createElement("script");
+
+
+        /* Script externo */
+
+        if (oldScript.src) {
+
+          newScript.src =
+            oldScript.src;
+
+        }
+
+
+        /* Script interno */
+
+        else {
+
+          newScript.textContent =
+            oldScript.textContent;
+
+        }
+
+
+        /* Copia atributos */
+
+        Array.from(
+          oldScript.attributes
+        ).forEach(attribute => {
+
+          newScript.setAttribute(
+            attribute.name,
+            attribute.value
+          );
+
+        });
+
+
+        document.body.appendChild(
+          newScript
+        );
+
+      });
+
+
+      /* ---------------------------------------------------
+         Volta para o topo
+      --------------------------------------------------- */
 
       window.scrollTo({
 
@@ -766,30 +861,63 @@ function loadPage(url) {
     .catch(error => {
 
 
-      document.getElementById(
-        "main-content"
-      ).innerHTML = `
+      /* ---------------------------------------------------
+         Mensagem de erro
+      --------------------------------------------------- */
 
-        <h2>Erro</h2>
+      mainContent.innerHTML = `
+
+        <h2>
+          Erro ao carregar página
+        </h2>
 
         <p>
-          Não foi possível carregar a página.
+          Não foi possível carregar o conteúdo.
         </p>
 
         <p>
           Verifique se o arquivo
           <strong>${url}</strong>
-          está na mesma pasta deste arquivo.
+          está na mesma pasta do
+          <strong>index.html</strong>.
+        </p>
+
+        <p>
+          <strong>Detalhes:</strong>
+          ${error.message}
         </p>
 
       `;
 
 
-      console.error(error);
+      console.error(
+        "Erro no loadPage():",
+        error
+      );
 
     });
 
 }
+
+
+/* =========================================================
+   FUNÇÃO PARA VOLTAR À PÁGINA INICIAL
+========================================================= */
+
+function voltarInicio() {
+
+  loadPage("home.html");
+
+}
+
+
+/* =========================================================
+   INICIALIZAÇÃO
+========================================================= */
+
+console.log(
+  "Site científico de Débora Dutra carregado."
+);
 
 
 </script>
