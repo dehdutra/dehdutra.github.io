@@ -31,6 +31,110 @@
 
     <style>
 
+        /* ======================================================
+           VARIÁVEIS - TEMA CLARO
+        ====================================================== */
+
+        :root {
+
+            --bg-principal: #f3f5f7;
+
+            --bg-painel: #ffffff;
+
+            --bg-painel-secundario: #f8fafb;
+
+            --texto-principal: #1f2933;
+
+            --texto-secundario: #667085;
+
+            --borda: #dfe4e8;
+
+            --sombra:
+                0 8px 25px rgba(15, 23, 42, 0.12);
+
+            --sombra-leve:
+                0 3px 12px rgba(15, 23, 42, 0.10);
+
+            --primaria: #7f0000;
+
+            --primaria-hover: #a30000;
+
+            --mapa-filtro: none;
+
+            --popup-bg: #ffffff;
+
+            --popup-texto: #1f2933;
+
+            --controle-bg: rgba(255,255,255,0.96);
+
+            --controle-texto: #222;
+
+            --legenda-bg: rgba(255,255,255,0.97);
+
+            --legenda-texto: #333;
+
+        }
+
+
+        /* ======================================================
+           TEMA ESCURO
+        ====================================================== */
+
+        body.tema-escuro {
+
+            --bg-principal: #11161c;
+
+            --bg-painel: #171d24;
+
+            --bg-painel-secundario: #1d252e;
+
+            --texto-principal: #f2f4f7;
+
+            --texto-secundario: #aeb7c2;
+
+            --borda: #303a45;
+
+            --sombra:
+                0 8px 25px rgba(0,0,0,0.40);
+
+            --sombra-leve:
+                0 3px 12px rgba(0,0,0,0.35);
+
+            --primaria: #d7301f;
+
+            --primaria-hover: #ef6548;
+
+            --mapa-filtro:
+                brightness(0.82)
+                contrast(1.05)
+                saturate(0.85);
+
+            --popup-bg: #1c242d;
+
+            --popup-texto: #f2f4f7;
+
+            --controle-bg: rgba(25,32,40,0.96);
+
+            --controle-texto: #f2f4f7;
+
+            --legenda-bg: rgba(25,32,40,0.97);
+
+            --legenda-texto: #f2f4f7;
+
+        }
+
+
+        /* ======================================================
+           RESET
+        ====================================================== */
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+
         html,
         body {
 
@@ -40,14 +144,214 @@
 
             width: 100%;
 
-            height: 100%;
+            min-height: 100%;
 
             font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
                 Arial,
                 Helvetica,
                 sans-serif;
 
-            background: #f4f6f8;
+            background:
+                var(--bg-principal);
+
+            color:
+                var(--texto-principal);
+
+            transition:
+                background 0.25s ease,
+                color 0.25s ease;
+
+        }
+
+
+        body {
+
+            overflow: hidden;
+
+        }
+
+
+        /* ======================================================
+           CABEÇALHO
+        ====================================================== */
+
+        #cabecalho {
+
+            position: absolute;
+
+            top: 18px;
+
+            left: 18px;
+
+            z-index: 1000;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 25px;
+
+            width:
+                calc(100% - 36px);
+
+            max-width: 900px;
+
+            padding:
+                16px 20px;
+
+            background:
+                var(--controle-bg);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius: 12px;
+
+            box-shadow:
+                var(--sombra);
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
+
+        }
+
+
+        /* ======================================================
+           TÍTULO
+        ====================================================== */
+
+        .cabecalho-titulo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            min-width: 0;
+
+        }
+
+
+        .icone-dashboard {
+
+            width: 42px;
+
+            height: 42px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background:
+                var(--primaria);
+
+            color: white;
+
+            font-size: 21px;
+
+            box-shadow:
+                0 4px 10px rgba(127,0,0,0.25);
+
+        }
+
+
+        .titulo-principal {
+
+            margin: 0;
+
+            font-size: 19px;
+
+            line-height: 1.2;
+
+            font-weight: 700;
+
+            letter-spacing: -0.2px;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .subtitulo {
+
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            color:
+                var(--texto-secundario);
+
+        }
+
+
+        /* ======================================================
+           BOTÃO TEMA
+        ====================================================== */
+
+        #botao-tema {
+
+            width: 40px;
+
+            height: 40px;
+
+            flex-shrink: 0;
+
+            border:
+                1px solid var(--borda);
+
+            border-radius: 9px;
+
+            background:
+                var(--bg-painel-secundario);
+
+            color:
+                var(--texto-principal);
+
+            cursor: pointer;
+
+            font-size: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition:
+                all 0.2s ease;
+
+        }
+
+
+        #botao-tema:hover {
+
+            background:
+                var(--primaria);
+
+            color: white;
+
+            border-color:
+                var(--primaria);
+
+            transform:
+                translateY(-1px);
 
         }
 
@@ -58,70 +362,30 @@
 
         #mapa {
 
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
             width: 100%;
 
             height: 100vh;
+
+            z-index: 1;
 
         }
 
 
         /* ======================================================
-           LEGENDA
+           FILTRO DO MAPA NO TEMA ESCURO
         ====================================================== */
 
-        .legenda-ranking {
+        body.tema-escuro
+        .leaflet-tile-pane {
 
-            background: white;
-
-            padding: 12px 14px;
-
-            line-height: 20px;
-
-            color: #333;
-
-            box-shadow:
-                0 0 8px rgba(0,0,0,0.25);
-
-            border-radius: 6px;
-
-            font-size: 13px;
-
-        }
-
-
-        .legenda-ranking strong {
-
-            display: block;
-
-            margin-bottom: 6px;
-
-            font-size: 14px;
-
-        }
-
-
-        .legenda-ranking div {
-
-            display: flex;
-
-            align-items: center;
-
-        }
-
-
-        .legenda-ranking i {
-
-            width: 18px;
-
-            height: 18px;
-
-            margin-right: 7px;
-
-            display: inline-block;
-
-            border: 1px solid #999;
-
-            box-sizing: border-box;
+            filter:
+                var(--mapa-filtro);
 
         }
 
@@ -132,14 +396,528 @@
 
         .leaflet-control-layers {
 
-            font-size: 14px;
+            background:
+                var(--controle-bg) !important;
+
+            color:
+                var(--controle-texto) !important;
+
+            border:
+                1px solid var(--borda) !important;
+
+            border-radius:
+                10px !important;
+
+            box-shadow:
+                var(--sombra) !important;
+
+            overflow:
+                hidden;
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
 
         }
 
 
         .leaflet-control-layers-expanded {
 
-            padding: 10px 12px;
+            padding:
+                12px 14px !important;
+
+            min-width:
+                150px;
+
+        }
+
+
+        .leaflet-control-layers-list {
+
+            margin: 0;
+
+        }
+
+
+        .leaflet-control-layers-base {
+
+            color:
+                var(--controle-texto);
+
+        }
+
+
+        .leaflet-control-layers label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin:
+                5px 0;
+
+            color:
+                var(--controle-texto);
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+        }
+
+
+        .leaflet-control-layers-selector {
+
+            accent-color:
+                var(--primaria);
+
+        }
+
+
+        /* ======================================================
+           CONTROLES LEAFLET
+        ====================================================== */
+
+        .leaflet-control-zoom {
+
+            border:
+                1px solid var(--borda) !important;
+
+            border-radius:
+                9px !important;
+
+            overflow:
+                hidden;
+
+            box-shadow:
+                var(--sombra-leve) !important;
+
+        }
+
+
+        .leaflet-control-zoom a {
+
+            background:
+                var(--controle-bg) !important;
+
+            color:
+                var(--controle-texto) !important;
+
+            border-color:
+                var(--borda) !important;
+
+        }
+
+
+        .leaflet-control-zoom a:hover {
+
+            background:
+                var(--primaria) !important;
+
+            color:
+                white !important;
+
+        }
+
+
+        /* ======================================================
+           LEGENDA
+        ====================================================== */
+
+        .legenda-ranking {
+
+            background:
+                var(--legenda-bg);
+
+            padding:
+                14px 16px;
+
+            line-height:
+                21px;
+
+            color:
+                var(--legenda-texto);
+
+            box-shadow:
+                var(--sombra);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                10px;
+
+            font-size:
+                12px;
+
+            min-width:
+                155px;
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
+
+        }
+
+
+        .legenda-titulo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom:
+                9px;
+
+            padding-bottom:
+                8px;
+
+            border-bottom:
+                1px solid var(--borda);
+
+            font-size:
+                13px;
+
+            font-weight:
+                700;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .legenda-titulo::before {
+
+            content: "";
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                var(--primaria);
+
+        }
+
+
+        .legenda-ranking div {
+
+            display: flex;
+
+            align-items: center;
+
+            height:
+                22px;
+
+        }
+
+
+        .legenda-ranking i {
+
+            width:
+                18px;
+
+            height:
+                14px;
+
+            margin-right:
+                8px;
+
+            display:
+                inline-block;
+
+            border:
+                1px solid rgba(0,0,0,0.22);
+
+            border-radius:
+                3px;
+
+            box-sizing:
+                border-box;
+
+        }
+
+
+        /* ======================================================
+           POPUP
+        ====================================================== */
+
+        .leaflet-popup-content-wrapper {
+
+            background:
+                var(--popup-bg);
+
+            color:
+                var(--popup-texto);
+
+            border-radius:
+                10px;
+
+            box-shadow:
+                var(--sombra);
+
+        }
+
+
+        .leaflet-popup-tip {
+
+            background:
+                var(--popup-bg);
+
+        }
+
+
+        .leaflet-popup-content {
+
+            margin:
+                14px 16px;
+
+            min-width:
+                190px;
+
+            color:
+                var(--popup-texto);
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+
+        }
+
+
+        .popup-nome {
+
+            font-size:
+                16px;
+
+            font-weight:
+                700;
+
+            margin-bottom:
+                8px;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .popup-linha {
+
+            padding:
+                4px 0;
+
+            border-top:
+                1px solid var(--borda);
+
+        }
+
+
+        .popup-label {
+
+            color:
+                var(--texto-secundario);
+
+        }
+
+
+        .popup-valor {
+
+            font-weight:
+                700;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .leaflet-popup-close-button {
+
+            color:
+                var(--texto-secundario) !important;
+
+        }
+
+
+        /* ======================================================
+           INDICADOR INFORMATIVO
+        ====================================================== */
+
+        #painel-info {
+
+            position: absolute;
+
+            left: 18px;
+
+            bottom: 22px;
+
+            z-index: 1000;
+
+            padding:
+                10px 14px;
+
+            background:
+                var(--controle-bg);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                9px;
+
+            box-shadow:
+                var(--sombra-leve);
+
+            color:
+                var(--texto-secundario);
+
+            font-size:
+                11px;
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
+
+        }
+
+
+        #painel-info strong {
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        /* ======================================================
+           ESCONDER ATRIBUIÇÃO COM VISUAL MAIS LIMPO
+        ====================================================== */
+
+        .leaflet-control-attribution {
+
+            background:
+                var(--controle-bg) !important;
+
+            color:
+                var(--texto-secundario) !important;
+
+            border-radius:
+                5px 0 0 0;
+
+        }
+
+
+        .leaflet-control-attribution a {
+
+            color:
+                var(--texto-secundario) !important;
+
+        }
+
+
+        /* ======================================================
+           RESPONSIVO
+        ====================================================== */
+
+        @media (max-width: 700px) {
+
+            #cabecalho {
+
+                top: 10px;
+
+                left: 10px;
+
+                width:
+                    calc(100% - 20px);
+
+                padding:
+                    12px 14px;
+
+            }
+
+
+            .icone-dashboard {
+
+                width: 36px;
+
+                height: 36px;
+
+                font-size: 18px;
+
+            }
+
+
+            .titulo-principal {
+
+                font-size: 16px;
+
+            }
+
+
+            .subtitulo {
+
+                font-size: 10px;
+
+            }
+
+
+            #botao-tema {
+
+                width: 36px;
+
+                height: 36px;
+
+            }
+
+
+            .leaflet-control-layers {
+
+                margin-top:
+                    75px !important;
+
+            }
+
+
+            .legenda-ranking {
+
+                font-size:
+                    11px;
+
+                min-width:
+                    135px;
+
+                padding:
+                    10px 12px;
+
+            }
+
+
+            #painel-info {
+
+                left: 10px;
+
+                bottom: 15px;
+
+                max-width:
+                    220px;
+
+            }
 
         }
 
@@ -152,10 +930,74 @@
 
 
 <!-- ==========================================================
+     CABEÇALHO
+=========================================================== -->
+
+<div id="cabecalho">
+
+    <div class="cabecalho-titulo">
+
+        <div class="icone-dashboard">
+
+            🔥
+
+        </div>
+
+
+        <div>
+
+            <h1 class="titulo-principal">
+
+                Dashboard de Área Queimada
+
+            </h1>
+
+
+            <div class="subtitulo">
+
+                Distribuição espacial do ranking de área queimada
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button
+        id="botao-tema"
+        title="Alternar modo claro/escuro"
+        aria-label="Alternar modo claro/escuro"
+    >
+
+        🌙
+
+    </button>
+
+</div>
+
+
+
+<!-- ==========================================================
      MAPA
 =========================================================== -->
 
 <div id="mapa"></div>
+
+
+
+<!-- ==========================================================
+     PAINEL INFORMATIVO
+=========================================================== -->
+
+<div id="painel-info">
+
+    <strong>Visualização:</strong>
+
+    Estados e Biomas
+
+</div>
+
 
 
 <script>
@@ -174,24 +1016,29 @@ const mapa = L.map("mapa").setView(
 );
 
 
+
 // ============================================================
 // 2. MAPA BASE
 // ============================================================
 
-L.tileLayer(
+const camadaBase =
+    L.tileLayer(
 
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 
-    {
+        {
 
-        attribution:
-            "&copy; OpenStreetMap contributors",
+            attribution:
+                "&copy; OpenStreetMap contributors",
 
-        maxZoom: 18
+            maxZoom: 18
 
-    }
+        }
 
-).addTo(mapa);
+    );
+
+
+camadaBase.addTo(mapa);
 
 
 
@@ -348,11 +1195,6 @@ function ehBrasil(feature) {
         feature.properties || {};
 
 
-    /*
-       Primeiro procuramos algum campo
-       que identifique o país.
-    */
-
     const camposPais =
         Object.keys(p).filter(
 
@@ -393,11 +1235,6 @@ function ehBrasil(feature) {
         );
 
 
-    /*
-       Se o arquivo possuir campo de país,
-       utilizamos esse campo.
-    */
-
     if (
         camposPais.length > 0
     ) {
@@ -434,14 +1271,6 @@ function ehBrasil(feature) {
 
     }
 
-
-    /*
-       Caso não exista campo de país,
-       usamos a lista de estados brasileiros.
-
-       Isso evita eliminar os estados
-       quando o GeoJSON não possui COUNTRY.
-    */
 
     const estadosBrasil = new Set([
 
@@ -757,9 +1586,12 @@ function estiloPorRanking(feature) {
 
         opacity: 1,
 
-        color: "#555",
+        color:
+            document.body.classList.contains("tema-escuro")
+                ? "#b8c0c8"
+                : "#555",
 
-        fillOpacity: 0.75
+        fillOpacity: 0.78
 
     };
 
@@ -882,13 +1714,11 @@ function popupRanking(
 
     let html = `
 
-        <strong>
+        <div class="popup-nome">
 
             ${escaparHTML(nome)}
 
-        </strong>
-
-        <br><br>
+        </div>
 
     `;
 
@@ -899,11 +1729,23 @@ function popupRanking(
 
         html += `
 
-            <b>Ranking:</b>
+            <div class="popup-linha">
 
-            ${rank}
+                <span class="popup-label">
 
-            <br>
+                    Ranking
+
+                </span>
+
+                <br>
+
+                <span class="popup-valor">
+
+                    ${rank}º lugar
+
+                </span>
+
+            </div>
 
         `;
 
@@ -916,11 +1758,23 @@ function popupRanking(
 
         html += `
 
-            <b>Área queimada:</b>
+            <div class="popup-linha">
 
-            ${formatarArea(area)}
+                <span class="popup-label">
 
-            km²
+                    Área queimada
+
+                </span>
+
+                <br>
+
+                <span class="popup-valor">
+
+                    ${formatarArea(area)} km²
+
+                </span>
+
+            </div>
 
         `;
 
@@ -972,8 +1826,11 @@ async function carregarArquivos(
         try {
 
             console.log(
+
                 "Carregando:",
+
                 arquivo
+
             );
 
 
@@ -1038,12 +1895,10 @@ async function carregarArquivos(
 
 
             /*
-               IMPORTANTE:
+               Não removemos duplicados.
 
-               Não removemos duplicados aqui.
-
-               Os arquivos podem representar partes
-               espaciais diferentes da camada.
+               Os arquivos podem representar
+               partes espaciais da camada.
             */
 
             todasFeatures.push(
@@ -1140,10 +1995,6 @@ carregarArquivos(
             camada
         );
 
-
-        /*
-           Estados ficam visíveis inicialmente.
-        */
 
         grupoEstados.addTo(
             mapa
@@ -1275,7 +2126,7 @@ L.control.layers(
 
 
 // ============================================================
-// 21. LEGENDA DO RANKING
+// 21. LEGENDA
 // ============================================================
 
 const legenda =
@@ -1303,68 +2154,118 @@ legenda.onAdd =
 
         div.innerHTML = `
 
-            <strong>
+            <div class="legenda-titulo">
+
                 Ranking de Área Queimada
-            </strong>
+
+            </div>
+
 
             <div>
+
                 <i style="background:#7f0000"></i>
+
                 1
+
             </div>
 
+
             <div>
+
                 <i style="background:#b30000"></i>
+
                 2
+
             </div>
 
+
             <div>
+
                 <i style="background:#d7301f"></i>
+
                 3
+
             </div>
 
+
             <div>
+
                 <i style="background:#ef6548"></i>
+
                 4
+
             </div>
 
+
             <div>
+
                 <i style="background:#fdae61"></i>
+
                 5
+
             </div>
 
+
             <div>
+
                 <i style="background:#bdbdbd"></i>
+
                 6–18
+
             </div>
 
+
             <div>
+
                 <i style="background:#c6dbef"></i>
+
                 19
+
             </div>
 
+
             <div>
+
                 <i style="background:#9ecae1"></i>
+
                 20
+
             </div>
 
+
             <div>
+
                 <i style="background:#6baed6"></i>
+
                 21
+
             </div>
 
+
             <div>
+
                 <i style="background:#4292c6"></i>
+
                 22
+
             </div>
 
+
             <div>
+
                 <i style="background:#2171b5"></i>
+
                 23
+
             </div>
 
+
             <div>
+
                 <i style="background:#084594"></i>
+
                 24
+
             </div>
 
         `;
@@ -1384,22 +2285,29 @@ legenda.addTo(mapa);
 // ============================================================
 
 L.DomEvent.disableClickPropagation(
+
     legenda.getContainer()
+
 );
 
+
 L.DomEvent.disableScrollPropagation(
+
     legenda.getContainer()
+
 );
 
 
 
 // ============================================================
-// 23. CONTROLE DO MOUSE NO CONTROLE DE CAMADAS
+// 23. CONTROLE DO MOUSE NAS CAMADAS
 // ============================================================
 
 const controle =
     document.querySelector(
+
         ".leaflet-control-layers"
+
     );
 
 
@@ -1414,6 +2322,167 @@ if (controle) {
     );
 
 }
+
+
+
+// ============================================================
+// 24. TEMA CLARO / ESCURO
+// ============================================================
+
+const botaoTema =
+    document.getElementById(
+        "botao-tema"
+    );
+
+
+
+function atualizarIconeTema() {
+
+    if (
+        document.body.classList.contains(
+            "tema-escuro"
+        )
+    ) {
+
+        botaoTema.textContent =
+            "☀️";
+
+        botaoTema.title =
+            "Ativar modo claro";
+
+    }
+
+    else {
+
+        botaoTema.textContent =
+            "🌙";
+
+        botaoTema.title =
+            "Ativar modo escuro";
+
+    }
+
+}
+
+
+
+botaoTema.addEventListener(
+
+    "click",
+
+    function() {
+
+        document.body.classList.toggle(
+
+            "tema-escuro"
+
+        );
+
+
+        atualizarIconeTema();
+
+
+        /*
+           Atualiza a borda dos polígonos
+           depois da troca de tema.
+        */
+
+        if (mapa.hasLayer(grupoEstados)) {
+
+            grupoEstados.eachLayer(
+
+                camada => {
+
+                    if (
+                        camada.eachLayer
+                    ) {
+
+                        camada.eachLayer(
+
+                            layer => {
+
+                                if (
+                                    layer.setStyle
+                                ) {
+
+                                    layer.setStyle(
+
+                                        estiloPorRanking(
+
+                                            layer.feature
+
+                                        )
+
+                                    );
+
+                                }
+
+                            }
+
+                        );
+
+                    }
+
+                }
+
+            );
+
+        }
+
+
+        if (mapa.hasLayer(grupoBiomas)) {
+
+            grupoBiomas.eachLayer(
+
+                camada => {
+
+                    if (
+                        camada.eachLayer
+                    ) {
+
+                        camada.eachLayer(
+
+                            layer => {
+
+                                if (
+                                    layer.setStyle
+                                ) {
+
+                                    layer.setStyle(
+
+                                        estiloPorRanking(
+
+                                            layer.feature
+
+                                        )
+
+                                    );
+
+                                }
+
+                            }
+
+                        );
+
+                    }
+
+                }
+
+            );
+
+        }
+
+    }
+
+);
+
+
+
+// ============================================================
+// 25. INICIALIZAÇÃO DO TEMA
+// ============================================================
+
+atualizarIconeTema();
 
 
 
