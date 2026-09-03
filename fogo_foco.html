@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard de Área Queimada</title>
+    <title>Ranking de Área Queimada: Dashboard Interativo</title>
 
 
     <!-- ==========================================================
@@ -31,20 +31,13 @@
 
     <style>
 
-        /* ======================================================
-           VARIÁVEIS - TEMA CLARO
-        ====================================================== */
-
         :root {
 
             --bg-principal: #f3f5f7;
-
             --bg-painel: #ffffff;
-
             --bg-painel-secundario: #f8fafb;
 
             --texto-principal: #1f2933;
-
             --texto-secundario: #667085;
 
             --borda: #dfe4e8;
@@ -56,11 +49,9 @@
                 0 3px 12px rgba(15, 23, 42, 0.10);
 
             --primaria: #7f0000;
-
             --primaria-hover: #a30000;
 
             --popup-bg: #ffffff;
-
             --popup-texto: #1f2933;
 
             --controle-bg:
@@ -83,13 +74,10 @@
         body.tema-escuro {
 
             --bg-principal: #11161c;
-
             --bg-painel: #171d24;
-
             --bg-painel-secundario: #1d252e;
 
             --texto-principal: #f2f4f7;
-
             --texto-secundario: #aeb7c2;
 
             --borda: #303a45;
@@ -101,11 +89,9 @@
                 0 3px 12px rgba(0,0,0,0.35);
 
             --primaria: #d7301f;
-
             --primaria-hover: #ef6548;
 
             --popup-bg: #1c242d;
-
             --popup-texto: #f2f4f7;
 
             --controle-bg:
@@ -134,11 +120,9 @@
         body {
 
             margin: 0;
-
             padding: 0;
 
             width: 100%;
-
             min-height: 100%;
 
             font-family:
@@ -177,7 +161,6 @@
             position: absolute;
 
             top: 18px;
-
             left: 18px;
 
             z-index: 1000;
@@ -193,7 +176,7 @@
             width:
                 calc(100% - 36px);
 
-            max-width: 1050px;
+            max-width: 1100px;
 
             padding:
                 14px 18px;
@@ -204,7 +187,8 @@
             border:
                 1px solid var(--borda);
 
-            border-radius: 12px;
+            border-radius:
+                12px;
 
             box-shadow:
                 var(--sombra);
@@ -238,7 +222,6 @@
         .icone-dashboard {
 
             width: 42px;
-
             height: 42px;
 
             flex-shrink: 0;
@@ -246,7 +229,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             border-radius: 10px;
@@ -321,7 +303,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             gap: 7px;
@@ -329,7 +310,8 @@
             border:
                 1px solid var(--borda);
 
-            border-radius: 8px;
+            border-radius:
+                8px;
 
             background:
                 var(--bg-painel-secundario);
@@ -376,6 +358,10 @@
         }
 
 
+        /* ======================================================
+           SELETOR DE IDIOMA
+        ====================================================== */
+
         .seletor-idioma {
 
             display: flex;
@@ -389,7 +375,8 @@
             border:
                 1px solid var(--borda);
 
-            border-radius: 8px;
+            border-radius:
+                8px;
 
             background:
                 var(--bg-painel-secundario);
@@ -454,11 +441,9 @@
             position: absolute;
 
             top: 0;
-
             left: 0;
 
             width: 100%;
-
             height: 100vh;
 
             z-index: 1;
@@ -467,7 +452,7 @@
 
 
         /* ======================================================
-           FILTRO DO MAPA NO TEMA ESCURO
+           MAPA NO TEMA ESCURO
         ====================================================== */
 
         body.tema-escuro
@@ -676,7 +661,6 @@
             content: "";
 
             width: 7px;
-
             height: 7px;
 
             border-radius: 50%;
@@ -1023,13 +1007,13 @@
         #fechar-citacao {
 
             width: 34px;
-
             height: 34px;
 
             border:
                 1px solid var(--borda);
 
-            border-radius: 8px;
+            border-radius:
+                8px;
 
             background:
                 var(--bg-painel-secundario);
@@ -1037,11 +1021,14 @@
             color:
                 var(--texto-principal);
 
-            cursor: pointer;
+            cursor:
+                pointer;
 
-            font-size: 20px;
+            font-size:
+                20px;
 
-            line-height: 1;
+            line-height:
+                1;
 
         }
 
@@ -1181,11 +1168,9 @@
             position: absolute;
 
             top: 10px;
-
             right: 10px;
 
             width: 32px;
-
             height: 32px;
 
             border:
@@ -1200,7 +1185,8 @@
             color:
                 var(--texto-principal);
 
-            cursor: pointer;
+            cursor:
+                pointer;
 
             font-size:
                 14px;
@@ -1321,7 +1307,6 @@
             .icone-dashboard {
 
                 width: 36px;
-
                 height: 36px;
 
                 font-size: 18px;
@@ -1354,7 +1339,8 @@
 
             .botao-cabecalho {
 
-                height: 34px;
+                height:
+                    34px;
 
                 padding:
                     0 8px;
@@ -1374,7 +1360,8 @@
 
             #botao-tema {
 
-                width: 34px;
+                width:
+                    34px;
 
                 padding: 0;
 
@@ -1383,16 +1370,19 @@
 
             .seletor-idioma {
 
-                height: 34px;
+                height:
+                    34px;
 
             }
 
 
             .idioma {
 
-                height: 27px;
+                height:
+                    27px;
 
-                min-width: 29px;
+                min-width:
+                    29px;
 
                 font-size:
                     10px;
@@ -1492,7 +1482,8 @@
                 class="titulo-principal"
                 id="titulo-dashboard"
             >
-                Dashboard de Área Queimada
+                Ranking de Área Queimada:
+                Dashboard Interativo
             </h1>
 
 
@@ -1616,7 +1607,7 @@
     >
 
 
-        <!-- CABEÇALHO DO PAINEL -->
+        <!-- CABEÇALHO -->
 
         <div class="citacao-cabecalho">
 
@@ -1649,7 +1640,9 @@
         <div class="citacao-conteudo">
 
 
-            <!-- AUTORES -->
+            <!-- ==================================================
+                 AUTORIA
+            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -1662,21 +1655,23 @@
 
                     <strong>
                         Débora J. Dutra
-                    </strong><sup>1*</sup>,
-                    Igor José Malfetoni Ferreira<sup>1</sup>,
-                    Zevir A. Cipriano Júnior<sup>2</sup>,
-                    Leonardo Congro<sup>3</sup>,
-                    Pedro Noronha<sup>4</sup>,
-                    Francisco Carlos Santos de Freitas Filho<sup>5</sup>
-                    and
-                    Liana O. Anderson<sup>1,6</sup>.
+                    </strong>,
+                    Igor José Malfetoni Ferreira,
+                    Zevir A. Cipriano Júnior,
+                    Leonardo Congro,
+                    Pedro Noronha,
+                    Francisco Carlos Santos de Freitas Filho
+                    e
+                    Liana O. Anderson.
 
                 </div>
 
             </div>
 
 
-            <!-- ASSOCIAÇÃO -->
+            <!-- ==================================================
+                 PROJETO ASSOCIADO
+            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -1688,7 +1683,7 @@
                 <p id="texto-projeto">
 
                     Este dashboard está associado ao trabalho da
-                    <strong>REDE BRASA DE PESQUISA</strong>,
+                    <strong>REDE BRASA</strong>,
                     desenvolvido no contexto do diagnóstico dos
                     incêndios no Brasil em 2024–2025.
 
@@ -1697,13 +1692,15 @@
             </div>
 
 
-            <!-- CITAÇÃO DO TRABALHO -->
+            <!-- ==================================================
+                 REFERÊNCIA DO DASHBOARD
+            =================================================== -->
 
             <div class="bloco-institucional">
 
                 <h3 id="titulo-trabalho">
 
-                    Trabalho de referência
+                    Referência do dashboard
 
                 </h3>
 
@@ -1715,16 +1712,18 @@
 
                     Dutra, D. J. et al.
                     <strong>
-                        Fogo em Foco: diagnóstico dos incêndios no Brasil em 2024-2025.
+                        Ranking de Área Queimada:
+                        Dashboard Interativo.
                     </strong>
-                    São José dos Campos: INPE, 2025. 92 p.
 
                 </div>
 
             </div>
 
 
-            <!-- COMO CITAR -->
+            <!-- ==================================================
+                 COMO CITAR
+            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -1749,11 +1748,9 @@
 
                     <span id="texto-citacao-dashboard">
 
-                        Dutra, D. J.; Ferreira, I. J. M.;
-                        Cipriano Júnior, Z. A.; Congro, L.;
-                        Noronha, P.; Freitas Filho, F. C. S.;
-                        Anderson, L. O. Dashboard de Área Queimada.
-                        REDE BRASA DE PESQUISA, 2026.
+                        Dutra, D. J. et al.
+                        Ranking de Área Queimada:
+                        Dashboard Interativo.
 
                     </span>
 
@@ -1766,12 +1763,15 @@
                     id="aviso-copia"
                 >
                     Clique no ícone para copiar a referência.
+
                 </div>
 
             </div>
 
 
-            <!-- REFERÊNCIA COMPLETA -->
+            <!-- ==================================================
+                 REFERÊNCIA DO TRABALHO ASSOCIADO
+            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -1784,10 +1784,14 @@
 
                     <span id="texto-referencia">
 
-                        Dutra, D. J. et al.
-                        Fogo em Foco: diagnóstico dos incêndios no Brasil em 2024-2025.
+                        REDE BRASA.
+                        <strong>
+                            Fogo em Foco: diagnóstico dos incêndios
+                            no Brasil em 2024-2025.
+                        </strong>
                         São José dos Campos: INPE, 2025. 92 p.
-                        URI: upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE.
+                        URI:
+                        upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE.
 
                     </span>
 
@@ -1810,7 +1814,9 @@
             </div>
 
 
-            <!-- CRÉDITOS -->
+            <!-- ==================================================
+                 CRÉDITOS
+            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -1822,7 +1828,7 @@
                 <p id="texto-creditos">
 
                     Dashboard desenvolvido para visualização
-                    espacial de informações de área queimada
+                    espacial do ranking de área queimada
                     no Brasil.
 
                 </p>
@@ -1859,10 +1865,12 @@ const camadaBase =
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
+
             attribution:
                 "&copy; OpenStreetMap contributors",
 
             maxZoom: 18
+
         }
     );
 
@@ -1877,9 +1885,7 @@ camadaBase.addTo(mapa);
 const arquivosEstados = [
 
     "estados_2024_01.geojson",
-
     "estados_2024_02.geojson",
-
     "estados_2024_03.geojson"
 
 ];
@@ -1892,13 +1898,9 @@ const arquivosEstados = [
 const arquivosBiomas = [
 
     "biomas_2024_01.geojson",
-
     "biomas_2024_02.geojson",
-
     "biomas_2024_03.geojson",
-
     "biomas_2024_04.geojson",
-
     "biomas_2024_05.geojson"
 
 ];
@@ -1945,25 +1947,15 @@ function obterNome(feature) {
     const camposNome = [
 
         "region_nam",
-
         "Region Name",
-
         "NAME_1",
-
         "NM_ESTADO",
-
         "NM_UF",
-
         "NAME",
-
         "nome",
-
         "Nome",
-
         "name",
-
         "NAME_0",
-
         "Region"
 
     ];
@@ -2023,15 +2015,10 @@ function ehBrasil(feature) {
                 return [
 
                     "country",
-
                     "pais",
-
                     "name0",
-
                     "countryname",
-
                     "nomepais",
-
                     "nomedopais"
 
                 ].includes(
@@ -2077,57 +2064,31 @@ function ehBrasil(feature) {
     const estadosBrasil = new Set([
 
         "acre",
-
         "alagoas",
-
         "amapa",
-
         "amazonas",
-
         "bahia",
-
         "ceara",
-
         "distrito federal",
-
         "espirito santo",
-
         "goias",
-
         "maranhao",
-
         "mato grosso",
-
         "mato grosso do sul",
-
         "minas gerais",
-
         "para",
-
         "paraiba",
-
         "parana",
-
         "pernambuco",
-
         "piaui",
-
         "rio de janeiro",
-
         "rio grande do norte",
-
         "rio grande do sul",
-
         "rondonia",
-
         "roraima",
-
         "santa catarina",
-
         "sao paulo",
-
         "sergipe",
-
         "tocantins"
 
     ]);
@@ -2157,17 +2118,11 @@ function obterRanking(feature) {
     const camposRanking = [
 
         "Rank_Category",
-
         "Burned Area Rank",
-
         "Burned_Area_Rank",
-
         "Ranking",
-
         "ranking",
-
         "Rank",
-
         "rank"
 
     ];
@@ -2180,9 +2135,7 @@ function obterRanking(feature) {
         if (
 
             p[campo] !== undefined &&
-
             p[campo] !== null &&
-
             p[campo] !== ""
 
         ) {
@@ -2224,15 +2177,10 @@ function obterArea(feature) {
     const camposArea = [
 
         "Burned Area (km^2)",
-
         "Burned_Area_km2",
-
         "Burned Area",
-
         "burned_area",
-
         "area_queimada",
-
         "Area Queimada"
 
     ];
@@ -2245,9 +2193,7 @@ function obterArea(feature) {
         if (
 
             p[campo] !== undefined &&
-
             p[campo] !== null &&
-
             p[campo] !== ""
 
         ) {
@@ -2299,18 +2245,14 @@ function corRanking(rank) {
     if (rank === 1)
         return "#7f0000";
 
-
     if (rank === 2)
         return "#b30000";
-
 
     if (rank === 3)
         return "#d7301f";
 
-
     if (rank === 4)
         return "#ef6548";
-
 
     if (rank === 5)
         return "#fdae61";
@@ -2327,22 +2269,17 @@ function corRanking(rank) {
     if (rank === 19)
         return "#c6dbef";
 
-
     if (rank === 20)
         return "#9ecae1";
-
 
     if (rank === 21)
         return "#6baed6";
 
-
     if (rank === 22)
         return "#4292c6";
 
-
     if (rank === 23)
         return "#2171b5";
-
 
     if (rank === 24)
         return "#084594";
@@ -2368,9 +2305,11 @@ function estiloPorRanking(feature) {
         fillColor:
             corRanking(rank),
 
-        weight: 1,
+        weight:
+            1,
 
-        opacity: 1,
+        opacity:
+            1,
 
         color:
             document.body.classList.contains("tema-escuro")
@@ -2379,7 +2318,8 @@ function estiloPorRanking(feature) {
 
                 : "#555",
 
-        fillOpacity: 0.78
+        fillOpacity:
+            0.78
 
     };
 
@@ -2441,29 +2381,33 @@ function formatarArea(valor) {
     if (
 
         valor === null ||
-
         valor === undefined ||
-
         !Number.isFinite(
             Number(valor)
         )
 
     ) {
 
-        return "Não disponível";
+        return idiomaAtual === "pt"
+            ? "Não disponível"
+            : "Not available";
 
     }
 
 
     return Number(valor).toLocaleString(
 
-        "pt-BR",
+        idiomaAtual === "pt"
+            ? "pt-BR"
+            : "en-US",
 
         {
 
-            minimumFractionDigits: 2,
+            minimumFractionDigits:
+                2,
 
-            maximumFractionDigits: 2
+            maximumFractionDigits:
+                2
 
         }
 
@@ -2479,7 +2423,6 @@ function formatarArea(valor) {
 function popupRanking(
 
     feature,
-
     layer
 
 ) {
@@ -2494,6 +2437,24 @@ function popupRanking(
 
     const area =
         obterArea(feature);
+
+
+    const rankingTexto =
+        idiomaAtual === "pt"
+            ? "Ranking"
+            : "Rank";
+
+
+    const lugarTexto =
+        idiomaAtual === "pt"
+            ? "º lugar"
+            : "";
+
+
+    const areaTexto =
+        idiomaAtual === "pt"
+            ? "Área queimada"
+            : "Burned area";
 
 
     let html = `
@@ -2516,11 +2477,11 @@ function popupRanking(
             <div class="popup-linha">
 
                 <span class="popup-label">
-                    Ranking
+                    ${rankingTexto}
                 </span>
 
                 <span class="popup-valor">
-                    ${rank}º lugar
+                    ${rank}${lugarTexto}
                 </span>
 
             </div>
@@ -2539,7 +2500,7 @@ function popupRanking(
             <div class="popup-linha">
 
                 <span class="popup-label">
-                    Área queimada
+                    ${areaTexto}
                 </span>
 
                 <span class="popup-valor">
@@ -2662,7 +2623,6 @@ async function carregarArquivos(
             console.error(
 
                 `Erro ao carregar ${arquivo}:`,
-
                 erro
 
             );
@@ -2675,7 +2635,6 @@ async function carregarArquivos(
     console.log(
 
         "Total de feições carregadas:",
-
         todasFeatures.length
 
     );
@@ -2726,7 +2685,6 @@ function criarCamada(data) {
 carregarArquivos(
 
     arquivosEstados,
-
     true
 
 ).then(
@@ -2769,7 +2727,6 @@ carregarArquivos(
 carregarArquivos(
 
     arquivosBiomas,
-
     false
 
 ).then(
@@ -2804,31 +2761,78 @@ carregarArquivos(
 // 20. CONTROLE DE CAMADAS
 // ============================================================
 
-const controleCamadas = {
-
-    "Estados":
-        grupoEstados,
-
-    "Biomas":
-        grupoBiomas
-
-};
+let controleCamadas;
 
 
-L.control.layers(
+function criarControleCamadas() {
 
-    null,
+    if (
+        controleCamadas
+    ) {
 
-    controleCamadas,
-
-    {
-
-        collapsed:
-            false
+        mapa.removeControl(
+            controleCamadas
+        );
 
     }
 
-).addTo(mapa);
+
+    controleCamadas =
+        L.control.layers(
+
+            null,
+
+            {
+
+                [
+                    idiomaAtual === "pt"
+                        ? "Estados"
+                        : "States"
+                ]:
+                    grupoEstados,
+
+                [
+                    idiomaAtual === "pt"
+                        ? "Biomas"
+                        : "Biomes"
+                ]:
+                    grupoBiomas
+
+            },
+
+            {
+
+                collapsed:
+                    false
+
+            }
+
+        ).addTo(mapa);
+
+
+    const controle =
+        document.querySelector(
+            ".leaflet-control-layers"
+        );
+
+
+    if (controle) {
+
+        L.DomEvent.disableClickPropagation(
+            controle
+        );
+
+
+        L.DomEvent.disableScrollPropagation(
+            controle
+        );
+
+    }
+
+}
+
+
+criarControleCamadas();
 
 
 // ============================================================
@@ -2853,7 +2857,6 @@ legenda.onAdd =
             L.DomUtil.create(
 
                 "div",
-
                 "legenda-ranking"
 
             );
@@ -2970,34 +2973,7 @@ L.DomEvent.disableScrollPropagation(
 
 
 // ============================================================
-// 23. CONTROLE DO MOUSE NAS CAMADAS
-// ============================================================
-
-const controle =
-
-    document.querySelector(
-
-        ".leaflet-control-layers"
-
-    );
-
-
-if (controle) {
-
-    L.DomEvent.disableClickPropagation(
-        controle
-    );
-
-
-    L.DomEvent.disableScrollPropagation(
-        controle
-    );
-
-}
-
-
-// ============================================================
-// 24. ATUALIZAR ESTILO DAS CAMADAS
+// 23. ATUALIZAR ESTILO DAS CAMADAS
 // ============================================================
 
 function atualizarEstilosCamadas() {
@@ -3007,7 +2983,6 @@ function atualizarEstilosCamadas() {
         if (
 
             layer.feature &&
-
             layer.setStyle
 
         ) {
@@ -3049,7 +3024,7 @@ function atualizarEstilosCamadas() {
 
 
 // ============================================================
-// 25. TEMA CLARO / ESCURO
+// 24. TEMA CLARO / ESCURO
 // ============================================================
 
 const botaoTema =
@@ -3073,7 +3048,9 @@ function atualizarIconeTema() {
             "☀️";
 
         botaoTema.title =
-            "Ativar modo claro";
+            idiomaAtual === "pt"
+                ? "Ativar modo claro"
+                : "Enable light mode";
 
     }
 
@@ -3083,7 +3060,9 @@ function atualizarIconeTema() {
             "🌙";
 
         botaoTema.title =
-            "Ativar modo escuro";
+            idiomaAtual === "pt"
+                ? "Ativar modo escuro"
+                : "Enable dark mode";
 
     }
 
@@ -3112,7 +3091,7 @@ botaoTema.addEventListener(
 
 
 // ============================================================
-// 26. PAINEL DE CITAÇÃO
+// 25. PAINEL DE CITAÇÃO
 // ============================================================
 
 function abrirCitacao() {
@@ -3175,45 +3154,38 @@ document.addEventListener(
 
 
 // ============================================================
-// 27. COPIAR CITAÇÃO
+// 26. COPIAR CITAÇÃO
 // ============================================================
 
 function copiarCitacao() {
 
-    const elemento =
-
-        document.getElementById(
-            "texto-citacao-dashboard"
-        );
-
-
     const texto =
-        elemento.innerText;
+        document
+            .getElementById(
+                "texto-citacao-dashboard"
+            )
+            .innerText
+            .trim();
 
 
-    navigator.clipboard.writeText(
-        texto
-    )
-    .then(
-
+    const mostrarSucesso =
         function() {
 
             const aviso =
-
                 document.getElementById(
                     "aviso-copia"
                 );
 
 
             const textoOriginal =
-                aviso.textContent;
+                idiomaAtual === "pt"
+                    ? "Clique no ícone para copiar a referência."
+                    : "Click the icon to copy the reference.";
 
 
             aviso.textContent =
                 idiomaAtual === "pt"
-
                     ? "✓ Referência copiada."
-
                     : "✓ Reference copied.";
 
 
@@ -3230,15 +3202,122 @@ function copiarCitacao() {
 
             );
 
-        }
+        };
 
+
+    if (
+        navigator.clipboard &&
+        window.isSecureContext
+    ) {
+
+        navigator.clipboard
+            .writeText(texto)
+            .then(
+                mostrarSucesso
+            )
+            .catch(
+                copiarCitacaoFallback
+            );
+
+    }
+
+    else {
+
+        copiarCitacaoFallback();
+
+    }
+
+}
+
+
+function copiarCitacaoFallback() {
+
+    const elemento =
+        document.getElementById(
+            "texto-citacao-dashboard"
+        );
+
+
+    const area =
+        document.createElement(
+            "textarea"
+        );
+
+
+    area.value =
+        elemento.innerText.trim();
+
+
+    area.style.position =
+        "fixed";
+
+    area.style.opacity =
+        "0";
+
+
+    document.body.appendChild(
+        area
+    );
+
+
+    area.select();
+
+
+    try {
+
+        document.execCommand(
+            "copy"
+        );
+
+
+        const aviso =
+            document.getElementById(
+                "aviso-copia"
+            );
+
+
+        aviso.textContent =
+            idiomaAtual === "pt"
+                ? "✓ Referência copiada."
+                : "✓ Reference copied.";
+
+
+        setTimeout(
+
+            function() {
+
+                aviso.textContent =
+                    idiomaAtual === "pt"
+                        ? "Clique no ícone para copiar a referência."
+                        : "Click the icon to copy the reference.";
+
+            },
+
+            2500
+
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao copiar:",
+            erro
+        );
+
+    }
+
+
+    document.body.removeChild(
+        area
     );
 
 }
 
 
 // ============================================================
-// 28. IDIOMAS
+// 27. IDIOMAS
 // ============================================================
 
 let idiomaAtual = "pt";
@@ -3249,7 +3328,7 @@ const textos = {
     pt: {
 
         titulo:
-            "Dashboard de Área Queimada",
+            "Ranking de Área Queimada: Dashboard Interativo",
 
         subtitulo:
             "Distribuição espacial do ranking de área queimada",
@@ -3279,10 +3358,10 @@ const textos = {
             "Projeto associado",
 
         textoProjeto:
-            "Este dashboard está associado ao trabalho da <strong>REDE BRASA DE PESQUISA</strong>, desenvolvido no contexto do diagnóstico dos incêndios no Brasil em 2024–2025.",
+            "Este dashboard está associado ao trabalho da <strong>REDE BRASA</strong>, desenvolvido no contexto do diagnóstico dos incêndios no Brasil em 2024–2025.",
 
         trabalho:
-            "Trabalho de referência",
+            "Referência do dashboard",
 
         comoCitar:
             "Como citar o dashboard",
@@ -3294,7 +3373,7 @@ const textos = {
             "Créditos",
 
         textoCreditos:
-            "Dashboard desenvolvido para visualização espacial de informações de área queimada no Brasil.",
+            "Dashboard desenvolvido para visualização espacial do ranking de área queimada no Brasil.",
 
         link:
             "Acessar publicação no INPE",
@@ -3308,7 +3387,7 @@ const textos = {
     en: {
 
         titulo:
-            "Burned Area Dashboard",
+            "Burned Area Ranking: Interactive Dashboard",
 
         subtitulo:
             "Spatial distribution of the burned area ranking",
@@ -3338,10 +3417,10 @@ const textos = {
             "Associated project",
 
         textoProjeto:
-            "This dashboard is associated with the work of the <strong>REDE BRASA DE PESQUISA</strong>, developed in the context of the assessment of fires in Brazil in 2024–2025.",
+            "This dashboard is associated with the work of <strong>REDE BRASA</strong>, developed in the context of the assessment of fires in Brazil in 2024–2025.",
 
         trabalho:
-            "Reference work",
+            "Dashboard reference",
 
         comoCitar:
             "How to cite the dashboard",
@@ -3353,7 +3432,7 @@ const textos = {
             "Credits",
 
         textoCreditos:
-            "Dashboard developed for the spatial visualization of burned area information in Brazil.",
+            "Dashboard developed for the spatial visualization of the burned area ranking in Brazil.",
 
         link:
             "Access publication at INPE",
@@ -3365,6 +3444,10 @@ const textos = {
 
 };
 
+
+// ============================================================
+// 28. MUDAR IDIOMA
+// ============================================================
 
 function mudarIdioma(novoIdioma) {
 
@@ -3508,6 +3591,42 @@ function mudarIdioma(novoIdioma) {
         "ativo",
         novoIdioma === "en"
     );
+
+
+    /* ============================================
+       ATUALIZAR REFERÊNCIA DO DASHBOARD
+    ============================================ */
+
+    document.getElementById(
+        "texto-citacao-dashboard"
+    ).textContent =
+
+        novoIdioma === "pt"
+
+            ? "Dutra, D. J. et al. Ranking de Área Queimada: Dashboard Interativo."
+
+            : "Dutra, D. J. et al. Burned Area Ranking: Interactive Dashboard.";
+
+
+    /* ============================================
+       ATUALIZAR CONTROLE DE CAMADAS
+    ============================================ */
+
+    criarControleCamadas();
+
+
+    /* ============================================
+       ATUALIZAR TEMA
+    ============================================ */
+
+    atualizarIconeTema();
+
+
+    /* ============================================
+       FECHAR POPUP ABERTO
+    ============================================ */
+
+    mapa.closePopup();
 
 }
 
