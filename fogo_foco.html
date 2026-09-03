@@ -1,11 +1,20 @@
-<!-- fogo_foco.html -->
+<!-- ============================================================
+     fogo_foco.html
+     Dashboard de Ranking de Área Queimada 2024/2025
+     ============================================================ -->
 
-<h2>Dashboard de Fogo e Focos de Calor</h2>
+<h2>Ranking de Área Queimada 2024/2025</h2>
 
 <p>
-  Visualização espacial e temporal dos focos de calor e das ocorrências
-  de fogo no território brasileiro.
+  Visualização espacial do ranking de área queimada para a temporada
+  2024/2025, com informações agregadas para estados, biomas,
+  terras indígenas e unidades de conservação no território brasileiro.
 </p>
+
+
+<!-- ============================================================
+     CARDS
+     ============================================================ -->
 
 <div style="
   display:grid;
@@ -14,19 +23,7 @@
   margin:25px 0;
 ">
 
-  <div style="
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
-    text-align:center;
-  ">
-    <h3>Focos de calor</h3>
-    <p style="font-size:30px;color:#e74c3c;">
-      0
-    </p>
-    <small>Total de focos</small>
-  </div>
+  <!-- CARD 1 -->
 
   <div style="
     background:white;
@@ -35,12 +32,46 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.1);
     text-align:center;
   ">
+
+    <h3>Unidades analisadas</h3>
+
+    <p
+      id="totalUnidades"
+      style="font-size:30px;color:#2980b9;"
+    >
+      0
+    </p>
+
+    <small>Regiões brasileiras</small>
+
+  </div>
+
+
+  <!-- CARD 2 -->
+
+  <div style="
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    text-align:center;
+  ">
+
     <h3>Área queimada</h3>
-    <p style="font-size:30px;color:#e67e22;">
-      0 ha
+
+    <p
+      id="areaTotal"
+      style="font-size:30px;color:#e67e22;"
+    >
+      0 km²
     </p>
-    <small>Área afetada pelo fogo</small>
+
+    <small>Área queimada nas unidades analisadas</small>
+
   </div>
+
+
+  <!-- CARD 3 -->
 
   <div style="
     background:white;
@@ -49,12 +80,24 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.1);
     text-align:center;
   ">
-    <h3>Emissões</h3>
-    <p style="font-size:30px;color:#8e44ad;">
-      0
+
+    <h3>Maior área queimada</h3>
+
+    <p
+      id="maiorArea"
+      style="font-size:22px;color:#c0392b;"
+    >
+      0 km²
     </p>
-    <small>Estimativa de CO₂</small>
+
+    <small id="maiorAreaNome">
+      Unidade
+    </small>
+
   </div>
+
+
+  <!-- CARD 4 -->
 
   <div style="
     background:white;
@@ -63,17 +106,27 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.1);
     text-align:center;
   ">
-    <h3>Período</h3>
-    <p style="font-size:22px;color:#2980b9;">
-      2025
+
+    <h3>Temporada</h3>
+
+    <p
+      style="font-size:22px;color:#8e44ad;"
+    >
+      2024/2025
     </p>
-    <small>Ano selecionado</small>
+
+    <small>
+      Período analisado
+    </small>
+
   </div>
 
 </div>
 
 
-<!-- MAPA -->
+<!-- ============================================================
+     MAPA
+     ============================================================ -->
 
 <div style="
   background:white;
@@ -83,19 +136,24 @@
   margin-bottom:25px;
 ">
 
-  <h3>Distribuição espacial dos focos de calor</h3>
+  <h3>Ranking espacial da área queimada</h3>
 
-  <iframe
-    src="mapa_focos.html"
-    width="100%"
-    height="600"
-    style="border:none;border-radius:8px;">
-  </iframe>
+  <div
+    id="mapaRanking"
+    style="
+      width:100%;
+      height:600px;
+      border-radius:8px;
+      overflow:hidden;
+    "
+  ></div>
 
 </div>
 
 
-<!-- FILTROS -->
+<!-- ============================================================
+     FILTROS
+     ============================================================ -->
 
 <div style="
   background:white;
@@ -106,46 +164,174 @@
 
   <h3>Filtros</h3>
 
-  <label>Ano:</label>
 
-  <select id="ano"
+  <!-- BIOMA -->
+
+  <label>Bioma:</label>
+
+  <select
+    id="bioma"
     style="
       padding:8px;
       margin:10px 20px 10px 5px;
       border-radius:5px;
       border:1px solid #ccc;
-    ">
+    "
+  >
 
-    <option>2025</option>
-    <option>2024</option>
-    <option>2023</option>
-    <option>2022</option>
-
-  </select>
-
-
-  <label>Bioma:</label>
-
-  <select id="bioma"
-    style="
-      padding:8px;
-      margin:10px;
-      border-radius:5px;
-      border:1px solid #ccc;
-    ">
-
-    <option>Todos</option>
-    <option>Amazônia</option>
-    <option>Cerrado</option>
-    <option>Caatinga</option>
-    <option>Mata Atlântica</option>
-    <option>Pantanal</option>
-    <option>Pampa</option>
+    <option value="Todos">Todos</option>
+    <option value="Amazônia">Amazônia</option>
+    <option value="Caatinga">Caatinga</option>
+    <option value="Cerrado">Cerrado</option>
+    <option value="Mata Atlântica">Mata Atlântica</option>
+    <option value="Pampa">Pampa</option>
+    <option value="Pantanal">Pantanal</option>
 
   </select>
+
+
+  <!-- CAMADAS -->
+
+  <label style="margin-left:10px;">
+    Camadas:
+  </label>
+
+  <label style="margin-left:10px;">
+    <input
+      type="checkbox"
+      id="checkEstados"
+      checked
+    >
+    Estados
+  </label>
+
+  <label style="margin-left:10px;">
+    <input
+      type="checkbox"
+      id="checkBiomas"
+    >
+    Biomas
+  </label>
+
+  <label style="margin-left:10px;">
+    <input
+      type="checkbox"
+      id="checkTI"
+    >
+    Terras Indígenas
+  </label>
+
+  <label style="margin-left:10px;">
+    <input
+      type="checkbox"
+      id="checkUC"
+    >
+    Unidades de Conservação
+  </label>
+
+
+  <!-- LEGENDA -->
+
+  <div style="
+    margin-top:20px;
+    padding:15px;
+    background:#f8f9fa;
+    border-radius:8px;
+  ">
+
+    <strong>
+      Classes do ranking
+    </strong>
+
+    <div style="
+      display:flex;
+      flex-wrap:wrap;
+      gap:15px;
+      margin-top:12px;
+      font-size:14px;
+    ">
+
+      <span>
+        <span style="
+          display:inline-block;
+          width:18px;
+          height:18px;
+          background:#7f0000;
+          margin-right:5px;
+          vertical-align:middle;
+        "></span>
+        1º
+      </span>
+
+      <span>
+        <span style="
+          display:inline-block;
+          width:18px;
+          height:18px;
+          background:#d7301f;
+          margin-right:5px;
+          vertical-align:middle;
+        "></span>
+        2º–5º
+      </span>
+
+      <span>
+        <span style="
+          display:inline-block;
+          width:18px;
+          height:18px;
+          background:#bdbdbd;
+          margin-right:5px;
+          vertical-align:middle;
+        "></span>
+        6º–17º
+      </span>
+
+      <span>
+        <span style="
+          display:inline-block;
+          width:18px;
+          height:18px;
+          background:#6baed6;
+          margin-right:5px;
+          vertical-align:middle;
+        "></span>
+        18º–22º
+      </span>
+
+      <span>
+        <span style="
+          display:inline-block;
+          width:18px;
+          height:18px;
+          background:#08519c;
+          margin-right:5px;
+          vertical-align:middle;
+        "></span>
+        23º+
+      </span>
+
+    </div>
+
+    <div style="
+      margin-top:10px;
+      font-size:13px;
+      color:#555;
+    ">
+
+      <strong>Interpretação:</strong>
+      1º representa a maior área queimada da série temporal.
+
+    </div>
+
+  </div>
 
 </div>
 
+
+<!-- ============================================================
+     FONTE
+     ============================================================ -->
 
 <div style="
   margin-top:25px;
@@ -157,7 +343,1693 @@
 
   <strong>Fonte dos dados:</strong>
 
-  BDQueimadas, INPE; MapBiomas Fogo;
-  demais bases utilizadas no projeto.
+  Bases de área queimada utilizadas no projeto, organizadas por
+  estados, biomas, terras indígenas e unidades de conservação.
 
 </div>
+
+
+<!-- ============================================================
+     LEAFLET
+     ============================================================ -->
+
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* ==========================================================
+     CONFIGURAÇÃO
+     ========================================================== */
+
+  const BASE_DADOS = "dashboard_data/";
+
+  const ARQUIVOS = {
+
+    estados: [
+      "estados_2024_01.geojson",
+      "estados_2024_02.geojson",
+      "estados_2024_03.geojson"
+    ],
+
+    biomas: [
+      "biomas_2024_01.geojson",
+      "biomas_2024_02.geojson",
+      "biomas_2024_03.geojson",
+      "biomas_2024_04.geojson",
+      "biomas_2024_05.geojson"
+    ],
+
+    terras_indigenas: [
+      "terras_indigenas_2024_01.geojson",
+      "terras_indigenas_2024_02.geojson",
+      "terras_indigenas_2024_03.geojson",
+      "terras_indigenas_2024_04.geojson"
+    ],
+
+    unidades_conservacao: [
+      "unidades_conservacao_2024_01.geojson",
+      "unidades_conservacao_2024_02.geojson",
+      "unidades_conservacao_2024_03.geojson",
+      "unidades_conservacao_2024_04.geojson"
+    ]
+
+  };
+
+
+  /* ==========================================================
+     MAPA
+     ========================================================== */
+
+  const mapa = L.map("mapaRanking").setView(
+    [-14.2, -51.9],
+    4
+  );
+
+
+  L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom: 18,
+      attribution: "&copy; OpenStreetMap contributors"
+    }
+  ).addTo(mapa);
+
+
+  /* ==========================================================
+     GRUPOS DE CAMADAS
+     ========================================================== */
+
+  const camadas = {
+
+    estados: L.layerGroup(),
+
+    biomas: L.layerGroup(),
+
+    terras_indigenas: L.layerGroup(),
+
+    unidades_conservacao: L.layerGroup()
+
+  };
+
+
+  camadas.estados.addTo(mapa);
+
+
+  /* ==========================================================
+     CONTROLE
+     ========================================================== */
+
+  const controles = {
+
+    estados: true,
+
+    biomas: false,
+
+    terras_indigenas: false,
+
+    unidades_conservacao: false
+
+  };
+
+
+  /* ==========================================================
+     CORES DO RANKING
+     ========================================================== */
+
+  function corRanking(rank) {
+
+    rank = Number(rank);
+
+    if (!Number.isFinite(rank)) {
+      return "#d9d9d9";
+    }
+
+    if (rank === 1) {
+      return "#7f0000";
+    }
+
+    if (rank >= 2 && rank <= 5) {
+      return "#d7301f";
+    }
+
+    if (rank >= 6 && rank <= 17) {
+      return "#bdbdbd";
+    }
+
+    if (rank >= 18 && rank <= 22) {
+      return "#6baed6";
+    }
+
+    if (rank >= 23) {
+      return "#08519c";
+    }
+
+    return "#d9d9d9";
+
+  }
+
+
+  /* ==========================================================
+     RANKING
+     ========================================================== */
+
+  function obterRanking(properties) {
+
+    let valor =
+      properties["Burned Area Rank"];
+
+    if (
+      valor === undefined ||
+      valor === null ||
+      valor === ""
+    ) {
+
+      valor =
+        properties["Rank_Category"];
+
+    }
+
+    if (
+      valor === undefined ||
+      valor === null ||
+      valor === ""
+    ) {
+
+      return null;
+
+    }
+
+    const numero = Number(valor);
+
+    return Number.isFinite(numero)
+      ? numero
+      : null;
+
+  }
+
+
+  /* ==========================================================
+     NÚMERO
+     ========================================================== */
+
+  function numero(valor) {
+
+    if (
+      valor === null ||
+      valor === undefined ||
+      valor === ""
+    ) {
+
+      return null;
+
+    }
+
+    const n = Number(valor);
+
+    return Number.isFinite(n)
+      ? n
+      : null;
+
+  }
+
+
+  /* ==========================================================
+     FORMATAÇÃO
+     ========================================================== */
+
+  function formatarNumero(valor, casas = 2) {
+
+    const n = numero(valor);
+
+    if (n === null) {
+      return "Não informado";
+    }
+
+    return n.toLocaleString(
+      "pt-BR",
+      {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: casas
+      }
+    );
+
+  }
+
+
+  function formatarRank(valor) {
+
+    const n = numero(valor);
+
+    if (n === null) {
+      return "Não informado";
+    }
+
+    return `${Math.round(n)}º`;
+
+  }
+
+
+  /* ==========================================================
+     NOMES DOS CAMPOS
+     ========================================================== */
+
+  const nomesCampos = {
+
+    "Product":
+      "Produto",
+
+    "Region ID":
+      "ID da região",
+
+    "Region Name":
+      "Nome da região",
+
+    "Regional Layer":
+      "Camada regional",
+
+    "Fire Season Start Year":
+      "Ano inicial da temporada",
+
+    "Fire Season End Year":
+      "Ano final da temporada",
+
+    "Fire Season Start Month":
+      "Mês inicial da temporada",
+
+    "Fire Season End Month":
+      "Mês final da temporada",
+
+    "Land Cover":
+      "Cobertura da terra",
+
+    "Burned Area (km^2)":
+      "Área queimada (km²)",
+
+    "Burned Area Fraction (%)":
+      "Fração da área queimada (%)",
+
+    "Burned Area Rank":
+      "Ranking da área queimada",
+
+    "Rank_Category":
+      "Classe de ranking",
+
+    "Burned Area Fraction Rank":
+      "Ranking da fração queimada",
+
+    "Burned Area Percentile":
+      "Percentil da área queimada",
+
+    "Burned Area Fraction Percentile":
+      "Percentil da fração queimada",
+
+    "Burned Area Mean Annual (km^2)":
+      "Média anual da área queimada (km²)",
+
+    "Burned Area StDev Annual (km^2)":
+      "Desvio padrão anual (km²)",
+
+    "Burned Area Fraction Mean Annual (%)":
+      "Média anual da fração (%)",
+
+    "Burned Area Fraction StDev Annual (%)":
+      "Desvio padrão da fração (%)",
+
+    "Burned Area Anomaly (%)":
+      "Anomalia da área queimada (%)",
+
+    "Burned Area Fraction Anomaly (%)":
+      "Anomalia da fração queimada (%)",
+
+    "Burned Area Anomaly (Standard Deviations)":
+      "Anomalia da área (desvios padrão)",
+
+    "Burned Area Fraction Anomaly (Standard Deviations)":
+      "Anomalia da fração (desvios padrão)",
+
+    "Month with Peak in Burned Area Anomaly":
+      "Mês do pico da anomalia",
+
+    "Months Prior to Peak with Above-Average Burned Area":
+      "Meses anteriores ao pico acima da média",
+
+    "Months After Peak with Above-Average Burned Area":
+      "Meses posteriores ao pico acima da média",
+
+    "Rank_Queimada_Serie":
+      "Ranking da área na série temporal"
+
+  };
+
+
+  /* ==========================================================
+     CAMPOS TÉCNICOS QUE NÃO APARECEM NO RELATÓRIO
+     ========================================================== */
+
+  const camposOcultos = new Set([
+
+    "geometry",
+
+    "Unnamed: 0",
+
+    "fid",
+
+    "FID",
+
+    "GID_0",
+
+    "GID_1",
+
+    "GID_2"
+
+  ]);
+
+
+  /* ==========================================================
+     FORMATAÇÃO ESPECÍFICA DOS CAMPOS
+     ========================================================== */
+
+  function formatarCampo(
+    campo,
+    valor
+  ) {
+
+    if (
+      valor === null ||
+      valor === undefined ||
+      valor === ""
+    ) {
+
+      return "Não informado";
+
+    }
+
+
+    if (
+      campo === "Burned Area (km^2)" ||
+      campo === "Burned Area Mean Annual (km^2)" ||
+      campo === "Burned Area StDev Annual (km^2)"
+    ) {
+
+      return (
+        formatarNumero(valor, 2) +
+        " km²"
+      );
+
+    }
+
+
+    if (
+      campo === "Burned Area Fraction (%)" ||
+      campo === "Burned Area Fraction Mean Annual (%)" ||
+      campo === "Burned Area Fraction StDev Annual (%)" ||
+      campo === "Burned Area Anomaly (%)" ||
+      campo === "Burned Area Fraction Anomaly (%)"
+    ) {
+
+      return (
+        formatarNumero(valor, 2) +
+        " %"
+      );
+
+    }
+
+
+    if (
+      campo === "Burned Area Rank" ||
+      campo === "Burned Area Fraction Rank" ||
+      campo === "Rank_Queimada_Serie"
+    ) {
+
+      return formatarRank(valor);
+
+    }
+
+
+    if (
+      campo === "Burned Area Percentile" ||
+      campo === "Burned Area Fraction Percentile"
+    ) {
+
+      return (
+        formatarNumero(valor, 2) +
+        " %"
+      );
+
+    }
+
+
+    if (
+      typeof valor === "number"
+    ) {
+
+      return formatarNumero(valor, 2);
+
+    }
+
+
+    if (
+      typeof valor === "object"
+    ) {
+
+      try {
+
+        return JSON.stringify(valor);
+
+      } catch (erro) {
+
+        return String(valor);
+
+      }
+
+    }
+
+
+    return String(valor);
+
+  }
+
+
+  /* ==========================================================
+     NOME DA REGIÃO
+     ========================================================== */
+
+  function obterNome(properties) {
+
+    return (
+
+      properties["Region Name"] ||
+
+      properties["region_nam"] ||
+
+      properties["NAME_1"] ||
+
+      properties["NM_ESTADO"] ||
+
+      properties["NM_BIOMA"] ||
+
+      properties["name"] ||
+
+      "Unidade sem identificação"
+
+    );
+
+  }
+
+
+  /* ==========================================================
+     RELATÓRIO
+     ========================================================== */
+
+  function criarRelatorio(
+    properties,
+    tipo
+  ) {
+
+    const nome =
+      obterNome(properties);
+
+    const ranking =
+      obterRanking(properties);
+
+    const area =
+      numero(
+        properties["Burned Area (km^2)"]
+      );
+
+
+    let temporada =
+      "2024/2025";
+
+
+    if (
+      properties["Fire Season Start Year"] !== undefined &&
+      properties["Fire Season End Year"] !== undefined
+    ) {
+
+      temporada =
+        `${properties["Fire Season Start Year"]}/${properties["Fire Season End Year"]}`;
+
+    }
+
+
+    let interpretacao =
+      "Não foi possível interpretar o ranking.";
+
+    if (ranking === 1) {
+
+      interpretacao =
+        "Esta unidade apresenta a maior área queimada entre as unidades classificadas na série temporal.";
+
+    }
+    else if (ranking >= 2 && ranking <= 5) {
+
+      interpretacao =
+        "Esta unidade está entre as cinco maiores posições do ranking de área queimada.";
+
+    }
+    else if (ranking >= 6 && ranking <= 17) {
+
+      interpretacao =
+        "Esta unidade ocupa uma posição intermediária no ranking de área queimada.";
+
+    }
+    else if (ranking >= 18 && ranking <= 22) {
+
+      interpretacao =
+        "Esta unidade apresenta uma posição inferior no ranking em comparação às primeiras classes.";
+
+    }
+    else if (ranking >= 23) {
+
+      interpretacao =
+        "Esta unidade está entre as posições de menor área queimada no ranking.";
+
+    }
+
+
+    let html = `
+
+      <div style="
+        width:420px;
+        max-width:80vw;
+        max-height:520px;
+        overflow-y:auto;
+        padding-right:8px;
+      ">
+
+        <h3 style="
+          margin-top:0;
+          margin-bottom:8px;
+          color:#2c3e50;
+        ">
+          ${nome}
+        </h3>
+
+        <div style="
+          font-size:13px;
+          color:#666;
+          margin-bottom:12px;
+        ">
+          ${tipo} | Temporada ${temporada}
+        </div>
+
+    `;
+
+
+    if (ranking !== null) {
+
+      html += `
+
+        <div style="
+          background:${corRanking(ranking)};
+          color:white;
+          padding:14px;
+          border-radius:8px;
+          text-align:center;
+          margin-bottom:12px;
+        ">
+
+          <div style="
+            font-size:13px;
+            opacity:0.9;
+          ">
+            Ranking da área queimada
+          </div>
+
+          <div style="
+            font-size:32px;
+            font-weight:bold;
+          ">
+            ${formatarRank(ranking)}
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+    if (area !== null) {
+
+      html += `
+
+        <div style="
+          background:#f8f9fa;
+          border-radius:8px;
+          padding:12px;
+          margin-bottom:12px;
+        ">
+
+          <strong>Área queimada</strong>
+
+          <div style="
+            font-size:22px;
+            color:#e67e22;
+            font-weight:bold;
+            margin-top:4px;
+          ">
+            ${formatarNumero(area)} km²
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+    html += `
+
+      <div style="
+        background:#ecf0f1;
+        padding:12px;
+        border-radius:8px;
+        margin-bottom:15px;
+        font-size:13px;
+        line-height:1.5;
+      ">
+
+        <strong>Interpretação</strong><br>
+
+        ${interpretacao}
+
+      </div>
+
+      <h4 style="
+        margin-bottom:8px;
+        color:#34495e;
+      ">
+        Informações da unidade
+      </h4>
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        font-size:12px;
+      ">
+    `;
+
+
+    Object.keys(properties).forEach(
+      function (campo) {
+
+        if (
+          camposOcultos.has(campo)
+        ) {
+
+          return;
+
+        }
+
+
+        const valor =
+          properties[campo];
+
+
+        if (
+          valor === null ||
+          valor === undefined ||
+          valor === ""
+        ) {
+
+          return;
+
+        }
+
+
+        let nomeCampo =
+          nomesCampos[campo] ||
+          campo;
+
+
+        let valorCampo =
+          formatarCampo(
+            campo,
+            valor
+          );
+
+
+        html += `
+
+          <tr>
+
+            <td style="
+              padding:6px;
+              border-bottom:1px solid #ddd;
+              font-weight:bold;
+              vertical-align:top;
+              width:48%;
+            ">
+              ${nomeCampo}
+            </td>
+
+            <td style="
+              padding:6px;
+              border-bottom:1px solid #ddd;
+              vertical-align:top;
+            ">
+              ${valorCampo}
+            </td>
+
+          </tr>
+
+        `;
+
+      }
+    );
+
+
+    html += `
+
+        </table>
+
+      </div>
+
+    `;
+
+
+    return html;
+
+  }
+
+
+  /* ==========================================================
+     ESTILO DAS FEIÇÕES
+     ========================================================== */
+
+  function estiloFeature(
+    feature,
+    tipo
+  ) {
+
+    const rank =
+      obterRanking(
+        feature.properties || {}
+      );
+
+
+    if (tipo === "estados") {
+
+      return {
+
+        color: "#333",
+
+        weight: 1.2,
+
+        fillColor:
+          corRanking(rank),
+
+        fillOpacity: 0.72
+
+      };
+
+    }
+
+
+    if (tipo === "biomas") {
+
+      return {
+
+        color: "#222",
+
+        weight: 2,
+
+        fillColor:
+          corRanking(rank),
+
+        fillOpacity: 0.45
+
+      };
+
+    }
+
+
+    if (tipo === "terras_indigenas") {
+
+      return {
+
+        color: "#7f8c8d",
+
+        weight: 1,
+
+        fillColor:
+          corRanking(rank),
+
+        fillOpacity: 0.25,
+
+        dashArray: "4,4"
+
+      };
+
+    }
+
+
+    if (tipo === "unidades_conservacao") {
+
+      return {
+
+        color: "#34495e",
+
+        weight: 1,
+
+        fillColor:
+          corRanking(rank),
+
+        fillOpacity: 0.25,
+
+        dashArray: "2,4"
+
+      };
+
+    }
+
+
+    return {
+
+      color:"#333",
+
+      weight:1,
+
+      fillColor:
+        corRanking(rank),
+
+      fillOpacity:0.5
+
+    };
+
+  }
+
+
+  /* ==========================================================
+     INTERAÇÃO
+     ========================================================== */
+
+  function configurarFeature(
+    feature,
+    layer,
+    tipo
+  ) {
+
+    layer.bindPopup(
+      criarRelatorio(
+        feature.properties || {},
+        tipo
+      ),
+      {
+        maxWidth:450
+      }
+    );
+
+
+    layer.on(
+      "mouseover",
+      function () {
+
+        this.setStyle({
+
+          weight: 3,
+
+          color: "#111",
+
+          fillOpacity: 0.85
+
+        });
+
+        this.bringToFront();
+
+      }
+    );
+
+
+    layer.on(
+      "mouseout",
+      function () {
+
+        const estilo =
+          estiloFeature(
+            feature,
+            tipo
+          );
+
+        this.setStyle(
+          estilo
+        );
+
+      }
+    );
+
+  }
+
+
+  /* ==========================================================
+     ARQUIVOS CARREGADOS
+     ========================================================== */
+
+  const dados = {
+
+    estados: [],
+
+    biomas: [],
+
+    terras_indigenas: [],
+
+    unidades_conservacao: []
+
+  };
+
+
+  /* ==========================================================
+     DEDUPLICAÇÃO
+     ========================================================== */
+
+  function chaveFeature(
+    feature,
+    tipo
+  ) {
+
+    const p =
+      feature.properties || {};
+
+
+    if (
+      p["Region ID"] !== undefined
+    ) {
+
+      return (
+        tipo +
+        "_" +
+        String(p["Region ID"])
+      );
+
+    }
+
+
+    if (
+      p["region_id"] !== undefined
+    ) {
+
+      return (
+        tipo +
+        "_" +
+        String(p["region_id"])
+      );
+
+    }
+
+
+    if (
+      p["CD_Bioma"] !== undefined
+    ) {
+
+      return (
+        tipo +
+        "_" +
+        String(p["CD_Bioma"])
+      );
+
+    }
+
+
+    if (
+      p["NAME_1"] !== undefined
+    ) {
+
+      return (
+        tipo +
+        "_" +
+        String(p["NAME_1"])
+      );
+
+    }
+
+
+    return null;
+
+  }
+
+
+  /* ==========================================================
+     CARREGAR UM ARQUIVO
+     ========================================================== */
+
+  async function carregarArquivo(
+    arquivo,
+    tipo
+  ) {
+
+    const resposta =
+      await fetch(
+        BASE_DADOS + arquivo
+      );
+
+
+    if (!resposta.ok) {
+
+      throw new Error(
+        `Erro HTTP ${resposta.status}: ${arquivo}`
+      );
+
+    }
+
+
+    const geojson =
+      await resposta.json();
+
+
+    if (
+      !geojson.features
+    ) {
+
+      return;
+
+    }
+
+
+    geojson.features.forEach(
+      function (feature) {
+
+        /* ----------------------------------------------------
+           ESTADOS: somente Brasil
+           ---------------------------------------------------- */
+
+        if (
+          tipo === "estados"
+        ) {
+
+          const pais =
+            feature.properties &&
+            feature.properties["COUNTRY"];
+
+
+          if (
+            pais &&
+            String(pais).toLowerCase() !== "brazil"
+          ) {
+
+            return;
+
+          }
+
+        }
+
+
+        dados[tipo].push(
+          feature
+        );
+
+      }
+    );
+
+  }
+
+
+  /* ==========================================================
+     CARREGAR TODOS OS BLOCOS
+     ========================================================== */
+
+  async function carregarTodos() {
+
+    for (
+      const tipo of Object.keys(ARQUIVOS)
+    ) {
+
+      for (
+        const arquivo of ARQUIVOS[tipo]
+      ) {
+
+        try {
+
+          await carregarArquivo(
+            arquivo,
+            tipo
+          );
+
+        }
+        catch (erro) {
+
+          console.error(
+            "Erro carregando:",
+            arquivo,
+            erro
+          );
+
+        }
+
+      }
+
+    }
+
+
+    /* --------------------------------------------------------
+       Remover duplicidades
+       -------------------------------------------------------- */
+
+    Object.keys(dados).forEach(
+      function (tipo) {
+
+        const mapaUnico =
+          new Map();
+
+
+        dados[tipo].forEach(
+          function (feature) {
+
+            const chave =
+              chaveFeature(
+                feature,
+                tipo
+              );
+
+
+            if (
+              chave === null
+            ) {
+
+              mapaUnico.set(
+                Math.random(),
+                feature
+              );
+
+            }
+            else if (
+              !mapaUnico.has(chave)
+            ) {
+
+              mapaUnico.set(
+                chave,
+                feature
+              );
+
+            }
+
+          }
+        );
+
+
+        dados[tipo] =
+          Array.from(
+            mapaUnico.values()
+          );
+
+      }
+    );
+
+
+    atualizarMapa();
+
+    atualizarCards();
+
+  }
+
+
+  /* ==========================================================
+     ADICIONAR CAMADA AO MAPA
+     ========================================================== */
+
+  function adicionarCamada(
+    tipo
+  ) {
+
+    camadas[tipo].clearLayers();
+
+
+    const features =
+      dados[tipo];
+
+
+    if (
+      features.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const geojson =
+      L.geoJSON(
+        {
+          type: "FeatureCollection",
+
+          features: features
+
+        },
+        {
+
+          style:
+            function (feature) {
+
+              return estiloFeature(
+                feature,
+                tipo
+              );
+
+            },
+
+
+          onEachFeature:
+            function (
+              feature,
+              layer
+            ) {
+
+              configurarFeature(
+                feature,
+                layer,
+                tipo
+              );
+
+            }
+
+        }
+      );
+
+
+    camadas[tipo].addLayer(
+      geojson
+    );
+
+  }
+
+
+  /* ==========================================================
+     FILTRO DE BIOMA
+     ========================================================== */
+
+  function obterBiomaFeature(
+    feature
+  ) {
+
+    const p =
+      feature.properties || {};
+
+
+    return (
+
+      p["Region Name"] ||
+
+      p["region_nam"] ||
+
+      p["region_des"] ||
+
+      p["NM_BIOMA"] ||
+
+      ""
+
+    );
+
+  }
+
+
+  function aplicarFiltroBioma() {
+
+    const selecionado =
+      document.getElementById(
+        "bioma"
+      ).value;
+
+
+    camadas.biomas.clearLayers();
+
+
+    let features =
+      dados.biomas;
+
+
+    if (
+      selecionado !== "Todos"
+    ) {
+
+      features =
+        features.filter(
+          function (feature) {
+
+            const nome =
+              obterBiomaFeature(
+                feature
+              );
+
+            return (
+              String(nome)
+                .toLowerCase()
+                .includes(
+                  selecionado.toLowerCase()
+                )
+            );
+
+          }
+        );
+
+    }
+
+
+    const geojson =
+      L.geoJSON(
+        {
+          type:"FeatureCollection",
+
+          features:features
+
+        },
+        {
+
+          style:
+            function (feature) {
+
+              return estiloFeature(
+                feature,
+                "biomas"
+              );
+
+            },
+
+
+          onEachFeature:
+            function (
+              feature,
+              layer
+            ) {
+
+              configurarFeature(
+                feature,
+                layer,
+                "biomas"
+              );
+
+            }
+
+        }
+      );
+
+
+    camadas.biomas.addLayer(
+      geojson
+    );
+
+  }
+
+
+  /* ==========================================================
+     ATUALIZAR MAPA
+     ========================================================== */
+
+  function atualizarMapa() {
+
+    Object.keys(
+      camadas
+    ).forEach(
+      function (tipo) {
+
+        if (
+          mapa.hasLayer(
+            camadas[tipo]
+          )
+        ) {
+
+          mapa.removeLayer(
+            camadas[tipo]
+          );
+
+        }
+
+      }
+    );
+
+
+    /* --------------------------------------------------------
+       Estados
+       -------------------------------------------------------- */
+
+    if (
+      controles.estados
+    ) {
+
+      adicionarCamada(
+        "estados"
+      );
+
+      camadas.estados.addTo(
+        mapa
+      );
+
+    }
+
+
+    /* --------------------------------------------------------
+       Biomas
+       -------------------------------------------------------- */
+
+    if (
+      controles.biomas
+    ) {
+
+      aplicarFiltroBioma();
+
+      camadas.biomas.addTo(
+        mapa
+      );
+
+    }
+
+
+    /* --------------------------------------------------------
+       Terras Indígenas
+       -------------------------------------------------------- */
+
+    if (
+      controles.terras_indigenas
+    ) {
+
+      adicionarCamada(
+        "terras_indigenas"
+      );
+
+      camadas.terras_indigenas.addTo(
+        mapa
+      );
+
+    }
+
+
+    /* --------------------------------------------------------
+       Unidades de Conservação
+       -------------------------------------------------------- */
+
+    if (
+      controles.unidades_conservacao
+    ) {
+
+      adicionarCamada(
+        "unidades_conservacao"
+      );
+
+      camadas.unidades_conservacao.addTo(
+        mapa
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     ATUALIZAR CARDS
+     ========================================================== */
+
+  function atualizarCards() {
+
+    const estados =
+      dados.estados;
+
+
+    document.getElementById(
+      "totalUnidades"
+    ).textContent =
+      estados.length.toLocaleString(
+        "pt-BR"
+      );
+
+
+    let soma =
+      0;
+
+
+    let maior =
+      null;
+
+
+    let maiorNome =
+      "Unidade";
+
+
+    estados.forEach(
+      function (feature) {
+
+        const p =
+          feature.properties || {};
+
+
+        const area =
+          numero(
+            p["Burned Area (km^2)"]
+          );
+
+
+        if (
+          area !== null
+        ) {
+
+          soma += area;
+
+
+          if (
+            maior === null ||
+            area > maior
+          ) {
+
+            maior =
+              area;
+
+            maiorNome =
+              obterNome(p);
+
+          }
+
+        }
+
+      }
+    );
+
+
+    document.getElementById(
+      "areaTotal"
+    ).textContent =
+      formatarNumero(
+        soma
+      ) + " km²";
+
+
+    if (
+      maior !== null
+    ) {
+
+      document.getElementById(
+        "maiorArea"
+      ).textContent =
+        formatarNumero(
+          maior
+        ) + " km²";
+
+
+      document.getElementById(
+        "maiorAreaNome"
+      ).textContent =
+        maiorNome;
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     EVENTOS DOS FILTROS
+     ========================================================== */
+
+  document.getElementById(
+    "bioma"
+  ).addEventListener(
+    "change",
+    function () {
+
+      if (
+        controles.biomas
+      ) {
+
+        aplicarFiltroBioma();
+
+      }
+
+    }
+  );
+
+
+  document.getElementById(
+    "checkEstados"
+  ).addEventListener(
+    "change",
+    function () {
+
+      controles.estados =
+        this.checked;
+
+      atualizarMapa();
+
+    }
+  );
+
+
+  document.getElementById(
+    "checkBiomas"
+  ).addEventListener(
+    "change",
+    function () {
+
+      controles.biomas =
+        this.checked;
+
+      atualizarMapa();
+
+    }
+  );
+
+
+  document.getElementById(
+    "checkTI"
+  ).addEventListener(
+    "change",
+    function () {
+
+      controles.terras_indigenas =
+        this.checked;
+
+      atualizarMapa();
+
+    }
+  );
+
+
+  document.getElementById(
+    "checkUC"
+  ).addEventListener(
+    "change",
+    function () {
+
+      controles.unidades_conservacao =
+        this.checked;
+
+      atualizarMapa();
+
+    }
+  );
+
+
+  /* ==========================================================
+     INICIAR
+     ========================================================== */
+
+  carregarTodos();
+
+
+});
+
+</script>
