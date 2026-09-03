@@ -10,6 +10,7 @@
 
     <title>Dashboard de Área Queimada</title>
 
+
     <!-- ==========================================================
          LEAFLET
     =========================================================== -->
@@ -17,7 +18,7 @@
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    >
 
     <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
@@ -330,7 +331,7 @@
 
 
         /* ======================================================
-           TABELA DE INFORMAÇÕES
+           TABELA
         ====================================================== */
 
         .tabela-relatorio {
@@ -520,7 +521,9 @@
     </h3>
 
 
-    <!-- CAMADA -->
+    <!-- ======================================================
+         SELEÇÃO DA CAMADA
+    ======================================================= -->
 
     <div class="seletor-relatorio">
 
@@ -568,7 +571,9 @@
     </div>
 
 
-    <!-- ENTIDADE -->
+    <!-- ======================================================
+         SELEÇÃO DA ENTIDADE
+    ======================================================= -->
 
     <div
         class="seletor-relatorio"
@@ -596,7 +601,9 @@
     </div>
 
 
-    <!-- CONTEÚDO -->
+    <!-- ======================================================
+         CONTEÚDO DO RELATÓRIO
+    ======================================================= -->
 
     <div
         id="conteudo-relatorio"
@@ -619,13 +626,18 @@
 // ============================================================
 
 const mapa = L.map("mapa").setView(
+
     [-14.2, -51.9],
+
     4
+
 );
 
 
 L.tileLayer(
+
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
     {
 
         attribution:
@@ -634,6 +646,7 @@ L.tileLayer(
         maxZoom: 18
 
     }
+
 ).addTo(mapa);
 
 
@@ -696,7 +709,152 @@ const arquivosUC = [
 
 
 // ============================================================
-// 3. CARREGAR ARQUIVOS
+// 3. NORMALIZAR TEXTO
+// ============================================================
+
+function normalizarTexto(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(valor)
+
+        .trim()
+
+        .toLowerCase()
+
+        .normalize("NFD")
+
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        );
+
+}
+
+
+
+// ============================================================
+// 4. VERIFICAR SE É BRASIL
+// ============================================================
+
+function ehBrasil(feature) {
+
+    const p =
+        feature.properties || {};
+
+
+    // ========================================================
+    // PRIORIDADE 1: COUNTRY
+    // ========================================================
+
+    if (
+        p.COUNTRY !== undefined &&
+        p.COUNTRY !== null
+    ) {
+
+        const pais =
+            normalizarTexto(
+                p.COUNTRY
+            );
+
+
+        return (
+
+            pais === "brazil" ||
+
+            pais === "brasil"
+
+        );
+
+    }
+
+
+    // ========================================================
+    // OUTROS CAMPOS POSSÍVEIS
+    // ========================================================
+
+    const camposPais = [
+
+        "Country",
+
+        "country",
+
+        "NAME_0",
+
+        "Name_0",
+
+        "name_0",
+
+        "PAIS",
+
+        "Pais",
+
+        "pais",
+
+        "COUNTRY_NAME",
+
+        "Country_Name",
+
+        "country_name"
+
+    ];
+
+
+    for (
+        const campo of camposPais
+    ) {
+
+        if (
+            p[campo] === undefined ||
+            p[campo] === null
+        ) {
+
+            continue;
+
+        }
+
+
+        const pais =
+            normalizarTexto(
+                p[campo]
+            );
+
+
+        if (
+
+            pais === "brazil" ||
+
+            pais === "brasil"
+
+        ) {
+
+            return true;
+
+        }
+
+    }
+
+
+    // ========================================================
+    // NÃO ENCONTROU PAÍS
+    // ========================================================
+
+    return false;
+
+}
+
+
+
+// ============================================================
+// 5. CARREGAR ARQUIVOS
 // ============================================================
 
 async function carregarArquivos(
@@ -725,13 +883,17 @@ async function carregarArquivos(
 
 
             const resposta =
-                await fetch(arquivo);
+                await fetch(
+                    arquivo
+                );
 
 
             if (!resposta.ok) {
 
                 throw new Error(
+
                     `Erro HTTP ${resposta.status}`
+
                 );
 
             }
@@ -745,61 +907,42 @@ async function carregarArquivos(
                 dados.features || [];
 
 
+            console.log(
+
+                `${arquivo}: ${features.length} feições originais`
+
+            );
+
+
             // ==================================================
-            // FILTRO SOMENTE BRASIL
+            // FILTRO DOS ESTADOS
             // ==================================================
 
             if (somenteBrasil) {
 
+                const totalAntes =
+                    features.length;
+
+
                 features =
                     features.filter(
+
                         feature => {
 
-                            const p =
-                                feature.properties || {};
-
-
-                            const valoresPais = [
-
-                                p.NAME_0,
-
-                                p.name_0,
-
-                                p.Name_0,
-
-                                p.COUNTRY,
-
-                                p.Country,
-
-                                p.country,
-
-                                p.PAIS,
-
-                                p.Pais,
-
-                                p.pais
-
-                            ];
-
-
-                            return valoresPais.some(
-
-                                valor =>
-
-                                    valor !== null &&
-
-                                    valor !== undefined &&
-
-                                    String(valor)
-                                        .trim()
-                                        .toLowerCase() ===
-                                        "brasil"
-
+                            return ehBrasil(
+                                feature
                             );
 
                         }
 
                     );
+
+
+                console.log(
+
+                    `${arquivo}: ${features.length} feições mantidas como Brasil de ${totalAntes}`
+
+                );
 
             }
 
@@ -824,6 +967,15 @@ async function carregarArquivos(
     }
 
 
+    console.log(
+
+        "Total de feições carregadas:",
+
+        todasFeatures.length
+
+    );
+
+
     return {
 
         type: "FeatureCollection",
@@ -837,7 +989,7 @@ async function carregarArquivos(
 
 
 // ============================================================
-// 4. RANKING
+// 6. RANKING
 // ============================================================
 
 function obterRanking(feature) {
@@ -882,13 +1034,13 @@ function obterRanking(feature) {
         ) {
 
             const valor =
-                Number(p[campo]);
+                Number(
+                    p[campo]
+                );
 
 
             if (
-
                 Number.isFinite(valor)
-
             ) {
 
                 return valor;
@@ -907,7 +1059,7 @@ function obterRanking(feature) {
 
 
 // ============================================================
-// 5. NOME
+// 7. NOME
 // ============================================================
 
 function obterNome(feature) {
@@ -977,7 +1129,7 @@ function obterNome(feature) {
 
 
 // ============================================================
-// 6. ÁREA QUEIMADA
+// 8. ÁREA QUEIMADA
 // ============================================================
 
 function obterArea(feature) {
@@ -1020,7 +1172,9 @@ function obterArea(feature) {
         ) {
 
             const valor =
-                Number(p[campo]);
+                Number(
+                    p[campo]
+                );
 
 
             if (
@@ -1043,7 +1197,7 @@ function obterArea(feature) {
 
 
 // ============================================================
-// 7. CORES DO RANKING
+// 9. CORES
 // ============================================================
 
 function corRanking(rank) {
@@ -1058,7 +1212,8 @@ function corRanking(rank) {
     }
 
 
-    rank = Number(rank);
+    rank =
+        Number(rank);
 
 
     if (rank === 1)
@@ -1120,7 +1275,7 @@ function corRanking(rank) {
 
 
 // ============================================================
-// 8. ESTILO
+// 10. ESTILO
 // ============================================================
 
 function estiloPorRanking(feature) {
@@ -1149,7 +1304,7 @@ function estiloPorRanking(feature) {
 
 
 // ============================================================
-// 9. ESCAPAR HTML
+// 11. ESCAPAR HTML
 // ============================================================
 
 function escaparHTML(valor) {
@@ -1196,7 +1351,7 @@ function escaparHTML(valor) {
 
 
 // ============================================================
-// 10. FORMATAÇÃO
+// 12. FORMATAÇÃO
 // ============================================================
 
 function formatarValor(valor) {
@@ -1217,12 +1372,15 @@ function formatarValor(valor) {
     ) {
 
         return valor.toLocaleString(
+
             "pt-BR",
+
             {
 
                 maximumFractionDigits: 4
 
             }
+
         );
 
     }
@@ -1257,7 +1415,7 @@ function formatarValor(valor) {
 
 
 // ============================================================
-// 11. POPUP DO MAPA
+// 13. POPUP
 // ============================================================
 
 function popupRanking(
@@ -1331,7 +1489,7 @@ function popupRanking(
 
 
 // ============================================================
-// 12. GRUPOS
+// 14. GRUPOS
 // ============================================================
 
 const grupoEstados =
@@ -1352,7 +1510,7 @@ const grupoUC =
 
 
 // ============================================================
-// 13. DADOS
+// 15. DADOS
 // ============================================================
 
 let dadosEstados = null;
@@ -1366,7 +1524,7 @@ let dadosUC = null;
 
 
 // ============================================================
-// 14. CRIAR CAMADA
+// 16. CRIAR CAMADA
 // ============================================================
 
 function criarCamada(data) {
@@ -1392,7 +1550,7 @@ function criarCamada(data) {
 
 
 // ============================================================
-// 15. CARREGAR ESTADOS
+// 17. CARREGAR ESTADOS
 // ============================================================
 
 carregarArquivos(
@@ -1420,7 +1578,7 @@ carregarArquivos(
 
         console.log(
 
-            "Estados somente Brasil:",
+            "ESTADOS DO BRASIL:",
 
             data.features.length
 
@@ -1433,7 +1591,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 16. CARREGAR BIOMAS
+// 18. CARREGAR BIOMAS
 // ============================================================
 
 carregarArquivos(
@@ -1459,7 +1617,7 @@ carregarArquivos(
 
         console.log(
 
-            "Biomas:",
+            "BIOMAS:",
 
             data.features.length
 
@@ -1472,7 +1630,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 17. CARREGAR TI
+// 19. CARREGAR TERRAS INDÍGENAS
 // ============================================================
 
 carregarArquivos(
@@ -1498,7 +1656,7 @@ carregarArquivos(
 
         console.log(
 
-            "Terras Indígenas:",
+            "TERRAS INDÍGENAS:",
 
             data.features.length
 
@@ -1511,7 +1669,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 18. CARREGAR UC
+// 20. CARREGAR UNIDADES DE CONSERVAÇÃO
 // ============================================================
 
 carregarArquivos(
@@ -1537,7 +1695,7 @@ carregarArquivos(
 
         console.log(
 
-            "Unidades de Conservação:",
+            "UNIDADES DE CONSERVAÇÃO:",
 
             data.features.length
 
@@ -1550,7 +1708,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 19. CONTROLE DE CAMADAS
+// 21. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas = {
@@ -1587,7 +1745,7 @@ L.control.layers(
 
 
 // ============================================================
-// 20. LEGENDA
+// 22. LEGENDA
 // ============================================================
 
 const legenda =
@@ -1604,8 +1762,11 @@ legenda.onAdd =
 
         const div =
             L.DomUtil.create(
+
                 "div",
+
                 "legenda-ranking"
+
             );
 
 
@@ -1690,7 +1851,7 @@ legenda.addTo(mapa);
 
 
 // ============================================================
-// 21. REFERÊNCIAS DAS CAMADAS
+// 23. OBTER DADOS DA CAMADA
 // ============================================================
 
 function obterDadosDaCamada(
@@ -1738,7 +1899,7 @@ function obterDadosDaCamada(
 
 
 // ============================================================
-// 22. GRUPO DA CAMADA
+// 24. OBTER GRUPO DA CAMADA
 // ============================================================
 
 function obterGrupoDaCamada(
@@ -1786,7 +1947,7 @@ function obterGrupoDaCamada(
 
 
 // ============================================================
-// 23. ID DA FEIÇÃO
+// 25. IDENTIFICADOR
 // ============================================================
 
 function obterIdentificador(
@@ -1848,13 +2009,15 @@ function obterIdentificador(
 
 
 // ============================================================
-// 24. EVENTO: SELEÇÃO DA CAMADA
+// 26. SELEÇÃO DA CAMADA NO RELATÓRIO
 // ============================================================
 
 document
+
     .getElementById(
         "seletor-camada"
     )
+
     .addEventListener(
 
         "change",
@@ -1906,9 +2069,12 @@ document
                 "mensagem-relatorio";
 
 
-            conteudo.innerHTML =
+            conteudo.innerHTML = `
 
-                "Selecione uma camada para gerar o relatório.";
+                Selecione uma camada
+                para gerar o relatório.
+
+            `;
 
 
             if (!nomeCamada) {
@@ -1939,24 +2105,31 @@ document
 
                 `;
 
-                // Tenta novamente depois de um pequeno intervalo
 
                 setTimeout(
+
                     () => {
 
                         document
+
                             .getElementById(
                                 "seletor-camada"
                             )
+
                             .dispatchEvent(
+
                                 new Event(
                                     "change"
                                 )
+
                             );
 
                     },
+
                     800
+
                 );
+
 
                 return;
 
@@ -1964,8 +2137,11 @@ document
 
 
             if (
+
                 !dados.features ||
+
                 dados.features.length === 0
+
             ) {
 
                 conteudo.innerHTML = `
@@ -1991,8 +2167,11 @@ document
 
 
             if (
+
                 grupo &&
+
                 !mapa.hasLayer(grupo)
+
             ) {
 
                 grupo.addTo(mapa);
@@ -2007,12 +2186,17 @@ document
             dados.features.forEach(
 
                 (
+
                     feature,
+
                     index
+
                 ) => {
 
                     const nome =
-                        obterNome(feature);
+                        obterNome(
+                            feature
+                        );
 
 
                     const identificador =
@@ -2025,9 +2209,9 @@ document
                         nome;
 
 
-                    // Evita opções exatamente iguais
-
-                    if (identificador) {
+                    if (
+                        identificador
+                    ) {
 
                         texto +=
                             ` — ${identificador}`;
@@ -2077,13 +2261,15 @@ document
 
 
 // ============================================================
-// 25. EVENTO: SELEÇÃO DA ENTIDADE
+// 27. SELEÇÃO DA ENTIDADE
 // ============================================================
 
 document
+
     .getElementById(
         "seletor-entidade"
     )
+
     .addEventListener(
 
         "change",
@@ -2093,14 +2279,18 @@ document
             const nomeCamada =
 
                 document
+
                     .getElementById(
                         "seletor-camada"
                     )
+
                     .value;
 
 
             const indice =
-                Number(this.value);
+                Number(
+                    this.value
+                );
 
 
             const conteudo =
@@ -2110,8 +2300,11 @@ document
 
 
             if (
+
                 !nomeCamada ||
+
                 this.value === ""
+
             ) {
 
                 conteudo.innerHTML = `
@@ -2133,8 +2326,11 @@ document
 
 
             if (
+
                 !dados ||
+
                 !dados.features[indice]
+
             ) {
 
                 conteudo.innerHTML = `
@@ -2163,7 +2359,7 @@ document
 
 
             // --------------------------------------------------
-            // CENTRALIZAR NO ITEM
+            // CENTRALIZAR
             // --------------------------------------------------
 
             try {
@@ -2179,12 +2375,17 @@ document
 
 
                 if (
+
                     bounds &&
+
                     bounds.isValid()
+
                 ) {
 
                     mapa.fitBounds(
+
                         bounds,
+
                         {
 
                             padding:
@@ -2194,15 +2395,21 @@ document
                                 8
 
                         }
+
                     );
 
                 }
 
-            } catch (erro) {
+            }
+
+            catch (erro) {
 
                 console.warn(
+
                     "Não foi possível centralizar:",
+
                     erro
+
                 );
 
             }
@@ -2214,7 +2421,7 @@ document
 
 
 // ============================================================
-// 26. GERAR RELATÓRIO
+// 28. GERAR RELATÓRIO
 // ============================================================
 
 function gerarRelatorio(
@@ -2260,8 +2467,11 @@ function gerarRelatorio(
             </h4>
 
             <p>
+
                 <strong>Camada:</strong>
+
                 ${escaparHTML(nomeCamada)}
+
             </p>
 
         </div>
@@ -2280,14 +2490,18 @@ function gerarRelatorio(
     `;
 
 
-    // Nome
+    // --------------------------------------------------------
+    // NOME
+    // --------------------------------------------------------
 
     html += `
 
         <div class="cartao-resumo">
 
             <div class="titulo">
+
                 Área selecionada
+
             </div>
 
             <div class="valor">
@@ -2301,7 +2515,9 @@ function gerarRelatorio(
     `;
 
 
-    // Ranking
+    // --------------------------------------------------------
+    // RANKING
+    // --------------------------------------------------------
 
     if (
         rank !== null
@@ -2312,8 +2528,11 @@ function gerarRelatorio(
 
 
         if (
+
             rank >= 1 &&
+
             rank <= 5
+
         ) {
 
             classeRanking =
@@ -2337,13 +2556,18 @@ function gerarRelatorio(
             <div class="cartao-resumo">
 
                 <div class="titulo">
+
                     Ranking
+
                 </div>
 
                 <div class="valor">
 
                     <span
-                        class="ranking ${classeRanking}"
+                        class="
+                            ranking
+                            ${classeRanking}
+                        "
                     >
 
                         ${rank}
@@ -2359,7 +2583,9 @@ function gerarRelatorio(
     }
 
 
-    // Área
+    // --------------------------------------------------------
+    // ÁREA
+    // --------------------------------------------------------
 
     if (
         area !== null
@@ -2370,7 +2596,9 @@ function gerarRelatorio(
             <div class="cartao-resumo">
 
                 <div class="titulo">
+
                     Área queimada
+
                 </div>
 
                 <div class="valor">
@@ -2396,7 +2624,7 @@ function gerarRelatorio(
 
 
     // ========================================================
-    // INFORMAÇÕES RELEVANTES
+    // INFORMAÇÕES
     // ========================================================
 
     html += `
@@ -2412,6 +2640,7 @@ function gerarRelatorio(
 
         </h4>
 
+
         <table
             class="tabela-relatorio"
         >
@@ -2421,9 +2650,9 @@ function gerarRelatorio(
     `;
 
 
-    // --------------------------------------------------------
-    // CAMPOS QUE NÃO DEVEM APARECER
-    // --------------------------------------------------------
+    // ========================================================
+    // CAMPOS A IGNORAR
+    // ========================================================
 
     const camposIgnorar = [
 
@@ -2439,29 +2668,18 @@ function gerarRelatorio(
 
         "FID",
 
-        "id"
-
-    ];
-
-
-    // --------------------------------------------------------
-    // CAMPOS TÉCNICOS ESPECÍFICOS
-    // --------------------------------------------------------
-
-    const camposTecnicos = [
+        "id",
 
         "region_id"
 
     ];
 
 
-    // --------------------------------------------------------
-    // CAMPOS RELEVANTES
-    // --------------------------------------------------------
+    // ========================================================
+    // CAMPOS PRINCIPAIS
+    // ========================================================
 
     const camposPreferenciais = [
-
-        // Nome
 
         "region_nam",
 
@@ -2483,8 +2701,6 @@ function gerarRelatorio(
 
         "name",
 
-        // Ranking
-
         "Rank_Category",
 
         "Burned Area Rank",
@@ -2499,8 +2715,6 @@ function gerarRelatorio(
 
         "rank",
 
-        // Área
-
         "Burned Area (km^2)",
 
         "Burned_Area_km2",
@@ -2513,13 +2727,9 @@ function gerarRelatorio(
 
         "Area Queimada",
 
-        // Região
-
         "region_des",
 
         "Region",
-
-        // Identificadores úteis
 
         "terrai_cod",
 
@@ -2528,13 +2738,13 @@ function gerarRelatorio(
     ];
 
 
-    // ========================================================
-    // PRIMEIRO: CAMPOS PREFERENCIAIS
-    // ========================================================
-
     const camposAdicionados =
         new Set();
 
+
+    // ========================================================
+    // CAMPOS PREFERENCIAIS
+    // ========================================================
 
     camposPreferenciais.forEach(
 
@@ -2542,7 +2752,7 @@ function gerarRelatorio(
 
             if (
 
-                Object.prototype
+                !Object.prototype
                     .hasOwnProperty
                     .call(
                         p,
@@ -2551,140 +2761,144 @@ function gerarRelatorio(
 
             ) {
 
-                if (
-                    camposIgnorar
-                        .includes(campo)
-                ) {
+                return;
 
-                    return;
-
-                }
+            }
 
 
-                if (
-                    camposTecnicos
-                        .includes(campo)
-                ) {
+            if (
+                camposIgnorar
+                    .includes(campo)
+            ) {
 
-                    return;
+                return;
 
-                }
-
-
-                if (
-                    camposAdicionados
-                        .has(campo)
-                ) {
-
-                    return;
-
-                }
+            }
 
 
+            if (
                 camposAdicionados
-                    .add(campo);
+                    .has(campo)
+            ) {
+
+                return;
+
+            }
 
 
-                let valor =
-                    formatarValor(
+            camposAdicionados
+                .add(campo);
+
+
+            let valor =
+                formatarValor(
+                    p[campo]
+                );
+
+
+            // ------------------------------------------------
+            // RANKING
+            // ------------------------------------------------
+
+            if (
+
+                [
+
+                    "Rank_Category",
+
+                    "Burned Area Rank",
+
+                    "Burned_Area_Rank",
+
+                    "Ranking",
+
+                    "ranking",
+
+                    "Rank",
+
+                    "rank"
+
+                ].includes(campo)
+
+            ) {
+
+                const r =
+                    Number(
                         p[campo]
                     );
 
 
-                // Ranking
-
                 if (
-
-                    [
-                        "Rank_Category",
-
-                        "Burned Area Rank",
-
-                        "Burned_Area_Rank",
-
-                        "Ranking",
-
-                        "ranking",
-
-                        "Rank",
-
-                        "rank"
-
-                    ].includes(campo)
-
+                    Number.isFinite(r)
                 ) {
 
-                    const r =
-                        Number(
-                            p[campo]
-                        );
+                    let classe =
+                        "ranking-6-18";
 
 
                     if (
-                        Number.isFinite(r)
+
+                        r >= 1 &&
+
+                        r <= 5
+
                     ) {
 
-                        let classe =
-                            "ranking-6-18";
-
-
-                        if (
-                            r >= 1 &&
-                            r <= 5
-                        ) {
-
-                            classe =
-                                `ranking-${r}`;
-
-                        }
-
-                        else if (
-                            r >= 19
-                        ) {
-
-                            classe =
-                                `ranking-${r}`;
-
-                        }
-
-
-                        valor = `
-
-                            <span
-                                class="
-                                    ranking
-                                    ${classe}
-                                "
-                            >
-
-                                ${r}
-
-                            </span>
-
-                        `;
+                        classe =
+                            `ranking-${r}`;
 
                     }
 
+
+                    else if (
+                        r >= 19
+                    ) {
+
+                        classe =
+                            `ranking-${r}`;
+
+                    }
+
+
+                    valor = `
+
+                        <span
+                            class="
+                                ranking
+                                ${classe}
+                            "
+                        >
+
+                            ${r}
+
+                        </span>
+
+                    `;
+
                 }
 
-
-                html += `
-
-                    <tr>
-
-                        <th>
-                            ${escaparHTML(campo)}
-                        </th>
-
-                        <td>
-                            ${valor}
-                        </td>
-
-                    </tr>
-
-                `;
-
             }
+
+
+            html += `
+
+                <tr>
+
+                    <th>
+
+                        ${escaparHTML(campo)}
+
+                    </th>
+
+                    <td>
+
+                        ${valor}
+
+                    </td>
+
+                </tr>
+
+            `;
 
         }
 
@@ -2695,12 +2909,6 @@ function gerarRelatorio(
     // ========================================================
     // CAMPOS ADICIONAIS
     // ========================================================
-
-    /*
-       Aqui entram outros campos que não são técnicos.
-       Assim não perdemos uma informação importante caso
-       apareça futuramente no GeoJSON.
-    */
 
     Object.keys(p).forEach(
 
@@ -2726,23 +2934,13 @@ function gerarRelatorio(
             }
 
 
-            if (
-                camposTecnicos
-                    .includes(campo)
-            ) {
-
-                return;
-
-            }
-
-
             const valor =
                 formatarValor(
                     p[campo]
                 );
 
 
-            // Ignora objetos enormes
+            // Não mostrar estruturas gigantes
 
             if (
                 valor.length > 500
@@ -2762,11 +2960,15 @@ function gerarRelatorio(
                 <tr>
 
                     <th>
+
                         ${escaparHTML(campo)}
+
                     </th>
 
                     <td>
+
                         ${escaparHTML(valor)}
+
                     </td>
 
                 </tr>
@@ -2792,15 +2994,6 @@ function gerarRelatorio(
     // GRÁFICO
     // ========================================================
 
-    /*
-       O gráfico somente aparece quando existe
-       Área Queimada.
-
-       Assim evitamos gráficos sem significado para
-       TI e UC quando essas camadas não possuem
-       campo de área.
-    */
-
     if (
         area !== null
     ) {
@@ -2810,7 +3003,9 @@ function gerarRelatorio(
             <div id="area-grafico">
 
                 <h4>
+
                     Área Queimada
+
                 </h4>
 
                 <canvas
@@ -2824,8 +3019,7 @@ function gerarRelatorio(
     }
 
 
-    conteudo.className =
-        "";
+    conteudo.className = "";
 
 
     conteudo.innerHTML =
@@ -2857,7 +3051,7 @@ function gerarRelatorio(
 
 
 // ============================================================
-// 27. GRÁFICO DE ÁREA
+// 29. GRÁFICO
 // ============================================================
 
 function criarGraficoArea(
@@ -2907,10 +3101,6 @@ function criarGraficoArea(
         altura;
 
 
-    // ========================================================
-    // CONFIGURAÇÕES
-    // ========================================================
-
     const margemEsquerda = 80;
 
     const margemDireita = 30;
@@ -2923,32 +3113,33 @@ function criarGraficoArea(
     const larguraGrafico =
 
         largura -
+
         margemEsquerda -
+
         margemDireita;
 
 
     const alturaGrafico =
 
         altura -
+
         margemSuperior -
+
         margemInferior;
 
 
-    // ========================================================
-    // FUNDO
-    // ========================================================
-
     ctx.clearRect(
+
         0,
+
         0,
+
         largura,
+
         altura
+
     );
 
-
-    // ========================================================
-    // VALOR MÁXIMO
-    // ========================================================
 
     const maximo =
         area > 0
@@ -3009,33 +3200,46 @@ function criarGraficoArea(
 
     const larguraBarra =
         Math.min(
+
             180,
+
             larguraGrafico * 0.4
+
         );
 
 
     const alturaBarra =
 
         (
+
             area /
+
             maximo
+
         ) *
+
         alturaGrafico;
 
 
     const x =
 
         margemEsquerda +
+
         (
+
             larguraGrafico -
+
             larguraBarra
+
         ) / 2;
 
 
     const y =
 
         margemSuperior +
+
         alturaGrafico -
+
         alturaBarra;
 
 
@@ -3112,7 +3316,12 @@ function criarGraficoArea(
     ctx.fillText(
 
         nome.length > 25
-            ? nome.substring(0, 25) + "..."
+
+            ? nome.substring(
+                0,
+                25
+            ) + "..."
+
             : nome,
 
         x +
