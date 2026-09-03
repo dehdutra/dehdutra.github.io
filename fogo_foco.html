@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title> Ranqueamento de Área Queimada no Brasil (2024/2025) </title>
+    <title>Fogo em Foco - Área Queimada no Brasil</title>
 
 
     <!-- ==========================================================
@@ -1259,9 +1259,12 @@
         </div>
 
 
-        <div id="status-dados">
-            Preparando dados espaciais...
-        </div>
+        <!--
+            REMOVIDO:
+            Dados carregados.
+            Estados: 168 feições
+            Biomas: 6 feições
+        -->
 
     </div>
 
@@ -1275,7 +1278,7 @@
 <div id="legenda">
 
     <div id="legenda-header">
-        Ranking de Área Queimada
+        Área queimada
     </div>
 
     <div id="legenda-corpo">
@@ -1287,7 +1290,7 @@
                 style="background:#7f0000"
             ></span>
 
-            Ranking 1
+            1º
 
         </div>
 
@@ -1299,7 +1302,7 @@
                 style="background:#b30000"
             ></span>
 
-            Ranking 2
+            2º
 
         </div>
 
@@ -1311,7 +1314,7 @@
                 style="background:#d7301f"
             ></span>
 
-            Ranking 3
+            3º
 
         </div>
 
@@ -1323,7 +1326,7 @@
                 style="background:#ef6548"
             ></span>
 
-            Ranking 4
+            4º
 
         </div>
 
@@ -1335,7 +1338,7 @@
                 style="background:#fdae61"
             ></span>
 
-            Ranking 5
+            5º
 
         </div>
 
@@ -1347,7 +1350,19 @@
                 style="background:#c6dbef"
             ></span>
 
-            Ranking 19–20
+            19º–20º
+
+        </div>
+
+
+        <div class="legenda-item">
+
+            <span
+                class="legenda-cor"
+                style="background:#9ecae1"
+            ></span>
+
+            20º
 
         </div>
 
@@ -1359,7 +1374,7 @@
                 style="background:#6baed6"
             ></span>
 
-            Ranking 21
+            21º
 
         </div>
 
@@ -1371,7 +1386,7 @@
                 style="background:#4292c6"
             ></span>
 
-            Ranking 22
+            22º
 
         </div>
 
@@ -1383,7 +1398,7 @@
                 style="background:#2171b5"
             ></span>
 
-            Ranking 23
+            23º
 
         </div>
 
@@ -1395,7 +1410,7 @@
                 style="background:#084594"
             ></span>
 
-            Ranking 24
+            24º
 
         </div>
 
@@ -1438,9 +1453,11 @@
                 <strong>
                     Fonte dos dados espaciais
                 </strong>
+
             </p>
 
             <p>
+
                 MODIS MCD64A1 Collection 6.1,
                 disponibilizado pelo State of Wildfire.
 
@@ -1456,6 +1473,7 @@
             </p>
 
             <p>
+
                 Março de 2024 a fevereiro de 2025,
                 comparado ao mesmo período dos anos anteriores.
 
@@ -1544,9 +1562,6 @@ L.tileLayer(
 
 // ============================================================
 // 2. GRUPOS DE CAMADAS
-//
-// Os grupos são criados imediatamente.
-// Os dados serão carregados uma única vez.
 // ============================================================
 
 const grupoEstados =
@@ -2335,10 +2350,6 @@ async function carregarArquivo(
 
 // ============================================================
 // 15. CARREGAMENTO PARALELO
-//
-// ESTA É UMA DAS PRINCIPAIS MELHORIAS.
-//
-// Os 8 arquivos são solicitados simultaneamente.
 // ============================================================
 
 async function carregarTodosDados() {
@@ -2380,14 +2391,6 @@ async function carregarTodosDados() {
         0;
 
 
-    let totalFeicoesEstados =
-        0;
-
-
-    let totalFeicoesBiomas =
-        0;
-
-
     const promessas =
         arquivos.map(
 
@@ -2405,24 +2408,6 @@ async function carregarTodosDados() {
                             item.tipo
 
                         );
-
-
-                    if (
-                        item.tipo ===
-                        "estados"
-                    ) {
-
-                        totalFeicoesEstados +=
-                            quantidade;
-
-                    }
-
-                    else {
-
-                        totalFeicoesBiomas +=
-                            quantidade;
-
-                    }
 
 
                     concluidos++;
@@ -2497,30 +2482,15 @@ async function carregarTodosDados() {
         );
 
 
-    const resultados =
-        await Promise.all(
-            promessas
-        );
-
-
-    return {
-
-        resultados,
-
-        totalFeicoesEstados,
-
-        totalFeicoesBiomas
-
-    };
+    return await Promise.all(
+        promessas
+    );
 
 }
 
 
 // ============================================================
-// 16. MANAGE LAYERS
-//
-// As camadas já estarão carregadas quando este controle
-// aparecer.
+// 16. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas =
@@ -2720,8 +2690,7 @@ async function inicializar() {
     );
 
 
-    const resultado =
-        await carregarTodosDados();
+    await carregarTodosDados();
 
 
     atualizarLoading(
@@ -2731,7 +2700,7 @@ async function inicializar() {
 
 
     // ========================================================
-    // COLOCA AS DUAS CAMADAS AUTOMATICAMENTE NO MAPA
+    // COLOCA AS DUAS CAMADAS NO MAPA
     // ========================================================
 
     if (
@@ -2757,7 +2726,7 @@ async function inicializar() {
 
 
     // ========================================================
-    // MANAGE LAYERS
+    // CONTROLE DE CAMADAS
     // ========================================================
 
     controleCamadas.addTo(
@@ -2770,35 +2739,6 @@ async function inicializar() {
     // ========================================================
 
     ajustarMapa();
-
-
-    // ========================================================
-    // INFORMAÇÕES
-    // ========================================================
-
-    const estados =
-        resultado.totalFeicoesEstados;
-
-
-    const biomas =
-        resultado.totalFeicoesBiomas;
-
-
-    document.getElementById(
-        "status-dados"
-    ).innerHTML = `
-
-        <b>Dados carregados.</b><br>
-
-        Estados:
-        ${estados.toLocaleString("pt-BR")}
-        feições<br>
-
-        Biomas:
-        ${biomas.toLocaleString("pt-BR")}
-        feições
-
-    `;
 
 
     // ========================================================
