@@ -456,30 +456,90 @@ function obterRanking(feature) {
     feature.properties || {};
 
 
-  // ----------------------------------------------------------
-  // Campo principal
-  // ----------------------------------------------------------
+  // ==========================================================
+  // TERRAS INDÍGENAS
+  // UNIDADES DE CONSERVAÇÃO
+  //
+  // Campo real:
+  // Rank_Category
+  // ==========================================================
+
+  if (
+
+    p["Rank_Category"] !== undefined &&
+
+    p["Rank_Category"] !== null &&
+
+    p["Rank_Category"] !== ""
+
+  ) {
+
+
+    const valor =
+
+      Number(
+
+        p["Rank_Category"]
+
+      );
+
+
+    if (
+
+      Number.isFinite(valor)
+
+    ) {
+
+      return valor;
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // ESTADOS E BIOMAS
+  //
+  // Campo:
+  // Burned Area Rank
+  // ==========================================================
 
   if (
 
     p["Burned Area Rank"] !== undefined &&
 
-    p["Burned Area Rank"] !== null
+    p["Burned Area Rank"] !== null &&
+
+    p["Burned Area Rank"] !== ""
 
   ) {
 
-    return Number(
 
-      p["Burned Area Rank"]
+    const valor =
 
-    );
+      Number(
+
+        p["Burned Area Rank"]
+
+      );
+
+
+    if (
+
+      Number.isFinite(valor)
+
+    ) {
+
+      return valor;
+
+    }
 
   }
 
 
-  // ----------------------------------------------------------
-  // Outras possibilidades
-  // ----------------------------------------------------------
+  // ==========================================================
+  // OUTRAS POSSIBILIDADES
+  // ==========================================================
 
   const possibilidades = [
 
@@ -511,15 +571,31 @@ function obterRanking(feature) {
 
       p[campo] !== undefined &&
 
-      p[campo] !== null
+      p[campo] !== null &&
+
+      p[campo] !== ""
 
     ) {
 
-      return Number(
 
-        p[campo]
+      const valor =
 
-      );
+        Number(
+
+          p[campo]
+
+        );
+
+
+      if (
+
+        Number.isFinite(valor)
+
+      ) {
+
+        return valor;
+
+      }
 
     }
 
@@ -527,7 +603,7 @@ function obterRanking(feature) {
 
 
   // ----------------------------------------------------------
-  // Não encontrado
+  // RANKING NÃO ENCONTRADO
   // ----------------------------------------------------------
 
   return null;
@@ -542,7 +618,9 @@ function obterRanking(feature) {
 function corRanking(rank) {
 
 
-  const r = Number(rank);
+  const r =
+
+    Number(rank);
 
 
   // ----------------------------------------------------------
@@ -693,13 +771,17 @@ function estiloPorRanking(feature) {
 
   return {
 
-    color: "#555555",
+    color:
+      "#555555",
 
-    weight: 1,
+    weight:
+      1,
 
-    fillColor: cor,
+    fillColor:
+      cor,
 
-    fillOpacity: 0.70
+    fillOpacity:
+      0.70
 
   };
 
@@ -720,15 +802,33 @@ function obterNome(feature) {
 
   const campos = [
 
-    "Region Name",
+    // --------------------------------------------------------
+    // TERRAS INDÍGENAS
+    // --------------------------------------------------------
 
     "region_nam",
+
+    // --------------------------------------------------------
+    // UNIDADES DE CONSERVAÇÃO
+    // --------------------------------------------------------
+
+    "reigon_nam",
+
+    // --------------------------------------------------------
+    // ESTADOS
+    // --------------------------------------------------------
+
+    "Region Name",
 
     "NAME_1",
 
     "NM_ESTADO",
 
     "NM_UF",
+
+    // --------------------------------------------------------
+    // OUTROS
+    // --------------------------------------------------------
 
     "NAME",
 
@@ -802,11 +902,6 @@ function popupRanking(
     obterRanking(feature);
 
 
-  const area =
-
-    p["Burned Area (km^2)"];
-
-
   let texto =
 
     "<strong>" +
@@ -826,6 +921,7 @@ function popupRanking(
 
   ) {
 
+
     texto +=
 
       "<strong>Ranking:</strong> " +
@@ -837,13 +933,59 @@ function popupRanking(
   }
 
 
-  // ----------------------------------------------------------
-  // ÁREA
-  // ----------------------------------------------------------
+  // ==========================================================
+  // ÁREA QUEIMADA
+  // ==========================================================
+
+  const camposArea = [
+
+    "Burned Area (km^2)",
+
+    "Burned_Area_km2",
+
+    "burned_area",
+
+    "area_queimada",
+
+    "Area Queimada"
+
+  ];
+
+
+  let area = null;
+
+
+  for (
+
+    const campo of camposArea
+
+  ) {
+
+
+    if (
+
+      p[campo] !== undefined &&
+
+      p[campo] !== null &&
+
+      p[campo] !== ""
+
+    ) {
+
+
+      area =
+
+        p[campo];
+
+
+      break;
+
+    }
+
+  }
+
 
   if (
-
-    area !== undefined &&
 
     area !== null
 
@@ -950,7 +1092,9 @@ carregarArquivos(
 .then(data => {
 
 
-  dadosEstados = data;
+  dadosEstados =
+
+    data;
 
 
   const camada =
@@ -989,6 +1133,7 @@ carregarArquivos(
 
 .catch(error => {
 
+
   console.error(
 
     "Erro geral nos estados:",
@@ -1015,7 +1160,9 @@ carregarArquivos(
 .then(data => {
 
 
-  dadosBiomas = data;
+  dadosBiomas =
+
+    data;
 
 
   const camada =
@@ -1054,6 +1201,7 @@ carregarArquivos(
 
 .catch(error => {
 
+
   console.error(
 
     "Erro geral nos biomas:",
@@ -1080,7 +1228,9 @@ carregarArquivos(
 .then(data => {
 
 
-  dadosTI = data;
+  dadosTI =
+
+    data;
 
 
   const camada =
@@ -1119,6 +1269,7 @@ carregarArquivos(
 
 .catch(error => {
 
+
   console.error(
 
     "Erro geral nas Terras Indígenas:",
@@ -1145,7 +1296,9 @@ carregarArquivos(
 .then(data => {
 
 
-  dadosUC = data;
+  dadosUC =
+
+    data;
 
 
   const camada =
@@ -1183,6 +1336,7 @@ carregarArquivos(
 })
 
 .catch(error => {
+
 
   console.error(
 
@@ -1236,7 +1390,8 @@ L.control.layers(
 
   {
 
-    collapsed: false
+    collapsed:
+      false
 
   }
 
