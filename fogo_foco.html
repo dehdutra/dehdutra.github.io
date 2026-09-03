@@ -64,6 +64,9 @@
 
             --legenda-texto: #333;
 
+            --painel-info-bg:
+                rgba(255,255,255,0.95);
+
         }
 
 
@@ -103,6 +106,9 @@
                 rgba(25,32,40,0.97);
 
             --legenda-texto: #f2f4f7;
+
+            --painel-info-bg:
+                rgba(25,32,40,0.95);
 
         }
 
@@ -811,7 +817,7 @@
 
 
         /* ======================================================
-           PAINEL INFORMATIVO
+           PAINEL INFORMATIVO INFERIOR
         ====================================================== */
 
         #painel-info {
@@ -858,6 +864,449 @@
 
             color:
                 var(--texto-principal);
+
+        }
+
+
+        /* ======================================================
+           NOVO PAINEL FIXO
+           SOBRE OS DADOS
+        ====================================================== */
+
+        #painel-dados {
+
+            position: absolute;
+
+            left: 18px;
+
+            top: 115px;
+
+            z-index: 999;
+
+            width: 360px;
+
+            max-height:
+                calc(100vh - 190px);
+
+            overflow-y:
+                auto;
+
+            padding:
+                18px 19px;
+
+            background:
+                var(--painel-info-bg);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                12px;
+
+            box-shadow:
+                var(--sombra);
+
+            backdrop-filter:
+                blur(12px);
+
+            -webkit-backdrop-filter:
+                blur(12px);
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        /* barra de rolagem */
+
+        #painel-dados::-webkit-scrollbar {
+
+            width: 5px;
+
+        }
+
+
+        #painel-dados::-webkit-scrollbar-thumb {
+
+            background:
+                var(--borda);
+
+            border-radius:
+                10px;
+
+        }
+
+
+        /* cabeçalho do painel */
+
+        .dados-cabecalho {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom:
+                13px;
+
+            padding-bottom:
+                12px;
+
+            border-bottom:
+                1px solid var(--borda);
+
+        }
+
+
+        .dados-icone {
+
+            width: 32px;
+            height: 32px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background:
+                var(--primaria);
+
+            color:
+                white;
+
+            font-size:
+                15px;
+
+        }
+
+
+        .dados-titulo {
+
+            margin: 0;
+
+            font-size:
+                15px;
+
+            line-height:
+                1.2;
+
+            font-weight:
+                700;
+
+            color:
+                var(--texto-principal);
+
+        }
+
+
+        .dados-subtitulo {
+
+            margin-top:
+                3px;
+
+            font-size:
+                10px;
+
+            color:
+                var(--texto-secundario);
+
+        }
+
+
+        /* blocos */
+
+        .dados-bloco {
+
+            margin-bottom:
+                16px;
+
+        }
+
+
+        .dados-bloco:last-child {
+
+            margin-bottom:
+                0;
+
+        }
+
+
+        .dados-bloco-titulo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom:
+                6px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.4px;
+
+            color:
+                var(--primaria);
+
+        }
+
+
+        .dados-bloco-titulo::before {
+
+            content: "";
+
+            width: 5px;
+            height: 5px;
+
+            border-radius: 50%;
+
+            background:
+                var(--primaria);
+
+            flex-shrink: 0;
+
+        }
+
+
+        .dados-texto {
+
+            margin: 0;
+
+            font-size:
+                11.5px;
+
+            line-height:
+                1.65;
+
+            color:
+                var(--texto-secundario);
+
+            text-align:
+                left;
+
+        }
+
+
+        .dados-texto strong {
+
+            color:
+                var(--texto-principal);
+
+            font-weight:
+                700;
+
+        }
+
+
+        /* destaque da fonte */
+
+        .dados-fonte {
+
+            padding:
+                10px 11px;
+
+            background:
+                var(--bg-painel-secundario);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                8px;
+
+        }
+
+
+        .dados-fonte .dados-texto {
+
+            font-size:
+                11px;
+
+        }
+
+
+        /* destaque do ranking */
+
+        .dados-ranking {
+
+            padding:
+                11px 12px;
+
+            background:
+                var(--bg-painel-secundario);
+
+            border:
+                1px solid var(--borda);
+
+            border-left:
+                3px solid var(--primaria);
+
+            border-radius:
+                8px;
+
+        }
+
+
+        /* exemplo ranking */
+
+        .exemplo-ranking {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                6px;
+
+            margin-top:
+                9px;
+
+        }
+
+
+        .exemplo-item {
+
+            padding:
+                8px;
+
+            background:
+                var(--bg-painel);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                6px;
+
+            text-align:
+                center;
+
+        }
+
+
+        .exemplo-numero {
+
+            display: block;
+
+            font-size:
+                16px;
+
+            font-weight:
+                800;
+
+            color:
+                var(--primaria);
+
+        }
+
+
+        .exemplo-texto {
+
+            display: block;
+
+            margin-top:
+                2px;
+
+            font-size:
+                9px;
+
+            line-height:
+                1.3;
+
+            color:
+                var(--texto-secundario);
+
+        }
+
+
+        /* escala de cores */
+
+        .escala-cores {
+
+            margin-top:
+                9px;
+
+            padding:
+                9px;
+
+            border:
+                1px solid var(--borda);
+
+            border-radius:
+                7px;
+
+            background:
+                var(--bg-painel-secundario);
+
+        }
+
+
+        .gradiente-ranking {
+
+            width:
+                100%;
+
+            height:
+                11px;
+
+            border-radius:
+                5px;
+
+            background:
+                linear-gradient(
+
+                    to right,
+
+                    #7f0000,
+                    #b30000,
+                    #d7301f,
+                    #ef6548,
+                    #fdae61,
+                    #bdbdbd,
+                    #c6dbef,
+                    #9ecae1,
+                    #6baed6,
+                    #4292c6,
+                    #2171b5,
+                    #084594
+
+                );
+
+        }
+
+
+        .escala-legendas {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            margin-top:
+                5px;
+
+            font-size:
+                9px;
+
+            color:
+                var(--texto-secundario);
 
         }
 
@@ -1285,6 +1734,18 @@
            RESPONSIVO
         ====================================================== */
 
+        @media (max-width: 900px) {
+
+            #painel-dados {
+
+                width:
+                    320px;
+
+            }
+
+        }
+
+
         @media (max-width: 700px) {
 
             #cabecalho {
@@ -1332,7 +1793,8 @@
 
             .cabecalho-acoes {
 
-                gap: 4px;
+                gap:
+                    4px;
 
             }
 
@@ -1398,6 +1860,60 @@
             }
 
 
+            /* ==========================================
+               PAINEL SOBRE OS DADOS NO CELULAR
+            ========================================== */
+
+            #painel-dados {
+
+                left:
+                    10px;
+
+                top:
+                    auto;
+
+                bottom:
+                    70px;
+
+                width:
+                    min(330px, calc(100% - 20px));
+
+                max-height:
+                    42vh;
+
+                padding:
+                    13px 14px;
+
+                border-radius:
+                    10px;
+
+            }
+
+
+            .dados-titulo {
+
+                font-size:
+                    14px;
+
+            }
+
+
+            .dados-texto {
+
+                font-size:
+                    10.5px;
+
+            }
+
+
+            .dados-bloco {
+
+                margin-bottom:
+                    12px;
+
+            }
+
+
             .legenda-ranking {
 
                 font-size:
@@ -1446,6 +1962,26 @@
 
                 font-size:
                     17px;
+
+            }
+
+        }
+
+
+        @media (max-width: 480px) {
+
+            #painel-dados {
+
+                max-height:
+                    38vh;
+
+            }
+
+
+            .exemplo-ranking {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
 
             }
 
@@ -1573,6 +2109,306 @@
 
 
 <!-- ==========================================================
+     PAINEL FIXO SOBRE OS DADOS
+=========================================================== -->
+
+<div id="painel-dados">
+
+
+    <!-- CABEÇALHO -->
+
+    <div class="dados-cabecalho">
+
+        <div class="dados-icone">
+
+            🔥
+
+        </div>
+
+
+        <div>
+
+            <h2
+                class="dados-titulo"
+                id="dados-titulo"
+            >
+                Sobre os dados
+            </h2>
+
+
+            <div
+                class="dados-subtitulo"
+                id="dados-subtitulo"
+            >
+                Fonte, período e interpretação do ranking
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         FONTE DOS DADOS
+    ======================================================= -->
+
+    <div class="dados-bloco">
+
+        <div
+            class="dados-bloco-titulo"
+            id="dados-fonte-titulo"
+        >
+            Fonte dos dados
+        </div>
+
+
+        <div class="dados-fonte">
+
+            <p
+                class="dados-texto"
+                id="dados-fonte-texto"
+            >
+
+                Os dados de área queimada são provenientes do
+                produto <strong>MODIS MCD64A1 Collection 6.1</strong>.
+                Os dados utilizados neste dashboard foram fornecidos
+                pelo projeto <strong>State of Wildfire</strong>.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         O QUE É O RANKING
+    ======================================================= -->
+
+    <div class="dados-bloco">
+
+        <div
+            class="dados-bloco-titulo"
+            id="dados-ranking-titulo"
+        >
+            O que significa o ranking?
+        </div>
+
+
+        <div class="dados-ranking">
+
+            <p
+                class="dados-texto"
+                id="dados-ranking-texto"
+            >
+
+                Para as métricas do fogo, assim como para a extensão
+                da área queimada, utilizamos um <strong>ranqueamento</strong>
+                que atribui posições para indicar a gravidade relativa
+                do período de <strong>março de 2024 a fevereiro de 2025</strong>
+                em relação ao mesmo período dos anos anteriores da
+                série temporal.
+
+            </p>
+
+
+            <div class="exemplo-ranking">
+
+
+                <div class="exemplo-item">
+
+                    <span
+                        class="exemplo-numero"
+                    >
+                        1
+                    </span>
+
+                    <span
+                        class="exemplo-texto"
+                        id="exemplo-1"
+                    >
+                        Período mais crítico
+                    </span>
+
+                </div>
+
+
+                <div class="exemplo-item">
+
+                    <span
+                        class="exemplo-numero"
+                    >
+                        2
+                    </span>
+
+                    <span
+                        class="exemplo-texto"
+                        id="exemplo-2"
+                    >
+                        Segundo mais crítico
+                    </span>
+
+                </div>
+
+
+                <div class="exemplo-item">
+
+                    <span
+                        class="exemplo-numero"
+                    >
+                        3
+                    </span>
+
+                    <span
+                        class="exemplo-texto"
+                        id="exemplo-3"
+                    >
+                        Terceiro mais crítico
+                    </span>
+
+                </div>
+
+
+                <div class="exemplo-item">
+
+                    <span
+                        class="exemplo-numero"
+                    >
+                        24
+                    </span>
+
+                    <span
+                        class="exemplo-texto"
+                        id="exemplo-24"
+                    >
+                        Menor valor da série
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         INTERPRETAÇÃO
+    ======================================================= -->
+
+    <div class="dados-bloco">
+
+        <div
+            class="dados-bloco-titulo"
+            id="dados-interpretacao-titulo"
+        >
+            Como interpretar
+        </div>
+
+
+        <p
+            class="dados-texto"
+            id="dados-interpretacao-texto"
+        >
+
+            Um recorte territorial ranqueado com o valor
+            <strong>1</strong> indica que o período analisado
+            (<strong>março de 2024 a fevereiro de 2025</strong>)
+            apresentou o pior resultado dentro da série histórica
+            para a variável analisada. Da mesma forma, um valor
+            <strong>2</strong> indica que o período foi o segundo
+            ano mais crítico da série, e assim sucessivamente.
+
+        </p>
+
+    </div>
+
+
+    <!-- ======================================================
+         ESCALA DE CORES
+    ======================================================= -->
+
+    <div class="dados-bloco">
+
+        <div
+            class="dados-bloco-titulo"
+            id="dados-cores-titulo"
+        >
+            Escala de cores
+        </div>
+
+
+        <p
+            class="dados-texto"
+            id="dados-cores-texto"
+        >
+
+            Os tons de <strong>vermelho escuro a amarelo</strong>
+            representam os recortes territoriais mais críticos
+            no ranqueamento. Já os recortes em que o período
+            analisado apresentou os menores valores da série
+            histórica são representados por um degradê de
+            <strong>verde para azul</strong>.
+
+        </p>
+
+
+        <div class="escala-cores">
+
+            <div class="gradiente-ranking"></div>
+
+
+            <div class="escala-legendas">
+
+                <span id="escala-maior">
+                    Mais crítico
+                </span>
+
+                <span id="escala-menor">
+                    Menos crítico
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         PERÍODO
+    ======================================================= -->
+
+    <div class="dados-bloco">
+
+        <div
+            class="dados-bloco-titulo"
+            id="dados-periodo-titulo"
+        >
+            Período analisado
+        </div>
+
+
+        <p
+            class="dados-texto"
+            id="dados-periodo-texto"
+        >
+
+            <strong>Março de 2024 a fevereiro de 2025</strong>,
+            comparado ao mesmo período dos anos anteriores da
+            série temporal.
+
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<!-- ==========================================================
      PAINEL INFORMATIVO
 =========================================================== -->
 
@@ -1607,8 +2443,6 @@
     >
 
 
-        <!-- CABEÇALHO -->
-
         <div class="citacao-cabecalho">
 
             <div>
@@ -1635,14 +2469,8 @@
         </div>
 
 
-        <!-- CONTEÚDO -->
-
         <div class="citacao-conteudo">
 
-
-            <!-- ==================================================
-                 AUTORIA
-            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -1669,10 +2497,6 @@
             </div>
 
 
-            <!-- ==================================================
-                 PROJETO ASSOCIADO
-            =================================================== -->
-
             <div class="bloco-institucional">
 
                 <h3 id="titulo-projeto">
@@ -1691,10 +2515,6 @@
 
             </div>
 
-
-            <!-- ==================================================
-                 REFERÊNCIA DO DASHBOARD
-            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -1721,10 +2541,6 @@
             </div>
 
 
-            <!-- ==================================================
-                 COMO CITAR
-            =================================================== -->
-
             <div class="bloco-institucional">
 
                 <h3 id="titulo-como-citar">
@@ -1748,9 +2564,19 @@
 
                     <span id="texto-citacao-dashboard">
 
-                        Dutra, D. J. et al.
-                        Ranking de Área Queimada:
-                        Dashboard Interativo.
+                        DUTRA, Débora J.;
+                        FERREIRA, Igor José Malfetoni;
+                        CIPRIANO JÚNIOR, Zevir A.;
+                        CONGRO, Leonardo;
+                        NORONHA, Pedro;
+                        FREITAS FILHO, Francisco Carlos Santos de;
+                        ANDERSON, Liana O.
+                        Ranking de Área Queimada: Dashboard Interativo.
+                        Associado ao trabalho REDE BRASA DE PESQUISA.
+                        Fogo em Foco: diagnóstico dos incêndios no Brasil
+                        em 2024-2025.
+                        São José dos Campos: INPE, 2025. 92 p.
+                        URI: upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE.
 
                     </span>
 
@@ -1769,10 +2595,6 @@
             </div>
 
 
-            <!-- ==================================================
-                 REFERÊNCIA DO TRABALHO ASSOCIADO
-            =================================================== -->
-
             <div class="bloco-institucional">
 
                 <h3 id="titulo-referencia">
@@ -1784,7 +2606,7 @@
 
                     <span id="texto-referencia">
 
-                        REDE BRASA.
+                        REDE BRASA DE PESQUISA.
                         <strong>
                             Fogo em Foco: diagnóstico dos incêndios
                             no Brasil em 2024-2025.
@@ -1813,10 +2635,6 @@
 
             </div>
 
-
-            <!-- ==================================================
-                 CRÉDITOS
-            =================================================== -->
 
             <div class="bloco-institucional">
 
@@ -3177,12 +3995,6 @@ function copiarCitacao() {
                 );
 
 
-            const textoOriginal =
-                idiomaAtual === "pt"
-                    ? "Clique no ícone para copiar a referência."
-                    : "Click the icon to copy the reference.";
-
-
             aviso.textContent =
                 idiomaAtual === "pt"
                     ? "✓ Referência copiada."
@@ -3194,7 +4006,9 @@ function copiarCitacao() {
                 function() {
 
                     aviso.textContent =
-                        textoOriginal;
+                        idiomaAtual === "pt"
+                            ? "Clique no ícone para copiar a referência."
+                            : "Click the icon to copy the reference.";
 
                 },
 
@@ -3317,7 +4131,7 @@ function copiarCitacaoFallback() {
 
 
 // ============================================================
-// 27. IDIOMAS
+// 27. TEXTOS DOS IDIOMAS
 // ============================================================
 
 let idiomaAtual = "pt";
@@ -3577,6 +4391,269 @@ function mudarIdioma(novoIdioma) {
         t.aviso;
 
 
+    /* ========================================================
+       PAINEL FIXO SOBRE OS DADOS
+    ======================================================== */
+
+    if (
+        novoIdioma === "pt"
+    ) {
+
+        document.getElementById(
+            "dados-titulo"
+        ).textContent =
+            "Sobre os dados";
+
+
+        document.getElementById(
+            "dados-subtitulo"
+        ).textContent =
+            "Fonte, período e interpretação do ranking";
+
+
+        document.getElementById(
+            "dados-fonte-titulo"
+        ).textContent =
+            "Fonte dos dados";
+
+
+        document.getElementById(
+            "dados-fonte-texto"
+        ).innerHTML =
+
+            "Os dados de área queimada são provenientes do produto <strong>MODIS MCD64A1 Collection 6.1</strong>. Os dados utilizados neste dashboard foram fornecidos pelo projeto <strong>State of Wildfire</strong>.";
+
+
+        document.getElementById(
+            "dados-ranking-titulo"
+        ).textContent =
+            "O que significa o ranking?";
+
+
+        document.getElementById(
+            "dados-ranking-texto"
+        ).innerHTML =
+
+            "Para as métricas do fogo, assim como para a extensão da área queimada, utilizamos um <strong>ranqueamento</strong> que atribui posições para indicar a gravidade relativa do período de <strong>março de 2024 a fevereiro de 2025</strong> em relação ao mesmo período dos anos anteriores da série temporal.";
+
+
+        document.getElementById(
+            "exemplo-1"
+        ).textContent =
+            "Período mais crítico";
+
+
+        document.getElementById(
+            "exemplo-2"
+        ).textContent =
+            "Segundo mais crítico";
+
+
+        document.getElementById(
+            "exemplo-3"
+        ).textContent =
+            "Terceiro mais crítico";
+
+
+        document.getElementById(
+            "exemplo-24"
+        ).textContent =
+            "Menor valor da série";
+
+
+        document.getElementById(
+            "dados-interpretacao-titulo"
+        ).textContent =
+            "Como interpretar";
+
+
+        document.getElementById(
+            "dados-interpretacao-texto"
+        ).innerHTML =
+
+            "Um recorte territorial ranqueado com o valor <strong>1</strong> indica que o período analisado (<strong>março de 2024 a fevereiro de 2025</strong>) apresentou o pior resultado dentro da série histórica para a variável analisada. Da mesma forma, um valor <strong>2</strong> indica que o período foi o segundo ano mais crítico da série, e assim sucessivamente.";
+
+
+        document.getElementById(
+            "dados-cores-titulo"
+        ).textContent =
+            "Escala de cores";
+
+
+        document.getElementById(
+            "dados-cores-texto"
+        ).innerHTML =
+
+            "Os tons de <strong>vermelho escuro a amarelo</strong> representam os recortes territoriais mais críticos no ranqueamento. Já os recortes em que o período analisado apresentou os menores valores da série histórica são representados por um degradê de <strong>verde para azul</strong>.";
+
+
+        document.getElementById(
+            "escala-maior"
+        ).textContent =
+            "Mais crítico";
+
+
+        document.getElementById(
+            "escala-menor"
+        ).textContent =
+            "Menos crítico";
+
+
+        document.getElementById(
+            "dados-periodo-titulo"
+        ).textContent =
+            "Período analisado";
+
+
+        document.getElementById(
+            "dados-periodo-texto"
+        ).innerHTML =
+
+            "<strong>Março de 2024 a fevereiro de 2025</strong>, comparado ao mesmo período dos anos anteriores da série temporal.";
+
+    }
+
+
+    else {
+
+        document.getElementById(
+            "dados-titulo"
+        ).textContent =
+            "About the data";
+
+
+        document.getElementById(
+            "dados-subtitulo"
+        ).textContent =
+            "Data source, period and ranking interpretation";
+
+
+        document.getElementById(
+            "dados-fonte-titulo"
+        ).textContent =
+            "Data source";
+
+
+        document.getElementById(
+            "dados-fonte-texto"
+        ).innerHTML =
+
+            "Burned area data are derived from the <strong>MODIS MCD64A1 Collection 6.1</strong> product. The data used in this dashboard were provided by the <strong>State of Wildfire</strong> project.";
+
+
+        document.getElementById(
+            "dados-ranking-titulo"
+        ).textContent =
+            "What does the ranking mean?";
+
+
+        document.getElementById(
+            "dados-ranking-texto"
+        ).innerHTML =
+
+            "For fire metrics, as well as burned area extent, we use a <strong>ranking</strong> that assigns positions indicating the relative severity of the period from <strong>March 2024 to February 2025</strong> compared with the same period in previous years of the time series.";
+
+
+        document.getElementById(
+            "exemplo-1"
+        ).textContent =
+            "Most critical period";
+
+
+        document.getElementById(
+            "exemplo-2"
+        ).textContent =
+            "Second most critical";
+
+
+        document.getElementById(
+            "exemplo-3"
+        ).textContent =
+            "Third most critical";
+
+
+        document.getElementById(
+            "exemplo-24"
+        ).textContent =
+            "Lowest value in series";
+
+
+        document.getElementById(
+            "dados-interpretacao-titulo"
+        ).textContent =
+            "How to interpret";
+
+
+        document.getElementById(
+            "dados-interpretacao-texto"
+        ).innerHTML =
+
+            "A territorial unit ranked <strong>1</strong> indicates that the analyzed period (<strong>March 2024 to February 2025</strong>) was the worst year in the historical series for the variable analyzed. Likewise, a ranking of <strong>2</strong> indicates that 2024–2025 was the second most critical year in the series, and so on.";
+
+
+        document.getElementById(
+            "dados-cores-titulo"
+        ).textContent =
+            "Color scale";
+
+
+        document.getElementById(
+            "dados-cores-texto"
+        ).innerHTML =
+
+            "Dark red to yellow tones represent the most critical territorial units in the ranking. Conversely, territorial units with the lowest values in the historical series are represented by a gradient from <strong>green to blue</strong>.";
+
+
+        document.getElementById(
+            "escala-maior"
+        ).textContent =
+            "More critical";
+
+
+        document.getElementById(
+            "escala-menor"
+        ).textContent =
+            "Less critical";
+
+
+        document.getElementById(
+            "dados-periodo-titulo"
+        ).textContent =
+            "Analyzed period";
+
+
+        document.getElementById(
+            "dados-periodo-texto"
+        ).innerHTML =
+
+            "<strong>March 2024 to February 2025</strong>, compared with the same period in previous years of the time series.";
+
+    }
+
+
+    /* ========================================================
+       CITAÇÃO
+    ======================================================== */
+
+    document.getElementById(
+        "texto-citacao-dashboard"
+    ).textContent =
+
+        novoIdioma === "pt"
+
+            ?
+
+            "DUTRA, Débora J.; FERREIRA, Igor José Malfetoni; CIPRIANO JÚNIOR, Zevir A.; CONGRO, Leonardo; NORONHA, Pedro; FREITAS FILHO, Francisco Carlos Santos de; ANDERSON, Liana O. Ranking de Área Queimada: Dashboard Interativo. Associado ao trabalho REDE BRASA DE PESQUISA. Fogo em Foco: diagnóstico dos incêndios no Brasil em 2024-2025. São José dos Campos: INPE, 2025. 92 p. URI: upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE."
+
+            :
+
+            "DUTRA, Débora J.; FERREIRA, Igor José Malfetoni; CIPRIANO JÚNIOR, Zevir A.; CONGRO, Leonardo; NORONHA, Pedro; FREITAS FILHO, Francisco Carlos Santos de; ANDERSON, Liana O. Burned Area Ranking: Interactive Dashboard. Associated with the REDE BRASA DE PESQUISA publication. Fogo em Foco: diagnóstico dos incêndios no Brasil em 2024-2025. São José dos Campos: INPE, 2025. 92 p. URI: upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE.";
+
+
+    /* ========================================================
+       BOTÕES DE IDIOMA
+    ======================================================== */
+
     document.getElementById(
         "idioma-pt"
     ).classList.toggle(
@@ -3593,38 +4670,23 @@ function mudarIdioma(novoIdioma) {
     );
 
 
-    /* ============================================
-       ATUALIZAR REFERÊNCIA DO DASHBOARD
-    ============================================ */
-
-    document.getElementById(
-        "texto-citacao-dashboard"
-    ).textContent =
-
-        novoIdioma === "pt"
-
-            ? "Dutra, D. J. et al. Ranking de Área Queimada: Dashboard Interativo."
-
-            : "Dutra, D. J. et al. Burned Area Ranking: Interactive Dashboard.";
-
-
-    /* ============================================
-       ATUALIZAR CONTROLE DE CAMADAS
-    ============================================ */
+    /* ========================================================
+       CONTROLE DE CAMADAS
+    ======================================================== */
 
     criarControleCamadas();
 
 
-    /* ============================================
-       ATUALIZAR TEMA
-    ============================================ */
+    /* ========================================================
+       TEMA
+    ======================================================== */
 
     atualizarIconeTema();
 
 
-    /* ============================================
-       FECHAR POPUP ABERTO
-    ============================================ */
+    /* ========================================================
+       FECHAR POPUP
+    ======================================================== */
 
     mapa.closePopup();
 
@@ -3636,7 +4698,6 @@ function mudarIdioma(novoIdioma) {
 // ============================================================
 
 atualizarIconeTema();
-
 
 mudarIdioma("pt");
 
