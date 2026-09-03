@@ -1689,7 +1689,6 @@
 
     <div id="acoes-header">
 
-        <!-- NOVO BOTÃO -->
         <button
             class="header-btn"
             onclick="abrirRanking()"
@@ -2041,10 +2040,6 @@
     <div id="modal-ranking-card">
 
 
-        <!-- ==================================================
-             CABEÇALHO
-        =================================================== -->
-
         <div id="ranking-header">
 
             <div id="ranking-header-left">
@@ -2164,6 +2159,7 @@
 
 
             <div id="ranking-lista"></div>
+
 
             <div
                 id="ranking-vazio"
@@ -2396,7 +2392,299 @@ function obterNome(feature) {
 
 
 // ============================================================
-// 7. RANKING
+// 7. NORMALIZAR TEXTO
+// ============================================================
+
+function normalizarTexto(texto) {
+
+    return String(texto)
+
+        .normalize("NFD")
+
+        .replace(/[\u0300-\u036f]/g, "")
+
+        .toUpperCase()
+
+        .trim();
+
+}
+
+
+// ============================================================
+// 8. ESTADOS OFICIAIS DO BRASIL
+// ============================================================
+
+const ESTADOS_BRASIL = {
+
+    "AC": "Acre",
+
+    "AL": "Alagoas",
+
+    "AP": "Amapá",
+
+    "AM": "Amazonas",
+
+    "BA": "Bahia",
+
+    "CE": "Ceará",
+
+    "DF": "Distrito Federal",
+
+    "ES": "Espírito Santo",
+
+    "GO": "Goiás",
+
+    "MA": "Maranhão",
+
+    "MT": "Mato Grosso",
+
+    "MS": "Mato Grosso do Sul",
+
+    "MG": "Minas Gerais",
+
+    "PA": "Pará",
+
+    "PB": "Paraíba",
+
+    "PR": "Paraná",
+
+    "PE": "Pernambuco",
+
+    "PI": "Piauí",
+
+    "RJ": "Rio de Janeiro",
+
+    "RN": "Rio Grande do Norte",
+
+    "RS": "Rio Grande do Sul",
+
+    "RO": "Rondônia",
+
+    "RR": "Roraima",
+
+    "SC": "Santa Catarina",
+
+    "SP": "São Paulo",
+
+    "SE": "Sergipe",
+
+    "TO": "Tocantins"
+
+};
+
+
+// ============================================================
+// 9. MAPA DE NOMES DOS ESTADOS
+// ============================================================
+
+const NOME_ESTADO_PARA_SIGLA = {};
+
+
+// Criar automaticamente correspondência
+// entre nome completo e sigla.
+
+Object.entries(
+    ESTADOS_BRASIL
+).forEach(
+
+    ([sigla, nome]) => {
+
+        NOME_ESTADO_PARA_SIGLA[
+            normalizarTexto(nome)
+        ] = sigla;
+
+        NOME_ESTADO_PARA_SIGLA[
+            sigla
+        ] = sigla;
+
+    }
+
+);
+
+
+// ============================================================
+// 10. IDENTIFICAR SIGLA DO ESTADO
+// ============================================================
+
+function obterSiglaEstado(feature) {
+
+    const props =
+        feature?.properties || {};
+
+
+    // --------------------------------------------------------
+    // Primeiro procura campos específicos de UF
+    // --------------------------------------------------------
+
+    const candidatosUF = [
+
+        props.SIGLA_UF,
+
+        props.sigla_uf,
+
+        props.SIGLA,
+
+        props.sigla,
+
+        props.UF,
+
+        props.uf,
+
+        props.CD_UF,
+
+        props.cd_uf
+
+    ];
+
+
+    for (
+        const valor of candidatosUF
+    ) {
+
+        if (
+            valor === undefined ||
+            valor === null ||
+            valor === ""
+        ) {
+
+            continue;
+
+        }
+
+
+        const texto =
+            normalizarTexto(valor);
+
+
+        if (
+            ESTADOS_BRASIL[texto]
+        ) {
+
+            return texto;
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // Depois procura pelo nome
+    // --------------------------------------------------------
+
+    const candidatosNome = [
+
+        props.region_nam,
+
+        props["Region Name"],
+
+        props.NAME_1,
+
+        props.NM_ESTADO,
+
+        props.NM_UF,
+
+        props.NAME,
+
+        props.nome,
+
+        props.Nome,
+
+        props.name,
+
+        props.NOME,
+
+        props.name_1
+
+    ];
+
+
+    for (
+        const valor of candidatosNome
+    ) {
+
+        if (
+            valor === undefined ||
+            valor === null ||
+            valor === ""
+        ) {
+
+            continue;
+
+        }
+
+
+        const texto =
+            normalizarTexto(valor);
+
+
+        if (
+            NOME_ESTADO_PARA_SIGLA[texto]
+        ) {
+
+            return NOME_ESTADO_PARA_SIGLA[
+                texto
+            ];
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ============================================================
+// 11. VERIFICAR SE É ESTADO BRASILEIRO
+// ============================================================
+
+function ehEstadoDoBrasil(feature) {
+
+    const sigla =
+        obterSiglaEstado(
+            feature
+        );
+
+
+    return (
+        sigla !== null &&
+        ESTADOS_BRASIL[sigla] !== undefined
+    );
+
+}
+
+
+// ============================================================
+// 12. NOME PADRONIZADO DO ESTADO
+// ============================================================
+
+function obterNomeEstadoPadronizado(feature) {
+
+    const sigla =
+        obterSiglaEstado(
+            feature
+        );
+
+
+    if (
+        sigla === null
+    ) {
+
+        return null;
+
+    }
+
+
+    return ESTADOS_BRASIL[
+        sigla
+    ];
+
+}
+
+
+// ============================================================
+// 13. RANKING ORIGINAL DA FEIÇÃO
 // ============================================================
 
 function obterRanking(feature) {
@@ -2468,7 +2756,7 @@ function obterRanking(feature) {
 
 
 // ============================================================
-// 8. ÁREA
+// 14. ÁREA
 // ============================================================
 
 function obterArea(feature) {
@@ -2535,7 +2823,7 @@ function obterArea(feature) {
 
 
 // ============================================================
-// 9. ESTILO
+// 15. ESTILO
 // ============================================================
 
 function estiloFeature(
@@ -2592,7 +2880,7 @@ function estiloFeature(
 
 
 // ============================================================
-// 10. NORMALIZAR GEOJSON
+// 16. NORMALIZAR GEOJSON
 // ============================================================
 
 function normalizarGeoJSON(dados) {
@@ -2685,7 +2973,7 @@ function normalizarGeoJSON(dados) {
 
 
 // ============================================================
-// 11. CRIAR CAMADA
+// 17. CRIAR CAMADA
 // ============================================================
 
 function criarCamada(
@@ -2784,7 +3072,7 @@ function criarCamada(
 
 
 // ============================================================
-// 12. POPUP
+// 18. POPUP
 // ============================================================
 
 function mostrarPopup(
@@ -2797,9 +3085,27 @@ function mostrarPopup(
 
 ) {
 
-    const nome =
-        obterNome(feature)
-        || "Sem identificação";
+    let nome;
+
+
+    if (
+        tipo === "estados"
+    ) {
+
+        nome =
+            obterNomeEstadoPadronizado(
+                feature
+            ) || "Estado";
+
+    }
+
+    else {
+
+        nome =
+            obterNome(feature)
+            || "Sem identificação";
+
+    }
 
 
     const ranking =
@@ -2823,7 +3129,7 @@ function mostrarPopup(
                 margin-bottom:8px;
                 color:#1f2933;
             ">
-                ${nome}
+                ${escaparHTML(nome)}
             </div>
 
             <div style="
@@ -2892,7 +3198,7 @@ function mostrarPopup(
 
 
 // ============================================================
-// 13. FORMATAR NÚMEROS
+// 19. FORMATAR NÚMEROS
 // ============================================================
 
 function formatarNumero(valor) {
@@ -2917,7 +3223,7 @@ function formatarNumero(valor) {
 
 
 // ============================================================
-// 14. ATUALIZAR LOADING
+// 20. ATUALIZAR LOADING
 // ============================================================
 
 function atualizarLoading(
@@ -2961,7 +3267,7 @@ function atualizarLoading(
 
 
 // ============================================================
-// 15. CARREGAR UM ARQUIVO
+// 21. CARREGAR UM ARQUIVO
 // ============================================================
 
 async function carregarArquivo(
@@ -3054,7 +3360,7 @@ async function carregarArquivo(
 
 
 // ============================================================
-// 16. CARREGAMENTO PARALELO
+// 22. CARREGAMENTO PARALELO
 // ============================================================
 
 async function carregarTodosDados() {
@@ -3211,7 +3517,7 @@ async function carregarTodosDados() {
 
 
 // ============================================================
-// 17. CONTROLE DE CAMADAS
+// 23. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas =
@@ -3243,7 +3549,7 @@ const controleCamadas =
 
 
 // ============================================================
-// 18. AJUSTAR MAPA
+// 24. AJUSTAR MAPA
 // ============================================================
 
 function ajustarMapa() {
@@ -3328,7 +3634,7 @@ function ajustarMapa() {
 
 
 // ============================================================
-// 19. ABRIR CITAÇÃO
+// 25. ABRIR CITAÇÃO
 // ============================================================
 
 function abrirCitacao() {
@@ -3345,7 +3651,7 @@ function abrirCitacao() {
 
 
 // ============================================================
-// 20. FECHAR CITAÇÃO
+// 26. FECHAR CITAÇÃO
 // ============================================================
 
 function fecharCitacao() {
@@ -3376,7 +3682,7 @@ function fecharModalFora(event) {
 
 
 // ============================================================
-// 21. DADOS PARA RANKING
+// 27. DADOS PARA RANKING
 // ============================================================
 
 let dadosRankingEstados = [];
@@ -3385,7 +3691,7 @@ let dadosRankingBiomas = [];
 
 
 // ============================================================
-// 22. AGREGAR DADOS
+// 28. CONSTRUIR RANKINGS
 // ============================================================
 
 function construirRankings(resultados) {
@@ -3410,109 +3716,301 @@ function construirRankings(resultados) {
             }
 
 
-            const destino =
-                resultado.tipo === "estados"
-                    ? estados
-                    : biomas;
+            // =================================================
+            // ESTADOS
+            // =================================================
+
+            if (
+                resultado.tipo ===
+                "estados"
+            ) {
+
+                resultado.features.forEach(
+
+                    feature => {
+
+                        /*
+                         * FILTRO PRINCIPAL:
+                         *
+                         * Só entra no ranking se a feição
+                         * corresponder a uma das 27 UFs
+                         * oficiais do Brasil.
+                         */
+
+                        if (
+                            !ehEstadoDoBrasil(
+                                feature
+                            )
+                        ) {
+
+                            return;
+
+                        }
 
 
-            resultado.features.forEach(
-
-                feature => {
-
-                    const nome =
-                        obterNome(feature);
+                        const sigla =
+                            obterSiglaEstado(
+                                feature
+                            );
 
 
-                    const area =
-                        obterArea(feature);
+                        const nome =
+                            ESTADOS_BRASIL[
+                                sigla
+                            ];
 
 
-                    if (
-                        !nome ||
-                        area === null
-                    ) {
+                        const area =
+                            obterArea(
+                                feature
+                            );
 
-                        return;
+
+                        if (
+                            !nome ||
+                            area === null ||
+                            !Number.isFinite(
+                                Number(area)
+                            ) ||
+                            Number(area) < 0
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * A chave é a SIGLA.
+                         *
+                         * Isso impede que:
+                         *
+                         * "Pará"
+                         * "PARÁ"
+                         * "PA"
+                         *
+                         * sejam tratados como três estados.
+                         */
+
+                        const chave =
+                            sigla;
+
+
+                        if (
+                            !estados.has(
+                                chave
+                            )
+                        ) {
+
+                            estados.set(
+
+                                chave,
+
+                                {
+
+                                    sigla:
+                                        sigla,
+
+                                    nome:
+                                        nome,
+
+                                    area:
+                                        0
+
+                                }
+
+                            );
+
+                        }
+
+
+                        estados.get(
+                            chave
+                        ).area +=
+                            Number(area);
 
                     }
 
+                );
 
-                    /*
-                     * Se o mesmo estado/bioma aparecer
-                     * em mais de um arquivo, as áreas
-                     * são somadas.
-                     */
-
-                    const chave =
-                        String(nome)
-                            .trim()
-                            .toUpperCase();
+            }
 
 
-                    if (
-                        !destino.has(chave)
-                    ) {
+            // =================================================
+            // BIOMAS
+            // =================================================
 
-                        destino.set(
+            else {
 
-                            chave,
+                resultado.features.forEach(
 
-                            {
+                    feature => {
 
-                                nome:
-                                    String(nome).trim(),
+                        const nome =
+                            obterNome(
+                                feature
+                            );
 
-                                area:
-                                    0
 
-                            }
+                        const area =
+                            obterArea(
+                                feature
+                            );
 
-                        );
+
+                        if (
+                            !nome ||
+                            area === null ||
+                            !Number.isFinite(
+                                Number(area)
+                            ) ||
+                            Number(area) < 0
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const chave =
+                            normalizarTexto(
+                                nome
+                            );
+
+
+                        if (
+                            !biomas.has(
+                                chave
+                            )
+                        ) {
+
+                            biomas.set(
+
+                                chave,
+
+                                {
+
+                                    nome:
+                                        String(
+                                            nome
+                                        ).trim(),
+
+                                    area:
+                                        0
+
+                                }
+
+                            );
+
+                        }
+
+
+                        biomas.get(
+                            chave
+                        ).area +=
+                            Number(area);
 
                     }
 
+                );
 
-                    destino.get(chave).area +=
-                        area;
-
-                }
-
-            );
+            }
 
         }
 
     );
 
 
-    dadosRankingEstados =
-        Array.from(
-            estados.values()
-        )
-        .sort(
-            (a, b) =>
-                b.area - a.area
-        );
+    // ========================================================
+    // RANKING DOS ESTADOS
+    // ========================================================
 
+    dadosRankingEstados =
+        Array
+            .from(
+                estados.values()
+            )
+            .filter(
+
+                item =>
+                    Number.isFinite(
+                        item.area
+                    ) &&
+                    item.area >= 0
+
+            )
+            .sort(
+
+                (a, b) =>
+                    b.area - a.area
+
+            );
+
+
+    // ========================================================
+    // RANKING DOS BIOMAS
+    // ========================================================
 
     dadosRankingBiomas =
-        Array.from(
-            biomas.values()
-        )
-        .sort(
-            (a, b) =>
-                b.area - a.area
+        Array
+            .from(
+                biomas.values()
+            )
+            .filter(
+
+                item =>
+                    Number.isFinite(
+                        item.area
+                    ) &&
+                    item.area >= 0
+
+            )
+            .sort(
+
+                (a, b) =>
+                    b.area - a.area
+
+            );
+
+
+    // ========================================================
+    // GARANTIA ABSOLUTA:
+    // NO MÁXIMO 27 ESTADOS
+    // ========================================================
+
+    dadosRankingEstados =
+        dadosRankingEstados.slice(
+            0,
+            27
         );
 
 
     console.log(
-        "Ranking Estados:",
+        "=========================================="
+    );
+
+    console.log(
+        "RANKING DE ESTADOS DO BRASIL"
+    );
+
+    console.log(
+        "Quantidade:",
+        dadosRankingEstados.length
+    );
+
+    console.table(
         dadosRankingEstados
     );
 
+    console.log(
+        "=========================================="
+    );
 
     console.log(
-        "Ranking Biomas:",
+        "RANKING DE BIOMAS"
+    );
+
+    console.table(
         dadosRankingBiomas
     );
 
@@ -3520,7 +4018,7 @@ function construirRankings(resultados) {
 
 
 // ============================================================
-// 23. ABRIR RANKING
+// 29. ABRIR RANKING
 // ============================================================
 
 function abrirRanking() {
@@ -3542,7 +4040,7 @@ function abrirRanking() {
 
 
 // ============================================================
-// 24. FECHAR RANKING
+// 30. FECHAR RANKING
 // ============================================================
 
 function fecharRanking() {
@@ -3559,7 +4057,7 @@ function fecharRanking() {
 
 
 // ============================================================
-// 25. FECHAR AO CLICAR FORA
+// 31. FECHAR AO CLICAR FORA
 // ============================================================
 
 function fecharRankingFora(event) {
@@ -3577,7 +4075,7 @@ function fecharRankingFora(event) {
 
 
 // ============================================================
-// 26. MOSTRAR RANKING
+// 32. MOSTRAR RANKING
 // ============================================================
 
 function mostrarRanking(tipo) {
@@ -3609,6 +4107,10 @@ function mostrarRanking(tipo) {
     let dados = [];
 
 
+    // ========================================================
+    // ESTADOS
+    // ========================================================
+
     if (
         tipo === "estados"
     ) {
@@ -3625,6 +4127,11 @@ function mostrarRanking(tipo) {
         );
 
     }
+
+
+    // ========================================================
+    // BIOMAS
+    // ========================================================
 
     else {
 
@@ -3760,7 +4267,7 @@ function mostrarRanking(tipo) {
 
 
 // ============================================================
-// 27. RESUMO DO RANKING
+// 33. RESUMO DO RANKING
 // ============================================================
 
 function atualizarResumo(
@@ -3804,17 +4311,6 @@ function atualizarResumo(
     }
 
 
-    const soma =
-        dados.reduce(
-
-            (acumulado, item) =>
-                acumulado + item.area,
-
-            0
-
-        );
-
-
     maior.innerText =
         dados[0].nome;
 
@@ -3832,7 +4328,7 @@ function atualizarResumo(
 
 
 // ============================================================
-// 28. PROTEÇÃO CONTRA HTML
+// 34. PROTEÇÃO CONTRA HTML
 // ============================================================
 
 function escaparHTML(texto) {
@@ -3868,7 +4364,7 @@ function escaparHTML(texto) {
 
 
 // ============================================================
-// 29. ESC
+// 35. ESC
 // ============================================================
 
 document.addEventListener(
@@ -3894,7 +4390,7 @@ document.addEventListener(
 
 
 // ============================================================
-// 30. INICIALIZAÇÃO
+// 36. INICIALIZAÇÃO
 // ============================================================
 
 async function inicializar() {
@@ -3931,7 +4427,7 @@ async function inicializar() {
 
 
     // ========================================================
-    // COLOCA ESTADOS NO MAPA
+    // ESTADOS NO MAPA
     // ========================================================
 
     if (
@@ -3946,7 +4442,7 @@ async function inicializar() {
 
 
     // ========================================================
-    // COLOCA BIOMAS NO MAPA
+    // BIOMAS NO MAPA
     // ========================================================
 
     if (
@@ -4011,7 +4507,7 @@ async function inicializar() {
 
 
 // ============================================================
-// 31. EXECUTAR
+// 37. EXECUTAR
 // ============================================================
 
 window.addEventListener(
