@@ -1630,7 +1630,8 @@
 
             font-size: 11px;
 
-            font-weight: 750;
+            font-weight:
+                750;
 
         }
 
@@ -2300,7 +2301,7 @@
 
 
 <!-- ==========================================================
-     NOVO RETÂNGULO / PAINEL DO POLÍGONO
+     PAINEL DO POLÍGONO
 =========================================================== -->
 
 <div
@@ -2394,6 +2395,7 @@
             <button
                 id="fechar-modal"
                 onclick="fecharCitacao()"
+                title="Fechar"
             >
                 ×
             </button>
@@ -2403,6 +2405,11 @@
 
         <div id="modal-body">
 
+
+            <!-- ==================================================
+                 FONTE DOS DADOS ESPACIAIS
+            =================================================== -->
+
             <p>
 
                 <strong>
@@ -2411,13 +2418,18 @@
 
             </p>
 
-            <p>
+            <div class="citacao-box">
 
                 MODIS MCD64A1 Collection 6.1,
-                disponibilizado pelo State of Wildfire.
+                disponibilizado pelo
+                <i>State of Wildfire</i>.
 
-            </p>
+            </div>
 
+
+            <!-- ==================================================
+                 PERÍODO ANALISADO
+            =================================================== -->
 
             <p>
 
@@ -2427,13 +2439,17 @@
 
             </p>
 
-            <p>
+            <div class="citacao-box">
 
                 Março de 2024 a fevereiro de 2025,
                 comparado ao mesmo período dos anos anteriores.
 
-            </p>
+            </div>
 
+
+            <!-- ==================================================
+                 PRODUTO
+            =================================================== -->
 
             <p>
 
@@ -2443,23 +2459,87 @@
 
             </p>
 
-            <p>
+            <div class="citacao-box">
 
                 Ranqueamento e espacialização da área queimada
                 no Brasil, com organização dos resultados por
                 estados e biomas.
 
-            </p>
+            </div>
 
+
+            <!-- ==================================================
+                 MATERIAL SUPLEMENTAR
+            =================================================== -->
 
             <p>
 
                 <strong>
-                    Referência
+                    Material suplementar
                 </strong>
 
             </p>
 
+            <div class="citacao-box">
+
+                Este dashboard constitui material suplementar
+                do trabalho desenvolvido para o
+                <strong>GeoInfo 2026</strong>.
+
+                <br><br>
+
+                <i>
+                    Toolkit to Mapping and Ranking Burned Areas
+                    in Brazil
+                </i>
+
+            </div>
+
+
+            <!-- ==================================================
+                 AUTORES
+            =================================================== -->
+
+            <p>
+
+                <strong>
+                    Autores
+                </strong>
+
+            </p>
+
+            <div class="citacao-box">
+
+                Débora J. Dutra;<br>
+
+                Igor José Malfetoni Ferreira;<br>
+
+                Guilherme Mataveli;<br>
+
+                Zevir A. Cipriano Júnior;<br>
+
+                Leonardo Congro;<br>
+
+                Pedro Noronha;<br>
+
+                Francisco Carlos Santos de Freitas Filho;<br>
+
+                Liana O. Anderson.
+
+            </div>
+
+
+            <!-- ==================================================
+                 REFERÊNCIA DOS DADOS
+            =================================================== -->
+
+            <p>
+
+                <strong>
+                    Referência dos dados
+                </strong>
+
+            </p>
 
             <div class="citacao-box">
 
@@ -2468,16 +2548,47 @@
                     Fogo em Foco: diagnóstico dos incêndios
                     no Brasil em 2024-2025.
                 </i>
+
                 São José dos Campos:
                 INPE, 2025.
                 92 p.
 
                 <br><br>
 
-                URI:
+                <strong>
+                    URI:
+                </strong>
+
                 upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE.
 
             </div>
+
+
+            <!-- ==================================================
+                 NOTA
+            =================================================== -->
+
+            <p>
+
+                <strong>
+                    Nota
+                </strong>
+
+            </p>
+
+            <div class="citacao-box">
+
+                Os resultados apresentados neste dashboard
+                integram o material suplementar associado ao
+                trabalho
+                <i>
+                    Toolkit to Mapping and Ranking Burned Areas
+                    in Brazil
+                </i>,
+                desenvolvido para o GeoInfo 2026.
+
+            </div>
+
 
         </div>
 
@@ -3504,11 +3615,6 @@ function criarCamada(
                                     );
 
 
-                                    // =================================================
-                                    // NOVO:
-                                    // ATUALIZAR PAINEL DE INFORMAÇÕES DO VETOR
-                                    // =================================================
-
                                     atualizarPainelVetor(
 
                                         e.target.feature,
@@ -3662,7 +3768,6 @@ function mostrarPopup(
 
 
 // ============================================================
-// NOVA FUNÇÃO
 // 19. CAMPOS DO VETOR
 // ============================================================
 
@@ -3879,7 +3984,6 @@ const CAMPOS_VETOR = [
 
 
 // ============================================================
-// NOVA FUNÇÃO
 // 20. LOCALIZAR VALOR DE UM CAMPO
 // ============================================================
 
@@ -3895,7 +3999,6 @@ function obterValorCampoVetor(
         feature?.properties || {};
 
 
-    // Primeiro tenta o nome exato
     if (
         props[chave] !== undefined &&
         props[chave] !== null &&
@@ -3906,9 +4009,6 @@ function obterValorCampoVetor(
 
     }
 
-
-    // Algumas versões dos arquivos podem
-    // ter variações no nome do campo.
 
     const variantes = {
 
@@ -4014,7 +4114,6 @@ function obterValorCampoVetor(
 
 
 // ============================================================
-// NOVA FUNÇÃO
 // 21. FORMATAR VALOR DOS CAMPOS
 // ============================================================
 
@@ -4059,7 +4158,6 @@ function formatarValorCampo(
 
 
 // ============================================================
-// NOVA FUNÇÃO
 // 22. ATUALIZAR PAINEL DO VETOR
 // ============================================================
 
@@ -4282,7 +4380,6 @@ function atualizarPainelVetor(
 
 
 // ============================================================
-// NOVA FUNÇÃO
 // 23. ABRIR / FECHAR PAINEL DO VETOR
 // ============================================================
 
