@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Fogo e Focos de Calor</title>
+
+
+<!-- =========================================================
+     LEAFLET CSS
+========================================================= -->
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+
+<style>
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+
+    margin: 0;
+
+    font-family: Arial, sans-serif;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+
+    background: linear-gradient(
+        135deg,
+        #e67e22,
+        #a04000
+    );
+
+    color: white;
+
+    padding: 15px 25px;
+
+    font-size: 1.3em;
+
+    font-weight: bold;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+/* =========================================================
+   BOTÕES DO HEADER
+========================================================= */
+
+.header-buttons {
+
+    display: flex;
+
+    gap: 8px;
+
+    align-items: center;
+
+}
+
+
+.header-btn {
+
+    background: rgba(
+        255,
+        255,
+        255,
+        0.15
+    );
+
+    border: 1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.7
+        );
+
+    color: white;
+
+    padding: 8px 14px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+
+}
+
+
+.header-btn:hover {
+
+    background: white;
+
+    color: #a04000;
+
+}
+
+
+/* =========================================================
+   MAPA PRINCIPAL
+========================================================= */
+
+#map {
+
+    width: 100%;
+
+    height: 92vh;
+
+}
+
+
+/* =========================================================
+   PAINEL DE CAMADAS
+========================================================= */
+
+.layers-panel {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 9998;
+
+    top: 75px;
+
+    right: 20px;
+
+    width: 280px;
+
+    background: white;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 4px 18px
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
+
+    padding: 18px;
+
+}
+
+
+.layers-panel h3 {
+
+    margin-top: 0;
+
+    margin-bottom: 15px;
+
+    color: #a04000;
+
+}
+
+
+.layer-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 9px 4px;
+
+    border-bottom:
+        1px solid #eeeeee;
+
+    font-size: 14px;
+
+}
+
+
+.layer-item:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.layer-item input {
+
+    width: 16px;
+
+    height: 16px;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   MODAIS
+========================================================= */
+
+.modal {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 9999;
+
+    left: 0;
+
+    top: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background-color:
+        rgba(
+            0,
+            0,
+            0,
+            0.5
+        );
+
+}
+
+
+/* =========================================================
+   CONTEÚDO DOS MODAIS
+========================================================= */
+
+.modal-content {
+
+    background-color: white;
+
+    width: 90%;
+
+    max-width: 650px;
+
+    margin: 8% auto;
+
+    padding: 25px;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 5px 20px
+        rgba(
+            0,
+            0,
+            0,
+            0.3
+        );
+
+    position: relative;
+
+}
+
+
+/* =========================================================
+   TÍTULOS
+========================================================= */
+
+.modal-content h2 {
+
+    margin-top: 0;
+
+    color: #a04000;
+
+}
+
+
+/* =========================================================
+   BOTÃO FECHAR
+========================================================= */
+
+.fechar {
+
+    position: absolute;
+
+    right: 18px;
+
+    top: 10px;
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    color: #777;
+
+    cursor: pointer;
+
+}
+
+
+.fechar:hover {
+
+    color: #a04000;
+
+}
+
+
+/* =========================================================
+   CITAÇÃO
+========================================================= */
+
+.citacao {
+
+    background: #f4f6f7;
+
+    border-left:
+        4px solid #e67e22;
+
+    padding: 15px;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   BOTÃO COPIAR
+========================================================= */
+
+.copiar-btn {
+
+    margin-top: 15px;
+
+    background: #e67e22;
+
+    color: white;
+
+    border: none;
+
+    padding: 9px 16px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+}
+
+
+.copiar-btn:hover {
+
+    background: #a04000;
+
+}
+
+
+/* =========================================================
+   DOWNLOADS
+========================================================= */
+
+.download-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 12px;
+
+    margin-bottom: 8px;
+
+    background: #f4f6f7;
+
+    border-radius: 6px;
+
+}
+
+
+.download-name {
+
+    font-size: 14px;
+
+    color: #333;
+
+}
+
+
+.download-btn {
+
+    background: #e67e22;
+
+    color: white;
+
+    border: none;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+}
+
+
+.download-btn:hover {
+
+    background: #a04000;
+
+}
+
+
+/* =========================================================
+   PAINEL DE ESTATÍSTICAS
+========================================================= */
+
+#statsPanel {
+
+    position: fixed;
+
+    z-index: 9997;
+
+    right: 20px;
+
+    bottom: 20px;
+
+    width: 270px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.97
+        );
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 4px 18px
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   TÍTULO DO PAINEL
+========================================================= */
+
+.stats-title {
+
+    background: linear-gradient(
+        135deg,
+        #e67e22,
+        #a04000
+    );
+
+    color: white;
+
+    padding: 10px 13px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================================================
+   ESTATÍSTICAS
+========================================================= */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    border-top:
+        1px solid #eeeeee;
+
+}
+
+
+.stat-item {
+
+    text-align: center;
+
+    padding: 12px 3px;
+
+}
+
+
+.stat-item:not(:last-child) {
+
+    border-right:
+        1px solid #eeeeee;
+
+}
+
+
+.stat-number {
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    color: #a04000;
+
+}
+
+
+.stat-label {
+
+    margin-top: 3px;
+
+    font-size: 10px;
+
+    color: #777;
+
+}
+
+
+.stats-update {
+
+    text-align: center;
+
+    font-size: 9px;
+
+    color: #999;
+
+    padding: 6px;
+
+    border-top:
+        1px solid #eeeeee;
+
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 700px) {
+
+    header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+    }
+
+
+    .header-buttons {
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .header-btn {
+
+        font-size: 12px;
+
+        padding: 7px 10px;
+
+    }
+
+
+    #statsPanel {
+
+        width: 230px;
+
+        right: 10px;
+
+        bottom: 10px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+
+    <div>
+
+        🔥 Fogo e Focos de Calor
+
+    </div>
+
+
+    <div class="header-buttons">
+
+
+        <!-- CAMADAS -->
+
+        <button
+            class="header-btn"
+            onclick="abrirCamadas()">
+
+            ☰ Camadas
+
+        </button>
+
+
+        <!-- BRASIL -->
+
+        <button
+            class="header-btn"
+            onclick="centralizarBrasil()">
+
+            🇧🇷 Brasil
+
+        </button>
+
+
+        <!-- DOWNLOAD -->
+
+        <button
+            class="header-btn"
+            onclick="abrirDownloads()">
+
+            ↓ Dados
+
+        </button>
+
+
+        <!-- CITAÇÃO -->
+
+        <button
+            class="header-btn"
+            onclick="abrirCitacao()">
+
+            Como citar
+
+        </button>
+
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     MAPA PRINCIPAL
+========================================================= -->
+
+<div id="map"></div>
+
+
+
+<!-- =========================================================
+     PAINEL DE CAMADAS
+========================================================= -->
+
+<div
+    id="layersPanel"
+    class="layers-panel">
+
+
+    <h3>
+
+        Camadas
+
+    </h3>
+
+
+    <!-- =====================================================
+         ESTADOS
+    ====================================================== -->
+
+    <div class="layer-item">
+
+
+        <input
+            type="checkbox"
+            id="checkEstados"
+            checked
+            onchange="alternarEstados()">
+
+
+        <label for="checkEstados">
+
+            Estados brasileiros
+
+        </label>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         FUTURO: FOCOS
+    ====================================================== -->
+
+    <div class="layer-item">
+
+
+        <input
+            type="checkbox"
+            id="checkFocos"
+            disabled>
+
+
+        <label for="checkFocos">
+
+            Focos de calor
+
+        </label>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         FUTURO: ÁREA QUEIMADA
+    ====================================================== -->
+
+    <div class="layer-item">
+
+
+        <input
+            type="checkbox"
+            id="checkAreaQueimada"
+            disabled>
+
+
+        <label for="checkAreaQueimada">
+
+            Área queimada
+
+        </label>
+
+
+    </div>
+
+
+    <div
+        style="
+        margin-top:15px;
+        padding:10px;
+        background:#f4f6f7;
+        border-radius:6px;
+        font-size:12px;
+        color:#777;
+        ">
+
+        As camadas de fogo serão adicionadas
+        posteriormente aos dados do projeto.
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     MODAL DOWNLOADS
+========================================================= -->
+
+<div
+    id="modalDownloads"
+    class="modal">
+
+
+    <div class="modal-content">
+
+
+        <span
+            class="fechar"
+            onclick="fecharDownloads()">
+
+            &times;
+
+        </span>
+
+
+        <h2>
+
+            Dados para download
+
+        </h2>
+
+
+        <p>
+
+            Os dados utilizados neste produto
+            estarão disponíveis para download
+            conforme forem incorporados ao dashboard.
+
+        </p>
+
+
+        <br>
+
+
+        <!-- ESTADOS -->
+
+        <div class="download-item">
+
+
+            <span class="download-name">
+
+                Estados brasileiros
+
+            </span>
+
+
+            <a
+                class="download-btn"
+                href="estados_simplificado.geojson"
+                download>
+
+                GeoJSON
+
+            </a>
+
+
+        </div>
+
+
+        <!-- FUTURO -->
+
+        <div class="download-item">
+
+
+            <span class="download-name">
+
+                Dados de fogo
+
+            </span>
+
+
+            <span
+                style="
+                font-size:12px;
+                color:#999;
+                ">
+
+                Em preparação
+
+            </span>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     MODAL CITAÇÃO
+========================================================= -->
+
+<div
+    id="modalCitacao"
+    class="modal">
+
+
+    <div class="modal-content">
+
+
+        <span
+            class="fechar"
+            onclick="fecharCitacao()">
+
+            &times;
+
+        </span>
+
+
+        <h2>
+
+            Como citar o produto
+
+        </h2>
+
+
+        <p>
+
+            A referência do produto será disponibilizada
+            juntamente com a documentação dos dados.
+
+        </p>
+
+
+        <br>
+
+
+        <div
+            class="citacao"
+            id="textoCitacao">
+
+            Dutra, D. J. (2026).
+            Fogo e Focos de Calor no Brasil.
+            Produto de monitoramento por
+            sensoriamento remoto.
+            Instituto Nacional de Pesquisas Espaciais
+            (INPE).
+
+        </div>
+
+
+        <button
+            class="copiar-btn"
+            onclick="copiarCitacao()">
+
+            Copiar citação
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     PAINEL DE ESTATÍSTICAS
+========================================================= -->
+
+<div id="statsPanel">
+
+
+    <div class="stats-title">
+
+        🔥 Monitoramento de fogo
+
+    </div>
+
+
+    <div class="stats-grid">
+
+
+        <!-- TOTAL DE FOCOS -->
+
+        <div class="stat-item">
+
+
+            <div
+                class="stat-number"
+                id="totalFocos">
+
+                --
+
+            </div>
+
+
+            <div class="stat-label">
+
+                Focos
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ÁREA -->
+
+        <div class="stat-item">
+
+
+            <div
+                class="stat-number"
+                id="areaQueimada">
+
+                --
+
+            </div>
+
+
+            <div class="stat-label">
+
+                Área queimada
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ESTADOS -->
+
+        <div class="stat-item">
+
+
+            <div
+                class="stat-number"
+                id="estadosBrasil">
+
+                27
+
+            </div>
+
+
+            <div class="stat-label">
+
+                Estados
+
+            </div>
+
+
+        </div>
+
+
+        <!-- PERÍODO -->
+
+        <div class="stat-item">
+
+
+            <div
+                class="stat-number"
+                id="periodoDados">
+
+                --
+
+            </div>
+
+
+            <div class="stat-label">
+
+                Período
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div
+        class="stats-update"
+        id="ultimaAtualizacao">
+
+        Dashboard em preparação
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     LEAFLET JS
+========================================================= -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+
+<script>
+
+
+// ============================================================
+// MAPA PRINCIPAL
+// ============================================================
+
+var map = L.map(
+
+    'map'
+
+).setView(
+
+    [-14.2, -51.9],
+
+    4
+
+);
+
+
+// ============================================================
+// OPEN STREET MAP
+// ============================================================
+
+L.tileLayer(
+
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
+    {
+
+        attribution:
+            '&copy; OpenStreetMap contributors'
+
+    }
+
+).addTo(map);
+
+
+
+// ============================================================
+// VARIÁVEL DOS ESTADOS
+// ============================================================
+
+var estadosLayer = null;
+
+
+
+// ============================================================
+// ESTILO DOS ESTADOS
+// ============================================================
+
+function estiloEstado(feature) {
+
+    return {
+
+        fillColor: '#e67e22',
+
+        color: '#555',
+
+        weight: 1,
+
+        opacity: 1,
+
+        fillOpacity: 0.08
+
+    };
+
+}
+
+
+
+// ============================================================
+// CARREGAR ESTADOS BRASILEIROS
+// ============================================================
+
+fetch(
+
+    'estados_simplificado.geojson'
+
+)
+
+.then(
+
+    function(response) {
+
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                'Arquivo estados_simplificado.geojson não encontrado.'
+
+            );
+
+        }
+
+
+        return response.json();
+
+    }
+
+)
+
+.then(
+
+    function(data) {
+
+
+        estadosLayer = L.geoJSON(
+
+            data,
+
+            {
+
+
+                // --------------------------------------------
+                // ESTILO
+                // --------------------------------------------
+
+                style:
+                    estiloEstado,
+
+
+                // --------------------------------------------
+                // INTERAÇÃO
+                // --------------------------------------------
+
+                onEachFeature:
+                    function(
+                        feature,
+                        layer
+                    ) {
+
+
+                        /*
+                         * Tenta encontrar o nome do estado
+                         * usando os mesmos campos do seu
+                         * GeoJSON do MCWD.
+                         */
+
+                        var nomeEstado =
+
+                            feature.properties.nome ||
+
+                            feature.properties.NM_UF ||
+
+                            feature.properties.NM_ESTADO ||
+
+                            feature.properties.name ||
+
+                            feature.properties.NOME ||
+
+                            'Estado';
+
+
+                        var siglaEstado =
+
+                            feature.properties.sigla ||
+
+                            feature.properties.SIGLA ||
+
+                            feature.properties.UF ||
+
+                            '';
+
+
+                        // ------------------------------------
+                        // TOOLTIP
+                        // ------------------------------------
+
+                        layer.bindTooltip(
+
+                            nomeEstado,
+
+                            {
+
+                                sticky: true
+
+                            }
+
+                        );
+
+
+                        // ------------------------------------
+                        // MOUSEOVER
+                        // ------------------------------------
+
+                        layer.on(
+
+                            'mouseover',
+
+                            function(e) {
+
+
+                                e.target.setStyle({
+
+                                    fillColor:
+                                        '#e67e22',
+
+                                    color:
+                                        '#a04000',
+
+                                    weight:
+                                        2,
+
+                                    fillOpacity:
+                                        0.25
+
+                                });
+
+
+                                e.target.bringToFront();
+
+                            }
+
+                        );
+
+
+                        // ------------------------------------
+                        // MOUSEOUT
+                        // ------------------------------------
+
+                        layer.on(
+
+                            'mouseout',
+
+                            function(e) {
+
+
+                                estadosLayer.resetStyle(
+
+                                    e.target
+
+                                );
+
+                            }
+
+                        );
+
+
+                        // ------------------------------------
+                        // CLIQUE
+                        // ------------------------------------
+
+                        layer.on(
+
+                            'click',
+
+                            function(e) {
+
+
+                                map.fitBounds(
+
+                                    e.target.getBounds(),
+
+                                    {
+
+                                        padding:
+                                            [20, 20]
+
+                                    }
+
+                                );
+
+
+                                layer.bindPopup(
+
+                                    '<div style="text-align:center;">' +
+
+                                    '<strong style="font-size:16px;">' +
+
+                                    nomeEstado +
+
+                                    '</strong>' +
+
+                                    '<br>' +
+
+                                    '<span style="font-size:13px;">' +
+
+                                    (
+                                        siglaEstado
+                                        ? 'UF: ' +
+                                          siglaEstado
+                                        : ''
+                                    ) +
+
+                                    '</span>' +
+
+                                    '<hr>' +
+
+                                    '<span style="font-size:12px;color:#777;">' +
+
+                                    'Dados de fogo serão adicionados posteriormente.' +
+
+                                    '</span>' +
+
+                                    '</div>'
+
+                                ).openPopup();
+
+                            }
+
+                        );
+
+                    }
+
+            }
+
+        );
+
+
+        // -----------------------------------------------
+        // ADICIONAR AO MAPA
+        // -----------------------------------------------
+
+        estadosLayer.addTo(map);
+
+
+        // -----------------------------------------------
+        // ENQUADRAR BRASIL
+        // -----------------------------------------------
+
+        map.fitBounds(
+
+            estadosLayer.getBounds()
+
+        );
+
+    }
+
+)
+
+.catch(
+
+    function(error) {
+
+
+        console.error(
+
+            'Erro ao carregar estados:',
+
+            error
+
+        );
+
+
+        alert(
+
+            'Não foi possível carregar o arquivo dos estados brasileiros.'
+
+        );
+
+    }
+
+);
+
+
+
+// ============================================================
+// CENTRALIZAR BRASIL
+// ============================================================
+
+function centralizarBrasil() {
+
+
+    if (
+
+        estadosLayer
+
+    ) {
+
+
+        map.fitBounds(
+
+            estadosLayer.getBounds(),
+
+            {
+
+                padding:
+                    [10, 10]
+
+            }
+
+        );
+
+    }
+
+    else {
+
+
+        map.setView(
+
+            [-14.2, -51.9],
+
+            4
+
+        );
+
+    }
+
+}
+
+
+
+// ============================================================
+// CAMADAS
+// ============================================================
+
+function abrirCamadas() {
+
+
+    var painel =
+        document.getElementById(
+            'layersPanel'
+        );
+
+
+    if (
+
+        painel.style.display ===
+        'block'
+
+    ) {
+
+        painel.style.display =
+            'none';
+
+    }
+
+    else {
+
+        painel.style.display =
+            'block';
+
+    }
+
+}
+
+
+
+// ============================================================
+// ATIVAR / DESATIVAR ESTADOS
+// ============================================================
+
+function alternarEstados() {
+
+
+    var checkbox =
+        document.getElementById(
+            'checkEstados'
+        );
+
+
+    if (
+
+        checkbox.checked
+
+    ) {
+
+
+        if (
+
+            estadosLayer &&
+            !map.hasLayer(
+                estadosLayer
+            )
+
+        ) {
+
+            estadosLayer.addTo(map);
+
+        }
+
+    }
+
+    else {
+
+
+        if (
+
+            estadosLayer &&
+            map.hasLayer(
+                estadosLayer
+            )
+
+        ) {
+
+            map.removeLayer(
+                estadosLayer
+            );
+
+        }
+
+    }
+
+}
+
+
+
+// ============================================================
+// DOWNLOADS
+// ============================================================
+
+function abrirDownloads() {
+
+
+    document.getElementById(
+        'modalDownloads'
+    ).style.display =
+        'block';
+
+}
+
+
+function fecharDownloads() {
+
+
+    document.getElementById(
+        'modalDownloads'
+    ).style.display =
+        'none';
+
+}
+
+
+
+// ============================================================
+// CITAÇÃO
+// ============================================================
+
+function abrirCitacao() {
+
+
+    document.getElementById(
+        'modalCitacao'
+    ).style.display =
+        'block';
+
+}
+
+
+function fecharCitacao() {
+
+
+    document.getElementById(
+        'modalCitacao'
+    ).style.display =
+        'none';
+
+}
+
+
+
+// ============================================================
+// COPIAR CITAÇÃO
+// ============================================================
+
+function copiarCitacao() {
+
+
+    var texto =
+
+        document.getElementById(
+            'textoCitacao'
+        ).innerText;
+
+
+    navigator.clipboard.writeText(
+
+        texto
+
+    )
+
+    .then(
+
+        function() {
+
+
+            alert(
+
+                'Citação copiada!'
+
+            );
+
+        }
+
+    )
+
+    .catch(
+
+        function() {
+
+
+            alert(
+
+                'Não foi possível copiar automaticamente.'
+
+            );
+
+        }
+
+    );
+
+}
+
+
+
+// ============================================================
+// FECHAR PAINEL AO CLICAR FORA
+// ============================================================
+
+window.addEventListener(
+
+    'click',
+
+    function(event) {
+
+
+        var painel =
+
+            document.getElementById(
+                'layersPanel'
+            );
+
+
+        var botao =
+
+            event.target.closest(
+                '.header-btn'
+            );
+
+
+        if (
+
+            painel.style.display ===
+            'block'
+
+            &&
+
+            !painel.contains(
+                event.target
+            )
+
+            &&
+
+            !botao
+
+        ) {
+
+            painel.style.display =
+                'none';
+
+        }
+
+    }
+
+);
+
+</script>
+
+
+</body>
+
+</html>
