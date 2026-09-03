@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -174,7 +173,7 @@
 
 
         /* ======================================================
-           CABEÇALHO
+           CABEÇALHO FIXO
         ====================================================== */
 
         #cabecalho {
@@ -278,102 +277,27 @@
 
 
         /* ======================================================
-           CONTROLE DE CAMADAS
+           NOVO CONTROLE DE VISUALIZAÇÃO
+           
+           Este controle substitui o controle padrão do Leaflet.
         ====================================================== */
 
-        .leaflet-control-layers {
-
-            background:
-                var(--controle-bg) !important;
-
-            color:
-                var(--controle-texto) !important;
-
-            border:
-                1px solid var(--borda) !important;
-
-            border-radius:
-                9px !important;
-
-            box-shadow:
-                var(--sombra-leve) !important;
-
-            padding:
-                7px !important;
-
-            z-index: 2000 !important;
-        }
-
-
-        .leaflet-control-layers-list {
-
-            margin: 0;
-        }
-
-
-        .leaflet-control-layers label {
-
-            display: block;
-
-            color:
-                var(--controle-texto) !important;
-
-            font-size: 13px;
-
-            padding: 5px 4px;
-
-            cursor: pointer;
-
-            user-select: none;
-        }
-
-
-        .leaflet-control-layers label:hover {
-
-            background:
-                var(--bg-painel-secundario);
-
-            border-radius: 5px;
-        }
-
-
-        .leaflet-control-layers input {
-
-            cursor: pointer;
-
-            margin-right: 6px;
-        }
-
-
-        .leaflet-control-layers-separator {
-
-            border-top:
-                1px solid var(--borda) !important;
-        }
-
-
-        /* ======================================================
-           LEGENDA
-        ====================================================== */
-
-        .legenda-ranking {
+        #controle-visualizacao {
 
             position: absolute;
 
+            top: 18px;
             right: 18px;
-            bottom: 20px;
 
-            z-index: 1000;
+            z-index: 1200;
 
-            width: 190px;
-
-            padding: 12px;
+            width: 185px;
 
             background:
-                var(--legenda-bg);
+                var(--controle-bg);
 
             color:
-                var(--legenda-texto);
+                var(--controle-texto);
 
             border:
                 1px solid var(--borda);
@@ -383,91 +307,91 @@
             box-shadow:
                 var(--sombra-leve);
 
-            font-size: 12px;
+            overflow: hidden;
         }
 
 
-        .legenda-titulo {
+        .controle-titulo {
+
+            padding:
+                9px 11px 7px 11px;
+
+            font-size: 12px;
 
             font-weight: bold;
 
-            margin-bottom: 8px;
+            border-bottom:
+                1px solid var(--borda);
+
+            color:
+                var(--texto-principal);
         }
 
 
-        .legenda-item {
+        .controle-opcoes {
 
             display: flex;
 
-            align-items: center;
+            padding: 7px;
 
-            gap: 7px;
-
-            margin: 3px 0;
+            gap: 6px;
         }
 
 
-        .legenda-cor {
+        .botao-camada {
 
-            width: 18px;
-            height: 14px;
-
-            border-radius: 2px;
+            flex: 1;
 
             border:
-                1px solid rgba(0,0,0,0.15);
-        }
-
-
-        /* ======================================================
-           POPUP
-        ====================================================== */
-
-        .leaflet-popup-content-wrapper,
-        .leaflet-popup-tip {
+                1px solid var(--borda);
 
             background:
-                var(--popup-bg);
+                var(--bg-painel-secundario);
 
             color:
-                var(--popup-texto);
+                var(--texto-principal);
+
+            border-radius: 6px;
+
+            padding:
+                8px 6px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            transition:
+                0.2s;
         }
 
 
-        .popup-ranking {
+        .botao-camada:hover {
 
-            min-width: 190px;
+            border-color:
+                var(--primaria);
 
-            font-size: 13px;
-
-            line-height: 1.5;
+            color:
+                var(--primaria);
         }
 
 
-        .popup-ranking h3 {
+        .botao-camada.ativo {
 
-            margin:
-                0 0 8px 0;
+            background:
+                var(--primaria);
 
-            font-size: 16px;
-        }
+            border-color:
+                var(--primaria);
 
-
-        .popup-ranking .linha {
-
-            margin:
-                4px 0;
-        }
-
-
-        .popup-ranking .valor {
-
-            font-weight: bold;
+            color:
+                #ffffff;
         }
 
 
         /* ======================================================
-           PAINEL DE DADOS
+           PAINEL SOBRE OS DADOS
         ====================================================== */
 
         #painel-dados {
@@ -677,6 +601,120 @@
 
             color:
                 var(--texto-secundario);
+        }
+
+
+        /* ======================================================
+           LEGENDA
+        ====================================================== */
+
+        .legenda-ranking {
+
+            position: absolute;
+
+            right: 18px;
+            bottom: 20px;
+
+            z-index: 1000;
+
+            width: 190px;
+
+            padding: 12px;
+
+            background:
+                var(--legenda-bg);
+
+            color:
+                var(--legenda-texto);
+
+            border:
+                1px solid var(--borda);
+
+            border-radius: 10px;
+
+            box-shadow:
+                var(--sombra-leve);
+
+            font-size: 12px;
+        }
+
+
+        .legenda-titulo {
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+
+        .legenda-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin: 3px 0;
+        }
+
+
+        .legenda-cor {
+
+            width: 18px;
+            height: 14px;
+
+            border-radius: 2px;
+
+            border:
+                1px solid rgba(0,0,0,0.15);
+        }
+
+
+        /* ======================================================
+           POPUP
+        ====================================================== */
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+
+            background:
+                var(--popup-bg);
+
+            color:
+                var(--popup-texto);
+        }
+
+
+        .popup-ranking {
+
+            min-width: 190px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        .popup-ranking h3 {
+
+            margin:
+                0 0 8px 0;
+
+            font-size: 16px;
+        }
+
+
+        .popup-ranking .linha {
+
+            margin:
+                4px 0;
+        }
+
+
+        .popup-ranking .valor {
+
+            font-weight: bold;
         }
 
 
@@ -897,15 +935,12 @@
             }
 
 
-            .leaflet-top.leaflet-right {
+            #controle-visualizacao {
 
-                margin-top:
-                    70px !important;
+                top: 105px;
+                right: 10px;
 
-                margin-right:
-                    10px !important;
-
-                z-index: 2000 !important;
+                width: 175px;
             }
 
 
@@ -944,13 +979,29 @@
 
             #painel-dados {
 
-                max-height: 38vh;
+                max-height:
+                    38vh;
             }
 
 
             .legenda-ranking {
 
                 display: none;
+            }
+
+
+            #controle-visualizacao {
+
+                width: 160px;
+            }
+
+
+            .botao-camada {
+
+                font-size: 11px;
+
+                padding:
+                    7px 4px;
             }
         }
 
@@ -963,7 +1014,7 @@
 
 
     <!-- ==========================================================
-         CABEÇALHO
+         CABEÇALHO FIXO
     =========================================================== -->
 
     <div id="cabecalho">
@@ -1012,6 +1063,42 @@
 
 
     <!-- ==========================================================
+         CONTROLE FIXO ESTADOS / BIOMAS
+    =========================================================== -->
+
+    <div id="controle-visualizacao">
+
+        <div
+            class="controle-titulo"
+            id="controle-titulo"
+        >
+            Visualização
+        </div>
+
+        <div class="controle-opcoes">
+
+            <button
+                id="botao-estados"
+                class="botao-camada ativo"
+                onclick="selecionarCamada('estados')"
+            >
+                Estados
+            </button>
+
+            <button
+                id="botao-biomas"
+                class="botao-camada"
+                onclick="selecionarCamada('biomas')"
+            >
+                Biomas
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================================
          MAPA
     =========================================================== -->
 
@@ -1044,8 +1131,9 @@
             class="painel-texto"
             id="dados-fonte"
         >
-            Os dados de área queimada são provenientes do produto MODIS MCD64A1 Collection 6.1.
-            Os dados utilizados neste dashboard foram fornecidos pelo projeto State of Wildfire.
+            Os dados de área queimada são provenientes do produto
+            MODIS MCD64A1 Collection 6.1. Os dados utilizados neste
+            dashboard foram fornecidos pelo projeto State of Wildfire.
         </p>
 
 
@@ -1061,10 +1149,11 @@
             class="painel-texto"
             id="dados-ranking"
         >
-            Para as métricas do fogo, assim como para a extensão da área queimada,
-            utilizamos um ranqueamento que atribui posições para indicar a gravidade
-            relativa do período de março de 2024 a fevereiro de 2025 em relação ao
-            mesmo período dos anos anteriores da série temporal.
+            Para as métricas do fogo, assim como para a extensão da área
+            queimada, utilizamos um ranqueamento que atribui posições para
+            indicar a gravidade relativa do período de março de 2024 a
+            fevereiro de 2025 em relação ao mesmo período dos anos
+            anteriores da série temporal.
         </p>
 
 
@@ -1136,11 +1225,11 @@
             class="painel-texto"
             id="dados-interpretar"
         >
-            Um recorte territorial ranqueado com o valor 1 indica que o período
-            analisado (março de 2024 a fevereiro de 2025) apresentou o pior resultado
-            dentro da série histórica para a variável analisada. Da mesma forma,
-            um valor 2 indica que o período foi o segundo ano mais crítico da série,
-            e assim sucessivamente.
+            Um recorte territorial ranqueado com o valor 1 indica que o
+            período analisado (março de 2024 a fevereiro de 2025) apresentou
+            o pior resultado dentro da série histórica para a variável
+            analisada. Da mesma forma, um valor 2 indica que o período foi
+            o segundo ano mais crítico da série, e assim sucessivamente.
         </p>
 
 
@@ -1156,10 +1245,10 @@
             class="painel-texto"
             id="dados-cores"
         >
-            Os tons de vermelho escuro a amarelo representam os recortes territoriais
-            mais críticos no ranqueamento. Já os recortes em que o período analisado
-            apresentou os menores valores da série histórica são representados por
-            um degradê de verde para azul.
+            Os tons de vermelho escuro a amarelo representam os recortes
+            territoriais mais críticos no ranqueamento. Já os recortes em
+            que o período analisado apresentou os menores valores da série
+            histórica são representados por um degradê de verde para azul.
         </p>
 
 
@@ -1189,9 +1278,8 @@
             class="painel-texto"
             id="dados-periodo"
         >
-            Março de 2024 a fevereiro de 2025,
-            comparado ao mesmo período dos anos anteriores
-            da série temporal.
+            Março de 2024 a fevereiro de 2025, comparado ao mesmo período
+            dos anos anteriores da série temporal.
         </p>
 
     </div>
@@ -1208,7 +1296,7 @@
         </span>
 
         <strong id="texto-camadas">
-            Estados e Biomas
+            Estados
         </strong>
 
     </div>
@@ -1346,14 +1434,11 @@
 
         /* ======================================================
            VARIÁVEIS GLOBAIS
-           
-           IMPORTANTE:
-           Cada variável é declarada somente UMA vez.
         ====================================================== */
 
         let idiomaAtual = "pt";
 
-        let controleCamadas = null;
+        let camadaSelecionada = "estados";
 
 
         /* ======================================================
@@ -1375,14 +1460,12 @@
             L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
-
                     attribution:
                         "&copy; OpenStreetMap contributors",
 
                     maxZoom: 18
                 }
             );
-
 
         camadaBase.addTo(mapa);
 
@@ -1394,7 +1477,9 @@
         const arquivosEstados = [
 
             "estados_2024_01.geojson",
+
             "estados_2024_02.geojson",
+
             "estados_2024_03.geojson"
 
         ];
@@ -1403,12 +1488,28 @@
         const arquivosBiomas = [
 
             "biomas_2024_01.geojson",
+
             "biomas_2024_02.geojson",
+
             "biomas_2024_03.geojson",
+
             "biomas_2024_04.geojson",
+
             "biomas_2024_05.geojson"
 
         ];
+
+
+        /* ======================================================
+           GRUPOS
+        ====================================================== */
+
+        const grupoEstados =
+            L.layerGroup();
+
+
+        const grupoBiomas =
+            L.layerGroup();
 
 
         /* ======================================================
@@ -1427,13 +1528,9 @@
 
 
             return String(valor)
-
                 .trim()
-
                 .toLowerCase()
-
                 .normalize("NFD")
-
                 .replace(
                     /[\u0300-\u036f]/g,
                     ""
@@ -1454,16 +1551,34 @@
             const campos = [
 
                 "region_nam",
+
                 "Region Name",
+
                 "NAME_1",
+
                 "NM_ESTADO",
+
                 "NM_UF",
+
                 "NAME",
+
                 "nome",
+
                 "Nome",
+
                 "name",
+
                 "NAME_0",
-                "Region"
+
+                "Region",
+
+                "Bioma",
+
+                "bioma",
+
+                "BIOMA",
+
+                "name_1"
 
             ];
 
@@ -1473,15 +1588,11 @@
             ) {
 
                 if (
-
                     props[campo] !== undefined &&
-
                     props[campo] !== null &&
-
                     String(
                         props[campo]
                     ).trim() !== ""
-
                 ) {
 
                     return String(
@@ -1492,101 +1603,6 @@
 
 
             return "Sem nome";
-        }
-
-
-        /* ======================================================
-           FILTRO BRASIL
-        ====================================================== */
-
-        function ehBrasil(feature) {
-
-            const props =
-                feature.properties || {};
-
-
-            const camposPais = [
-
-                "country",
-                "Country",
-                "COUNTRY",
-                "pais",
-                "PAIS",
-                "NAME_0"
-
-            ];
-
-
-            for (
-                const campo of camposPais
-            ) {
-
-                if (
-                    props[campo] !== undefined
-                ) {
-
-                    const valor =
-                        normalizarTexto(
-                            props[campo]
-                        );
-
-
-                    if (
-
-                        valor === "brazil" ||
-
-                        valor === "brasil"
-
-                    ) {
-
-                        return true;
-                    }
-                }
-            }
-
-
-            const estadosBrasil = [
-
-                "acre",
-                "alagoas",
-                "amapa",
-                "amazonas",
-                "bahia",
-                "ceara",
-                "distrito federal",
-                "espirito santo",
-                "goias",
-                "maranhao",
-                "mato grosso",
-                "mato grosso do sul",
-                "minas gerais",
-                "para",
-                "paraiba",
-                "parana",
-                "pernambuco",
-                "piaui",
-                "rio de janeiro",
-                "rio grande do norte",
-                "rio grande do sul",
-                "rondonia",
-                "roraima",
-                "santa catarina",
-                "sao paulo",
-                "sergipe",
-                "tocantins"
-
-            ];
-
-
-            const nome =
-                normalizarTexto(
-                    obterNome(feature)
-                );
-
-
-            return estadosBrasil.includes(
-                nome
-            );
         }
 
 
@@ -1603,11 +1619,17 @@
             const campos = [
 
                 "Rank_Category",
+
                 "Burned Area Rank",
+
                 "Burned_Area_Rank",
+
                 "Ranking",
+
                 "ranking",
+
                 "Rank",
+
                 "rank"
 
             ];
@@ -1618,11 +1640,8 @@
             ) {
 
                 if (
-
                     props[campo] !== undefined &&
-
                     props[campo] !== null
-
                 ) {
 
                     const numero =
@@ -1658,10 +1677,15 @@
             const campos = [
 
                 "Burned Area (km^2)",
+
                 "Burned_Area_km2",
+
                 "Burned Area",
+
                 "burned_area",
+
                 "area_queimada",
+
                 "Area Queimada"
 
             ];
@@ -1672,25 +1696,19 @@
             ) {
 
                 if (
-
                     props[campo] !== undefined &&
-
                     props[campo] !== null
-
                 ) {
 
                     const numero =
                         Number(
-
                             String(
                                 props[campo]
                             )
-
                             .replace(
                                 ",",
                                 "."
                             )
-
                         );
 
 
@@ -1717,27 +1735,33 @@
             const cores = {
 
                 1: "#7f0000",
+
                 2: "#b30000",
+
                 3: "#d7301f",
+
                 4: "#ef6548",
+
                 5: "#fdae61",
 
                 19: "#c6dbef",
+
                 20: "#9ecae1",
+
                 21: "#6baed6",
+
                 22: "#4292c6",
+
                 23: "#2171b5",
+
                 24: "#084594"
 
             };
 
 
             if (
-
                 ranking >= 6 &&
-
                 ranking <= 18
-
             ) {
 
                 return "#bdbdbd";
@@ -1745,11 +1769,8 @@
 
 
             return (
-
                 cores[ranking] ||
-
                 "#bdbdbd"
-
             );
         }
 
@@ -1767,16 +1788,13 @@
             return {
 
                 color:
-
                     document.body.classList.contains(
                         "tema-escuro"
                     )
-
                         ? "#b8c0c8"
-
                         : "#555",
 
-                weight: 1,
+                weight: 1.2,
 
                 opacity: 1,
 
@@ -1831,19 +1849,13 @@
         function formatarArea(area) {
 
             if (
-
                 area === null ||
-
                 area === undefined ||
-
                 !Number.isFinite(area)
-
             ) {
 
                 return idiomaAtual === "pt"
-
                     ? "Não informado"
-
                     : "Not available";
             }
 
@@ -1851,15 +1863,11 @@
             return area.toLocaleString(
 
                 idiomaAtual === "pt"
-
                     ? "pt-BR"
-
                     : "en-US",
 
                 {
-
                     maximumFractionDigits: 2
-
                 }
 
             ) + " km²";
@@ -1903,24 +1911,29 @@
                             Ranking:
 
                             <span class="valor">
+
                                 ${
                                     ranking ??
                                     "Não informado"
                                 }
+
                             </span>
 
                         </div>
+
 
                         <div class="linha">
 
                             Área queimada:
 
                             <span class="valor">
+
                                 ${
                                     formatarArea(
                                         area
                                     )
                                 }
+
                             </span>
 
                         </div>
@@ -1928,7 +1941,6 @@
                     </div>
 
                 `;
-
             }
 
 
@@ -1945,24 +1957,29 @@
                         Ranking:
 
                         <span class="valor">
+
                             ${
                                 ranking ??
                                 "Not available"
                             }
+
                         </span>
 
                     </div>
+
 
                     <div class="linha">
 
                         Burned area:
 
                         <span class="valor">
+
                             ${
                                 formatarArea(
                                     area
                                 )
                             }
+
                         </span>
 
                     </div>
@@ -1991,27 +2008,15 @@
 
 
         /* ======================================================
-           GRUPOS
-        ====================================================== */
-
-        const grupoEstados =
-            L.layerGroup();
-
-
-        const grupoBiomas =
-            L.layerGroup();
-
-
-        /* ======================================================
-           CARREGAMENTO
+           CARREGAMENTO DOS GEOJSON
+           
+           IMPORTANTE:
+           NÃO fazemos mais ehBrasil().
+           Os arquivos já são de estados e biomas.
         ====================================================== */
 
         async function carregarArquivos(
-
-            listaArquivos,
-
-            somenteBrasil = false
-
+            listaArquivos
         ) {
 
             const features = [];
@@ -2022,6 +2027,12 @@
             ) {
 
                 try {
+
+                    console.log(
+                        "Carregando:",
+                        arquivo
+                    );
+
 
                     const resposta =
                         await fetch(
@@ -2034,9 +2045,7 @@
                     ) {
 
                         throw new Error(
-
                             `Erro HTTP ${resposta.status}`
-
                         );
                     }
 
@@ -2046,44 +2055,42 @@
 
 
                     if (
-
                         dados.type ===
                         "FeatureCollection"
-
                     ) {
 
-                        let novasFeatures =
+                        const novasFeatures =
                             dados.features || [];
-
-
-                        if (
-                            somenteBrasil
-                        ) {
-
-                            novasFeatures =
-                                novasFeatures.filter(
-                                    ehBrasil
-                                );
-                        }
 
 
                         features.push(
                             ...novasFeatures
                         );
-                    }
 
+
+                        console.log(
+                            arquivo,
+                            "features:",
+                            novasFeatures.length
+                        );
+
+                    }
 
                 } catch (erro) {
 
                     console.error(
-
                         "Erro ao carregar:",
                         arquivo,
                         erro
-
                     );
                 }
             }
+
+
+            console.log(
+                "Total de features carregadas:",
+                features.length
+            );
 
 
             return {
@@ -2093,7 +2100,6 @@
 
                 features:
                     features
-
             };
         }
 
@@ -2103,11 +2109,9 @@
         ====================================================== */
 
         function criarCamadaGeoJSON(
-
             dados,
-
-            grupo
-
+            grupo,
+            tipo
         ) {
 
             const camada =
@@ -2118,13 +2122,38 @@
                     {
 
                         style:
-                            estiloPorRanking,
+                            function(feature) {
+
+                                const estilo =
+                                    estiloPorRanking(
+                                        feature
+                                    );
+
+
+                                /*
+                                 * Biomas recebem uma
+                                 * borda um pouco mais
+                                 * visível.
+                                 */
+
+                                if (
+                                    tipo ===
+                                    "biomas"
+                                ) {
+
+                                    estilo.weight =
+                                        1.5;
+                                }
+
+
+                                return estilo;
+                            },
+
 
                         onEachFeature:
                             configurarPopup
 
                     }
-
                 );
 
 
@@ -2138,98 +2167,6 @@
 
 
         /* ======================================================
-           CONTROLE DE CAMADAS
-           
-           ESTE É O ÚNICO LUGAR ONDE O CONTROLE É CRIADO.
-        ====================================================== */
-
-        function criarControleCamadas() {
-
-            if (
-                controleCamadas !== null
-            ) {
-
-                return;
-            }
-
-
-            const nomeEstados =
-
-                idiomaAtual === "pt"
-
-                    ? "Estados"
-
-                    : "States";
-
-
-            const nomeBiomas =
-
-                idiomaAtual === "pt"
-
-                    ? "Biomas"
-
-                    : "Biomes";
-
-
-            controleCamadas =
-
-                L.control.layers(
-
-                    null,
-
-                    {
-
-                        [nomeEstados]:
-                            grupoEstados,
-
-                        [nomeBiomas]:
-                            grupoBiomas
-
-                    },
-
-                    {
-
-                        collapsed:
-                            false,
-
-                        position:
-                            "topright"
-
-                    }
-
-                );
-
-
-            controleCamadas.addTo(
-                mapa
-            );
-
-
-            /*
-             * NÃO usamos disableClickPropagation
-             * no controle inteiro.
-             *
-             * Isso garante que os checkboxes continuem
-             * recebendo normalmente os eventos de clique.
-             */
-
-
-            const elemento =
-                document.querySelector(
-                    ".leaflet-control-layers"
-                );
-
-
-            if (elemento) {
-
-                L.DomEvent.disableScrollPropagation(
-                    elemento
-                );
-            }
-        }
-
-
-        /* ======================================================
            CARREGAR ESTADOS
         ====================================================== */
 
@@ -2237,29 +2174,21 @@
 
             const dados =
                 await carregarArquivos(
-
-                    arquivosEstados,
-
-                    true
-
+                    arquivosEstados
                 );
 
 
             criarCamadaGeoJSON(
-
                 dados,
-
-                grupoEstados
-
+                grupoEstados,
+                "estados"
             );
 
 
-            /*
-             * Estados começam visíveis.
-             */
-
-            grupoEstados.addTo(
-                mapa
+            console.log(
+                "ESTADOS:",
+                grupoEstados.getLayers().length,
+                "camadas"
             );
         }
 
@@ -2272,28 +2201,197 @@
 
             const dados =
                 await carregarArquivos(
-
-                    arquivosBiomas,
-
-                    false
-
+                    arquivosBiomas
                 );
 
 
             criarCamadaGeoJSON(
-
                 dados,
-
-                grupoBiomas
-
+                grupoBiomas,
+                "biomas"
             );
 
 
+            console.log(
+                "BIOMAS:",
+                grupoBiomas.getLayers().length,
+                "camadas"
+            );
+        }
+
+
+        /* ======================================================
+           SELECIONAR ESTADOS OU BIOMAS
+           
+           Aqui está a parte principal da correção.
+        ====================================================== */
+
+        function selecionarCamada(tipo) {
+
+            camadaSelecionada =
+                tipo;
+
+
             /*
-             * Biomas começam desligados.
-             *
-             * O usuário ativa pelo checkbox.
+             * Primeiro removemos
+             * as duas camadas.
              */
+
+            if (
+                mapa.hasLayer(
+                    grupoEstados
+                )
+            ) {
+
+                mapa.removeLayer(
+                    grupoEstados
+                );
+            }
+
+
+            if (
+                mapa.hasLayer(
+                    grupoBiomas
+                )
+            ) {
+
+                mapa.removeLayer(
+                    grupoBiomas
+                );
+            }
+
+
+            /*
+             * Agora adicionamos
+             * somente a escolhida.
+             */
+
+            if (
+                tipo === "estados"
+            ) {
+
+                grupoEstados.addTo(
+                    mapa
+                );
+
+
+                document
+                    .getElementById(
+                        "botao-estados"
+                    )
+                    .classList.add(
+                        "ativo"
+                    );
+
+
+                document
+                    .getElementById(
+                        "botao-biomas"
+                    )
+                    .classList.remove(
+                        "ativo"
+                    );
+
+
+                document
+                    .getElementById(
+                        "texto-camadas"
+                    )
+                    .textContent =
+                    idiomaAtual === "pt"
+                        ? "Estados"
+                        : "States";
+
+
+                ajustarMapaParaCamada(
+                    grupoEstados
+                );
+
+            }
+
+
+            else {
+
+                grupoBiomas.addTo(
+                    mapa
+                );
+
+
+                document
+                    .getElementById(
+                        "botao-biomas"
+                    )
+                    .classList.add(
+                        "ativo"
+                    );
+
+
+                document
+                    .getElementById(
+                        "botao-estados"
+                    )
+                    .classList.remove(
+                        "ativo"
+                    );
+
+
+                document
+                    .getElementById(
+                        "texto-camadas"
+                    )
+                    .textContent =
+                    idiomaAtual === "pt"
+                        ? "Biomas"
+                        : "Biomes";
+
+
+                ajustarMapaParaCamada(
+                    grupoBiomas
+                );
+            }
+        }
+
+
+        /* ======================================================
+           AJUSTAR MAPA À CAMADA
+        ====================================================== */
+
+        function ajustarMapaParaCamada(
+            grupo
+        ) {
+
+            try {
+
+                const bounds =
+                    grupo.getBounds();
+
+
+                if (
+                    bounds &&
+                    bounds.isValid()
+                ) {
+
+                    mapa.fitBounds(
+                        bounds,
+                        {
+                            paddingTopLeft:
+                                [390, 80],
+
+                            paddingBottomRight:
+                                [30, 80],
+
+                            maxZoom: 6
+                        }
+                    );
+                }
+
+            } catch (erro) {
+
+                console.warn(
+                    "Não foi possível ajustar o mapa:",
+                    erro
+                );
+            }
         }
 
 
@@ -2317,11 +2415,8 @@
 
                     const div =
                         L.DomUtil.create(
-
                             "div",
-
                             "legenda-ranking"
-
                         );
 
 
@@ -2502,66 +2597,35 @@
             ) {
 
                 grupo.eachLayer(
-
                     function(layer) {
-
-                        if (
-                            layer.setStyle
-                        ) {
-
-                            if (
-                                layer.feature
-                            ) {
-
-                                layer.setStyle(
-
-                                    estiloPorRanking(
-
-                                        layer.feature
-
-                                    )
-
-                                );
-                            }
-                        }
-
 
                         if (
                             layer.eachLayer
                         ) {
 
                             layer.eachLayer(
-
                                 function(
                                     subLayer
                                 ) {
 
                                     if (
-
                                         subLayer.setStyle &&
-
                                         subLayer.feature
-
                                     ) {
 
                                         subLayer.setStyle(
-
                                             estiloPorRanking(
-
                                                 subLayer.feature
-
                                             )
-
                                         );
                                     }
 
                                 }
-
                             );
+
                         }
 
                     }
-
                 );
             }
 
@@ -2614,21 +2678,21 @@
 
 
                 botao.title =
-
                     idiomaAtual === "pt"
 
                         ? "Alternar para tema claro"
 
                         : "Switch to light theme";
 
-            } else {
+            }
+
+            else {
 
                 botao.textContent =
                     "🌙";
 
 
                 botao.title =
-
                     idiomaAtual === "pt"
 
                         ? "Alternar para tema escuro"
@@ -2665,10 +2729,8 @@
         ) {
 
             if (
-
                 event.target.id ===
                 "painel-citacao"
-
             ) {
 
                 fecharCitacao();
@@ -2677,9 +2739,7 @@
 
 
         document.addEventListener(
-
             "keydown",
-
             function(event) {
 
                 if (
@@ -2690,7 +2750,6 @@
                 }
 
             }
-
         );
 
 
@@ -2733,20 +2792,18 @@
 
 
                 setTimeout(
-
                     function() {
 
                         botao.textContent =
                             textoOriginal;
 
                     },
-
                     1500
-
                 );
 
+            }
 
-            } catch (erro) {
+            catch (erro) {
 
                 alert(
 
@@ -2780,9 +2837,6 @@
 
                 visualizacao:
                     "Visualização:",
-
-                camadas:
-                    "Estados e Biomas",
 
                 legenda:
                     "Ranking de Área Queimada",
@@ -2842,7 +2896,13 @@
                     "Escala de cores",
 
                 periodoTitulo:
-                    "Período analisado"
+                    "Período analisado",
+
+                estados:
+                    "Estados",
+
+                biomas:
+                    "Biomas"
 
             },
 
@@ -2860,9 +2920,6 @@
 
                 visualizacao:
                     "Visualization:",
-
-                camadas:
-                    "States and Biomes",
 
                 legenda:
                     "Burned Area Ranking",
@@ -2922,7 +2979,13 @@
                     "Color scale",
 
                 periodoTitulo:
-                    "Period analyzed"
+                    "Period analyzed",
+
+                estados:
+                    "States",
+
+                biomas:
+                    "Biomes"
 
             }
 
@@ -2931,10 +2994,6 @@
 
         /* ======================================================
            MUDAR IDIOMA
-           
-           IMPORTANTE:
-           NÃO recria o controle de camadas.
-           Assim os checkboxes permanecem selecionados.
         ====================================================== */
 
         function mudarIdioma(
@@ -2946,11 +3005,8 @@
             ) {
 
                 idioma =
-
                     idiomaAtual === "pt"
-
                         ? "en"
-
                         : "pt";
             }
 
@@ -2968,9 +3024,7 @@
             document.documentElement.lang =
 
                 idiomaAtual === "pt"
-
                     ? "pt-BR"
-
                     : "en";
 
 
@@ -2996,12 +3050,6 @@
                 "texto-visualizacao"
             ).textContent =
                 t.visualizacao;
-
-
-            document.getElementById(
-                "texto-camadas"
-            ).textContent =
-                t.camadas;
 
 
             document.getElementById(
@@ -3125,13 +3173,29 @@
 
 
             document.getElementById(
+                "controle-titulo"
+            ).textContent =
+                t.visualizacao;
+
+
+            document.getElementById(
+                "botao-estados"
+            ).textContent =
+                t.estados;
+
+
+            document.getElementById(
+                "botao-biomas"
+            ).textContent =
+                t.biomas;
+
+
+            document.getElementById(
                 "botao-idioma"
             ).textContent =
 
                 idiomaAtual === "pt"
-
                     ? "EN"
-
                     : "PT";
 
 
@@ -3140,22 +3204,33 @@
             ).title =
 
                 idiomaAtual === "pt"
-
                     ? "English"
-
                     : "Português";
+
+
+            /*
+             * Atualiza o nome da camada
+             * atualmente selecionada.
+             */
+
+            document.getElementById(
+                "texto-camadas"
+            ).textContent =
+
+                camadaSelecionada === "estados"
+
+                    ? t.estados
+
+                    : t.biomas;
 
 
             atualizarIconeTema();
 
 
             /*
-             * NÃO chamar criarControleCamadas()
-             * aqui.
-             *
-             * Isso preserva os checkboxes selecionados.
+             * Atualiza popups que estejam
+             * abertos.
              */
-
 
             mapa.closePopup();
         }
@@ -3170,6 +3245,23 @@
             try {
 
                 console.log(
+                    "===================================="
+                );
+
+                console.log(
+                    "INICIANDO DASHBOARD"
+                );
+
+                console.log(
+                    "===================================="
+                );
+
+
+                /*
+                 * Carrega os estados.
+                 */
+
+                console.log(
                     "Carregando Estados..."
                 );
 
@@ -3178,9 +3270,14 @@
 
 
                 console.log(
-                    "Estados carregados."
+                    "Estados carregados:",
+                    grupoEstados.getLayers().length
                 );
 
+
+                /*
+                 * Carrega os biomas.
+                 */
 
                 console.log(
                     "Carregando Biomas..."
@@ -3191,48 +3288,83 @@
 
 
                 console.log(
-                    "Biomas carregados."
+                    "Biomas carregados:",
+                    grupoBiomas.getLayers().length
                 );
 
 
                 /*
-                 * Só agora criamos o controle.
-                 *
-                 * Os dois grupos já existem.
+                 * Estados são a visualização
+                 * inicial.
                  */
 
-                criarControleCamadas();
+                selecionarCamada(
+                    "estados"
+                );
 
 
                 /*
-                 * Cria a legenda.
+                 * Cria legenda.
                  */
 
                 criarLegenda();
 
 
                 /*
-                 * Define o idioma inicial.
-                 *
-                 * Essa função NÃO recria o controle.
+                 * Idioma inicial.
                  */
 
-                mudarIdioma("pt");
+                mudarIdioma(
+                    "pt"
+                );
 
 
                 atualizarIconeTema();
 
 
-                console.log(
-                    "Dashboard inicializado com sucesso."
+                /*
+                 * Ajusta o mapa para o Brasil.
+                 */
+
+                ajustarMapaParaCamada(
+                    grupoEstados
                 );
 
 
-            } catch (erro) {
+                console.log(
+                    "===================================="
+                );
+
+                console.log(
+                    "DASHBOARD INICIALIZADO"
+                );
+
+                console.log(
+                    "Estados:",
+                    grupoEstados.getLayers().length
+                );
+
+                console.log(
+                    "Biomas:",
+                    grupoBiomas.getLayers().length
+                );
+
+                console.log(
+                    "===================================="
+                );
+
+            }
+
+            catch (erro) {
 
                 console.error(
                     "Erro na inicialização:",
                     erro
+                );
+
+
+                alert(
+                    "Erro ao carregar os dados geográficos. Verifique se os arquivos GeoJSON estão no mesmo diretório do HTML."
                 );
             }
         }
@@ -3249,4 +3381,3 @@
 </body>
 
 </html>
-```
