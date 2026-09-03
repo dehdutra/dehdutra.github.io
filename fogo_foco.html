@@ -1426,6 +1426,306 @@
 
 
         /* ======================================================
+           NOVO PAINEL DE INFORMAÇÕES DO POLÍGONO
+        ====================================================== */
+
+        #painel-vetor {
+
+            position: absolute;
+
+            left: 22px;
+
+            bottom: 24px;
+
+            width: 340px;
+
+            max-height: 520px;
+
+            z-index: 1500;
+
+            background:
+                rgba(255,255,255,0.97);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                12px;
+
+            box-shadow:
+                var(--shadow);
+
+            overflow: hidden;
+
+            transition:
+                all 0.25s ease;
+
+        }
+
+
+        #painel-vetor.recolhido {
+
+            width: 220px;
+
+        }
+
+
+        #painel-vetor-cabecalho {
+
+            min-height: 48px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            padding:
+                0 14px;
+
+            background:
+                #ffffff;
+
+            border-bottom:
+                1px solid var(--border);
+
+            cursor: pointer;
+
+        }
+
+
+        #painel-vetor-titulo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            min-width: 0;
+
+            font-size: 11.5px;
+
+            font-weight: 750;
+
+            color:
+                #1f2933;
+
+        }
+
+
+        #painel-vetor-icone {
+
+            width: 28px;
+
+            height: 28px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border-radius: 7px;
+
+            background:
+                #fef3f2;
+
+            font-size: 14px;
+
+        }
+
+
+        #painel-vetor-seta {
+
+            width: 27px;
+
+            height: 27px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border: none;
+
+            border-radius: 6px;
+
+            background:
+                #f2f4f7;
+
+            color:
+                #475467;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+        }
+
+
+        #painel-vetor-corpo {
+
+            max-height: 455px;
+
+            overflow-y: auto;
+
+            padding:
+                12px 14px 15px;
+
+        }
+
+
+        #painel-vetor.recolhido
+        #painel-vetor-corpo {
+
+            display: none;
+
+        }
+
+
+        #painel-vetor-introducao {
+
+            padding:
+                9px 10px;
+
+            margin-bottom:
+                10px;
+
+            border-radius:
+                8px;
+
+            background:
+                #f8f9fa;
+
+            border:
+                1px solid #eaecf0;
+
+            font-size: 10px;
+
+            line-height: 1.45;
+
+            color:
+                #667085;
+
+        }
+
+
+        #vetor-nome {
+
+            display: block;
+
+            margin-bottom:
+                3px;
+
+            color:
+                #1f2933;
+
+            font-size: 11px;
+
+            font-weight: 750;
+
+        }
+
+
+        #vetor-tipo {
+
+            color:
+                #667085;
+
+        }
+
+
+        .vetor-info-item {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.55fr)
+                minmax(90px, 1fr);
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding:
+                8px 0;
+
+            border-bottom:
+                1px solid #f0f1f3;
+
+        }
+
+
+        .vetor-info-item:last-child {
+
+            border-bottom:
+                none;
+
+        }
+
+
+        .vetor-info-label {
+
+            font-size: 9.5px;
+
+            line-height: 1.3;
+
+            color:
+                #667085;
+
+        }
+
+
+        .vetor-info-valor {
+
+            text-align: right;
+
+            font-size: 10px;
+
+            line-height: 1.3;
+
+            font-weight: 700;
+
+            color:
+                #344054;
+
+            word-break: break-word;
+
+        }
+
+
+        .vetor-info-valor.destaque {
+
+            color:
+                #b42318;
+
+        }
+
+
+        #painel-vetor-vazio {
+
+            padding:
+                12px 4px 5px;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+
+            color:
+                #667085;
+
+        }
+
+
+        /* ======================================================
            RESPONSIVO
         ====================================================== */
 
@@ -1547,6 +1847,25 @@
 
             }
 
+
+            #painel-vetor {
+
+                left: 10px;
+
+                bottom: 15px;
+
+                width:
+                    min(340px, calc(100vw - 20px));
+
+            }
+
+
+            #painel-vetor.recolhido {
+
+                width: 220px;
+
+            }
+
         }
 
 
@@ -1619,6 +1938,33 @@
 
                 grid-column:
                     3;
+
+            }
+
+
+            #painel-vetor {
+
+                width:
+                    calc(100vw - 20px);
+
+                max-height:
+                    440px;
+
+            }
+
+
+            #painel-vetor.recolhido {
+
+                width:
+                    220px;
+
+            }
+
+
+            #painel-vetor-corpo {
+
+                max-height:
+                    375px;
 
             }
 
@@ -1946,6 +2292,80 @@
                 style="background:#084594"
             ></span>
             24º
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     NOVO RETÂNGULO / PAINEL DO POLÍGONO
+=========================================================== -->
+
+<div
+    id="painel-vetor"
+    class="recolhido"
+>
+
+    <div
+        id="painel-vetor-cabecalho"
+        onclick="alternarPainelVetor()"
+    >
+
+        <div id="painel-vetor-titulo">
+
+            <div id="painel-vetor-icone">
+                📍
+            </div>
+
+            <span>
+                Informações do polígono
+            </span>
+
+        </div>
+
+
+        <button
+            id="painel-vetor-seta"
+            type="button"
+            onclick="event.stopPropagation(); alternarPainelVetor();"
+            title="Abrir informações"
+        >
+            ▲
+        </button>
+
+    </div>
+
+
+    <div id="painel-vetor-corpo">
+
+        <div id="painel-vetor-introducao">
+
+            <span id="vetor-nome">
+                Nenhum polígono selecionado
+            </span>
+
+            <span id="vetor-tipo">
+                Clique em um polígono do mapa para visualizar
+                suas informações de área queimada e ranqueamento.
+            </span>
+
+        </div>
+
+
+        <div id="vetor-informacoes">
+
+            <!-- Os dados serão inseridos pelo JavaScript -->
+
+        </div>
+
+
+        <div
+            id="painel-vetor-vazio"
+        >
+            Selecione um polígono no mapa para consultar
+            os indicadores disponíveis no vetor.
         </div>
 
     </div>
@@ -3083,6 +3503,20 @@ function criarCamada(
 
                                     );
 
+
+                                    // =================================================
+                                    // NOVO:
+                                    // ATUALIZAR PAINEL DE INFORMAÇÕES DO VETOR
+                                    // =================================================
+
+                                    atualizarPainelVetor(
+
+                                        e.target.feature,
+
+                                        tipo
+
+                                    );
+
                                 }
 
                         });
@@ -3228,7 +3662,679 @@ function mostrarPopup(
 
 
 // ============================================================
-// 19. FORMATAR NÚMEROS
+// NOVA FUNÇÃO
+// 19. CAMPOS DO VETOR
+// ============================================================
+
+const CAMPOS_VETOR = [
+
+    {
+        chave:
+            "Burned Area (km^2)",
+
+        rotulo:
+            "Área queimada",
+
+        unidade:
+            "km²",
+
+        classe:
+            "destaque"
+
+    },
+
+    {
+        chave:
+            "Burned Area Fraction (%)",
+
+        rotulo:
+            "Fração da área queimada",
+
+        unidade:
+            "%"
+
+    },
+
+    {
+        chave:
+            "Burned Area Rank",
+
+        rotulo:
+            "Ranking da área queimada",
+
+        unidade:
+            ""
+
+    },
+
+    {
+        chave:
+            "Burned Area Fraction Rank",
+
+        rotulo:
+            "Ranking da fração da área queimada",
+
+        unidade:
+            ""
+
+    },
+
+    {
+        chave:
+            "Burned Area Percentile",
+
+        rotulo:
+            "Percentil da área queimada",
+
+        unidade:
+            ""
+
+    },
+
+    {
+        chave:
+            "Burned Area Fraction Percentile",
+
+        rotulo:
+            "Percentil da fração da área queimada",
+
+        unidade:
+            ""
+
+    },
+
+    {
+        chave:
+            "Burned Area Mean Annual (km^2)",
+
+        rotulo:
+            "Média anual da área queimada",
+
+        unidade:
+            "km²"
+
+    },
+
+    {
+        chave:
+            "Burned Area StDev Annual (km^2)",
+
+        rotulo:
+            "Desvio-padrão anual da área queimada",
+
+        unidade:
+            "km²"
+
+    },
+
+    {
+        chave:
+            "Burned Area Fraction Mean Annual (%)",
+
+        rotulo:
+            "Média anual da fração da área queimada",
+
+        unidade:
+            "%"
+
+    },
+
+    {
+        chave:
+            "Burned Area Fraction StDev Annual (%)",
+
+        rotulo:
+            "Desvio-padrão anual da fração da área queimada",
+
+        unidade:
+            "%"
+
+    },
+
+    {
+        chave:
+            "Burned Area Anomaly (%)",
+
+        rotulo:
+            "Anomalia da área queimada",
+
+        unidade:
+            "%"
+
+    },
+
+    {
+        chave:
+            "Burned Area Fraction Anomaly (%)",
+
+        rotulo:
+            "Anomalia da fração da área queimada",
+
+        unidade:
+            "%"
+
+    },
+
+    {
+        chave:
+            "Burned Area Anomaly (Standard Deviations)",
+
+        rotulo:
+            "Anomalia da área queimada",
+
+        unidade:
+            "desvios-padrão"
+
+    },
+
+    {
+        chave:
+            "Burned Area Fraction Anomaly (Standard Deviations)",
+
+        rotulo:
+            "Anomalia da fração da área queimada",
+
+        unidade:
+            "desvios-padrão"
+
+    },
+
+    {
+        chave:
+            "Month with Peak in Burned Area Anomaly",
+
+        rotulo:
+            "Mês de pico da anomalia",
+
+        unidade:
+            ""
+
+    },
+
+    {
+        chave:
+            "Months Prior to Peak with Above-Average Burned Area",
+
+        rotulo:
+            "Meses antes do pico com área acima da média",
+
+        unidade:
+            "meses"
+
+    },
+
+    {
+        chave:
+            "Months After Peak with Above-Average Burned Area",
+
+        rotulo:
+            "Meses após o pico com área acima da média",
+
+        unidade:
+            "meses"
+
+    }
+
+];
+
+
+// ============================================================
+// NOVA FUNÇÃO
+// 20. LOCALIZAR VALOR DE UM CAMPO
+// ============================================================
+
+function obterValorCampoVetor(
+
+    feature,
+
+    chave
+
+) {
+
+    const props =
+        feature?.properties || {};
+
+
+    // Primeiro tenta o nome exato
+    if (
+        props[chave] !== undefined &&
+        props[chave] !== null &&
+        props[chave] !== ""
+    ) {
+
+        return props[chave];
+
+    }
+
+
+    // Algumas versões dos arquivos podem
+    // ter variações no nome do campo.
+
+    const variantes = {
+
+        "Burned Area (km^2)": [
+            "Burned Area (km²)",
+            "Burned Area (km2)",
+            "Burned_Area_km2"
+        ],
+
+        "Burned Area Fraction (%)": [
+            "Burned Area Fraction",
+            "Burned_Area_Fraction"
+        ],
+
+        "Burned Area Rank": [
+            "Burned_Area_Rank",
+            "Rank_Category"
+        ],
+
+        "Burned Area Fraction Rank": [
+            "Burned_Area_Fraction_Rank"
+        ],
+
+        "Burned Area Percentile": [
+            "Burned_Area_Percentile"
+        ],
+
+        "Burned Area Fraction Percentile": [
+            "Burned_Area_Fraction_Percentile"
+        ],
+
+        "Burned Area Mean Annual (km^2)": [
+            "Burned_Area_Mean_Annual_km2"
+        ],
+
+        "Burned Area StDev Annual (km^2)": [
+            "Burned_Area_StDev_Annual_km2"
+        ],
+
+        "Burned Area Fraction Mean Annual (%)": [
+            "Burned_Area_Fraction_Mean_Annual"
+        ],
+
+        "Burned Area Fraction StDev Annual (%)": [
+            "Burned_Area_Fraction_StDev_Annual"
+        ],
+
+        "Burned Area Anomaly (%)": [
+            "Burned_Area_Anomaly"
+        ],
+
+        "Burned Area Fraction Anomaly (%)": [
+            "Burned_Area_Fraction_Anomaly"
+        ],
+
+        "Burned Area Anomaly (Standard Deviations)": [
+            "Burned_Area_Anomaly_Standard_Deviations"
+        ],
+
+        "Burned Area Fraction Anomaly (Standard Deviations)": [
+            "Burned_Area_Fraction_Anomaly_Standard_Deviations"
+        ],
+
+        "Month with Peak in Burned Area Anomaly": [
+            "Month_with_Peak_in_Burned_Area_Anomaly"
+        ],
+
+        "Months Prior to Peak with Above-Average Burned Area": [
+            "Months_Prior_to_Peak_with_Above_Average_Burned_Area"
+        ],
+
+        "Months After Peak with Above-Average Burned Area": [
+            "Months_After_Peak_with_Above_Average_Burned_Area"
+        ]
+
+    };
+
+
+    const alternativas =
+        variantes[chave] || [];
+
+
+    for (
+        const alternativa of alternativas
+    ) {
+
+        if (
+            props[alternativa] !== undefined &&
+            props[alternativa] !== null &&
+            props[alternativa] !== ""
+        ) {
+
+            return props[alternativa];
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ============================================================
+// NOVA FUNÇÃO
+// 21. FORMATAR VALOR DOS CAMPOS
+// ============================================================
+
+function formatarValorCampo(
+
+    valor,
+
+    campo
+
+) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+
+        return "Não informado";
+
+    }
+
+
+    const numero =
+        Number(
+            String(valor)
+                .replace(",", ".")
+        );
+
+
+    if (
+        Number.isFinite(numero)
+    ) {
+
+        return `${formatarNumero(numero)}${campo.unidade ? " " + campo.unidade : ""}`;
+
+    }
+
+
+    return String(valor);
+
+}
+
+
+// ============================================================
+// NOVA FUNÇÃO
+// 22. ATUALIZAR PAINEL DO VETOR
+// ============================================================
+
+function atualizarPainelVetor(
+
+    feature,
+
+    tipo
+
+) {
+
+    const painel =
+        document.getElementById(
+            "painel-vetor"
+        );
+
+
+    const nomeElemento =
+        document.getElementById(
+            "vetor-nome"
+        );
+
+
+    const tipoElemento =
+        document.getElementById(
+            "vetor-tipo"
+        );
+
+
+    const informacoes =
+        document.getElementById(
+            "vetor-informacoes"
+        );
+
+
+    const vazio =
+        document.getElementById(
+            "painel-vetor-vazio"
+        );
+
+
+    let nome;
+
+
+    if (
+        tipo === "estados"
+    ) {
+
+        nome =
+            obterNomeEstadoPadronizado(
+                feature
+            ) || "Estado";
+
+        tipoElemento.innerText =
+            "Estado brasileiro";
+
+    }
+
+    else {
+
+        nome =
+            obterNome(
+                feature
+            ) || "Sem identificação";
+
+        tipoElemento.innerText =
+            "Bioma";
+
+    }
+
+
+    nomeElemento.innerText =
+        nome;
+
+
+    informacoes.innerHTML =
+        "";
+
+
+    let quantidadeInformada =
+        0;
+
+
+    CAMPOS_VETOR.forEach(
+
+        campo => {
+
+            const valor =
+                obterValorCampoVetor(
+
+                    feature,
+
+                    campo.chave
+
+                );
+
+
+            if (
+                valor !== null &&
+                valor !== undefined &&
+                valor !== ""
+            ) {
+
+                quantidadeInformada++;
+
+            }
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "vetor-info-item";
+
+
+            const label =
+                document.createElement(
+                    "div"
+                );
+
+
+            label.className =
+                "vetor-info-label";
+
+
+            label.innerText =
+                campo.rotulo;
+
+
+            const valorElemento =
+                document.createElement(
+                    "div"
+                );
+
+
+            valorElemento.className =
+                "vetor-info-valor";
+
+
+            if (
+                campo.classe
+            ) {
+
+                valorElemento.classList.add(
+                    campo.classe
+                );
+
+            }
+
+
+            valorElemento.innerText =
+                formatarValorCampo(
+
+                    valor,
+
+                    campo
+
+                );
+
+
+            item.appendChild(
+                label
+            );
+
+
+            item.appendChild(
+                valorElemento
+            );
+
+
+            informacoes.appendChild(
+                item
+            );
+
+        }
+
+    );
+
+
+    if (
+        quantidadeInformada > 0
+    ) {
+
+        vazio.style.display =
+            "none";
+
+    }
+
+    else {
+
+        vazio.style.display =
+            "block";
+
+        vazio.innerText =
+            "Os campos de ranqueamento não foram encontrados nesta feição.";
+
+    }
+
+
+    // =========================================================
+    // ABRE AUTOMATICAMENTE O PAINEL AO CLICAR NO POLÍGONO
+    // =========================================================
+
+    painel.classList.remove(
+        "recolhido"
+    );
+
+
+    document
+        .getElementById(
+            "painel-vetor-seta"
+        )
+        .innerText =
+        "▼";
+
+}
+
+
+// ============================================================
+// NOVA FUNÇÃO
+// 23. ABRIR / FECHAR PAINEL DO VETOR
+// ============================================================
+
+function alternarPainelVetor() {
+
+    const painel =
+        document.getElementById(
+            "painel-vetor"
+        );
+
+
+    const seta =
+        document.getElementById(
+            "painel-vetor-seta"
+        );
+
+
+    const estaRecolhido =
+        painel.classList.contains(
+            "recolhido"
+        );
+
+
+    if (
+        estaRecolhido
+    ) {
+
+        painel.classList.remove(
+            "recolhido"
+        );
+
+        seta.innerText =
+            "▼";
+
+    }
+
+    else {
+
+        painel.classList.add(
+            "recolhido"
+        );
+
+        seta.innerText =
+            "▲";
+
+    }
+
+}
+
+
+// ============================================================
+// 24. FORMATAR NÚMEROS
 // ============================================================
 
 function formatarNumero(valor) {
@@ -3253,7 +4359,7 @@ function formatarNumero(valor) {
 
 
 // ============================================================
-// 20. ATUALIZAR LOADING
+// 25. ATUALIZAR LOADING
 // ============================================================
 
 function atualizarLoading(
@@ -3297,7 +4403,7 @@ function atualizarLoading(
 
 
 // ============================================================
-// 21. CARREGAR UM ARQUIVO
+// 26. CARREGAR UM ARQUIVO
 // ============================================================
 
 async function carregarArquivo(
@@ -3390,7 +4496,7 @@ async function carregarArquivo(
 
 
 // ============================================================
-// 22. CARREGAMENTO PARALELO
+// 27. CARREGAMENTO PARALELO
 // ============================================================
 
 async function carregarTodosDados() {
@@ -3548,7 +4654,7 @@ async function carregarTodosDados() {
 
 
 // ============================================================
-// 23. CONTROLE DE CAMADAS
+// 28. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas =
@@ -3580,7 +4686,7 @@ const controleCamadas =
 
 
 // ============================================================
-// 24. AJUSTAR MAPA
+// 29. AJUSTAR MAPA
 // ============================================================
 
 function ajustarMapa() {
@@ -3665,7 +4771,7 @@ function ajustarMapa() {
 
 
 // ============================================================
-// 25. ABRIR CITAÇÃO
+// 30. ABRIR CITAÇÃO
 // ============================================================
 
 function abrirCitacao() {
@@ -3682,7 +4788,7 @@ function abrirCitacao() {
 
 
 // ============================================================
-// 26. FECHAR CITAÇÃO
+// 31. FECHAR CITAÇÃO
 // ============================================================
 
 function fecharCitacao() {
@@ -3713,7 +4819,7 @@ function fecharModalFora(event) {
 
 
 // ============================================================
-// 27. DADOS PARA RANKING
+// 32. DADOS PARA RANKING
 // ============================================================
 
 let dadosRankingEstados = [];
@@ -3722,7 +4828,7 @@ let dadosRankingBiomas = [];
 
 
 // ============================================================
-// 28. CONSTRUIR RANKINGS
+// 33. CONSTRUIR RANKINGS
 // ============================================================
 
 function construirRankings(resultados) {
@@ -4019,7 +5125,7 @@ function construirRankings(resultados) {
 
 
 // ============================================================
-// 29. ABRIR RANKING
+// 34. ABRIR RANKING
 // ============================================================
 
 function abrirRanking() {
@@ -4041,7 +5147,7 @@ function abrirRanking() {
 
 
 // ============================================================
-// 30. FECHAR RANKING
+// 35. FECHAR RANKING
 // ============================================================
 
 function fecharRanking() {
@@ -4058,7 +5164,7 @@ function fecharRanking() {
 
 
 // ============================================================
-// 31. FECHAR AO CLICAR FORA
+// 36. FECHAR AO CLICAR FORA
 // ============================================================
 
 function fecharRankingFora(event) {
@@ -4076,7 +5182,7 @@ function fecharRankingFora(event) {
 
 
 // ============================================================
-// 32. MOSTRAR RANKING
+// 37. MOSTRAR RANKING
 // ============================================================
 
 function mostrarRanking(tipo) {
@@ -4270,7 +5376,7 @@ function mostrarRanking(tipo) {
 
 
 // ============================================================
-// 33. RESUMO DO RANKING
+// 38. RESUMO DO RANKING
 // ============================================================
 
 function atualizarResumo(
@@ -4331,7 +5437,7 @@ function atualizarResumo(
 
 
 // ============================================================
-// 34. PROTEÇÃO CONTRA HTML
+// 39. PROTEÇÃO CONTRA HTML
 // ============================================================
 
 function escaparHTML(texto) {
@@ -4367,7 +5473,7 @@ function escaparHTML(texto) {
 
 
 // ============================================================
-// 35. ESC
+// 40. ESC
 // ============================================================
 
 document.addEventListener(
@@ -4393,7 +5499,7 @@ document.addEventListener(
 
 
 // ============================================================
-// 36. INICIALIZAÇÃO
+// 41. INICIALIZAÇÃO
 // ============================================================
 
 async function inicializar() {
@@ -4510,7 +5616,7 @@ async function inicializar() {
 
 
 // ============================================================
-// 37. EXECUTAR
+// 42. EXECUTAR
 // ============================================================
 
 window.addEventListener(
