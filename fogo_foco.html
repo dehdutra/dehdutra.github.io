@@ -7,6 +7,7 @@
 
   <title>Ranking de Área Queimada 2024/2025</title>
 
+
   <!-- ===================================================== -->
   <!-- LEAFLET -->
   <!-- ===================================================== -->
@@ -20,78 +21,36 @@
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
   </script>
 
+
+  <!-- ===================================================== -->
+  <!-- ESTILO -->
+  <!-- ===================================================== -->
+
   <style>
 
     body {
+
       margin: 0;
+
       font-family: Arial, sans-serif;
+
       background: #f5f5f5;
+
     }
+
 
     h2 {
+
       margin: 20px;
+
     }
+
 
     #mapa {
+
       width: 100%;
+
       height: 700px;
-    }
-
-    /* ===================================================== */
-    /* PAINEL DE CONTAGEM */
-    /* ===================================================== */
-
-    #contador {
-
-      position: absolute;
-
-      top: 80px;
-
-      left: 20px;
-
-      z-index: 1000;
-
-      background: white;
-
-      padding: 15px;
-
-      border-radius: 8px;
-
-      box-shadow:
-        0 2px 8px rgba(0,0,0,0.25);
-
-      min-width: 220px;
-
-      font-size: 14px;
-
-    }
-
-    #contador h3 {
-
-      margin-top: 0;
-
-      margin-bottom: 12px;
-
-    }
-
-    .contador-item {
-
-      display: flex;
-
-      justify-content: space-between;
-
-      margin: 8px 0;
-
-      padding-bottom: 6px;
-
-      border-bottom:
-        1px solid #eeeeee;
-
-    }
-
-    .contador-valor {
-
-      font-weight: bold;
 
     }
 
@@ -103,7 +62,9 @@
 <body>
 
 
-<h2>Ranking de Área Queimada 2024/2025</h2>
+<h2>
+  Ranking de Área Queimada 2024/2025
+</h2>
 
 
 <!-- ===================================================== -->
@@ -113,77 +74,19 @@
 <div id="mapa"></div>
 
 
-<!-- ===================================================== -->
-<!-- CONTADOR DAS REGIONAL LAYERS -->
-<!-- ===================================================== -->
-
-<div id="contador">
-
-  <h3>Regional Layers</h3>
-
-  <div class="contador-item">
-
-    <span>Estados</span>
-
-    <span
-      id="contagem-estados"
-      class="contador-valor">
-      carregando...
-    </span>
-
-  </div>
-
-
-  <div class="contador-item">
-
-    <span>Biomas</span>
-
-    <span
-      id="contagem-biomas"
-      class="contador-valor">
-      carregando...
-    </span>
-
-  </div>
-
-
-  <div class="contador-item">
-
-    <span>Terras Indígenas</span>
-
-    <span
-      id="contagem-ti"
-      class="contador-valor">
-      carregando...
-    </span>
-
-  </div>
-
-
-  <div class="contador-item">
-
-    <span>Unidades de Conservação</span>
-
-    <span
-      id="contagem-uc"
-      class="contador-valor">
-      carregando...
-    </span>
-
-  </div>
-
-</div>
-
-
 <script>
 
+
 // ============================================================
-// 1. MAPA
+// 1. CRIAR MAPA
 // ============================================================
 
 const mapa = L.map("mapa").setView(
+
   [-14.2, -51.9],
+
   4
+
 );
 
 
@@ -192,13 +95,16 @@ const mapa = L.map("mapa").setView(
 // ============================================================
 
 L.tileLayer(
+
   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
   {
 
     attribution:
       "&copy; OpenStreetMap contributors"
 
   }
+
 ).addTo(mapa);
 
 
@@ -209,7 +115,9 @@ L.tileLayer(
 const arquivosEstados = [
 
   "estados_2024_01.geojson",
+
   "estados_2024_02.geojson",
+
   "estados_2024_03.geojson"
 
 ];
@@ -222,9 +130,13 @@ const arquivosEstados = [
 const arquivosBiomas = [
 
   "biomas_2024_01.geojson",
+
   "biomas_2024_02.geojson",
+
   "biomas_2024_03.geojson",
+
   "biomas_2024_04.geojson",
+
   "biomas_2024_05.geojson"
 
 ];
@@ -237,8 +149,11 @@ const arquivosBiomas = [
 const arquivosTI = [
 
   "terras_indigenas_2024_01.geojson",
+
   "terras_indigenas_2024_02.geojson",
+
   "terras_indigenas_2024_03.geojson",
+
   "terras_indigenas_2024_04.geojson"
 
 ];
@@ -251,8 +166,11 @@ const arquivosTI = [
 const arquivosUC = [
 
   "unidades_conservacao_2024_01.geojson",
+
   "unidades_conservacao_2024_02.geojson",
+
   "unidades_conservacao_2024_03.geojson",
+
   "unidades_conservacao_2024_04.geojson"
 
 ];
@@ -263,22 +181,29 @@ const arquivosUC = [
 // ============================================================
 
 async function carregarArquivos(
+
   listaArquivos,
+
   nomeCamada
+
 ) {
 
-  console.log(
-    "--------------------------------------"
-  );
 
   console.log(
+    "======================================"
+  );
+
+
+  console.log(
+
     "Carregando:",
     nomeCamada
+
   );
 
 
   // ----------------------------------------------------------
-  // Carrega todos os arquivos
+  // CARREGAR TODOS OS ARQUIVOS
   // ----------------------------------------------------------
 
   const resultados = await Promise.all(
@@ -291,20 +216,30 @@ async function carregarArquivos(
 
           .then(response => {
 
+
             console.log(
+
               arquivo,
+
               "Status:",
+
               response.status
+
             );
 
 
             if (!response.ok) {
 
               throw new Error(
+
                 "Erro HTTP " +
+
                 response.status +
+
                 " em " +
+
                 arquivo
+
               );
 
             }
@@ -320,7 +255,7 @@ async function carregarArquivos(
 
 
   // ----------------------------------------------------------
-  // Junta todas as features
+  // JUNTAR TODAS AS FEATURES
   // ----------------------------------------------------------
 
   let features = [];
@@ -330,19 +265,28 @@ async function carregarArquivos(
 
     geojson => {
 
+
       if (
 
         geojson &&
+
         geojson.features &&
+
         Array.isArray(
+
           geojson.features
+
         )
 
       ) {
 
+
         features =
+
           features.concat(
+
             geojson.features
+
           );
 
       }
@@ -353,7 +297,7 @@ async function carregarArquivos(
 
 
   // ----------------------------------------------------------
-  // Resultado final
+  // CRIAR FEATURE COLLECTION FINAL
   // ----------------------------------------------------------
 
   const resultadoFinal = {
@@ -365,11 +309,29 @@ async function carregarArquivos(
   };
 
 
+  // ----------------------------------------------------------
+  // CONTAGEM
+  // ----------------------------------------------------------
+
   console.log(
+
     nomeCamada +
+
     ":",
+
     features.length,
+
     "dados"
+
+  );
+
+
+  console.log(
+
+    "Arquivos utilizados:",
+
+    listaArquivos.length
+
   );
 
 
@@ -379,7 +341,7 @@ async function carregarArquivos(
 
 
 // ============================================================
-// 8. ESTILOS
+// 8. ESTILO DOS ESTADOS
 // ============================================================
 
 const estiloEstados = {
@@ -395,6 +357,10 @@ const estiloEstados = {
 };
 
 
+// ============================================================
+// 9. ESTILO DOS BIOMAS
+// ============================================================
+
 const estiloBiomas = {
 
   color: "#008000",
@@ -408,6 +374,10 @@ const estiloBiomas = {
 };
 
 
+// ============================================================
+// 10. ESTILO DAS TERRAS INDÍGENAS
+// ============================================================
+
 const estiloTI = {
 
   color: "#8e44ad",
@@ -420,6 +390,10 @@ const estiloTI = {
 
 };
 
+
+// ============================================================
+// 11. ESTILO DAS UNIDADES DE CONSERVAÇÃO
+// ============================================================
 
 const estiloUC = {
 
@@ -435,279 +409,330 @@ const estiloUC = {
 
 
 // ============================================================
-// 9. VARIÁVEIS DAS CAMADAS
-// ============================================================
-
-let camadaEstados;
-
-let camadaBiomas;
-
-let camadaTI;
-
-let camadaUC;
-
-
-// ============================================================
-// 10. CONTROLE DE CAMADAS
+// 12. GRUPOS DAS CAMADAS
 // ============================================================
 
 const grupoEstados =
+
   L.layerGroup();
+
 
 const grupoBiomas =
+
   L.layerGroup();
+
 
 const grupoTI =
+
   L.layerGroup();
 
+
 const grupoUC =
+
   L.layerGroup();
 
 
 // ============================================================
-// 11. CARREGAR ESTADOS
+// 13. VARIÁVEIS PARA GUARDAR OS GEOJSON
+// ============================================================
+
+let dadosEstados = null;
+
+let dadosBiomas = null;
+
+let dadosTI = null;
+
+let dadosUC = null;
+
+
+// ============================================================
+// 14. CARREGAR ESTADOS
 // ============================================================
 
 carregarArquivos(
+
   arquivosEstados,
+
   "Estados"
+
 )
 
 .then(data => {
 
-  // ----------------------------------------------------------
-  // Conta os dados
-  // ----------------------------------------------------------
 
-  document.getElementById(
-    "contagem-estados"
-  ).textContent =
-    data.features.length;
+  dadosEstados = data;
 
 
-  // ----------------------------------------------------------
-  // Cria camada
-  // ----------------------------------------------------------
+  const camada =
 
-  camadaEstados =
     L.geoJSON(
+
       data,
+
       {
+
         style:
+
           estiloEstados
+
       }
+
     );
 
 
   grupoEstados.addLayer(
-    camadaEstados
+
+    camada
+
   );
 
 
   console.log(
-    "Estados prontos."
+
+    "Estados adicionados ao mapa."
+
   );
 
 })
 
 .catch(error => {
 
+
   console.error(
-    "Erro nos estados:",
+
+    "ERRO NOS ESTADOS:",
+
     error
+
   );
-
-
-  document.getElementById(
-    "contagem-estados"
-  ).textContent =
-    "erro";
 
 });
 
 
 // ============================================================
-// 12. CARREGAR BIOMAS
+// 15. CARREGAR BIOMAS
 // ============================================================
 
 carregarArquivos(
+
   arquivosBiomas,
+
   "Biomas"
+
 )
 
 .then(data => {
 
-  document.getElementById(
-    "contagem-biomas"
-  ).textContent =
-    data.features.length;
+
+  dadosBiomas = data;
 
 
-  camadaBiomas =
+  const camada =
+
     L.geoJSON(
+
       data,
+
       {
+
         style:
+
           estiloBiomas
+
       }
+
     );
 
 
   grupoBiomas.addLayer(
-    camadaBiomas
+
+    camada
+
   );
 
 
   console.log(
-    "Biomas prontos."
+
+    "Biomas adicionados ao mapa."
+
   );
 
 })
 
 .catch(error => {
 
+
   console.error(
-    "Erro nos biomas:",
+
+    "ERRO NOS BIOMAS:",
+
     error
+
   );
-
-
-  document.getElementById(
-    "contagem-biomas"
-  ).textContent =
-    "erro";
 
 });
 
 
 // ============================================================
-// 13. CARREGAR TERRAS INDÍGENAS
+// 16. CARREGAR TERRAS INDÍGENAS
 // ============================================================
 
 carregarArquivos(
+
   arquivosTI,
+
   "Terras Indígenas"
+
 )
 
 .then(data => {
 
-  document.getElementById(
-    "contagem-ti"
-  ).textContent =
-    data.features.length;
+
+  dadosTI = data;
 
 
-  camadaTI =
+  const camada =
+
     L.geoJSON(
+
       data,
+
       {
+
         style:
+
           estiloTI
+
       }
+
     );
 
 
   grupoTI.addLayer(
-    camadaTI
+
+    camada
+
   );
 
 
   console.log(
-    "Terras Indígenas prontas."
+
+    "Terras Indígenas adicionadas ao mapa."
+
   );
 
 })
 
 .catch(error => {
 
+
   console.error(
-    "Erro nas Terras Indígenas:",
+
+    "ERRO NAS TERRAS INDÍGENAS:",
+
     error
+
   );
-
-
-  document.getElementById(
-    "contagem-ti"
-  ).textContent =
-    "erro";
 
 });
 
 
 // ============================================================
-// 14. CARREGAR UNIDADES DE CONSERVAÇÃO
+// 17. CARREGAR UNIDADES DE CONSERVAÇÃO
 // ============================================================
 
 carregarArquivos(
+
   arquivosUC,
+
   "Unidades de Conservação"
+
 )
 
 .then(data => {
 
-  document.getElementById(
-    "contagem-uc"
-  ).textContent =
-    data.features.length;
+
+  dadosUC = data;
 
 
-  camadaUC =
+  const camada =
+
     L.geoJSON(
+
       data,
+
       {
+
         style:
+
           estiloUC
+
       }
+
     );
 
 
   grupoUC.addLayer(
-    camadaUC
+
+    camada
+
   );
 
 
   console.log(
-    "Unidades de Conservação prontas."
+
+    "Unidades de Conservação adicionadas ao mapa."
+
   );
 
 })
 
 .catch(error => {
 
+
   console.error(
-    "Erro nas Unidades de Conservação:",
+
+    "ERRO NAS UNIDADES DE CONSERVAÇÃO:",
+
     error
+
   );
-
-
-  document.getElementById(
-    "contagem-uc"
-  ).textContent =
-    "erro";
 
 });
 
 
 // ============================================================
-// 15. CONTROLE DE CAMADAS
+// 18. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas = {
 
+
   "Estados":
+
     grupoEstados,
 
+
   "Biomas":
+
     grupoBiomas,
 
+
   "Terras Indígenas":
+
     grupoTI,
 
+
   "Unidades de Conservação":
+
     grupoUC
 
 };
 
+
+// ============================================================
+// 19. ADICIONAR CONTROLE AO MAPA
+// ============================================================
 
 L.control.layers(
 
@@ -716,18 +741,43 @@ L.control.layers(
   controleCamadas,
 
   {
+
     collapsed: false
+
   }
 
 ).addTo(mapa);
 
 
 // ============================================================
-// 16. MENSAGEM INICIAL
+// 20. MENSAGEM INICIAL
 // ============================================================
 
 console.log(
-  "Iniciando carregamento das Regional Layers..."
+
+  "======================================"
+
+);
+
+
+console.log(
+
+  "DASHBOARD INICIADO"
+
+);
+
+
+console.log(
+
+  "Carregando Regional Layers..."
+
+);
+
+
+console.log(
+
+  "======================================"
+
 );
 
 </script>
