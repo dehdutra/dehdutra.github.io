@@ -433,27 +433,8 @@
         }
 
 
-        #status-dados {
-
-            margin-top: 13px;
-
-            padding-top: 12px;
-
-            border-top:
-                1px solid var(--border);
-
-            font-size: 10.5px;
-
-            line-height: 1.45;
-
-            color:
-                #667085;
-
-        }
-
-
         /* ======================================================
-           BADGE DE DADOS
+           BADGE
         ====================================================== */
 
         .badge {
@@ -805,10 +786,10 @@
 
 
         /* ======================================================
-           MODAL CITAÇÃO
+           MODAL GERAL
         ====================================================== */
 
-        #modal-citacao {
+        .modal {
 
             position: fixed;
 
@@ -833,12 +814,16 @@
         }
 
 
-        #modal-citacao.aberto {
+        .modal.aberto {
 
             display: flex;
 
         }
 
+
+        /* ======================================================
+           MODAL CITAÇÃO
+        ====================================================== */
 
         #modal-card {
 
@@ -953,6 +938,486 @@
 
 
         /* ======================================================
+           MODAL RANKING
+        ====================================================== */
+
+        #modal-ranking-card {
+
+            width:
+                min(900px, 96vw);
+
+            max-height:
+                88vh;
+
+            display: flex;
+
+            flex-direction: column;
+
+            background:
+                #ffffff;
+
+            border-radius:
+                16px;
+
+            box-shadow:
+                0 25px 70px
+                rgba(0,0,0,0.28);
+
+            overflow: hidden;
+
+        }
+
+
+        #ranking-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding:
+                18px 22px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            flex-shrink: 0;
+
+        }
+
+
+        #ranking-header-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        #ranking-icon {
+
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background:
+                #fef3f2;
+
+            font-size: 20px;
+
+        }
+
+
+        #ranking-header h2 {
+
+            margin: 0;
+
+            font-size: 17px;
+
+            font-weight: 750;
+
+            color:
+                #202124;
+
+        }
+
+
+        #ranking-subtitulo {
+
+            margin-top: 4px;
+
+            font-size: 10.5px;
+
+            color:
+                var(--text-secondary);
+
+        }
+
+
+        #fechar-ranking {
+
+            width: 32px;
+            height: 32px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background:
+                #f2f4f7;
+
+            cursor: pointer;
+
+            font-size: 21px;
+
+            color:
+                #475467;
+
+            transition:
+                all 0.15s ease;
+
+        }
+
+
+        #fechar-ranking:hover {
+
+            background:
+                #e4e7ec;
+
+        }
+
+
+        /* ======================================================
+           TABS
+        ====================================================== */
+
+        #ranking-tabs {
+
+            display: flex;
+
+            gap: 5px;
+
+            padding:
+                12px 22px 0;
+
+            border-bottom:
+                1px solid var(--border);
+
+            flex-shrink: 0;
+
+        }
+
+
+        .ranking-tab {
+
+            border: none;
+
+            background:
+                transparent;
+
+            padding:
+                9px 15px;
+
+            border-radius:
+                7px 7px 0 0;
+
+            font-size: 11px;
+
+            font-weight: 650;
+
+            color:
+                #667085;
+
+            cursor: pointer;
+
+            border-bottom:
+                2px solid transparent;
+
+        }
+
+
+        .ranking-tab:hover {
+
+            color:
+                #344054;
+
+            background:
+                #f9fafb;
+
+        }
+
+
+        .ranking-tab.ativo {
+
+            color:
+                #b42318;
+
+            border-bottom:
+                2px solid #b42318;
+
+        }
+
+
+        /* ======================================================
+           CONTEÚDO RANKING
+        ====================================================== */
+
+        #ranking-body {
+
+            padding:
+                18px 22px 22px;
+
+            overflow-y: auto;
+
+            min-height: 0;
+
+        }
+
+
+        #ranking-resumo {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-bottom:
+                16px;
+
+        }
+
+
+        .ranking-resumo-card {
+
+            padding:
+                12px 14px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                9px;
+
+            background:
+                #fafafa;
+
+        }
+
+
+        .ranking-resumo-label {
+
+            font-size: 9.5px;
+
+            color:
+                #667085;
+
+            margin-bottom:
+                5px;
+
+        }
+
+
+        .ranking-resumo-valor {
+
+            font-size: 15px;
+
+            font-weight: 750;
+
+            color:
+                #1f2933;
+
+        }
+
+
+        /* ======================================================
+           ITEM DO RANKING
+        ====================================================== */
+
+        .ranking-item {
+
+            display: grid;
+
+            grid-template-columns:
+                42px
+                minmax(140px, 190px)
+                1fr
+                120px;
+
+            align-items: center;
+
+            gap: 12px;
+
+            min-height: 51px;
+
+            padding:
+                8px 10px;
+
+            border-bottom:
+                1px solid #f0f1f3;
+
+        }
+
+
+        .ranking-item:hover {
+
+            background:
+                #fafafa;
+
+        }
+
+
+        .ranking-posicao {
+
+            width: 30px;
+            height: 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                #f2f4f7;
+
+            color:
+                #667085;
+
+            font-size: 10px;
+
+            font-weight: 750;
+
+        }
+
+
+        .ranking-item:nth-child(1)
+        .ranking-posicao {
+
+            background:
+                #7f0000;
+
+            color:
+                white;
+
+        }
+
+
+        .ranking-item:nth-child(2)
+        .ranking-posicao {
+
+            background:
+                #b30000;
+
+            color:
+                white;
+
+        }
+
+
+        .ranking-item:nth-child(3)
+        .ranking-posicao {
+
+            background:
+                #d7301f;
+
+            color:
+                white;
+
+        }
+
+
+        .ranking-nome {
+
+            font-size: 11.5px;
+
+            font-weight: 650;
+
+            color:
+                #344054;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+
+        .ranking-barra-container {
+
+            height: 18px;
+
+            background:
+                #f1f3f5;
+
+            border-radius: 5px;
+
+            overflow: hidden;
+
+        }
+
+
+        .ranking-barra {
+
+            height: 100%;
+
+            min-width: 2px;
+
+            border-radius: 5px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #d7301f,
+                    #7f0000
+                );
+
+            transition:
+                width 0.45s ease;
+
+        }
+
+
+        .ranking-valor {
+
+            text-align: right;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            color:
+                #1f2933;
+
+            white-space: nowrap;
+
+        }
+
+
+        .ranking-unidade {
+
+            font-size: 9px;
+
+            font-weight: 500;
+
+            color:
+                #667085;
+
+        }
+
+
+        #ranking-vazio {
+
+            padding:
+                50px 20px;
+
+            text-align: center;
+
+            font-size: 12px;
+
+            color:
+                #667085;
+
+        }
+
+
+        /* ======================================================
            RESPONSIVO
         ====================================================== */
 
@@ -1028,6 +1493,52 @@
 
             }
 
+
+            #ranking-body {
+
+                padding:
+                    14px;
+
+            }
+
+
+            #ranking-header {
+
+                padding:
+                    14px 16px;
+
+            }
+
+
+            #ranking-tabs {
+
+                padding-left:
+                    14px;
+
+            }
+
+
+            #ranking-resumo {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .ranking-item {
+
+                grid-template-columns:
+                    34px
+                    120px
+                    1fr
+                    95px;
+
+                gap:
+                    7px;
+
+            }
+
         }
 
 
@@ -1068,6 +1579,38 @@
                 justify-content: center;
 
                 padding: 0;
+
+            }
+
+
+            .ranking-item {
+
+                grid-template-columns:
+                    30px
+                    105px
+                    1fr;
+
+            }
+
+
+            .ranking-valor {
+
+                grid-column:
+                    2 / 4;
+
+                text-align:
+                    left;
+
+                margin-top:
+                    -5px;
+
+            }
+
+
+            .ranking-barra-container {
+
+                grid-column:
+                    3;
 
             }
 
@@ -1145,6 +1688,17 @@
 
 
     <div id="acoes-header">
+
+        <!-- NOVO BOTÃO -->
+        <button
+            class="header-btn"
+            onclick="abrirRanking()"
+            title="Abrir ranking de área queimada"
+        >
+            <span>📊</span>
+            <span>Ranking</span>
+        </button>
+
 
         <button
             class="header-btn"
@@ -1258,14 +1812,6 @@
 
         </div>
 
-
-        <!--
-            REMOVIDO:
-            Dados carregados.
-            Estados: 168 feições
-            Biomas: 6 feições
-        -->
-
     </div>
 
 </section>
@@ -1284,134 +1830,101 @@
     <div id="legenda-corpo">
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#7f0000"
             ></span>
-
             1º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#b30000"
             ></span>
-
             2º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#d7301f"
             ></span>
-
             3º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#ef6548"
             ></span>
-
             4º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#fdae61"
             ></span>
-
             5º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#c6dbef"
             ></span>
-
             19º–20º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#9ecae1"
             ></span>
-
             20º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#6baed6"
             ></span>
-
             21º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#4292c6"
             ></span>
-
             22º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#2171b5"
             ></span>
-
             23º
-
         </div>
 
 
         <div class="legenda-item">
-
             <span
                 class="legenda-cor"
                 style="background:#084594"
             ></span>
-
             24º
-
         </div>
 
     </div>
@@ -1425,6 +1938,7 @@
 
 <div
     id="modal-citacao"
+    class="modal"
     onclick="fecharModalFora(event)"
 >
 
@@ -1505,6 +2019,157 @@
                 URI:
                 upn:4CUH36S:8JMKD2USNRW34T/4EDUKEE.
 
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     MODAL RANKING
+=========================================================== -->
+
+<div
+    id="modal-ranking"
+    class="modal"
+    onclick="fecharRankingFora(event)"
+>
+
+    <div id="modal-ranking-card">
+
+
+        <!-- ==================================================
+             CABEÇALHO
+        =================================================== -->
+
+        <div id="ranking-header">
+
+            <div id="ranking-header-left">
+
+                <div id="ranking-icon">
+                    📊
+                </div>
+
+                <div>
+
+                    <h2>
+                        Ranking de área queimada
+                    </h2>
+
+                    <div id="ranking-subtitulo">
+                        Ordenação decrescente da área queimada
+                        no período analisado
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="fechar-ranking"
+                onclick="fecharRanking()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- ==================================================
+             ABAS
+        =================================================== -->
+
+        <div id="ranking-tabs">
+
+            <button
+                class="ranking-tab ativo"
+                id="tab-estados"
+                onclick="mostrarRanking('estados')"
+            >
+                🇧🇷 Estados
+            </button>
+
+
+            <button
+                class="ranking-tab"
+                id="tab-biomas"
+                onclick="mostrarRanking('biomas')"
+            >
+                🌳 Biomas
+            </button>
+
+        </div>
+
+
+        <!-- ==================================================
+             CORPO
+        =================================================== -->
+
+        <div id="ranking-body">
+
+            <div id="ranking-resumo">
+
+                <div class="ranking-resumo-card">
+
+                    <div class="ranking-resumo-label">
+                        Maior área queimada
+                    </div>
+
+                    <div
+                        class="ranking-resumo-valor"
+                        id="resumo-maior"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="ranking-resumo-card">
+
+                    <div class="ranking-resumo-label">
+                        Área queimada
+                    </div>
+
+                    <div
+                        class="ranking-resumo-valor"
+                        id="resumo-area"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="ranking-resumo-card">
+
+                    <div class="ranking-resumo-label">
+                        Unidades
+                    </div>
+
+                    <div
+                        class="ranking-resumo-valor"
+                        id="resumo-total"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="ranking-lista"></div>
+
+            <div
+                id="ranking-vazio"
+                style="display:none;"
+            >
+                Nenhum dado de área queimada encontrado.
             </div>
 
         </div>
@@ -1833,7 +2498,13 @@ function obterArea(feature) {
 
                 "AREA_KM2",
 
-                "AREA_QUEIMADA"
+                "AREA_QUEIMADA",
+
+                "area_burned",
+
+                "burnedArea",
+
+                "Burned_Area"
 
             ]
 
@@ -1850,7 +2521,10 @@ function obterArea(feature) {
 
 
     const numero =
-        Number(valor);
+        Number(
+            String(valor)
+                .replace(",", ".")
+        );
 
 
     return Number.isFinite(numero)
@@ -2196,12 +2870,7 @@ function mostrarPopup(
                 font-size:12px;
             ">
                 <b>Área queimada:</b>
-                ${area.toLocaleString(
-                    "pt-BR",
-                    {
-                        maximumFractionDigits: 2
-                    }
-                )}
+                ${formatarNumero(area)}
                 km²
             </div>
 
@@ -2223,7 +2892,32 @@ function mostrarPopup(
 
 
 // ============================================================
-// 13. ATUALIZAR LOADING
+// 13. FORMATAR NÚMEROS
+// ============================================================
+
+function formatarNumero(valor) {
+
+    return Number(valor).toLocaleString(
+
+        "pt-BR",
+
+        {
+
+            minimumFractionDigits:
+                0,
+
+            maximumFractionDigits:
+                2
+
+        }
+
+    );
+
+}
+
+
+// ============================================================
+// 14. ATUALIZAR LOADING
 // ============================================================
 
 function atualizarLoading(
@@ -2267,7 +2961,7 @@ function atualizarLoading(
 
 
 // ============================================================
-// 14. CARREGAR UM ARQUIVO
+// 15. CARREGAR UM ARQUIVO
 // ============================================================
 
 async function carregarArquivo(
@@ -2343,13 +3037,24 @@ async function carregarArquivo(
     );
 
 
-    return dados.features.length;
+    return {
+
+        quantidade:
+            dados.features.length,
+
+        features:
+            dados.features,
+
+        tipo:
+            tipo
+
+    };
 
 }
 
 
 // ============================================================
-// 15. CARREGAMENTO PARALELO
+// 16. CARREGAMENTO PARALELO
 // ============================================================
 
 async function carregarTodosDados() {
@@ -2398,7 +3103,7 @@ async function carregarTodosDados() {
 
                 try {
 
-                    const quantidade =
+                    const resultado =
                         await carregarArquivo(
 
                             item.arquivo,
@@ -2434,7 +3139,13 @@ async function carregarTodosDados() {
                             item.arquivo,
 
                         quantidade:
-                            quantidade
+                            resultado.quantidade,
+
+                        features:
+                            resultado.features,
+
+                        tipo:
+                            resultado.tipo
 
                     };
 
@@ -2471,7 +3182,13 @@ async function carregarTodosDados() {
                             item.arquivo,
 
                         erro:
-                            erro.message
+                            erro.message,
+
+                        features:
+                            [],
+
+                        tipo:
+                            item.tipo
 
                     };
 
@@ -2482,15 +3199,19 @@ async function carregarTodosDados() {
         );
 
 
-    return await Promise.all(
-        promessas
-    );
+    const resultados =
+        await Promise.all(
+            promessas
+        );
+
+
+    return resultados;
 
 }
 
 
 // ============================================================
-// 16. CONTROLE DE CAMADAS
+// 17. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas =
@@ -2522,7 +3243,7 @@ const controleCamadas =
 
 
 // ============================================================
-// 17. AJUSTAR MAPA
+// 18. AJUSTAR MAPA
 // ============================================================
 
 function ajustarMapa() {
@@ -2607,7 +3328,7 @@ function ajustarMapa() {
 
 
 // ============================================================
-// 18. ABRIR CITAÇÃO
+// 19. ABRIR CITAÇÃO
 // ============================================================
 
 function abrirCitacao() {
@@ -2624,7 +3345,7 @@ function abrirCitacao() {
 
 
 // ============================================================
-// 19. FECHAR CITAÇÃO
+// 20. FECHAR CITAÇÃO
 // ============================================================
 
 function fecharCitacao() {
@@ -2655,7 +3376,499 @@ function fecharModalFora(event) {
 
 
 // ============================================================
-// 20. ESC
+// 21. DADOS PARA RANKING
+// ============================================================
+
+let dadosRankingEstados = [];
+
+let dadosRankingBiomas = [];
+
+
+// ============================================================
+// 22. AGREGAR DADOS
+// ============================================================
+
+function construirRankings(resultados) {
+
+    const estados =
+        new Map();
+
+    const biomas =
+        new Map();
+
+
+    resultados.forEach(
+
+        resultado => {
+
+            if (
+                !resultado.sucesso
+            ) {
+
+                return;
+
+            }
+
+
+            const destino =
+                resultado.tipo === "estados"
+                    ? estados
+                    : biomas;
+
+
+            resultado.features.forEach(
+
+                feature => {
+
+                    const nome =
+                        obterNome(feature);
+
+
+                    const area =
+                        obterArea(feature);
+
+
+                    if (
+                        !nome ||
+                        area === null
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * Se o mesmo estado/bioma aparecer
+                     * em mais de um arquivo, as áreas
+                     * são somadas.
+                     */
+
+                    const chave =
+                        String(nome)
+                            .trim()
+                            .toUpperCase();
+
+
+                    if (
+                        !destino.has(chave)
+                    ) {
+
+                        destino.set(
+
+                            chave,
+
+                            {
+
+                                nome:
+                                    String(nome).trim(),
+
+                                area:
+                                    0
+
+                            }
+
+                        );
+
+                    }
+
+
+                    destino.get(chave).area +=
+                        area;
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+    dadosRankingEstados =
+        Array.from(
+            estados.values()
+        )
+        .sort(
+            (a, b) =>
+                b.area - a.area
+        );
+
+
+    dadosRankingBiomas =
+        Array.from(
+            biomas.values()
+        )
+        .sort(
+            (a, b) =>
+                b.area - a.area
+        );
+
+
+    console.log(
+        "Ranking Estados:",
+        dadosRankingEstados
+    );
+
+
+    console.log(
+        "Ranking Biomas:",
+        dadosRankingBiomas
+    );
+
+}
+
+
+// ============================================================
+// 23. ABRIR RANKING
+// ============================================================
+
+function abrirRanking() {
+
+    document
+        .getElementById(
+            "modal-ranking"
+        )
+        .classList.add(
+            "aberto"
+        );
+
+
+    mostrarRanking(
+        "estados"
+    );
+
+}
+
+
+// ============================================================
+// 24. FECHAR RANKING
+// ============================================================
+
+function fecharRanking() {
+
+    document
+        .getElementById(
+            "modal-ranking"
+        )
+        .classList.remove(
+            "aberto"
+        );
+
+}
+
+
+// ============================================================
+// 25. FECHAR AO CLICAR FORA
+// ============================================================
+
+function fecharRankingFora(event) {
+
+    if (
+        event.target.id ===
+        "modal-ranking"
+    ) {
+
+        fecharRanking();
+
+    }
+
+}
+
+
+// ============================================================
+// 26. MOSTRAR RANKING
+// ============================================================
+
+function mostrarRanking(tipo) {
+
+    const lista =
+        document.getElementById(
+            "ranking-lista"
+        );
+
+
+    const vazio =
+        document.getElementById(
+            "ranking-vazio"
+        );
+
+
+    const tabEstados =
+        document.getElementById(
+            "tab-estados"
+        );
+
+
+    const tabBiomas =
+        document.getElementById(
+            "tab-biomas"
+        );
+
+
+    let dados = [];
+
+
+    if (
+        tipo === "estados"
+    ) {
+
+        dados =
+            dadosRankingEstados;
+
+        tabEstados.classList.add(
+            "ativo"
+        );
+
+        tabBiomas.classList.remove(
+            "ativo"
+        );
+
+    }
+
+    else {
+
+        dados =
+            dadosRankingBiomas;
+
+        tabBiomas.classList.add(
+            "ativo"
+        );
+
+        tabEstados.classList.remove(
+            "ativo"
+        );
+
+    }
+
+
+    lista.innerHTML =
+        "";
+
+
+    if (
+        dados.length === 0
+    ) {
+
+        vazio.style.display =
+            "block";
+
+        atualizarResumo(
+            [],
+            tipo
+        );
+
+        return;
+
+    }
+
+
+    vazio.style.display =
+        "none";
+
+
+    atualizarResumo(
+        dados,
+        tipo
+    );
+
+
+    const maiorArea =
+        dados[0].area;
+
+
+    dados.forEach(
+
+        (item, indice) => {
+
+            const posicao =
+                indice + 1;
+
+
+            const percentual =
+                maiorArea > 0
+                    ? (
+                        item.area /
+                        maiorArea
+                    ) * 100
+                    : 0;
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "ranking-item";
+
+
+            div.innerHTML = `
+
+                <div class="ranking-posicao">
+
+                    ${posicao}
+
+                </div>
+
+
+                <div
+                    class="ranking-nome"
+                    title="${escaparHTML(item.nome)}"
+                >
+
+                    ${escaparHTML(item.nome)}
+
+                </div>
+
+
+                <div class="ranking-barra-container">
+
+                    <div
+                        class="ranking-barra"
+                        style="
+                            width:${percentual}%;
+                        "
+                    ></div>
+
+                </div>
+
+
+                <div class="ranking-valor">
+
+                    ${formatarNumero(item.area)}
+
+                    <span class="ranking-unidade">
+                        km²
+                    </span>
+
+                </div>
+
+            `;
+
+
+            lista.appendChild(
+                div
+            );
+
+        }
+
+    );
+
+}
+
+
+// ============================================================
+// 27. RESUMO DO RANKING
+// ============================================================
+
+function atualizarResumo(
+    dados,
+    tipo
+) {
+
+    const maior =
+        document.getElementById(
+            "resumo-maior"
+        );
+
+
+    const area =
+        document.getElementById(
+            "resumo-area"
+        );
+
+
+    const total =
+        document.getElementById(
+            "resumo-total"
+        );
+
+
+    if (
+        dados.length === 0
+    ) {
+
+        maior.innerText =
+            "-";
+
+        area.innerText =
+            "-";
+
+        total.innerText =
+            "0";
+
+        return;
+
+    }
+
+
+    const soma =
+        dados.reduce(
+
+            (acumulado, item) =>
+                acumulado + item.area,
+
+            0
+
+        );
+
+
+    maior.innerText =
+        dados[0].nome;
+
+
+    area.innerText =
+        `${formatarNumero(
+            dados[0].area
+        )} km²`;
+
+
+    total.innerText =
+        dados.length;
+
+}
+
+
+// ============================================================
+// 28. PROTEÇÃO CONTRA HTML
+// ============================================================
+
+function escaparHTML(texto) {
+
+    return String(texto)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ============================================================
+// 29. ESC
 // ============================================================
 
 document.addEventListener(
@@ -2671,6 +3884,8 @@ document.addEventListener(
 
             fecharCitacao();
 
+            fecharRanking();
+
         }
 
     }
@@ -2679,28 +3894,44 @@ document.addEventListener(
 
 
 // ============================================================
-// 21. INICIALIZAÇÃO
+// 30. INICIALIZAÇÃO
 // ============================================================
 
 async function inicializar() {
 
     atualizarLoading(
+
         3,
+
         "Inicializando mapa..."
+
     );
 
 
-    await carregarTodosDados();
+    const resultados =
+        await carregarTodosDados();
 
 
     atualizarLoading(
+
         96,
+
         "Organizando camadas..."
+
     );
 
 
     // ========================================================
-    // COLOCA AS DUAS CAMADAS NO MAPA
+    // CONSTRÓI RANKINGS
+    // ========================================================
+
+    construirRankings(
+        resultados
+    );
+
+
+    // ========================================================
+    // COLOCA ESTADOS NO MAPA
     // ========================================================
 
     if (
@@ -2713,6 +3944,10 @@ async function inicializar() {
 
     }
 
+
+    // ========================================================
+    // COLOCA BIOMAS NO MAPA
+    // ========================================================
 
     if (
         grupoBiomas.getLayers().length > 0
@@ -2746,8 +3981,11 @@ async function inicializar() {
     // ========================================================
 
     atualizarLoading(
+
         100,
+
         "Dashboard pronto."
+
     );
 
 
@@ -2773,7 +4011,7 @@ async function inicializar() {
 
 
 // ============================================================
-// 22. EXECUTAR
+// 31. EXECUTAR
 // ============================================================
 
 window.addEventListener(
