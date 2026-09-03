@@ -143,27 +143,18 @@
 
       margin-top: 0;
 
-      margin-bottom: 8px;
+      margin-bottom: 15px;
 
-      font-size: 20px;
-
-    }
-
-
-    #painel-relatorio .subtitulo {
-
-      color: #666;
-
-      margin-bottom: 20px;
+      font-size: 21px;
 
     }
 
 
     /* ===================================================== */
-    /* RESUMO */
+    /* SELETORES */
     /* ===================================================== */
 
-    .resumo-relatorio {
+    .selecao-relatorio {
 
       display: flex;
 
@@ -176,59 +167,102 @@
     }
 
 
-    .cartao-resumo {
+    .campo-selecao {
 
       flex: 1;
 
-      min-width: 180px;
-
-      background: #f7f7f7;
-
-      border: 1px solid #ddd;
-
-      border-radius: 8px;
-
-      padding: 15px;
+      min-width: 250px;
 
     }
 
 
-    .cartao-resumo .numero {
+    .campo-selecao label {
 
-      font-size: 24px;
+      display: block;
 
       font-weight: bold;
 
-      margin-bottom: 5px;
+      margin-bottom: 7px;
+
+      color: #444;
 
     }
 
 
-    .cartao-resumo .descricao {
+    .campo-selecao select {
 
-      font-size: 13px;
+      width: 100%;
+
+      padding: 10px;
+
+      border: 1px solid #bbb;
+
+      border-radius: 6px;
+
+      background: white;
+
+      font-size: 14px;
+
+    }
+
+
+    /* ===================================================== */
+    /* CABEÇALHO DO POLÍGONO */
+    /* ===================================================== */
+
+    .cabecalho-poligono {
+
+      margin-top: 20px;
+
+      margin-bottom: 15px;
+
+      padding: 15px;
+
+      background: #f5f5f5;
+
+      border-left: 5px solid #7f0000;
+
+      border-radius: 5px;
+
+    }
+
+
+    .cabecalho-poligono h4 {
+
+      margin: 0 0 5px 0;
+
+      font-size: 19px;
+
+    }
+
+
+    .cabecalho-poligono span {
 
       color: #666;
 
+      font-size: 13px;
+
     }
 
 
     /* ===================================================== */
-    /* TABELA */
+    /* TABELA DE ATRIBUTOS */
     /* ===================================================== */
 
-    .tabela-relatorio {
+    .tabela-atributos {
 
       width: 100%;
 
       border-collapse: collapse;
 
-      margin-top: 15px;
+      margin-top: 10px;
 
     }
 
 
-    .tabela-relatorio th {
+    .tabela-atributos th {
+
+      width: 35%;
 
       background: #eeeeee;
 
@@ -236,89 +270,42 @@
 
       text-align: left;
 
-      border-bottom: 2px solid #ccc;
+      border: 1px solid #ddd;
+
+      font-size: 13px;
 
     }
 
 
-    .tabela-relatorio td {
+    .tabela-atributos td {
 
       padding: 10px;
 
-      border-bottom: 1px solid #ddd;
+      border: 1px solid #ddd;
+
+      font-size: 13px;
+
+      word-break: break-word;
 
     }
 
 
-    .tabela-relatorio tr:hover {
+    .tabela-atributos tr:hover {
 
-      background: #f7f7f7;
-
-    }
-
-
-    /* ===================================================== */
-    /* CORES DO RANKING NA TABELA */
-    /* ===================================================== */
-
-    .ranking-1 {
-
-      color: #7f0000;
-
-      font-weight: bold;
-
-    }
-
-
-    .ranking-2 {
-
-      color: #b30000;
-
-      font-weight: bold;
-
-    }
-
-
-    .ranking-3 {
-
-      color: #d7301f;
-
-      font-weight: bold;
-
-    }
-
-
-    .ranking-4 {
-
-      color: #ef6548;
-
-      font-weight: bold;
-
-    }
-
-
-    .ranking-5 {
-
-      color: #fdae61;
-
-      font-weight: bold;
+      background: #f8f8f8;
 
     }
 
 
     /* ===================================================== */
-    /* GRÁFICO */
+    /* RANKING */
     /* ===================================================== */
 
-    #grafico-area {
+    .ranking-destaque {
 
-      width: 100%;
+      font-weight: bold;
 
-      max-width: 900px;
-
-      height: 350px;
-
-      margin: 30px auto 10px auto;
+      font-size: 16px;
 
     }
 
@@ -336,6 +323,34 @@
       border-radius: 8px;
 
       color: #555;
+
+    }
+
+
+    /* ===================================================== */
+    /* BOTÃO LIMPAR */
+    /* ===================================================== */
+
+    .botao-limpar {
+
+      margin-top: 10px;
+
+      padding: 8px 14px;
+
+      border: 1px solid #aaa;
+
+      background: white;
+
+      border-radius: 5px;
+
+      cursor: pointer;
+
+    }
+
+
+    .botao-limpar:hover {
+
+      background: #eeeeee;
 
     }
 
@@ -360,22 +375,108 @@
 
 
 <!-- ===================================================== -->
-<!-- PAINEL INFERIOR -->
+<!-- PAINEL DE RELATÓRIO -->
 <!-- ===================================================== -->
 
 <div id="painel-relatorio">
 
   <h3>
-    Relatório da camada selecionada
+    Relatório
   </h3>
+
+
+  <!-- =================================================== -->
+  <!-- SELEÇÃO -->
+  <!-- =================================================== -->
+
+  <div class="selecao-relatorio">
+
+
+    <div class="campo-selecao">
+
+      <label for="seletor-camada">
+
+        Selecione a camada
+
+      </label>
+
+
+      <select id="seletor-camada">
+
+        <option value="">
+
+          Selecione...
+
+        </option>
+
+        <option value="Estados">
+
+          Estados
+
+        </option>
+
+        <option value="Biomas">
+
+          Biomas
+
+        </option>
+
+        <option value="Terras Indígenas">
+
+          Terras Indígenas
+
+        </option>
+
+        <option value="Unidades de Conservação">
+
+          Unidades de Conservação
+
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div
+      class="campo-selecao"
+      id="campo-poligono"
+      style="display:none;"
+    >
+
+      <label for="seletor-poligono">
+
+        Selecione o polígono
+
+      </label>
+
+
+      <select id="seletor-poligono">
+
+        <option value="">
+
+          Selecione...
+
+        </option>
+
+      </select>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- =================================================== -->
+  <!-- CONTEÚDO -->
+  <!-- =================================================== -->
 
   <div
     id="conteudo-relatorio"
     class="mensagem-relatorio"
   >
 
-    Selecione uma camada no controle do mapa para visualizar
-    os polígonos classificados entre 1º e 5º.
+    Selecione uma camada para começar.
 
   </div>
 
@@ -485,7 +586,7 @@ const arquivosUC = [
 
 
 // ============================================================
-// 7. FUNÇÃO PARA CARREGAR OS ARQUIVOS
+// 7. CARREGAR ARQUIVOS
 // ============================================================
 
 async function carregarArquivos(
@@ -495,6 +596,7 @@ async function carregarArquivos(
   nomeCamada
 
 ) {
+
 
   console.log("");
 
@@ -526,25 +628,17 @@ async function carregarArquivos(
 
 
       console.log(
+
         "Tentando:",
+
         arquivo
+
       );
 
 
       const response =
 
         await fetch(arquivo);
-
-
-      console.log(
-
-        arquivo,
-
-        "Status:",
-
-        response.status
-
-      );
 
 
       if (!response.ok) {
@@ -570,14 +664,16 @@ async function carregarArquivos(
         !geojson ||
 
         !Array.isArray(
+
           geojson.features
+
         )
 
       ) {
 
         throw new Error(
 
-          "Arquivo não possui uma coleção GeoJSON válida."
+          "GeoJSON inválido."
 
         );
 
@@ -617,12 +713,7 @@ async function carregarArquivos(
 
         "ERRO:",
 
-        arquivo
-
-      );
-
-
-      console.error(
+        arquivo,
 
         erro
 
@@ -633,7 +724,7 @@ async function carregarArquivos(
   }
 
 
-  const resultadoFinal = {
+  return {
 
     type:
       "FeatureCollection",
@@ -643,34 +734,11 @@ async function carregarArquivos(
 
   };
 
-
-  console.log("");
-
-  console.log(
-
-    "RESULTADO:",
-
-    nomeCamada
-
-  );
-
-
-  console.log(
-
-    "Total de feições carregadas:",
-
-    features.length
-
-  );
-
-
-  return resultadoFinal;
-
 }
 
 
 // ============================================================
-// 8. FUNÇÃO PARA OBTER O RANKING
+// 8. OBTER RANKING
 // ============================================================
 
 function obterRanking(feature) {
@@ -682,7 +750,7 @@ function obterRanking(feature) {
 
 
   // ----------------------------------------------------------
-  // TI E UC
+  // TI / UC
   // ----------------------------------------------------------
 
   if (
@@ -719,7 +787,7 @@ function obterRanking(feature) {
 
 
   // ----------------------------------------------------------
-  // ESTADOS E BIOMAS
+  // ESTADOS / BIOMAS
   // ----------------------------------------------------------
 
   if (
@@ -756,7 +824,7 @@ function obterRanking(feature) {
 
 
   // ----------------------------------------------------------
-  // OUTRAS POSSIBILIDADES
+  // ALTERNATIVAS
   // ----------------------------------------------------------
 
   const possibilidades = [
@@ -826,7 +894,7 @@ function obterRanking(feature) {
 
 
 // ============================================================
-// 9. ESCALA DE CORES
+// 9. CORES DO RANKING
 // ============================================================
 
 function corRanking(rank) {
@@ -975,7 +1043,7 @@ function estiloPorRanking(feature) {
 
 
 // ============================================================
-// 11. NOME
+// 11. NOME DO POLÍGONO
 // ============================================================
 
 function obterNome(feature) {
@@ -1032,184 +1100,24 @@ function obterNome(feature) {
 
     ) {
 
-      return p[campo];
+      return String(
+
+        p[campo]
+
+      );
 
     }
 
   }
 
 
-  return "Região";
+  return "Polígono";
 
 }
 
 
 // ============================================================
-// 12. ÁREA QUEIMADA
-// ============================================================
-
-function obterArea(feature) {
-
-
-  const p =
-
-    feature.properties || {};
-
-
-  const camposArea = [
-
-    "Burned Area (km^2)",
-
-    "Burned_Area_km2",
-
-    "burned_area",
-
-    "area_queimada",
-
-    "Area Queimada"
-
-  ];
-
-
-  for (
-
-    const campo of camposArea
-
-  ) {
-
-
-    if (
-
-      p[campo] !== undefined &&
-
-      p[campo] !== null &&
-
-      p[campo] !== ""
-
-    ) {
-
-
-      const valor =
-
-        Number(
-
-          p[campo]
-
-        );
-
-
-      if (
-
-        Number.isFinite(valor)
-
-      ) {
-
-        return valor;
-
-      }
-
-    }
-
-  }
-
-
-  return null;
-
-}
-
-
-// ============================================================
-// 13. POPUP
-// ============================================================
-
-function popupRanking(
-
-  feature,
-
-  layer
-
-) {
-
-
-  const nome =
-
-    obterNome(feature);
-
-
-  const rank =
-
-    obterRanking(feature);
-
-
-  const area =
-
-    obterArea(feature);
-
-
-  let texto =
-
-    "<strong>" +
-
-    nome +
-
-    "</strong><br><br>";
-
-
-  if (
-
-    Number.isFinite(rank)
-
-  ) {
-
-    texto +=
-
-      "<strong>Ranking:</strong> " +
-
-      rank +
-
-      "º<br>";
-
-  }
-
-
-  if (
-
-    area !== null
-
-  ) {
-
-    texto +=
-
-      "<strong>Área queimada:</strong> " +
-
-      area.toLocaleString(
-
-        "pt-BR",
-
-        {
-
-          maximumFractionDigits: 2
-
-        }
-
-      ) +
-
-      " km²";
-
-  }
-
-
-  layer.bindPopup(
-
-    texto
-
-  );
-
-}
-
-
-// ============================================================
-// 14. GRUPOS DAS CAMADAS
+// 12. GRUPOS DAS CAMADAS
 // ============================================================
 
 const grupoEstados =
@@ -1233,7 +1141,7 @@ const grupoUC =
 
 
 // ============================================================
-// 15. DADOS
+// 13. DADOS
 // ============================================================
 
 let dadosEstados = null;
@@ -1246,12 +1154,14 @@ let dadosUC = null;
 
 
 // ============================================================
-// 16. CRIAR CAMADA
+// 14. CRIAR CAMADA GEOJSON
 // ============================================================
 
 function criarCamada(
 
-  data
+  data,
+
+  nomeCamada
 
 ) {
 
@@ -1263,10 +1173,101 @@ function criarCamada(
     {
 
       style:
+
         estiloPorRanking,
 
+
       onEachFeature:
-        popupRanking
+
+        function(
+
+          feature,
+
+          layer
+
+        ) {
+
+
+          // -----------------------------------------------
+          // CLICK NO POLÍGONO
+          // -----------------------------------------------
+
+          layer.on(
+
+            "click",
+
+            function() {
+
+
+              mostrarRelatorio(
+
+                feature,
+
+                nomeCamada
+
+              );
+
+
+              selecionarPoligonoNoRelatorio(
+
+                feature,
+
+                nomeCamada
+
+              );
+
+
+              // -------------------------------------------
+              // POPUP
+              // -------------------------------------------
+
+              const nome =
+
+                obterNome(feature);
+
+
+              const rank =
+
+                obterRanking(feature);
+
+
+              let texto =
+
+                "<strong>" +
+
+                nome +
+
+                "</strong><br><br>";
+
+
+              if (
+
+                Number.isFinite(rank)
+
+              ) {
+
+                texto +=
+
+                  "<strong>Ranking:</strong> " +
+
+                  rank +
+
+                  "º";
+
+              }
+
+
+              layer.bindPopup(
+
+                texto
+
+              );
+
+            }
+
+          );
+
+        }
 
     }
 
@@ -1276,7 +1277,7 @@ function criarCamada(
 
 
 // ============================================================
-// 17. ESTADOS
+// 15. ESTADOS
 // ============================================================
 
 carregarArquivos(
@@ -1297,7 +1298,13 @@ carregarArquivos(
 
   const camada =
 
-    criarCamada(data);
+    criarCamada(
+
+      data,
+
+      "Estados"
+
+    );
 
 
   grupoEstados.addLayer(
@@ -1317,7 +1324,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 18. BIOMAS
+// 16. BIOMAS
 // ============================================================
 
 carregarArquivos(
@@ -1338,7 +1345,13 @@ carregarArquivos(
 
   const camada =
 
-    criarCamada(data);
+    criarCamada(
+
+      data,
+
+      "Biomas"
+
+    );
 
 
   grupoBiomas.addLayer(
@@ -1358,7 +1371,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 19. TERRAS INDÍGENAS
+// 17. TERRAS INDÍGENAS
 // ============================================================
 
 carregarArquivos(
@@ -1379,7 +1392,13 @@ carregarArquivos(
 
   const camada =
 
-    criarCamada(data);
+    criarCamada(
+
+      data,
+
+      "Terras Indígenas"
+
+    );
 
 
   grupoTI.addLayer(
@@ -1399,7 +1418,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 20. UNIDADES DE CONSERVAÇÃO
+// 18. UNIDADES DE CONSERVAÇÃO
 // ============================================================
 
 carregarArquivos(
@@ -1420,7 +1439,13 @@ carregarArquivos(
 
   const camada =
 
-    criarCamada(data);
+    criarCamada(
+
+      data,
+
+      "Unidades de Conservação"
+
+    );
 
 
   grupoUC.addLayer(
@@ -1440,7 +1465,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 21. CONTROLE DE CAMADAS
+// 19. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas = {
@@ -1468,26 +1493,904 @@ const controleCamadas = {
 };
 
 
-const controle =
+L.control.layers(
 
-  L.control.layers(
+  null,
 
-    null,
+  controleCamadas,
 
-    controleCamadas,
+  {
 
-    {
+    collapsed:
+      false
 
-      collapsed:
-        false
+  }
 
-    }
-
-  ).addTo(mapa);
+).addTo(mapa);
 
 
 // ============================================================
-// 22. LEGENDA
+// 20. DADOS DA CAMADA
+// ============================================================
+
+function obterDadosDaCamada(
+
+  nomeCamada
+
+) {
+
+
+  if (
+
+    nomeCamada === "Estados"
+
+  ) {
+
+    return dadosEstados;
+
+  }
+
+
+  if (
+
+    nomeCamada === "Biomas"
+
+  ) {
+
+    return dadosBiomas;
+
+  }
+
+
+  if (
+
+    nomeCamada === "Terras Indígenas"
+
+  ) {
+
+    return dadosTI;
+
+  }
+
+
+  if (
+
+    nomeCamada === "Unidades de Conservação"
+
+  ) {
+
+    return dadosUC;
+
+  }
+
+
+  return null;
+
+}
+
+
+// ============================================================
+// 21. SELECIONAR CAMADA NO RELATÓRIO
+// ============================================================
+
+document
+
+  .getElementById(
+
+    "seletor-camada"
+
+  )
+
+  .addEventListener(
+
+    "change",
+
+    function() {
+
+
+      const nomeCamada =
+
+        this.value;
+
+
+      const seletorPoligono =
+
+        document.getElementById(
+
+          "seletor-poligono"
+
+        );
+
+
+      const campoPoligono =
+
+        document.getElementById(
+
+          "campo-poligono"
+
+        );
+
+
+      const painel =
+
+        document.getElementById(
+
+          "conteudo-relatorio"
+
+        );
+
+
+      // ------------------------------------------------------
+      // NENHUMA CAMADA
+      // ------------------------------------------------------
+
+      if (
+
+        !nomeCamada
+
+      ) {
+
+
+        campoPoligono.style.display =
+
+          "none";
+
+
+        painel.innerHTML = `
+
+          <div class="mensagem-relatorio">
+
+            Selecione uma camada para começar.
+
+          </div>
+
+        `;
+
+
+        return;
+
+      }
+
+
+      const dados =
+
+        obterDadosDaCamada(
+
+          nomeCamada
+
+        );
+
+
+      // ------------------------------------------------------
+      // DADOS AINDA NÃO CARREGADOS
+      // ------------------------------------------------------
+
+      if (!dados) {
+
+
+        campoPoligono.style.display =
+
+          "none";
+
+
+        painel.innerHTML = `
+
+          <div class="mensagem-relatorio">
+
+            Os dados de
+
+            <strong>${nomeCamada}</strong>
+
+            ainda estão sendo carregados.
+
+            Aguarde alguns segundos.
+
+          </div>
+
+        `;
+
+
+        return;
+
+      }
+
+
+      // ------------------------------------------------------
+      // LIMPAR SELETOR
+      // ------------------------------------------------------
+
+      seletorPoligono.innerHTML = `
+
+        <option value="">
+
+          Selecione um polígono...
+
+        </option>
+
+      `;
+
+
+      // ------------------------------------------------------
+      // CRIAR LISTA
+      // ------------------------------------------------------
+
+      dados.features.forEach(
+
+        function(
+
+          feature,
+
+          indice
+
+        ) {
+
+
+          const option =
+
+            document.createElement(
+
+              "option"
+
+            );
+
+
+          option.value =
+
+            indice;
+
+
+          const nome =
+
+            obterNome(feature);
+
+
+          const rank =
+
+            obterRanking(feature);
+
+
+          if (
+
+            Number.isFinite(rank)
+
+          ) {
+
+
+            option.textContent =
+
+              nome +
+
+              " — Ranking " +
+
+              rank +
+
+              "º";
+
+
+          } else {
+
+
+            option.textContent =
+
+              nome;
+
+          }
+
+
+          seletorPoligono.appendChild(
+
+            option
+
+          );
+
+        }
+
+      );
+
+
+      campoPoligono.style.display =
+
+        "block";
+
+
+      painel.innerHTML = `
+
+        <div class="mensagem-relatorio">
+
+          Agora selecione o polígono que deseja
+
+          consultar.
+
+        </div>
+
+      `;
+
+    }
+
+  );
+
+
+// ============================================================
+// 22. SELECIONAR POLÍGONO
+// ============================================================
+
+document
+
+  .getElementById(
+
+    "seletor-poligono"
+
+  )
+
+  .addEventListener(
+
+    "change",
+
+    function() {
+
+
+      const nomeCamada =
+
+        document
+
+          .getElementById(
+
+            "seletor-camada"
+
+          )
+
+          .value;
+
+
+      const indice =
+
+        Number(
+
+          this.value
+
+        );
+
+
+      if (
+
+        !nomeCamada ||
+
+        !Number.isInteger(indice)
+
+      ) {
+
+        return;
+
+      }
+
+
+      const dados =
+
+        obterDadosDaCamada(
+
+          nomeCamada
+
+        );
+
+
+      if (
+
+        !dados ||
+
+        !dados.features[indice]
+
+      ) {
+
+        return;
+
+      }
+
+
+      const feature =
+
+        dados.features[indice];
+
+
+      mostrarRelatorio(
+
+        feature,
+
+        nomeCamada
+
+      );
+
+    }
+
+  );
+
+
+// ============================================================
+// 23. MOSTRAR RELATÓRIO
+// ============================================================
+
+function mostrarRelatorio(
+
+  feature,
+
+  nomeCamada
+
+) {
+
+
+  const painel =
+
+    document.getElementById(
+
+      "conteudo-relatorio"
+
+    );
+
+
+  const propriedades =
+
+    feature.properties || {};
+
+
+  const nome =
+
+    obterNome(feature);
+
+
+  const rank =
+
+    obterRanking(feature);
+
+
+  // ----------------------------------------------------------
+  // CABEÇALHO
+  // ----------------------------------------------------------
+
+  let html = `
+
+    <div class="cabecalho-poligono">
+
+      <h4>
+
+        ${nome}
+
+      </h4>
+
+      <span>
+
+        Camada: ${nomeCamada}
+
+      </span>
+
+    </div>
+
+  `;
+
+
+  // ----------------------------------------------------------
+  // TABELA
+  // ----------------------------------------------------------
+
+  const campos =
+
+    Object.keys(
+
+      propriedades
+
+    );
+
+
+  if (
+
+    campos.length === 0
+
+  ) {
+
+
+    html += `
+
+      <div class="mensagem-relatorio">
+
+        Este polígono não possui atributos
+
+        disponíveis.
+
+      </div>
+
+    `;
+
+
+    painel.innerHTML =
+
+      html;
+
+
+    return;
+
+  }
+
+
+  html += `
+
+    <table class="tabela-atributos">
+
+      <thead>
+
+        <tr>
+
+          <th>
+
+            Campo
+
+          </th>
+
+          <th>
+
+            Informação
+
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+  `;
+
+
+  campos.forEach(
+
+    function(campo) {
+
+
+      let valor =
+
+        propriedades[campo];
+
+
+      // ------------------------------------------------------
+      // VALOR NULO
+      // ------------------------------------------------------
+
+      if (
+
+        valor === null ||
+
+        valor === undefined ||
+
+        valor === ""
+
+      ) {
+
+        valor =
+
+          "Não informado";
+
+      }
+
+
+      // ------------------------------------------------------
+      // OBJETOS / ARRAYS
+      // ------------------------------------------------------
+
+      else if (
+
+        typeof valor ===
+
+        "object"
+
+      ) {
+
+        valor =
+
+          JSON.stringify(
+
+            valor
+
+          );
+
+      }
+
+
+      // ------------------------------------------------------
+      // RANKING
+      // ------------------------------------------------------
+
+      if (
+
+        campo ===
+
+        "Rank_Category"
+
+        ||
+
+        campo ===
+
+        "Burned Area Rank"
+
+      ) {
+
+
+        if (
+
+          Number.isFinite(
+
+            Number(valor)
+
+          )
+
+        ) {
+
+
+          valor = `
+
+            <span class="ranking-destaque">
+
+              ${valor}º
+
+            </span>
+
+          `;
+
+        }
+
+      }
+
+
+      html += `
+
+        <tr>
+
+          <th>
+
+            ${campo}
+
+          </th>
+
+          <td>
+
+            ${valor}
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }
+
+  );
+
+
+  html += `
+
+      </tbody>
+
+    </table>
+
+  `;
+
+
+  painel.innerHTML =
+
+    html;
+
+}
+
+
+// ============================================================
+// 24. SELECIONAR POLÍGONO NO RELATÓRIO
+// ============================================================
+
+function selecionarPoligonoNoRelatorio(
+
+  feature,
+
+  nomeCamada
+
+) {
+
+
+  const seletorCamada =
+
+    document.getElementById(
+
+      "seletor-camada"
+
+    );
+
+
+  const seletorPoligono =
+
+    document.getElementById(
+
+      "seletor-poligono"
+
+    );
+
+
+  const campoPoligono =
+
+    document.getElementById(
+
+      "campo-poligono"
+
+    );
+
+
+  // ----------------------------------------------------------
+  // SELECIONAR CAMADA
+  // ----------------------------------------------------------
+
+  seletorCamada.value =
+
+    nomeCamada;
+
+
+  // ----------------------------------------------------------
+  // OBTER DADOS
+  // ----------------------------------------------------------
+
+  const dados =
+
+    obterDadosDaCamada(
+
+      nomeCamada
+
+    );
+
+
+  if (!dados) {
+
+    return;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // MOSTRAR CAMPO
+  // ----------------------------------------------------------
+
+  campoPoligono.style.display =
+
+    "block";
+
+
+  // ----------------------------------------------------------
+  // PROCURAR FEATURE
+  // ----------------------------------------------------------
+
+  let indiceEncontrado =
+
+    -1;
+
+
+  dados.features.forEach(
+
+    function(
+
+      f,
+
+      indice
+
+    ) {
+
+
+      if (
+
+        f === feature
+
+      ) {
+
+        indiceEncontrado =
+
+          indice;
+
+      }
+
+    }
+
+  );
+
+
+  // ----------------------------------------------------------
+  // RECRIAR LISTA
+  // ----------------------------------------------------------
+
+  seletorPoligono.innerHTML = `
+
+    <option value="">
+
+      Selecione um polígono...
+
+    </option>
+
+  `;
+
+
+  dados.features.forEach(
+
+    function(
+
+      f,
+
+      indice
+
+    ) {
+
+
+      const option =
+
+        document.createElement(
+
+          "option"
+
+        );
+
+
+      option.value =
+
+        indice;
+
+
+      const nome =
+
+        obterNome(f);
+
+
+      const rank =
+
+        obterRanking(f);
+
+
+      option.textContent =
+
+        Number.isFinite(rank)
+
+          ?
+
+          nome +
+
+          " — Ranking " +
+
+          rank +
+
+          "º"
+
+          :
+
+          nome;
+
+
+      seletorPoligono.appendChild(
+
+        option
+
+      );
+
+    }
+
+  );
+
+
+  if (
+
+    indiceEncontrado >= 0
+
+  ) {
+
+
+    seletorPoligono.value =
+
+      indiceEncontrado;
+
+  }
+
+}
+
+
+// ============================================================
+// 25. LEGENDA
 // ============================================================
 
 const legenda =
@@ -1662,7 +2565,7 @@ legenda.addTo(mapa);
 
 
 // ============================================================
-// 23. ITEM DA LEGENDA
+// 26. ITEM DA LEGENDA
 // ============================================================
 
 function itemLegenda(
@@ -1700,1002 +2603,7 @@ function itemLegenda(
 
 
 // ============================================================
-// 24. OBTER DADOS DA CAMADA
-// ============================================================
-
-function obterDadosDaCamada(
-
-  nome
-
-) {
-
-
-  if (
-
-    nome === "Estados"
-
-  ) {
-
-    return dadosEstados;
-
-  }
-
-
-  if (
-
-    nome === "Biomas"
-
-  ) {
-
-    return dadosBiomas;
-
-  }
-
-
-  if (
-
-    nome === "Terras Indígenas"
-
-  ) {
-
-    return dadosTI;
-
-  }
-
-
-  if (
-
-    nome === "Unidades de Conservação"
-
-  ) {
-
-    return dadosUC;
-
-  }
-
-
-  return null;
-
-}
-
-
-// ============================================================
-// 25. FILTRAR RANKING 1 A 5
-// ============================================================
-
-function obterTop5(
-
-  dados
-
-) {
-
-
-  if (
-
-    !dados ||
-
-    !Array.isArray(
-
-      dados.features
-
-    )
-
-  ) {
-
-    return [];
-
-  }
-
-
-  return dados.features.filter(
-
-    feature => {
-
-
-      const rank =
-
-        obterRanking(feature);
-
-
-      return (
-
-        Number.isFinite(rank) &&
-
-        rank >= 1 &&
-
-        rank <= 5
-
-      );
-
-    }
-
-  ).sort(
-
-    (a, b) =>
-
-      obterRanking(a) -
-
-      obterRanking(b)
-
-  );
-
-}
-
-
-// ============================================================
-// 26. CRIAR GRÁFICO
-// ============================================================
-
-function criarGraficoArea(
-
-  features
-
-) {
-
-
-  const dados =
-
-    features.map(
-
-      feature => ({
-
-        nome:
-          obterNome(feature),
-
-        rank:
-          obterRanking(feature),
-
-        area:
-          obterArea(feature)
-
-      })
-
-    );
-
-
-  const areasValidas =
-
-    dados.filter(
-
-      d =>
-
-        d.area !== null
-
-    );
-
-
-  if (
-
-    areasValidas.length === 0
-
-  ) {
-
-    return;
-
-  }
-
-
-  const canvas =
-
-    document.createElement(
-
-      "canvas"
-
-    );
-
-
-  canvas.id =
-
-    "grafico-area";
-
-
-  const painel =
-
-    document.getElementById(
-
-      "conteudo-relatorio"
-
-    );
-
-
-  painel.appendChild(
-
-    canvas
-
-  );
-
-
-  const ctx =
-
-    canvas.getContext(
-
-      "2d"
-
-    );
-
-
-  const largura =
-
-    canvas.width =
-
-      canvas.clientWidth *
-
-      window.devicePixelRatio;
-
-
-  const altura =
-
-    canvas.height =
-
-      canvas.clientHeight *
-
-      window.devicePixelRatio;
-
-
-  ctx.scale(
-
-    window.devicePixelRatio,
-
-    window.devicePixelRatio
-
-  );
-
-
-  const w =
-
-    canvas.clientWidth;
-
-
-  const h =
-
-    canvas.clientHeight;
-
-
-  const margemEsquerda =
-
-    180;
-
-
-  const margemDireita =
-
-    30;
-
-
-  const margemSuperior =
-
-    35;
-
-
-  const margemInferior =
-
-    40;
-
-
-  const areaGrafico =
-
-    w -
-
-    margemEsquerda -
-
-    margemDireita;
-
-
-  const alturaGrafico =
-
-    h -
-
-    margemSuperior -
-
-    margemInferior;
-
-
-  const maiorValor =
-
-    Math.max(
-
-      ...areasValidas.map(
-
-        d => d.area
-
-      )
-
-    );
-
-
-  const alturaBarra =
-
-    alturaGrafico /
-
-    areasValidas.length *
-
-    0.55;
-
-
-  // ----------------------------------------------------------
-  // TÍTULO
-  // ----------------------------------------------------------
-
-  ctx.font =
-
-    "bold 15px Arial";
-
-
-  ctx.fillText(
-
-    "Área queimada dos polígonos 1º–5º",
-
-    margemEsquerda,
-
-    20
-
-  );
-
-
-  // ----------------------------------------------------------
-  // BARRAS
-  // ----------------------------------------------------------
-
-  areasValidas.forEach(
-
-    (d, i) => {
-
-
-      const y =
-
-        margemSuperior +
-
-        i *
-
-        (
-
-          alturaGrafico /
-
-          areasValidas.length
-
-        );
-
-
-      const larguraBarra =
-
-        (
-
-          d.area /
-
-          maiorValor
-
-        ) *
-
-        areaGrafico;
-
-
-      ctx.fillStyle =
-
-        corRanking(
-
-          d.rank
-
-        );
-
-
-      ctx.fillRect(
-
-        margemEsquerda,
-
-        y,
-
-        larguraBarra,
-
-        alturaBarra
-
-      );
-
-
-      // ------------------------------------------------------
-      // NOME
-      // ------------------------------------------------------
-
-      ctx.fillStyle =
-
-        "#333";
-
-
-      ctx.font =
-
-        "12px Arial";
-
-
-      let nome =
-
-        String(d.nome);
-
-
-      if (
-
-        nome.length > 25
-
-      ) {
-
-        nome =
-
-          nome.substring(
-
-            0,
-
-            25
-
-          ) +
-
-          "...";
-
-      }
-
-
-      ctx.fillText(
-
-        nome,
-
-        10,
-
-        y +
-
-        alturaBarra -
-
-        3
-
-      );
-
-
-      // ------------------------------------------------------
-      // VALOR
-      // ------------------------------------------------------
-
-      ctx.fillText(
-
-        d.area.toLocaleString(
-
-          "pt-BR",
-
-          {
-
-            maximumFractionDigits: 2
-
-          }
-
-        ) +
-
-        " km²",
-
-        margemEsquerda +
-
-        larguraBarra +
-
-        5,
-
-        y +
-
-        alturaBarra -
-
-        3
-
-      );
-
-    }
-
-  );
-
-}
-
-
-// ============================================================
-// 27. GERAR RELATÓRIO
-// ============================================================
-
-function gerarRelatorio(
-
-  nomeCamada
-
-) {
-
-
-  const painel =
-
-    document.getElementById(
-
-      "conteudo-relatorio"
-
-    );
-
-
-  const dados =
-
-    obterDadosDaCamada(
-
-      nomeCamada
-
-    );
-
-
-  // ----------------------------------------------------------
-  // VERIFICAR DADOS
-  // ----------------------------------------------------------
-
-  if (
-
-    !dados
-
-  ) {
-
-
-    painel.innerHTML = `
-
-      <div class="mensagem-relatorio">
-
-        Os dados da camada
-
-        <strong>${nomeCamada}</strong>
-
-        ainda estão sendo carregados.
-
-      </div>
-
-    `;
-
-
-    return;
-
-  }
-
-
-  // ----------------------------------------------------------
-  // TOP 5
-  // ----------------------------------------------------------
-
-  const top5 =
-
-    obterTop5(dados);
-
-
-  // ----------------------------------------------------------
-  // NENHUM DADO
-  // ----------------------------------------------------------
-
-  if (
-
-    top5.length === 0
-
-  ) {
-
-
-    painel.innerHTML = `
-
-      <div class="mensagem-relatorio">
-
-        Não foram encontrados polígonos classificados
-
-        entre 1º e 5º nesta camada.
-
-      </div>
-
-    `;
-
-
-    return;
-
-  }
-
-
-  // ----------------------------------------------------------
-  // VERIFICAR SE EXISTE ÁREA
-  // ----------------------------------------------------------
-
-  const possuiArea =
-
-    top5.some(
-
-      feature =>
-
-        obterArea(feature) !== null
-
-    );
-
-
-  // ----------------------------------------------------------
-  // TÍTULO
-  // ----------------------------------------------------------
-
-  let html = `
-
-    <h3>
-
-      ${nomeCamada}
-
-    </h3>
-
-    <div class="subtitulo">
-
-      Polígonos classificados entre
-
-      <strong>1º e 5º</strong>
-
-      no ranking de área queimada.
-
-    </div>
-
-  `;
-
-
-  // ----------------------------------------------------------
-  // RESUMO
-  // ----------------------------------------------------------
-
-  html += `
-
-    <div class="resumo-relatorio">
-
-      <div class="cartao-resumo">
-
-        <div class="numero">
-
-          ${top5.length}
-
-        </div>
-
-        <div class="descricao">
-
-          Polígonos entre 1º e 5º
-
-        </div>
-
-      </div>
-
-  `;
-
-
-  if (
-
-    possuiArea
-
-  ) {
-
-
-    const areas =
-
-      top5
-
-        .map(
-
-          feature =>
-
-            obterArea(feature)
-
-        )
-
-        .filter(
-
-          area =>
-
-            area !== null
-
-        );
-
-
-    const somaArea =
-
-      areas.reduce(
-
-        (a, b) =>
-
-          a + b,
-
-        0
-
-      );
-
-
-    html += `
-
-      <div class="cartao-resumo">
-
-        <div class="numero">
-
-          ${somaArea.toLocaleString(
-
-            "pt-BR",
-
-            {
-
-              maximumFractionDigits: 2
-
-            }
-
-          )}
-
-        </div>
-
-        <div class="descricao">
-
-          km² de área queimada
-
-          nos cinco primeiros
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  html += `
-
-    </div>
-
-  `;
-
-
-  // ----------------------------------------------------------
-  // TABELA
-  // ----------------------------------------------------------
-
-  html += `
-
-    <table class="tabela-relatorio">
-
-      <thead>
-
-        <tr>
-
-          <th>
-
-            Ranking
-
-          </th>
-
-          <th>
-
-            Região / Unidade
-
-          </th>
-
-  `;
-
-
-  if (
-
-    possuiArea
-
-  ) {
-
-    html += `
-
-          <th>
-
-            Área queimada
-
-          </th>
-
-    `;
-
-  }
-
-
-  html += `
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-  `;
-
-
-  top5.forEach(
-
-    feature => {
-
-
-      const rank =
-
-        obterRanking(feature);
-
-
-      const nome =
-
-        obterNome(feature);
-
-
-      const area =
-
-        obterArea(feature);
-
-
-      html += `
-
-        <tr>
-
-          <td>
-
-            <span class="ranking-${rank}">
-
-              ${rank}º
-
-            </span>
-
-          </td>
-
-          <td>
-
-            ${nome}
-
-          </td>
-
-      `;
-
-
-      if (
-
-        possuiArea
-
-      ) {
-
-
-        html += `
-
-          <td>
-
-            ${
-
-              area !== null
-
-                ?
-
-                area.toLocaleString(
-
-                  "pt-BR",
-
-                  {
-
-                    maximumFractionDigits: 2
-
-                  }
-
-                ) +
-
-                " km²"
-
-                :
-
-                "Não disponível"
-
-            }
-
-          </td>
-
-        `;
-
-      }
-
-
-      html += `
-
-        </tr>
-
-      `;
-
-    }
-
-  );
-
-
-  html += `
-
-      </tbody>
-
-    </table>
-
-  `;
-
-
-  painel.innerHTML =
-
-    html;
-
-
-  // ----------------------------------------------------------
-  // GRÁFICO
-  // ----------------------------------------------------------
-
-  if (
-
-    possuiArea
-
-  ) {
-
-    criarGraficoArea(
-
-      top5
-
-    );
-
-  }
-
-}
-
-
-// ============================================================
-// 28. DETECTAR SELEÇÃO DA CAMADA
-// ============================================================
-
-mapa.on(
-
-  "overlayadd",
-
-  function(e) {
-
-
-    console.log(
-
-      "Camada selecionada:",
-
-      e.name
-
-    );
-
-
-    gerarRelatorio(
-
-      e.name
-
-    );
-
-  }
-
-);
-
-
-// ============================================================
-// 29. DETECTAR REMOÇÃO DA CAMADA
-// ============================================================
-
-mapa.on(
-
-  "overlayremove",
-
-  function(e) {
-
-
-    const painel =
-
-      document.getElementById(
-
-        "conteudo-relatorio"
-
-      );
-
-
-    painel.innerHTML = `
-
-      <div class="mensagem-relatorio">
-
-        Selecione uma camada no controle do mapa para
-
-        visualizar os polígonos classificados entre
-
-        <strong>1º e 5º</strong>.
-
-      </div>
-
-    `;
-
-  }
-
-);
-
-
-// ============================================================
-// 30. INÍCIO
+// 27. INÍCIO
 // ============================================================
 
 console.log("");
@@ -2714,7 +2622,7 @@ console.log(
 
 console.log(
 
-  "Carregando Regional Layers..."
+  "Relatório interativo"
 
 );
 
