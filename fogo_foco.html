@@ -13,6 +13,7 @@
 
     <title>Dashboard de Área Queimada</title>
 
+
     <!-- ==========================================================
          LEAFLET
     =========================================================== -->
@@ -59,8 +60,11 @@
             --controle-bg: #ffffff;
             --controle-texto: #1f2933;
 
-            --legenda-bg: rgba(255,255,255,0.95);
-            --legenda-texto: #1f2933;
+            --legenda-bg:
+                rgba(255,255,255,0.95);
+
+            --legenda-texto:
+                #1f2933;
 
             --painel-info-bg:
                 rgba(255,255,255,0.94);
@@ -74,13 +78,20 @@
         body.tema-escuro {
 
             --bg-principal: #101418;
+
             --bg-painel: #1b2228;
-            --bg-painel-secundario: #232b32;
 
-            --texto-principal: #f1f5f9;
-            --texto-secundario: #b7c0c8;
+            --bg-painel-secundario:
+                #232b32;
 
-            --borda: #39434c;
+            --texto-principal:
+                #f1f5f9;
+
+            --texto-secundario:
+                #b7c0c8;
+
+            --borda:
+                #39434c;
 
             --sombra:
                 0 8px 25px rgba(0,0,0,0.45);
@@ -88,19 +99,29 @@
             --sombra-leve:
                 0 3px 10px rgba(0,0,0,0.35);
 
-            --primaria: #42a5f5;
-            --primaria-hover: #64b5f6;
+            --primaria:
+                #42a5f5;
 
-            --popup-bg: #1b2228;
-            --popup-texto: #f1f5f9;
+            --primaria-hover:
+                #64b5f6;
 
-            --controle-bg: #1b2228;
-            --controle-texto: #f1f5f9;
+            --popup-bg:
+                #1b2228;
+
+            --popup-texto:
+                #f1f5f9;
+
+            --controle-bg:
+                #1b2228;
+
+            --controle-texto:
+                #f1f5f9;
 
             --legenda-bg:
                 rgba(27,34,40,0.96);
 
-            --legenda-texto: #f1f5f9;
+            --legenda-texto:
+                #f1f5f9;
 
             --painel-info-bg:
                 rgba(27,34,40,0.95);
@@ -184,7 +205,8 @@
 
         #titulo-dashboard {
 
-            margin: 0 0 5px 0;
+            margin:
+                0 0 5px 0;
 
             font-size: 20px;
 
@@ -220,7 +242,8 @@
 
         .botao-cabecalho {
 
-            border: 1px solid var(--borda);
+            border:
+                1px solid var(--borda);
 
             background:
                 var(--bg-painel-secundario);
@@ -230,13 +253,15 @@
 
             border-radius: 7px;
 
-            padding: 7px 10px;
+            padding:
+                7px 10px;
 
             cursor: pointer;
 
             font-size: 13px;
 
-            transition: 0.2s;
+            transition:
+                0.2s;
         }
 
 
@@ -267,23 +292,56 @@
             border:
                 1px solid var(--borda) !important;
 
-            border-radius: 9px !important;
+            border-radius:
+                9px !important;
 
             box-shadow:
                 var(--sombra-leve) !important;
 
-            padding: 7px !important;
+            padding:
+                7px !important;
+
+            z-index: 2000 !important;
+        }
+
+
+        .leaflet-control-layers-list {
+
+            margin: 0;
         }
 
 
         .leaflet-control-layers label {
+
+            display: block;
 
             color:
                 var(--controle-texto) !important;
 
             font-size: 13px;
 
-            padding: 3px;
+            padding: 5px 4px;
+
+            cursor: pointer;
+
+            user-select: none;
+        }
+
+
+        .leaflet-control-layers label:hover {
+
+            background:
+                var(--bg-painel-secundario);
+
+            border-radius: 5px;
+        }
+
+
+        .leaflet-control-layers input {
+
+            cursor: pointer;
+
+            margin-right: 6px;
         }
 
 
@@ -499,7 +557,7 @@
 
 
         /* ======================================================
-           CARDS DE RANKING
+           CARDS
         ====================================================== */
 
         .exemplos-ranking {
@@ -575,7 +633,7 @@
 
 
         /* ======================================================
-           GRADIENTE DA LEGENDA
+           GRADIENTE
         ====================================================== */
 
         .gradiente-ranking {
@@ -612,7 +670,8 @@
 
             display: flex;
 
-            justify-content: space-between;
+            justify-content:
+                space-between;
 
             font-size: 10px;
 
@@ -634,7 +693,8 @@
 
             z-index: 1000;
 
-            padding: 8px 11px;
+            padding:
+                8px 11px;
 
             background:
                 var(--painel-info-bg);
@@ -678,7 +738,8 @@
 
         .modal-conteudo {
 
-            width: min(650px, calc(100% - 30px));
+            width:
+                min(650px, calc(100% - 30px));
 
             max-height:
                 calc(100vh - 50px);
@@ -709,9 +770,11 @@
 
             display: flex;
 
-            justify-content: space-between;
+            justify-content:
+                space-between;
 
-            align-items: center;
+            align-items:
+                center;
 
             gap: 15px;
         }
@@ -775,7 +838,8 @@
 
             border-radius: 7px;
 
-            padding: 8px 12px;
+            padding:
+                8px 12px;
 
             cursor: pointer;
         }
@@ -798,6 +862,7 @@
 
                 width: 320px;
             }
+
 
             #painel-dados {
 
@@ -834,9 +899,13 @@
 
             .leaflet-top.leaflet-right {
 
-                margin-top: 70px !important;
+                margin-top:
+                    70px !important;
 
-                margin-right: 10px !important;
+                margin-right:
+                    10px !important;
+
+                z-index: 2000 !important;
             }
 
 
@@ -849,7 +918,8 @@
                 width:
                     min(330px, calc(100% - 20px));
 
-                max-height: 42vh;
+                max-height:
+                    42vh;
             }
 
 
@@ -917,6 +987,7 @@
                 🌙
             </button>
 
+
             <button
                 class="botao-cabecalho"
                 onclick="mudarIdioma()"
@@ -925,6 +996,7 @@
             >
                 EN
             </button>
+
 
             <button
                 class="botao-cabecalho"
@@ -967,6 +1039,7 @@
             Fonte dos dados
         </h3>
 
+
         <p
             class="painel-texto"
             id="dados-fonte"
@@ -982,6 +1055,7 @@
         >
             O que significa o ranking?
         </h3>
+
 
         <p
             class="painel-texto"
@@ -1057,6 +1131,7 @@
             Como interpretar
         </h3>
 
+
         <p
             class="painel-texto"
             id="dados-interpretar"
@@ -1076,6 +1151,7 @@
             Escala de cores
         </h3>
 
+
         <p
             class="painel-texto"
             id="dados-cores"
@@ -1088,6 +1164,7 @@
 
 
         <div class="gradiente-ranking"></div>
+
 
         <div class="gradiente-labels">
 
@@ -1106,6 +1183,7 @@
         >
             Período analisado
         </h3>
+
 
         <p
             class="painel-texto"
@@ -1137,7 +1215,7 @@
 
 
     <!-- ==========================================================
-         MODAL DE CITAÇÃO
+         MODAL
     =========================================================== -->
 
     <div
@@ -1160,6 +1238,7 @@
 
                 </div>
 
+
                 <button
                     class="botao-fechar"
                     onclick="fecharCitacao()"
@@ -1174,6 +1253,7 @@
                 Autoria
             </h3>
 
+
             <p
                 class="painel-texto"
                 id="texto-autoria"
@@ -1186,6 +1266,7 @@
             <h3 id="projeto">
                 Projeto associado
             </h3>
+
 
             <p
                 class="painel-texto"
@@ -1234,6 +1315,7 @@
                 Créditos
             </h3>
 
+
             <p
                 class="painel-texto"
                 id="texto-creditos"
@@ -1261,13 +1343,17 @@
 
     <script>
 
+
         /* ======================================================
+           VARIÁVEIS GLOBAIS
+           
            IMPORTANTE:
-           idiomaAtual precisa existir ANTES de qualquer função
-           que utilize essa variável.
+           Cada variável é declarada somente UMA vez.
         ====================================================== */
 
         let idiomaAtual = "pt";
+
+        let controleCamadas = null;
 
 
         /* ======================================================
@@ -1289,12 +1375,14 @@
             L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
+
                     attribution:
                         "&copy; OpenStreetMap contributors",
 
                     maxZoom: 18
                 }
             );
+
 
         camadaBase.addTo(mapa);
 
@@ -1337,10 +1425,15 @@
                 return "";
             }
 
+
             return String(valor)
+
                 .trim()
+
                 .toLowerCase()
+
                 .normalize("NFD")
+
                 .replace(
                     /[\u0300-\u036f]/g,
                     ""
@@ -1380,9 +1473,15 @@
             ) {
 
                 if (
+
                     props[campo] !== undefined &&
+
                     props[campo] !== null &&
-                    String(props[campo]).trim() !== ""
+
+                    String(
+                        props[campo]
+                    ).trim() !== ""
+
                 ) {
 
                     return String(
@@ -1433,8 +1532,11 @@
 
 
                     if (
+
                         valor === "brazil" ||
+
                         valor === "brasil"
+
                     ) {
 
                         return true;
@@ -1472,6 +1574,7 @@
                 "sao paulo",
                 "sergipe",
                 "tocantins"
+
             ];
 
 
@@ -1515,8 +1618,11 @@
             ) {
 
                 if (
+
                     props[campo] !== undefined &&
+
                     props[campo] !== null
+
                 ) {
 
                     const numero =
@@ -1566,15 +1672,25 @@
             ) {
 
                 if (
+
                     props[campo] !== undefined &&
+
                     props[campo] !== null
+
                 ) {
 
                     const numero =
                         Number(
+
                             String(
                                 props[campo]
-                            ).replace(",", ".")
+                            )
+
+                            .replace(
+                                ",",
+                                "."
+                            )
+
                         );
 
 
@@ -1617,8 +1733,11 @@
 
 
             if (
+
                 ranking >= 6 &&
+
                 ranking <= 18
+
             ) {
 
                 return "#bdbdbd";
@@ -1626,8 +1745,11 @@
 
 
             return (
+
                 cores[ranking] ||
+
                 "#bdbdbd"
+
             );
         }
 
@@ -1645,10 +1767,13 @@
             return {
 
                 color:
+
                     document.body.classList.contains(
                         "tema-escuro"
                     )
+
                         ? "#b8c0c8"
+
                         : "#555",
 
                 weight: 1,
@@ -1658,7 +1783,8 @@
                 fillColor:
                     corRanking(ranking),
 
-                fillOpacity: 0.78
+                fillOpacity:
+                    0.78
             };
         }
 
@@ -1670,22 +1796,27 @@
         function escaparHTML(valor) {
 
             return String(valor)
+
                 .replace(
                     /&/g,
                     "&amp;"
                 )
+
                 .replace(
                     /</g,
                     "&lt;"
                 )
+
                 .replace(
                     />/g,
                     "&gt;"
                 )
+
                 .replace(
                     /"/g,
                     "&quot;"
                 )
+
                 .replace(
                     /'/g,
                     "&#039;"
@@ -1700,24 +1831,37 @@
         function formatarArea(area) {
 
             if (
+
                 area === null ||
+
                 area === undefined ||
+
                 !Number.isFinite(area)
+
             ) {
 
                 return idiomaAtual === "pt"
+
                     ? "Não informado"
+
                     : "Not available";
             }
 
 
             return area.toLocaleString(
+
                 idiomaAtual === "pt"
+
                     ? "pt-BR"
+
                     : "en-US",
+
                 {
+
                     maximumFractionDigits: 2
+
                 }
+
             ) + " km²";
         }
 
@@ -1742,61 +1886,106 @@
                 obterArea(feature);
 
 
-            if (idiomaAtual === "pt") {
+            if (
+                idiomaAtual === "pt"
+            ) {
 
                 return `
+
                     <div class="popup-ranking">
 
-                        <h3>${nome}</h3>
+                        <h3>
+                            ${nome}
+                        </h3>
 
                         <div class="linha">
+
                             Ranking:
+
                             <span class="valor">
-                                ${ranking ?? "Não informado"}
+                                ${
+                                    ranking ??
+                                    "Não informado"
+                                }
                             </span>
+
                         </div>
 
                         <div class="linha">
+
                             Área queimada:
+
                             <span class="valor">
-                                ${formatarArea(area)}
+                                ${
+                                    formatarArea(
+                                        area
+                                    )
+                                }
                             </span>
+
                         </div>
 
                     </div>
+
                 `;
 
             }
 
 
             return `
+
                 <div class="popup-ranking">
 
-                    <h3>${nome}</h3>
+                    <h3>
+                        ${nome}
+                    </h3>
 
                     <div class="linha">
+
                         Ranking:
+
                         <span class="valor">
-                            ${ranking ?? "Not available"}
+                            ${
+                                ranking ??
+                                "Not available"
+                            }
                         </span>
+
                     </div>
 
                     <div class="linha">
+
                         Burned area:
+
                         <span class="valor">
-                            ${formatarArea(area)}
+                            ${
+                                formatarArea(
+                                    area
+                                )
+                            }
                         </span>
+
                     </div>
 
                 </div>
+
             `;
         }
 
 
-        function configurarPopup(layer, feature) {
+        function configurarPopup(
+            layer,
+            feature
+        ) {
 
             layer.bindPopup(
-                popupRanking(feature)
+                function() {
+
+                    return popupRanking(
+                        feature
+                    );
+
+                }
             );
         }
 
@@ -1814,12 +2003,15 @@
 
 
         /* ======================================================
-           CARREGAMENTO DOS GEOJSON
+           CARREGAMENTO
         ====================================================== */
 
         async function carregarArquivos(
+
             listaArquivos,
+
             somenteBrasil = false
+
         ) {
 
             const features = [];
@@ -1842,7 +2034,9 @@
                     ) {
 
                         throw new Error(
+
                             `Erro HTTP ${resposta.status}`
+
                         );
                     }
 
@@ -1852,8 +2046,10 @@
 
 
                     if (
+
                         dados.type ===
                         "FeatureCollection"
+
                     ) {
 
                         let novasFeatures =
@@ -1880,9 +2076,11 @@
                 } catch (erro) {
 
                     console.error(
+
                         "Erro ao carregar:",
                         arquivo,
                         erro
+
                     );
                 }
             }
@@ -1895,6 +2093,7 @@
 
                 features:
                     features
+
             };
         }
 
@@ -1904,13 +2103,18 @@
         ====================================================== */
 
         function criarCamadaGeoJSON(
+
             dados,
+
             grupo
+
         ) {
 
             const camada =
                 L.geoJSON(
+
                     dados,
+
                     {
 
                         style:
@@ -1920,10 +2124,13 @@
                             configurarPopup
 
                     }
+
                 );
 
 
-            camada.addTo(grupo);
+            camada.addTo(
+                grupo
+            );
 
 
             return camada;
@@ -1933,45 +2140,49 @@
         /* ======================================================
            CONTROLE DE CAMADAS
            
-           IMPORTANTE:
-           idiomaAtual já foi declarado no início.
+           ESTE É O ÚNICO LUGAR ONDE O CONTROLE É CRIADO.
         ====================================================== */
-
-        let controleCamadas = null;
-
 
         function criarControleCamadas() {
 
             if (
-                controleCamadas
+                controleCamadas !== null
             ) {
 
-                mapa.removeControl(
-                    controleCamadas
-                );
+                return;
             }
 
 
+            const nomeEstados =
+
+                idiomaAtual === "pt"
+
+                    ? "Estados"
+
+                    : "States";
+
+
+            const nomeBiomas =
+
+                idiomaAtual === "pt"
+
+                    ? "Biomas"
+
+                    : "Biomes";
+
+
             controleCamadas =
+
                 L.control.layers(
 
                     null,
 
                     {
 
-                        [
-                            idiomaAtual === "pt"
-                                ? "Estados"
-                                : "States"
-                        ]:
+                        [nomeEstados]:
                             grupoEstados,
 
-
-                        [
-                            idiomaAtual === "pt"
-                                ? "Biomas"
-                                : "Biomes"
-                        ]:
+                        [nomeBiomas]:
                             grupoBiomas
 
                     },
@@ -1979,31 +2190,41 @@
                     {
 
                         collapsed:
-                            false
+                            false,
+
+                        position:
+                            "topright"
 
                     }
 
-                ).addTo(mapa);
+                );
 
 
-            const controle =
+            controleCamadas.addTo(
+                mapa
+            );
+
+
+            /*
+             * NÃO usamos disableClickPropagation
+             * no controle inteiro.
+             *
+             * Isso garante que os checkboxes continuem
+             * recebendo normalmente os eventos de clique.
+             */
+
+
+            const elemento =
                 document.querySelector(
                     ".leaflet-control-layers"
                 );
 
 
-            if (controle) {
+            if (elemento) {
 
-                L.DomEvent
-                    .disableClickPropagation(
-                        controle
-                    );
-
-
-                L.DomEvent
-                    .disableScrollPropagation(
-                        controle
-                    );
+                L.DomEvent.disableScrollPropagation(
+                    elemento
+                );
             }
         }
 
@@ -2016,18 +2237,26 @@
 
             const dados =
                 await carregarArquivos(
+
                     arquivosEstados,
+
                     true
+
                 );
 
 
             criarCamadaGeoJSON(
+
                 dados,
+
                 grupoEstados
+
             );
 
 
-            /* Estados começam visíveis */
+            /*
+             * Estados começam visíveis.
+             */
 
             grupoEstados.addTo(
                 mapa
@@ -2043,23 +2272,28 @@
 
             const dados =
                 await carregarArquivos(
+
                     arquivosBiomas,
+
                     false
+
                 );
 
 
             criarCamadaGeoJSON(
+
                 dados,
+
                 grupoBiomas
+
             );
 
 
             /*
-                Biomas NÃO são adicionados
-                automaticamente.
-
-                O usuário seleciona no controle.
-            */
+             * Biomas começam desligados.
+             *
+             * O usuário ativa pelo checkbox.
+             */
         }
 
 
@@ -2071,8 +2305,10 @@
 
             const legenda =
                 L.control({
+
                     position:
                         "bottomright"
+
                 });
 
 
@@ -2081,8 +2317,11 @@
 
                     const div =
                         L.DomUtil.create(
+
                             "div",
+
                             "legenda-ranking"
+
                         );
 
 
@@ -2095,100 +2334,148 @@
                             Ranking de Área Queimada
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#7f0000"
                             ></span>
+
                             1
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#b30000"
                             ></span>
+
                             2
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#d7301f"
                             ></span>
+
                             3
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#ef6548"
                             ></span>
+
                             4
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#fdae61"
                             ></span>
+
                             5
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#bdbdbd"
                             ></span>
+
                             6–18
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#c6dbef"
                             ></span>
+
                             19
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#9ecae1"
                             ></span>
+
                             20
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#6baed6"
                             ></span>
+
                             21
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#4292c6"
                             ></span>
+
                             22
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#2171b5"
                             ></span>
+
                             23
+
                         </div>
 
+
                         <div class="legenda-item">
+
                             <span
                                 class="legenda-cor"
                                 style="background:#084594"
                             ></span>
+
                             24
+
                         </div>
 
                     `;
@@ -2210,20 +2497,32 @@
 
         function atualizarEstilosCamadas() {
 
-            function atualizarGrupo(grupo) {
+            function atualizarGrupo(
+                grupo
+            ) {
 
                 grupo.eachLayer(
+
                     function(layer) {
 
                         if (
                             layer.setStyle
                         ) {
 
-                            layer.setStyle(
-                                estiloPorRanking(
-                                    layer.feature
-                                )
-                            );
+                            if (
+                                layer.feature
+                            ) {
+
+                                layer.setStyle(
+
+                                    estiloPorRanking(
+
+                                        layer.feature
+
+                                    )
+
+                                );
+                            }
                         }
 
 
@@ -2232,25 +2531,37 @@
                         ) {
 
                             layer.eachLayer(
-                                function(subLayer) {
+
+                                function(
+                                    subLayer
+                                ) {
 
                                     if (
+
                                         subLayer.setStyle &&
+
                                         subLayer.feature
+
                                     ) {
 
                                         subLayer.setStyle(
+
                                             estiloPorRanking(
+
                                                 subLayer.feature
+
                                             )
+
                                         );
                                     }
 
                                 }
+
                             );
                         }
 
                     }
+
                 );
             }
 
@@ -2298,20 +2609,30 @@
                 )
             ) {
 
-                botao.textContent = "☀️";
+                botao.textContent =
+                    "☀️";
+
 
                 botao.title =
+
                     idiomaAtual === "pt"
+
                         ? "Alternar para tema claro"
+
                         : "Switch to light theme";
 
             } else {
 
-                botao.textContent = "🌙";
+                botao.textContent =
+                    "🌙";
+
 
                 botao.title =
+
                     idiomaAtual === "pt"
+
                         ? "Alternar para tema escuro"
+
                         : "Switch to dark theme";
             }
         }
@@ -2325,7 +2646,8 @@
 
             document.getElementById(
                 "painel-citacao"
-            ).style.display = "flex";
+            ).style.display =
+                "flex";
         }
 
 
@@ -2333,15 +2655,20 @@
 
             document.getElementById(
                 "painel-citacao"
-            ).style.display = "none";
+            ).style.display =
+                "none";
         }
 
 
-        function fecharCitacaoFora(event) {
+        function fecharCitacaoFora(
+            event
+        ) {
 
             if (
+
                 event.target.id ===
                 "painel-citacao"
+
             ) {
 
                 fecharCitacao();
@@ -2350,7 +2677,9 @@
 
 
         document.addEventListener(
+
             "keydown",
+
             function(event) {
 
                 if (
@@ -2361,11 +2690,12 @@
                 }
 
             }
+
         );
 
 
         /* ======================================================
-           COPIAR CITAÇÃO
+           COPIAR
         ====================================================== */
 
         async function copiarCitacao() {
@@ -2394,28 +2724,38 @@
 
 
                 botao.textContent =
+
                     idiomaAtual === "pt"
+
                         ? "Copiado!"
+
                         : "Copied!";
 
 
                 setTimeout(
+
                     function() {
 
                         botao.textContent =
                             textoOriginal;
 
                     },
+
                     1500
+
                 );
 
 
             } catch (erro) {
 
                 alert(
+
                     idiomaAtual === "pt"
+
                         ? "Não foi possível copiar automaticamente."
+
                         : "Could not copy automatically."
+
                 );
             }
         }
@@ -2591,6 +2931,10 @@
 
         /* ======================================================
            MUDAR IDIOMA
+           
+           IMPORTANTE:
+           NÃO recria o controle de camadas.
+           Assim os checkboxes permanecem selecionados.
         ====================================================== */
 
         function mudarIdioma(
@@ -2602,8 +2946,11 @@
             ) {
 
                 idioma =
+
                     idiomaAtual === "pt"
+
                         ? "en"
+
                         : "pt";
             }
 
@@ -2619,8 +2966,11 @@
 
 
             document.documentElement.lang =
+
                 idiomaAtual === "pt"
+
                     ? "pt-BR"
+
                     : "en";
 
 
@@ -2777,34 +3127,35 @@
             document.getElementById(
                 "botao-idioma"
             ).textContent =
+
                 idiomaAtual === "pt"
+
                     ? "EN"
+
                     : "PT";
 
 
             document.getElementById(
                 "botao-idioma"
             ).title =
+
                 idiomaAtual === "pt"
+
                     ? "English"
+
                     : "Português";
 
 
             atualizarIconeTema();
 
 
-            /* ==================================================
-               RECRIA O CONTROLE DE CAMADAS
-               COM O IDIOMA ATUAL
-            ================================================== */
-
-            criarControleCamadas();
-
-
             /*
-               Fecha popup aberto para evitar que fique
-               com texto no idioma anterior.
-            */
+             * NÃO chamar criarControleCamadas()
+             * aqui.
+             *
+             * Isso preserva os checkboxes selecionados.
+             */
+
 
             mapa.closePopup();
         }
@@ -2818,32 +3169,58 @@
 
             try {
 
-                await Promise.all([
+                console.log(
+                    "Carregando Estados..."
+                );
 
-                    carregarEstados(),
 
-                    carregarBiomas()
+                await carregarEstados();
 
-                ]);
+
+                console.log(
+                    "Estados carregados."
+                );
+
+
+                console.log(
+                    "Carregando Biomas..."
+                );
+
+
+                await carregarBiomas();
+
+
+                console.log(
+                    "Biomas carregados."
+                );
 
 
                 /*
-                   Agora que os grupos existem e os arquivos
-                   foram carregados, criamos o seletor.
-                */
+                 * Só agora criamos o controle.
+                 *
+                 * Os dois grupos já existem.
+                 */
 
                 criarControleCamadas();
 
 
+                /*
+                 * Cria a legenda.
+                 */
+
                 criarLegenda();
 
 
+                /*
+                 * Define o idioma inicial.
+                 *
+                 * Essa função NÃO recria o controle.
+                 */
+
+                mudarIdioma("pt");
+
+
                 atualizarIconeTema();
-
-
-                mudarIdioma(
-                    idiomaAtual
-                );
 
 
                 console.log(
