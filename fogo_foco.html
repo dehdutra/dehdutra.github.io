@@ -7,10 +7,9 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
-<title>Fogo e Focos de Calor</title>
-
+<title>Fogo em Foco 2024/2025</title>
 
 <!-- =========================================================
      LEAFLET CSS
@@ -18,7 +17,6 @@
 
 <link rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
 
 <style>
 
@@ -60,6 +58,39 @@ header {
     justify-content: space-between;
 
     align-items: center;
+
+}
+
+
+/* =========================================================
+   TÍTULO DO HEADER
+========================================================= */
+
+.header-title {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+}
+
+
+.header-main-title {
+
+    font-size: 1.15em;
+
+}
+
+
+.header-subtitle {
+
+    font-size: 11px;
+
+    font-weight: normal;
+
+    opacity: 0.9;
 
 }
 
@@ -217,6 +248,67 @@ header {
 
 
 /* =========================================================
+   LEGENDA DO RANKING
+========================================================= */
+
+.ranking-legend {
+
+    margin-top: 15px;
+
+    padding-top: 12px;
+
+    border-top:
+        1px solid #eeeeee;
+
+}
+
+
+.ranking-legend-title {
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    color: #555;
+
+    margin-bottom: 8px;
+
+}
+
+
+.legend-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 5px;
+
+    font-size: 11px;
+
+    color: #666;
+
+}
+
+
+.legend-color {
+
+    width: 20px;
+
+    height: 12px;
+
+    border-radius: 2px;
+
+    border:
+        1px solid
+        rgba(0,0,0,0.15);
+
+}
+
+
+/* =========================================================
    MODAIS
 ========================================================= */
 
@@ -258,6 +350,10 @@ header {
     width: 90%;
 
     max-width: 650px;
+
+    max-height: 80vh;
+
+    overflow-y: auto;
 
     margin: 8% auto;
 
@@ -446,7 +542,7 @@ header {
 
     bottom: 20px;
 
-    width: 270px;
+    width: 290px;
 
     background:
         rgba(
@@ -521,7 +617,7 @@ header {
 }
 
 
-.stat-item:not(:last-child) {
+.stat-item:not(:nth-child(2n)) {
 
     border-right:
         1px solid #eeeeee;
@@ -531,7 +627,7 @@ header {
 
 .stat-number {
 
-    font-size: 18px;
+    font-size: 17px;
 
     font-weight: bold;
 
@@ -563,6 +659,105 @@ header {
 
     border-top:
         1px solid #eeeeee;
+
+}
+
+
+/* =========================================================
+   TABELA DE ATRIBUTOS
+========================================================= */
+
+.dados-tabela {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 12px;
+
+    font-size: 12px;
+
+}
+
+
+.dados-tabela tr {
+
+    border-bottom:
+        1px solid #eeeeee;
+
+}
+
+
+.dados-tabela td {
+
+    padding: 7px 4px;
+
+    vertical-align: top;
+
+}
+
+
+.dados-tabela td:first-child {
+
+    font-weight: bold;
+
+    color: #666;
+
+    width: 48%;
+
+}
+
+
+.dados-tabela td:last-child {
+
+    text-align: right;
+
+    color: #222;
+
+}
+
+
+/* =========================================================
+   RANKING DESTACADO
+========================================================= */
+
+.ranking-destaque {
+
+    margin-top: 12px;
+
+    padding: 12px;
+
+    background:
+        #fff3e0;
+
+    border-left:
+        4px solid #e67e22;
+
+    border-radius: 5px;
+
+    text-align: center;
+
+}
+
+
+.ranking-numero {
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    color: #a04000;
+
+}
+
+
+.ranking-texto {
+
+    font-size: 11px;
+
+    color: #666;
+
+    margin-top: 3px;
 
 }
 
@@ -616,9 +811,7 @@ header {
 
 </head>
 
-
 <body>
-
 
 <!-- =========================================================
      HEADER
@@ -626,74 +819,84 @@ header {
 
 <header>
 
+```
+<div class="header-title">
 
-    <div>
 
-        🔥 Fogo e Focos de Calor
+    <div class="header-main-title">
+
+        🔥 Fogo em Foco 2024/2025
+
+    </div>
+
+
+    <div class="header-subtitle">
+
+        Ranking da área queimada ao longo da série temporal
 
     </div>
 
 
-    <div class="header-buttons">
+</div>
 
 
-        <!-- CAMADAS -->
-
-        <button
-            class="header-btn"
-            onclick="abrirCamadas()">
-
-            ☰ Camadas
-
-        </button>
+<div class="header-buttons">
 
 
-        <!-- BRASIL -->
+    <!-- CAMADAS -->
 
-        <button
-            class="header-btn"
-            onclick="centralizarBrasil()">
+    <button
+        class="header-btn"
+        onclick="abrirCamadas()">
 
-            🇧🇷 Brasil
+        ☰ Camadas
 
-        </button>
-
-
-        <!-- DOWNLOAD -->
-
-        <button
-            class="header-btn"
-            onclick="abrirDownloads()">
-
-            ↓ Dados
-
-        </button>
+    </button>
 
 
-        <!-- CITAÇÃO -->
+    <!-- BRASIL -->
 
-        <button
-            class="header-btn"
-            onclick="abrirCitacao()">
+    <button
+        class="header-btn"
+        onclick="centralizarBrasil()">
 
-            Como citar
+        🇧🇷 Brasil
 
-        </button>
+    </button>
 
 
-    </div>
+    <!-- DOWNLOAD -->
+
+    <button
+        class="header-btn"
+        onclick="abrirDownloads()">
+
+        ↓ Dados
+
+    </button>
+
+
+    <!-- CITAÇÃO -->
+
+    <button
+        class="header-btn"
+        onclick="abrirCitacao()">
+
+        Como citar
+
+    </button>
+
+
+</div>
+```
 
 </header>
-
-
 
 <!-- =========================================================
      MAPA PRINCIPAL
 ========================================================= -->
 
 <div id="map"></div>
-
-
 
 <!-- =========================================================
      PAINEL DE CAMADAS
@@ -703,96 +906,281 @@ header {
     id="layersPanel"
     class="layers-panel">
 
+```
+<h3>
 
-    <h3>
+    Camadas
 
-        Camadas
-
-    </h3>
-
-
-    <!-- =====================================================
-         ESTADOS
-    ====================================================== -->
-
-    <div class="layer-item">
+</h3>
 
 
-        <input
-            type="checkbox"
-            id="checkEstados"
-            checked
-            onchange="alternarEstados()">
+<!-- =====================================================
+     ESTADOS
+====================================================== -->
+
+<div class="layer-item">
 
 
-        <label for="checkEstados">
+    <input
+        type="checkbox"
+        id="checkEstados"
+        checked
+        onchange="alternarEstados()">
 
-            Estados brasileiros
 
-        </label>
+    <label for="checkEstados">
+
+        Estados brasileiros
+
+    </label>
+
+
+</div>
+
+
+<!-- =====================================================
+     MUNICÍPIOS
+====================================================== -->
+
+<div class="layer-item">
+
+
+    <input
+        type="checkbox"
+        id="checkMunicipios"
+        disabled>
+
+
+    <label for="checkMunicipios">
+
+        Municípios
+
+    </label>
+
+
+</div>
+
+
+<!-- =====================================================
+     TERRAS INDÍGENAS
+====================================================== -->
+
+<div class="layer-item">
+
+
+    <input
+        type="checkbox"
+        id="checkTI"
+        disabled>
+
+
+    <label for="checkTI">
+
+        Terras Indígenas
+
+    </label>
+
+
+</div>
+
+
+<!-- =====================================================
+     BIOMAS
+====================================================== -->
+
+<div class="layer-item">
+
+
+    <input
+        type="checkbox"
+        id="checkBiomas"
+        disabled>
+
+
+    <label for="checkBiomas">
+
+        Biomas
+
+    </label>
+
+
+</div>
+
+
+<!-- =====================================================
+     UNIDADES DE CONSERVAÇÃO
+====================================================== -->
+
+<div class="layer-item">
+
+
+    <input
+        type="checkbox"
+        id="checkUC"
+        disabled>
+
+
+    <label for="checkUC">
+
+        Unidades de Conservação
+
+    </label>
+
+
+</div>
+
+
+<!-- =====================================================
+     FOCOS DE CALOR
+====================================================== -->
+
+<div class="layer-item">
+
+
+    <input
+        type="checkbox"
+        id="checkFocos"
+        disabled>
+
+
+    <label for="checkFocos">
+
+        Focos de calor
+
+    </label>
+
+
+</div>
+
+
+<!-- =====================================================
+     ÁREA QUEIMADA
+====================================================== -->
+
+<div class="layer-item">
+
+
+    <input
+        type="checkbox"
+        id="checkAreaQueimada"
+        disabled>
+
+
+    <label for="checkAreaQueimada">
+
+        Área queimada
+
+    </label>
+
+
+</div>
+
+
+<!-- =====================================================
+     LEGENDA
+====================================================== -->
+
+<div class="ranking-legend">
+
+
+    <div class="ranking-legend-title">
+
+        Ranking histórico
+
+    </div>
+
+
+    <div class="legend-row">
+
+
+        <span
+            class="legend-color"
+            style="background:#67000d;">
+        </span>
+
+
+        <span>
+
+            1º - maior área queimada
+
+        </span>
 
 
     </div>
 
 
-    <!-- =====================================================
-         FUTURO: FOCOS
-    ====================================================== -->
-
-    <div class="layer-item">
+    <div class="legend-row">
 
 
-        <input
-            type="checkbox"
-            id="checkFocos"
-            disabled>
+        <span
+            class="legend-color"
+            style="background:#cb181d;">
+        </span>
 
 
-        <label for="checkFocos">
+        <span>
 
-            Focos de calor
+            2º a 5º
 
-        </label>
+        </span>
 
 
     </div>
 
 
-    <!-- =====================================================
-         FUTURO: ÁREA QUEIMADA
-    ====================================================== -->
-
-    <div class="layer-item">
+    <div class="legend-row">
 
 
-        <input
-            type="checkbox"
-            id="checkAreaQueimada"
-            disabled>
+        <span
+            class="legend-color"
+            style="background:#d9d9d9;">
+        </span>
 
 
-        <label for="checkAreaQueimada">
+        <span>
 
-            Área queimada
+            6º a 17º
 
-        </label>
+        </span>
 
 
     </div>
 
 
-    <div
-        style="
-        margin-top:15px;
-        padding:10px;
-        background:#f4f6f7;
-        border-radius:6px;
-        font-size:12px;
-        color:#777;
-        ">
+    <div class="legend-row">
 
-        As camadas de fogo serão adicionadas
-        posteriormente aos dados do projeto.
+
+        <span
+            class="legend-color"
+            style="background:#6baed6;">
+        </span>
+
+
+        <span>
+
+            18º a 22º
+
+        </span>
+
+
+    </div>
+
+
+    <div class="legend-row">
+
+
+        <span
+            class="legend-color"
+            style="background:#08519c;">
+        </span>
+
+
+        <span>
+
+            23º - menor área queimada
+
+        </span>
+
 
     </div>
 
@@ -800,6 +1188,34 @@ header {
 </div>
 
 
+<!-- =====================================================
+     EXPLICAÇÃO
+====================================================== -->
+
+<div
+    style="
+    margin-top:15px;
+    padding:10px;
+    background:#f4f6f7;
+    border-radius:6px;
+    font-size:12px;
+    color:#666;
+    line-height:1.5;
+    ">
+
+    O ranking representa a posição
+    da área queimada de cada unidade
+    territorial ao longo da série temporal.
+
+    <br><br>
+
+    <strong>1º</strong> corresponde ao ano
+    com maior área queimada da série.
+
+</div>
+```
+
+</div>
 
 <!-- =========================================================
      MODAL DOWNLOADS
@@ -809,94 +1225,170 @@ header {
     id="modalDownloads"
     class="modal">
 
+```
+<div class="modal-content">
 
-    <div class="modal-content">
+
+    <span
+        class="fechar"
+        onclick="fecharDownloads()">
+
+        &times;
+
+    </span>
 
 
-        <span
-            class="fechar"
-            onclick="fecharDownloads()">
+    <h2>
 
-            &times;
+        Dados para download
+
+    </h2>
+
+
+    <p>
+
+        Dados geoespaciais utilizados no
+        dashboard Fogo em Foco 2024/2025.
+
+    </p>
+
+
+    <br>
+
+
+    <!-- ESTADOS -->
+
+    <div class="download-item">
+
+
+        <span class="download-name">
+
+            Estados brasileiros
 
         </span>
 
 
-        <h2>
+        <a
+            class="download-btn"
+            href="dashboard_data/estados_2024.geojson"
+            download>
 
-            Dados para download
+            GeoJSON
 
-        </h2>
-
-
-        <p>
-
-            Os dados utilizados neste produto
-            estarão disponíveis para download
-            conforme forem incorporados ao dashboard.
-
-        </p>
-
-
-        <br>
-
-
-        <!-- ESTADOS -->
-
-        <div class="download-item">
-
-
-            <span class="download-name">
-
-                Estados brasileiros
-
-            </span>
-
-
-            <a
-                class="download-btn"
-                href="estados_simplificado.geojson"
-                download>
-
-                GeoJSON
-
-            </a>
-
-
-        </div>
-
-
-        <!-- FUTURO -->
-
-        <div class="download-item">
-
-
-            <span class="download-name">
-
-                Dados de fogo
-
-            </span>
-
-
-            <span
-                style="
-                font-size:12px;
-                color:#999;
-                ">
-
-                Em preparação
-
-            </span>
-
-
-        </div>
+        </a>
 
 
     </div>
 
+
+    <!-- MUNICÍPIOS -->
+
+    <div class="download-item">
+
+
+        <span class="download-name">
+
+            Municípios
+
+        </span>
+
+
+        <span
+            style="
+            font-size:12px;
+            color:#999;
+            ">
+
+            Em preparação
+
+        </span>
+
+
+    </div>
+
+
+    <!-- TERRAS INDÍGENAS -->
+
+    <div class="download-item">
+
+
+        <span class="download-name">
+
+            Terras Indígenas
+
+        </span>
+
+
+        <span
+            style="
+            font-size:12px;
+            color:#999;
+            ">
+
+            Em preparação
+
+        </span>
+
+
+    </div>
+
+
+    <!-- BIOMAS -->
+
+    <div class="download-item">
+
+
+        <span class="download-name">
+
+            Biomas
+
+        </span>
+
+
+        <span
+            style="
+            font-size:12px;
+            color:#999;
+            ">
+
+            Em preparação
+
+        </span>
+
+
+    </div>
+
+
+    <!-- UC -->
+
+    <div class="download-item">
+
+
+        <span class="download-name">
+
+            Unidades de Conservação
+
+        </span>
+
+
+        <span
+            style="
+            font-size:12px;
+            color:#999;
+            ">
+
+            Em preparação
+
+        </span>
+
+
+    </div>
+
+
 </div>
+```
 
-
+</div>
 
 <!-- =========================================================
      MODAL CITAÇÃO
@@ -906,65 +1398,65 @@ header {
     id="modalCitacao"
     class="modal">
 
-
-    <div class="modal-content">
-
-
-        <span
-            class="fechar"
-            onclick="fecharCitacao()">
-
-            &times;
-
-        </span>
+```
+<div class="modal-content">
 
 
-        <h2>
+    <span
+        class="fechar"
+        onclick="fecharCitacao()">
 
-            Como citar o produto
+        &times;
 
-        </h2>
-
-
-        <p>
-
-            A referência do produto será disponibilizada
-            juntamente com a documentação dos dados.
-
-        </p>
+    </span>
 
 
-        <br>
+    <h2>
+
+        Como citar o produto
+
+    </h2>
 
 
-        <div
-            class="citacao"
-            id="textoCitacao">
+    <p>
 
-            Dutra, D. J. (2026).
-            Fogo e Focos de Calor no Brasil.
-            Produto de monitoramento por
-            sensoriamento remoto.
-            Instituto Nacional de Pesquisas Espaciais
-            (INPE).
+        A referência do produto será disponibilizada
+        juntamente com a documentação dos dados.
 
-        </div>
+    </p>
 
 
-        <button
-            class="copiar-btn"
-            onclick="copiarCitacao()">
+    <br>
 
-            Copiar citação
 
-        </button>
+    <div
+        class="citacao"
+        id="textoCitacao">
 
+        Dutra, D. J. (2026).
+        Fogo em Foco 2024/2025:
+        ranking da área queimada no Brasil.
+        Produto de monitoramento por
+        sensoriamento remoto.
+        Instituto Nacional de Pesquisas Espaciais
+        (INPE).
 
     </div>
 
+
+    <button
+        class="copiar-btn"
+        onclick="copiarCitacao()">
+
+        Copiar citação
+
+    </button>
+
+
 </div>
+```
 
-
+</div>
 
 <!-- =========================================================
      PAINEL DE ESTATÍSTICAS
@@ -972,109 +1464,34 @@ header {
 
 <div id="statsPanel">
 
+```
+<div class="stats-title">
 
-    <div class="stats-title">
+    🔥 Fogo em Foco 2024/2025
 
-        🔥 Monitoramento de fogo
-
-    </div>
-
-
-    <div class="stats-grid">
+</div>
 
 
-        <!-- TOTAL DE FOCOS -->
-
-        <div class="stat-item">
+<div class="stats-grid">
 
 
-            <div
-                class="stat-number"
-                id="totalFocos">
+    <!-- UNIDADES -->
 
-                --
-
-            </div>
+    <div class="stat-item">
 
 
-            <div class="stat-label">
+        <div
+            class="stat-number"
+            id="totalUnidades">
 
-                Focos
-
-            </div>
-
+            --
 
         </div>
 
 
-        <!-- ÁREA -->
+        <div class="stat-label">
 
-        <div class="stat-item">
-
-
-            <div
-                class="stat-number"
-                id="areaQueimada">
-
-                --
-
-            </div>
-
-
-            <div class="stat-label">
-
-                Área queimada
-
-            </div>
-
-
-        </div>
-
-
-        <!-- ESTADOS -->
-
-        <div class="stat-item">
-
-
-            <div
-                class="stat-number"
-                id="estadosBrasil">
-
-                27
-
-            </div>
-
-
-            <div class="stat-label">
-
-                Estados
-
-            </div>
-
-
-        </div>
-
-
-        <!-- PERÍODO -->
-
-        <div class="stat-item">
-
-
-            <div
-                class="stat-number"
-                id="periodoDados">
-
-                --
-
-            </div>
-
-
-            <div class="stat-label">
-
-                Período
-
-            </div>
-
+            Estados analisados
 
         </div>
 
@@ -1082,11 +1499,74 @@ header {
     </div>
 
 
-    <div
-        class="stats-update"
-        id="ultimaAtualizacao">
+    <!-- ÁREA -->
 
-        Dashboard em preparação
+    <div class="stat-item">
+
+
+        <div
+            class="stat-number"
+            id="areaQueimada">
+
+            --
+
+        </div>
+
+
+        <div class="stat-label">
+
+            Área queimada
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ANO -->
+
+    <div class="stat-item">
+
+
+        <div
+            class="stat-number"
+            id="periodoDados">
+
+            2024/25
+
+        </div>
+
+
+        <div class="stat-label">
+
+            Período
+
+        </div>
+
+
+    </div>
+
+
+    <!-- RANKING -->
+
+    <div class="stat-item">
+
+
+        <div
+            class="stat-number"
+            id="rankingMaximo">
+
+            --
+
+        </div>
+
+
+        <div class="stat-label">
+
+            Ranking máximo
+
+        </div>
+
 
     </div>
 
@@ -1094,6 +1574,16 @@ header {
 </div>
 
 
+<div
+    class="stats-update"
+    id="ultimaAtualizacao">
+
+    Carregando dados...
+
+</div>
+```
+
+</div>
 
 <!-- =========================================================
      LEAFLET JS
@@ -1102,8 +1592,6 @@ header {
 <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 </script>
-
-
 
 <script>
 
@@ -1145,10 +1633,173 @@ L.tileLayer(
 
 
 // ============================================================
-// VARIÁVEL DOS ESTADOS
+// VARIÁVEL DA CAMADA DE ESTADOS
 // ============================================================
 
 var estadosLayer = null;
+
+
+
+// ============================================================
+// FUNÇÃO DE COR DO RANKING
+// ============================================================
+
+function corRanking(rank) {
+
+
+    if (
+        rank === null ||
+        rank === undefined ||
+        rank === ''
+    ) {
+
+        return '#d9d9d9';
+
+    }
+
+
+    rank =
+        Number(rank);
+
+
+    // --------------------------------------------------------
+    // RANK 1
+    // --------------------------------------------------------
+
+    if (rank === 1) {
+
+        return '#67000d';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 2
+    // --------------------------------------------------------
+
+    if (rank === 2) {
+
+        return '#a50f15';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 3
+    // --------------------------------------------------------
+
+    if (rank === 3) {
+
+        return '#cb181d';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 4
+    // --------------------------------------------------------
+
+    if (rank === 4) {
+
+        return '#ef3b2c';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 5
+    // --------------------------------------------------------
+
+    if (rank === 5) {
+
+        return '#fb6a4a';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 6 A 17
+    // --------------------------------------------------------
+
+    if (
+        rank >= 6 &&
+        rank <= 17
+    ) {
+
+        return '#d9d9d9';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 18
+    // --------------------------------------------------------
+
+    if (rank === 18) {
+
+        return '#c6dbef';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 19
+    // --------------------------------------------------------
+
+    if (rank === 19) {
+
+        return '#9ecae1';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 20
+    // --------------------------------------------------------
+
+    if (rank === 20) {
+
+        return '#6baed6';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 21
+    // --------------------------------------------------------
+
+    if (rank === 21) {
+
+        return '#4292c6';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 22
+    // --------------------------------------------------------
+
+    if (rank === 22) {
+
+        return '#2171b5';
+
+    }
+
+
+    // --------------------------------------------------------
+    // RANK 23
+    // --------------------------------------------------------
+
+    if (rank >= 23) {
+
+        return '#08519c';
+
+    }
+
+
+    return '#d9d9d9';
+
+}
 
 
 
@@ -1158,17 +1809,27 @@ var estadosLayer = null;
 
 function estiloEstado(feature) {
 
+
+    var rank =
+        feature.properties.Rank_Category;
+
+
     return {
 
-        fillColor: '#e67e22',
+        fillColor:
+            corRanking(rank),
 
-        color: '#555',
+        color:
+            '#555',
 
-        weight: 1,
+        weight:
+            1,
 
-        opacity: 1,
+        opacity:
+            1,
 
-        fillOpacity: 0.08
+        fillOpacity:
+            0.75
 
     };
 
@@ -1177,12 +1838,465 @@ function estiloEstado(feature) {
 
 
 // ============================================================
-// CARREGAR ESTADOS BRASILEIROS
+// FORMATAR NÚMEROS
+// ============================================================
+
+function formatarNumero(valor) {
+
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ) {
+
+        return '--';
+
+    }
+
+
+    var numero =
+        Number(valor);
+
+
+    if (
+        isNaN(numero)
+    ) {
+
+        return String(valor);
+
+    }
+
+
+    return numero.toLocaleString(
+        'pt-BR',
+        {
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+
+
+// ============================================================
+// FORMATAR ÁREA
+// ============================================================
+
+function formatarArea(valor) {
+
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ) {
+
+        return '--';
+
+    }
+
+
+    var numero =
+        Number(valor);
+
+
+    if (
+        isNaN(numero)
+    ) {
+
+        return String(valor);
+
+    }
+
+
+    return numero.toLocaleString(
+        'pt-BR',
+        {
+            maximumFractionDigits: 2
+        }
+    ) + ' km²';
+
+}
+
+
+
+// ============================================================
+// IDENTIFICAR NOME DO ESTADO
+// ============================================================
+
+function obterNomeEstado(properties) {
+
+
+    return (
+
+        properties["Region Name"] ||
+
+        properties.Region_Name ||
+
+        properties.nome ||
+
+        properties.NM_UF ||
+
+        properties.NM_ESTADO ||
+
+        properties.NAME_1 ||
+
+        properties.name ||
+
+        properties.NOME ||
+
+        'Estado'
+
+    );
+
+}
+
+
+
+// ============================================================
+// IDENTIFICAR SIGLA
+// ============================================================
+
+function obterSiglaEstado(properties) {
+
+
+    return (
+
+        properties.sigla ||
+
+        properties.SIGLA ||
+
+        properties.UF ||
+
+        properties.SIGLA_UF ||
+
+        properties.ISO_1 ||
+
+        ''
+
+    );
+
+}
+
+
+
+// ============================================================
+// CRIAR POPUP
+// ============================================================
+
+function criarPopupEstado(feature) {
+
+
+    var p =
+        feature.properties;
+
+
+    var nome =
+        obterNomeEstado(p);
+
+
+    var sigla =
+        obterSiglaEstado(p);
+
+
+    var ranking =
+        p.Rank_Category;
+
+
+    var area =
+        p["Burned Area (km^2)"];
+
+
+    var fracao =
+        p["Burned Area Fraction (%)"];
+
+
+    var ano =
+        p["Fire Season Start Year"];
+
+
+    var produto =
+        p.Product;
+
+
+    var regionalLayer =
+        p["Regional Layer"];
+
+
+    var rankArea =
+        p["Burned Area Rank"];
+
+
+    var rankFracao =
+        p["Burned Area Fraction Rank"];
+
+
+    var percentile =
+        p["Burned Area Percentile"];
+
+
+    var mediaAnual =
+        p["Burned Area Mean Annual (km^2)"];
+
+
+    var desvioAnual =
+        p["Burned Area StDev Annual (km^2)"];
+
+
+    var anomalia =
+        p["Burned Area Anomaly (%)"];
+
+
+    // --------------------------------------------------------
+    // POPUP
+    // --------------------------------------------------------
+
+    var html =
+
+        '<div style="min-width:300px;max-width:380px;">' +
+
+
+        '<div style="' +
+        'font-size:18px;' +
+        'font-weight:bold;' +
+        'color:#a04000;' +
+        'margin-bottom:3px;' +
+        '">' +
+
+        '🔥 ' +
+        nome +
+
+        '</div>' +
+
+
+        (
+            sigla
+            ?
+            '<div style="' +
+            'font-size:12px;' +
+            'color:#777;' +
+            'margin-bottom:8px;' +
+            '">' +
+            'UF: ' +
+            sigla +
+            '</div>'
+            :
+            ''
+        ) +
+
+
+        '<div class="ranking-destaque">' +
+
+        '<div class="ranking-numero">' +
+
+        (
+            ranking !== undefined &&
+            ranking !== null
+            ?
+            ranking + 'º'
+            :
+            '--'
+        ) +
+
+        '</div>' +
+
+        '<div class="ranking-texto">' +
+
+        'posição no ranking da área queimada' +
+
+        '</div>' +
+
+        '</div>' +
+
+
+        '<table class="dados-tabela">' +
+
+
+        '<tr>' +
+
+        '<td>Período</td>' +
+
+        '<td>' +
+
+        (
+            ano !== undefined &&
+            ano !== null
+            ?
+            ano
+            :
+            '2024/2025'
+        ) +
+
+        '</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Área queimada</td>' +
+
+        '<td>' +
+
+        formatarArea(area) +
+
+        '</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Fração da área (%)</td>' +
+
+        '<td>' +
+
+        formatarNumero(fracao) +
+
+        '%</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Ranking da área</td>' +
+
+        '<td>' +
+
+        (
+            rankArea !== undefined &&
+            rankArea !== null
+            ?
+            rankArea + 'º'
+            :
+            '--'
+        ) +
+
+        '</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Ranking da fração</td>' +
+
+        '<td>' +
+
+        (
+            rankFracao !== undefined &&
+            rankFracao !== null
+            ?
+            rankFracao + 'º'
+            :
+            '--'
+        ) +
+
+        '</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Percentil</td>' +
+
+        '<td>' +
+
+        formatarNumero(percentile) +
+
+        '</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Média anual</td>' +
+
+        '<td>' +
+
+        formatarArea(mediaAnual) +
+
+        '</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Desvio padrão anual</td>' +
+
+        '<td>' +
+
+        formatarArea(desvioAnual) +
+
+        '</td>' +
+
+        '</tr>' +
+
+
+        '<tr>' +
+
+        '<td>Anomalia da área</td>' +
+
+        '<td>' +
+
+        formatarNumero(anomalia) +
+
+        '%</td>' +
+
+        '</tr>' +
+
+
+        '</table>' +
+
+
+        '<div style="' +
+        'margin-top:10px;' +
+        'font-size:10px;' +
+        'color:#999;' +
+        '">' +
+
+        (
+            regionalLayer
+            ?
+            'Camada: ' +
+            regionalLayer
+            :
+            ''
+        ) +
+
+        (
+            produto
+            ?
+            '<br>Produto: ' +
+            produto
+            :
+            ''
+        ) +
+
+        '</div>' +
+
+
+        '</div>';
+
+
+    return html;
+
+}
+
+
+
+// ============================================================
+// CARREGAR ESTADOS
 // ============================================================
 
 fetch(
 
-    'estados_simplificado.geojson'
+    'dashboard_data/estados_2024.geojson'
 
 )
 
@@ -1195,7 +2309,7 @@ fetch(
 
             throw new Error(
 
-                'Arquivo estados_simplificado.geojson não encontrado.'
+                'Arquivo dashboard_data/estados_2024.geojson não encontrado.'
 
             );
 
@@ -1213,24 +2327,19 @@ fetch(
     function(data) {
 
 
+        // ----------------------------------------------------
+        // CRIAR CAMADA
+        // ----------------------------------------------------
+
         estadosLayer = L.geoJSON(
 
             data,
 
             {
 
-
-                // --------------------------------------------
-                // ESTILO
-                // --------------------------------------------
-
                 style:
                     estiloEstado,
 
-
-                // --------------------------------------------
-                // INTERAÇÃO
-                // --------------------------------------------
 
                 onEachFeature:
                     function(
@@ -1239,36 +2348,10 @@ fetch(
                     ) {
 
 
-                        /*
-                         * Tenta encontrar o nome do estado
-                         * usando os mesmos campos do seu
-                         * GeoJSON do MCWD.
-                         */
-
-                        var nomeEstado =
-
-                            feature.properties.nome ||
-
-                            feature.properties.NM_UF ||
-
-                            feature.properties.NM_ESTADO ||
-
-                            feature.properties.name ||
-
-                            feature.properties.NOME ||
-
-                            'Estado';
-
-
-                        var siglaEstado =
-
-                            feature.properties.sigla ||
-
-                            feature.properties.SIGLA ||
-
-                            feature.properties.UF ||
-
-                            '';
+                        var nome =
+                            obterNomeEstado(
+                                feature.properties
+                            );
 
 
                         // ------------------------------------
@@ -1277,11 +2360,12 @@ fetch(
 
                         layer.bindTooltip(
 
-                            nomeEstado,
+                            nome,
 
                             {
 
-                                sticky: true
+                                sticky:
+                                    true
 
                             }
 
@@ -1301,17 +2385,14 @@ fetch(
 
                                 e.target.setStyle({
 
-                                    fillColor:
-                                        '#e67e22',
-
                                     color:
-                                        '#a04000',
+                                        '#222',
 
                                     weight:
-                                        2,
+                                        2.5,
 
                                     fillOpacity:
-                                        0.25
+                                        0.9
 
                                 });
 
@@ -1370,38 +2451,11 @@ fetch(
                                 );
 
 
-                                layer.bindPopup(
+                                e.target.bindPopup(
 
-                                    '<div style="text-align:center;">' +
-
-                                    '<strong style="font-size:16px;">' +
-
-                                    nomeEstado +
-
-                                    '</strong>' +
-
-                                    '<br>' +
-
-                                    '<span style="font-size:13px;">' +
-
-                                    (
-                                        siglaEstado
-                                        ? 'UF: ' +
-                                          siglaEstado
-                                        : ''
-                                    ) +
-
-                                    '</span>' +
-
-                                    '<hr>' +
-
-                                    '<span style="font-size:12px;color:#777;">' +
-
-                                    'Dados de fogo serão adicionados posteriormente.' +
-
-                                    '</span>' +
-
-                                    '</div>'
+                                    criarPopupEstado(
+                                        feature
+                                    )
 
                                 ).openPopup();
 
@@ -1416,22 +2470,145 @@ fetch(
         );
 
 
-        // -----------------------------------------------
+        // ----------------------------------------------------
         // ADICIONAR AO MAPA
-        // -----------------------------------------------
+        // ----------------------------------------------------
 
         estadosLayer.addTo(map);
 
 
-        // -----------------------------------------------
+        // ----------------------------------------------------
         // ENQUADRAR BRASIL
-        // -----------------------------------------------
+        // ----------------------------------------------------
 
         map.fitBounds(
 
-            estadosLayer.getBounds()
+            estadosLayer.getBounds(),
+
+            {
+
+                padding:
+                    [10, 10]
+
+            }
 
         );
+
+
+        // ----------------------------------------------------
+        // ESTATÍSTICAS
+        // ----------------------------------------------------
+
+        var totalEstados =
+            data.features.length;
+
+
+        document.getElementById(
+            'totalUnidades'
+        ).innerText =
+            totalEstados;
+
+
+        // ----------------------------------------------------
+        // ÁREA TOTAL
+        // ----------------------------------------------------
+
+        var totalArea =
+            0;
+
+
+        data.features.forEach(
+
+            function(feature) {
+
+
+                var valor =
+
+                    feature.properties[
+                        "Burned Area (km^2)"
+                    ];
+
+
+                var numero =
+                    Number(valor);
+
+
+                if (
+                    !isNaN(numero)
+                ) {
+
+                    totalArea +=
+                        numero;
+
+                }
+
+            }
+
+        );
+
+
+        document.getElementById(
+            'areaQueimada'
+        ).innerText =
+
+            formatarArea(
+                totalArea
+            );
+
+
+        // ----------------------------------------------------
+        // RANKING MÁXIMO
+        // ----------------------------------------------------
+
+        var maiorRanking =
+            0;
+
+
+        data.features.forEach(
+
+            function(feature) {
+
+
+                var ranking =
+
+                    Number(
+                        feature.properties.Rank_Category
+                    );
+
+
+                if (
+                    !isNaN(ranking)
+                    &&
+                    ranking > maiorRanking
+                ) {
+
+                    maiorRanking =
+                        ranking;
+
+                }
+
+            }
+
+        );
+
+
+        document.getElementById(
+            'rankingMaximo'
+        ).innerText =
+
+            maiorRanking +
+            'º';
+
+
+        // ----------------------------------------------------
+        // STATUS
+        // ----------------------------------------------------
+
+        document.getElementById(
+            'ultimaAtualizacao'
+        ).innerText =
+
+            'Dados de área queimada • 2024/2025';
 
     }
 
@@ -1445,15 +2622,22 @@ fetch(
         console.error(
 
             'Erro ao carregar estados:',
-
             error
 
         );
 
 
+        document.getElementById(
+            'ultimaAtualizacao'
+        ).innerText =
+
+            'Erro ao carregar os dados';
+
+
         alert(
 
-            'Não foi possível carregar o arquivo dos estados brasileiros.'
+            'Não foi possível carregar os dados dos estados.\n\n' +
+            error.message
 
         );
 
@@ -1471,9 +2655,7 @@ function centralizarBrasil() {
 
 
     if (
-
         estadosLayer
-
     ) {
 
 
@@ -1517,6 +2699,7 @@ function abrirCamadas() {
 
 
     var painel =
+
         document.getElementById(
             'layersPanel'
         );
@@ -1553,15 +2736,14 @@ function alternarEstados() {
 
 
     var checkbox =
+
         document.getElementById(
             'checkEstados'
         );
 
 
     if (
-
         checkbox.checked
-
     ) {
 
 
@@ -1684,9 +2866,7 @@ function copiarCitacao() {
 
 
             alert(
-
                 'Citação copiada!'
-
             );
 
         }
@@ -1713,7 +2893,7 @@ function copiarCitacao() {
 
 
 // ============================================================
-// FECHAR PAINEL AO CLICAR FORA
+// FECHAR MODAIS CLICANDO FORA
 // ============================================================
 
 window.addEventListener(
@@ -1759,12 +2939,53 @@ window.addEventListener(
 
         }
 
+
+        // ----------------------------------------------------
+        // FECHAR DOWNLOAD
+        // ----------------------------------------------------
+
+        var modalDownloads =
+
+            document.getElementById(
+                'modalDownloads'
+            );
+
+
+        if (
+            event.target ===
+            modalDownloads
+        ) {
+
+            fecharDownloads();
+
+        }
+
+
+        // ----------------------------------------------------
+        // FECHAR CITAÇÃO
+        // ----------------------------------------------------
+
+        var modalCitacao =
+
+            document.getElementById(
+                'modalCitacao'
+            );
+
+
+        if (
+            event.target ===
+            modalCitacao
+        ) {
+
+            fecharCitacao();
+
+        }
+
     }
 
 );
 
 </script>
-
 
 </body>
 
