@@ -64,7 +64,7 @@
 
 
         /* ======================================================
-           PAINEL DE RELATÓRIO
+           PAINEL
         ====================================================== */
 
         #painel-relatorio {
@@ -167,7 +167,7 @@
 
 
         /* ======================================================
-           CABEÇALHO DO RELATÓRIO
+           CABEÇALHO
         ====================================================== */
 
         .cabecalho-relatorio {
@@ -280,31 +280,57 @@
         }
 
 
-        .ranking-1,
-        .ranking-2,
-        .ranking-3 {
+        .ranking-1 {
+
+            background: #7f0000;
+
+        }
+
+
+        .ranking-2 {
 
             background: #b30000;
 
         }
 
 
-        .ranking-4,
-        .ranking-5 {
+        .ranking-3 {
+
+            background: #d7301f;
+
+        }
+
+
+        .ranking-4 {
 
             background: #ef6548;
 
         }
 
 
-        .ranking-6-18 {
+        .ranking-5 {
 
-            background: #999;
+            background: #fdae61;
 
         }
 
 
-        .ranking-19,
+        .ranking-6-18 {
+
+            background: #bdbdbd;
+
+        }
+
+
+        .ranking-19 {
+
+            background: #c6dbef;
+
+            color: #222;
+
+        }
+
+
         .ranking-20 {
 
             background: #9ecae1;
@@ -314,7 +340,13 @@
         }
 
 
-        .ranking-21,
+        .ranking-21 {
+
+            background: #6baed6;
+
+        }
+
+
         .ranking-22 {
 
             background: #4292c6;
@@ -322,7 +354,13 @@
         }
 
 
-        .ranking-23,
+        .ranking-23 {
+
+            background: #2171b5;
+
+        }
+
+
         .ranking-24 {
 
             background: #084594;
@@ -372,13 +410,6 @@
                 1px solid #ddd;
 
             word-break: break-word;
-
-        }
-
-
-        .tabela-relatorio tr:hover {
-
-            background: #f8f8f8;
 
         }
 
@@ -461,6 +492,30 @@
             margin-right: 7px;
 
             display: inline-block;
+
+        }
+
+
+        /* ======================================================
+           AVISO TI / UC
+        ====================================================== */
+
+        .aviso-sem-dados {
+
+            margin-top: 25px;
+
+            padding: 18px;
+
+            background: #f5f5f5;
+
+            border-left:
+                5px solid #999;
+
+            border-radius: 6px;
+
+            color: #555;
+
+            font-size: 15px;
 
         }
 
@@ -602,7 +657,7 @@
 
 
     <!-- ======================================================
-         CONTEÚDO DO RELATÓRIO
+         CONTEÚDO
     ======================================================= -->
 
     <div
@@ -742,7 +797,7 @@ function normalizarTexto(valor) {
 
 
 // ============================================================
-// 4. VERIFICAR SE É BRASIL
+// 4. VERIFICAR BRASIL
 // ============================================================
 
 function ehBrasil(feature) {
@@ -751,76 +806,52 @@ function ehBrasil(feature) {
         feature.properties || {};
 
 
-    // ========================================================
-    // PRIORIDADE 1: COUNTRY
-    // ========================================================
+    /*
+       Procuramos dinamicamente o campo do país.
 
-    if (
-        p.COUNTRY !== undefined &&
-        p.COUNTRY !== null
-    ) {
+       Assim não dependemos de p.COUNTRY,
+       que pode não existir em todos os arquivos.
+    */
 
-        const pais =
-            normalizarTexto(
-                p.COUNTRY
-            );
+    const camposPais =
+        Object.keys(p).filter(
+
+            campo => {
+
+                const campoNormalizado =
+                    normalizarTexto(campo)
+                        .replace(
+                            /[^a-z0-9]/g,
+                            ""
+                        );
 
 
-        return (
+                return [
 
-            pais === "brazil" ||
+                    "country",
 
-            pais === "brasil"
+                    "pais",
+
+                    "name0",
+
+                    "countryname",
+
+                    "nomepais",
+
+                    "nomedopais"
+
+                ].includes(
+                    campoNormalizado
+                );
+
+            }
 
         );
-
-    }
-
-
-    // ========================================================
-    // OUTROS CAMPOS POSSÍVEIS
-    // ========================================================
-
-    const camposPais = [
-
-        "Country",
-
-        "country",
-
-        "NAME_0",
-
-        "Name_0",
-
-        "name_0",
-
-        "PAIS",
-
-        "Pais",
-
-        "pais",
-
-        "COUNTRY_NAME",
-
-        "Country_Name",
-
-        "country_name"
-
-    ];
 
 
     for (
         const campo of camposPais
     ) {
-
-        if (
-            p[campo] === undefined ||
-            p[campo] === null
-        ) {
-
-            continue;
-
-        }
-
 
         const pais =
             normalizarTexto(
@@ -842,10 +873,6 @@ function ehBrasil(feature) {
 
     }
 
-
-    // ========================================================
-    // NÃO ENCONTROU PAÍS
-    // ========================================================
 
     return false;
 
@@ -915,7 +942,7 @@ async function carregarArquivos(
 
 
             // ==================================================
-            // FILTRO DOS ESTADOS
+            // FILTRO BRASIL
             // ==================================================
 
             if (somenteBrasil) {
@@ -927,20 +954,15 @@ async function carregarArquivos(
                 features =
                     features.filter(
 
-                        feature => {
-
-                            return ehBrasil(
-                                feature
-                            );
-
-                        }
+                        feature =>
+                            ehBrasil(feature)
 
                     );
 
 
                 console.log(
 
-                    `${arquivo}: ${features.length} feições mantidas como Brasil de ${totalAntes}`
+                    `${arquivo}: ${features.length} feições brasileiras de ${totalAntes}`
 
                 );
 
@@ -952,7 +974,9 @@ async function carregarArquivos(
             );
 
 
-        } catch (erro) {
+        }
+
+        catch (erro) {
 
             console.error(
 
@@ -967,11 +991,81 @@ async function carregarArquivos(
     }
 
 
+    // ========================================================
+    // REMOVER DUPLICADOS
+    // ========================================================
+
+    /*
+       Os arquivos dos Estados podem possuir
+       os mesmos estados em mais de uma parte.
+
+       Aqui usamos o nome do estado como chave.
+
+       Resultado:
+       São Paulo aparece uma vez,
+       Minas Gerais aparece uma vez etc.
+    */
+
+    const mapaUnico =
+        new Map();
+
+
+    todasFeatures.forEach(
+
+        feature => {
+
+            const nome =
+                normalizarTexto(
+                    obterNome(feature)
+                );
+
+
+            if (!nome) {
+
+                return;
+
+            }
+
+
+            if (
+                !mapaUnico.has(nome)
+            ) {
+
+                mapaUnico.set(
+
+                    nome,
+
+                    feature
+
+                );
+
+            }
+
+        }
+
+    );
+
+
+    const featuresUnicas =
+        Array.from(
+            mapaUnico.values()
+        );
+
+
     console.log(
 
-        "Total de feições carregadas:",
+        "Total original:",
 
         todasFeatures.length
+
+    );
+
+
+    console.log(
+
+        "Total após remover duplicados:",
+
+        featuresUnicas.length
 
     );
 
@@ -980,7 +1074,7 @@ async function carregarArquivos(
 
         type: "FeatureCollection",
 
-        features: todasFeatures
+        features: featuresUnicas
 
     };
 
@@ -1197,7 +1291,61 @@ function obterArea(feature) {
 
 
 // ============================================================
-// 9. CORES
+// 9. REGIÃO
+// ============================================================
+
+function obterRegiao(feature) {
+
+    const p =
+        feature.properties || {};
+
+
+    const campos = [
+
+        "region_des",
+
+        "Region",
+
+        "REGION",
+
+        "region_name",
+
+        "Region Name"
+
+    ];
+
+
+    for (
+        const campo of campos
+    ) {
+
+        if (
+
+            p[campo] !== undefined &&
+
+            p[campo] !== null &&
+
+            String(p[campo]).trim() !== ""
+
+        ) {
+
+            return String(
+                p[campo]
+            );
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+
+// ============================================================
+// 10. CORES
 // ============================================================
 
 function corRanking(rank) {
@@ -1275,7 +1423,7 @@ function corRanking(rank) {
 
 
 // ============================================================
-// 10. ESTILO
+// 11. ESTILO
 // ============================================================
 
 function estiloPorRanking(feature) {
@@ -1304,7 +1452,7 @@ function estiloPorRanking(feature) {
 
 
 // ============================================================
-// 11. ESCAPAR HTML
+// 12. ESCAPAR HTML
 // ============================================================
 
 function escaparHTML(valor) {
@@ -1351,7 +1499,7 @@ function escaparHTML(valor) {
 
 
 // ============================================================
-// 12. FORMATAÇÃO
+// 13. FORMATAÇÃO
 // ============================================================
 
 function formatarValor(valor) {
@@ -1386,28 +1534,6 @@ function formatarValor(valor) {
     }
 
 
-    if (
-        typeof valor === "boolean"
-    ) {
-
-        return valor
-            ? "Sim"
-            : "Não";
-
-    }
-
-
-    if (
-        typeof valor === "object"
-    ) {
-
-        return JSON.stringify(
-            valor
-        );
-
-    }
-
-
     return String(valor);
 
 }
@@ -1415,7 +1541,7 @@ function formatarValor(valor) {
 
 
 // ============================================================
-// 13. POPUP
+// 14. POPUP DO MAPA
 // ============================================================
 
 function popupRanking(
@@ -1489,7 +1615,7 @@ function popupRanking(
 
 
 // ============================================================
-// 14. GRUPOS
+// 15. GRUPOS
 // ============================================================
 
 const grupoEstados =
@@ -1510,7 +1636,7 @@ const grupoUC =
 
 
 // ============================================================
-// 15. DADOS
+// 16. DADOS
 // ============================================================
 
 let dadosEstados = null;
@@ -1524,7 +1650,7 @@ let dadosUC = null;
 
 
 // ============================================================
-// 16. CRIAR CAMADA
+// 17. CRIAR CAMADA
 // ============================================================
 
 function criarCamada(data) {
@@ -1550,7 +1676,7 @@ function criarCamada(data) {
 
 
 // ============================================================
-// 17. CARREGAR ESTADOS
+// 18. CARREGAR ESTADOS
 // ============================================================
 
 carregarArquivos(
@@ -1591,7 +1717,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 18. CARREGAR BIOMAS
+// 19. CARREGAR BIOMAS
 // ============================================================
 
 carregarArquivos(
@@ -1630,7 +1756,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 19. CARREGAR TERRAS INDÍGENAS
+// 20. CARREGAR TERRAS INDÍGENAS
 // ============================================================
 
 carregarArquivos(
@@ -1669,7 +1795,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 20. CARREGAR UNIDADES DE CONSERVAÇÃO
+// 21. CARREGAR UNIDADES DE CONSERVAÇÃO
 // ============================================================
 
 carregarArquivos(
@@ -1708,7 +1834,7 @@ carregarArquivos(
 
 
 // ============================================================
-// 21. CONTROLE DE CAMADAS
+// 22. CONTROLE DE CAMADAS
 // ============================================================
 
 const controleCamadas = {
@@ -1745,7 +1871,7 @@ L.control.layers(
 
 
 // ============================================================
-// 22. LEGENDA
+// 23. LEGENDA
 // ============================================================
 
 const legenda =
@@ -1851,7 +1977,7 @@ legenda.addTo(mapa);
 
 
 // ============================================================
-// 23. OBTER DADOS DA CAMADA
+// 24. OBTER DADOS DA CAMADA
 // ============================================================
 
 function obterDadosDaCamada(
@@ -1899,7 +2025,7 @@ function obterDadosDaCamada(
 
 
 // ============================================================
-// 24. OBTER GRUPO DA CAMADA
+// 25. OBTER GRUPO DA CAMADA
 // ============================================================
 
 function obterGrupoDaCamada(
@@ -1947,7 +2073,7 @@ function obterGrupoDaCamada(
 
 
 // ============================================================
-// 25. IDENTIFICADOR
+// 26. IDENTIFICADOR
 // ============================================================
 
 function obterIdentificador(
@@ -1964,17 +2090,7 @@ function obterIdentificador(
 
         "terrai_cod",
 
-        "Cnuc",
-
-        "region_id",
-
-        "NAME_1",
-
-        "NM_ESTADO",
-
-        "ID",
-
-        "id"
+        "Cnuc"
 
     ];
 
@@ -2009,7 +2125,29 @@ function obterIdentificador(
 
 
 // ============================================================
-// 26. SELEÇÃO DA CAMADA NO RELATÓRIO
+// 27. CAMADA TEM RELATÓRIO COMPLETO?
+// ============================================================
+
+function temRelatorioCompleto(
+
+    nomeCamada
+
+) {
+
+    return (
+
+        nomeCamada === "Estados" ||
+
+        nomeCamada === "Biomas"
+
+    );
+
+}
+
+
+
+// ============================================================
+// 28. SELEÇÃO DA CAMADA
 // ============================================================
 
 document
@@ -2091,7 +2229,7 @@ document
 
 
             // --------------------------------------------------
-            // DADOS AINDA CARREGANDO
+            // AINDA CARREGANDO
             // --------------------------------------------------
 
             if (!dados) {
@@ -2104,32 +2242,6 @@ document
                     </strong>...
 
                 `;
-
-
-                setTimeout(
-
-                    () => {
-
-                        document
-
-                            .getElementById(
-                                "seletor-camada"
-                            )
-
-                            .dispatchEvent(
-
-                                new Event(
-                                    "change"
-                                )
-
-                            );
-
-                    },
-
-                    800
-
-                );
-
 
                 return;
 
@@ -2180,8 +2292,11 @@ document
 
 
             // --------------------------------------------------
-            // PREENCHER ENTIDADES
+            // CRIAR LISTA DE NOMES
             // --------------------------------------------------
+
+            const entidades = [];
+
 
             dados.features.forEach(
 
@@ -2193,31 +2308,97 @@ document
 
                 ) => {
 
-                    const nome =
-                        obterNome(
-                            feature
+                    entidades.push({
+
+                        index:
+                            index,
+
+                        nome:
+                            obterNome(
+                                feature
+                            ),
+
+                        identificador:
+                            obterIdentificador(
+                                feature
+                            )
+
+                    });
+
+                }
+
+            );
+
+
+            // --------------------------------------------------
+            // CONTAGEM DE NOMES
+            // --------------------------------------------------
+
+            const contagemNomes = {};
+
+
+            entidades.forEach(
+
+                entidade => {
+
+                    const chave =
+                        normalizarTexto(
+                            entidade.nome
                         );
-
-
-                    const identificador =
-                        obterIdentificador(
-                            feature
-                        );
-
-
-                    let texto =
-                        nome;
 
 
                     if (
-                        identificador
+                        !contagemNomes[chave]
                     ) {
 
-                        texto +=
-                            ` — ${identificador}`;
+                        contagemNomes[chave] =
+                            0;
 
                     }
 
+
+                    contagemNomes[chave]++;
+
+                }
+
+            );
+
+
+            // --------------------------------------------------
+            // ORDENAR ALFABETICAMENTE
+            // --------------------------------------------------
+
+            entidades.sort(
+
+                (a, b) => {
+
+                    return a.nome.localeCompare(
+
+                        b.nome,
+
+                        "pt-BR",
+
+                        {
+
+                            sensitivity:
+                                "base"
+
+                        }
+
+                    );
+
+                }
+
+            );
+
+
+            // --------------------------------------------------
+            // PREENCHER SELETOR
+            // --------------------------------------------------
+
+            entidades.forEach(
+
+                entidade => {
 
                     const option =
                         document.createElement(
@@ -2226,7 +2407,51 @@ document
 
 
                     option.value =
-                        index;
+                        entidade.index;
+
+
+                    let texto =
+                        entidade.nome;
+
+
+                    /*
+                       Para Estados e Biomas,
+                       mostrar somente o nome.
+
+                       Para TI e UC, se houver nomes
+                       duplicados, acrescentar o código.
+                    */
+
+                    if (
+
+                        (
+
+                            nomeCamada ===
+                            "Terras Indígenas" ||
+
+                            nomeCamada ===
+                            "Unidades de Conservação"
+
+                        ) &&
+
+                        contagemNomes[
+                            normalizarTexto(
+                                entidade.nome
+                            )
+                        ] > 1
+
+                    ) {
+
+                        if (
+                            entidade.identificador
+                        ) {
+
+                            texto +=
+                                ` — ${entidade.identificador}`;
+
+                        }
+
+                    }
 
 
                     option.textContent =
@@ -2247,12 +2472,35 @@ document
                 "flex";
 
 
-            conteudo.innerHTML = `
+            // --------------------------------------------------
+            // MENSAGEM
+            // --------------------------------------------------
 
-                Agora selecione
-                o item que deseja consultar.
+            if (
+                temRelatorioCompleto(
+                    nomeCamada
+                )
+            ) {
 
-            `;
+                conteudo.innerHTML = `
+
+                    Agora selecione
+                    o item que deseja consultar.
+
+                `;
+
+            }
+
+            else {
+
+                conteudo.innerHTML = `
+
+                    Selecione uma área para
+                    visualizar o ranking.
+
+                `;
+
+            }
 
         }
 
@@ -2261,7 +2509,7 @@ document
 
 
 // ============================================================
-// 27. SELEÇÃO DA ENTIDADE
+// 29. SELEÇÃO DA ENTIDADE
 // ============================================================
 
 document
@@ -2287,6 +2535,15 @@ document
                     .value;
 
 
+            if (
+                this.value === ""
+            ) {
+
+                return;
+
+            }
+
+
             const indice =
                 Number(
                     this.value
@@ -2297,26 +2554,6 @@ document
                 document.getElementById(
                     "conteudo-relatorio"
                 );
-
-
-            if (
-
-                !nomeCamada ||
-
-                this.value === ""
-
-            ) {
-
-                conteudo.innerHTML = `
-
-                    Selecione um item
-                    para visualizar o relatório.
-
-                `;
-
-                return;
-
-            }
 
 
             const dados =
@@ -2349,13 +2586,42 @@ document
                 dados.features[indice];
 
 
-            gerarRelatorio(
+            // ==================================================
+            // TI E UC
+            // ==================================================
 
-                feature,
+            if (
+                !temRelatorioCompleto(
+                    nomeCamada
+                )
+            ) {
 
-                nomeCamada
+                gerarRelatorioSimplificado(
 
-            );
+                    feature,
+
+                    nomeCamada
+
+                );
+
+            }
+
+
+            // ==================================================
+            // ESTADOS E BIOMAS
+            // ==================================================
+
+            else {
+
+                gerarRelatorio(
+
+                    feature,
+
+                    nomeCamada
+
+                );
+
+            }
 
 
             // --------------------------------------------------
@@ -2421,7 +2687,172 @@ document
 
 
 // ============================================================
-// 28. GERAR RELATÓRIO
+// 30. RELATÓRIO SIMPLIFICADO
+// ============================================================
+
+function gerarRelatorioSimplificado(
+
+    feature,
+
+    nomeCamada
+
+) {
+
+    const conteudo =
+        document.getElementById(
+            "conteudo-relatorio"
+        );
+
+
+    const nome =
+        obterNome(feature);
+
+
+    const rank =
+        obterRanking(feature);
+
+
+    let rankingHTML =
+        "Não disponível";
+
+
+    if (
+        rank !== null
+    ) {
+
+        let classe =
+            "ranking-6-18";
+
+
+        if (
+
+            rank >= 1 &&
+
+            rank <= 5
+
+        ) {
+
+            classe =
+                `ranking-${rank}`;
+
+        }
+
+
+        else if (
+
+            rank >= 19 &&
+
+            rank <= 24
+
+        ) {
+
+            classe =
+                `ranking-${rank}`;
+
+        }
+
+
+        rankingHTML = `
+
+            <span
+                class="
+                    ranking
+                    ${classe}
+                "
+            >
+
+                ${rank}
+
+            </span>
+
+        `;
+
+    }
+
+
+    conteudo.className = "";
+
+
+    conteudo.innerHTML = `
+
+        <div class="cabecalho-relatorio">
+
+            <h4>
+
+                ${escaparHTML(nome)}
+
+            </h4>
+
+            <p>
+
+                <strong>Camada:</strong>
+
+                ${escaparHTML(nomeCamada)}
+
+            </p>
+
+        </div>
+
+
+        <div class="resumo-relatorio">
+
+            <div class="cartao-resumo">
+
+                <div class="titulo">
+
+                    Área selecionada
+
+                </div>
+
+                <div class="valor">
+
+                    ${escaparHTML(nome)}
+
+                </div>
+
+            </div>
+
+
+            <div class="cartao-resumo">
+
+                <div class="titulo">
+
+                    Ranking
+
+                </div>
+
+                <div class="valor">
+
+                    ${rankingHTML}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="aviso-sem-dados">
+
+            <strong>
+                Dados adicionais:
+            </strong>
+
+            <br><br>
+
+            Não há dados adicionais disponíveis
+            para esta camada além do ranking.
+
+        </div>
+
+    `;
+
+}
+
+
+
+// ============================================================
+// 31. RELATÓRIO COMPLETO
 // ============================================================
 
 function gerarRelatorio(
@@ -2438,10 +2869,6 @@ function gerarRelatorio(
         );
 
 
-    const p =
-        feature.properties || {};
-
-
     const nome =
         obterNome(feature);
 
@@ -2454,6 +2881,10 @@ function gerarRelatorio(
         obterArea(feature);
 
 
+    const regiao =
+        obterRegiao(feature);
+
+
     // ========================================================
     // CABEÇALHO
     // ========================================================
@@ -2463,8 +2894,11 @@ function gerarRelatorio(
         <div class="cabecalho-relatorio">
 
             <h4>
+
                 ${escaparHTML(nome)}
+
             </h4>
+
 
             <p>
 
@@ -2542,7 +2976,11 @@ function gerarRelatorio(
 
 
         else if (
-            rank >= 19
+
+            rank >= 19 &&
+
+            rank <= 24
+
         ) {
 
             classeRanking =
@@ -2622,7 +3060,6 @@ function gerarRelatorio(
     `;
 
 
-
     // ========================================================
     // INFORMAÇÕES
     // ========================================================
@@ -2650,334 +3087,123 @@ function gerarRelatorio(
     `;
 
 
-    // ========================================================
-    // CAMPOS A IGNORAR
-    // ========================================================
+    // --------------------------------------------------------
+    // NOME
+    // --------------------------------------------------------
 
-    const camposIgnorar = [
+    html += `
 
-        "geometry",
+        <tr>
 
-        "shape",
+            <th>
 
-        "Shape_Area",
+                Nome
 
-        "Shape_Length",
+            </th>
 
-        "OBJECTID",
+            <td>
 
-        "FID",
+                ${escaparHTML(nome)}
 
-        "id",
+            </td>
 
-        "region_id"
+        </tr>
 
-    ];
+    `;
 
 
-    // ========================================================
-    // CAMPOS PRINCIPAIS
-    // ========================================================
+    // --------------------------------------------------------
+    // RANKING
+    // --------------------------------------------------------
 
-    const camposPreferenciais = [
+    if (
+        rank !== null
+    ) {
 
-        "region_nam",
+        html += `
 
-        "reigon_nam",
+            <tr>
 
-        "Region Name",
+                <th>
 
-        "NAME_1",
+                    Ranking
 
-        "NM_ESTADO",
+                </th>
 
-        "NM_UF",
+                <td>
 
-        "NAME",
+                    ${rank}
 
-        "nome",
+                </td>
 
-        "Nome",
+            </tr>
 
-        "name",
+        `;
 
-        "Rank_Category",
+    }
 
-        "Burned Area Rank",
 
-        "Burned_Area_Rank",
+    // --------------------------------------------------------
+    // ÁREA
+    // --------------------------------------------------------
 
-        "Ranking",
+    if (
+        area !== null
+    ) {
 
-        "ranking",
+        html += `
 
-        "Rank",
+            <tr>
 
-        "rank",
+                <th>
 
-        "Burned Area (km^2)",
+                    Área queimada
 
-        "Burned_Area_km2",
+                </th>
 
-        "Burned Area",
+                <td>
 
-        "burned_area",
+                    ${formatarValor(area)}
+                    km²
 
-        "area_queimada",
+                </td>
 
-        "Area Queimada",
+            </tr>
 
-        "region_des",
+        `;
 
-        "Region",
+    }
 
-        "terrai_cod",
 
-        "Cnuc"
+    // --------------------------------------------------------
+    // REGIÃO
+    // --------------------------------------------------------
 
-    ];
+    if (
+        regiao !== null
+    ) {
 
+        html += `
 
-    const camposAdicionados =
-        new Set();
+            <tr>
 
+                <th>
 
-    // ========================================================
-    // CAMPOS PREFERENCIAIS
-    // ========================================================
+                    Região
 
-    camposPreferenciais.forEach(
+                </th>
 
-        campo => {
+                <td>
 
-            if (
+                    ${escaparHTML(regiao)}
 
-                !Object.prototype
-                    .hasOwnProperty
-                    .call(
-                        p,
-                        campo
-                    )
+                </td>
 
-            ) {
+            </tr>
 
-                return;
+        `;
 
-            }
-
-
-            if (
-                camposIgnorar
-                    .includes(campo)
-            ) {
-
-                return;
-
-            }
-
-
-            if (
-                camposAdicionados
-                    .has(campo)
-            ) {
-
-                return;
-
-            }
-
-
-            camposAdicionados
-                .add(campo);
-
-
-            let valor =
-                formatarValor(
-                    p[campo]
-                );
-
-
-            // ------------------------------------------------
-            // RANKING
-            // ------------------------------------------------
-
-            if (
-
-                [
-
-                    "Rank_Category",
-
-                    "Burned Area Rank",
-
-                    "Burned_Area_Rank",
-
-                    "Ranking",
-
-                    "ranking",
-
-                    "Rank",
-
-                    "rank"
-
-                ].includes(campo)
-
-            ) {
-
-                const r =
-                    Number(
-                        p[campo]
-                    );
-
-
-                if (
-                    Number.isFinite(r)
-                ) {
-
-                    let classe =
-                        "ranking-6-18";
-
-
-                    if (
-
-                        r >= 1 &&
-
-                        r <= 5
-
-                    ) {
-
-                        classe =
-                            `ranking-${r}`;
-
-                    }
-
-
-                    else if (
-                        r >= 19
-                    ) {
-
-                        classe =
-                            `ranking-${r}`;
-
-                    }
-
-
-                    valor = `
-
-                        <span
-                            class="
-                                ranking
-                                ${classe}
-                            "
-                        >
-
-                            ${r}
-
-                        </span>
-
-                    `;
-
-                }
-
-            }
-
-
-            html += `
-
-                <tr>
-
-                    <th>
-
-                        ${escaparHTML(campo)}
-
-                    </th>
-
-                    <td>
-
-                        ${valor}
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        }
-
-    );
-
-
-
-    // ========================================================
-    // CAMPOS ADICIONAIS
-    // ========================================================
-
-    Object.keys(p).forEach(
-
-        campo => {
-
-            if (
-                camposAdicionados
-                    .has(campo)
-            ) {
-
-                return;
-
-            }
-
-
-            if (
-                camposIgnorar
-                    .includes(campo)
-            ) {
-
-                return;
-
-            }
-
-
-            const valor =
-                formatarValor(
-                    p[campo]
-                );
-
-
-            // Não mostrar estruturas gigantes
-
-            if (
-                valor.length > 500
-            ) {
-
-                return;
-
-            }
-
-
-            camposAdicionados
-                .add(campo);
-
-
-            html += `
-
-                <tr>
-
-                    <th>
-
-                        ${escaparHTML(campo)}
-
-                    </th>
-
-                    <td>
-
-                        ${escaparHTML(valor)}
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        }
-
-    );
+    }
 
 
     html += `
@@ -2987,7 +3213,6 @@ function gerarRelatorio(
         </table>
 
     `;
-
 
 
     // ========================================================
@@ -3027,7 +3252,7 @@ function gerarRelatorio(
 
 
     // ========================================================
-    // CRIAR GRÁFICO
+    // GRÁFICO
     // ========================================================
 
     if (
@@ -3051,7 +3276,7 @@ function gerarRelatorio(
 
 
 // ============================================================
-// 29. GRÁFICO
+// 32. GRÁFICO
 // ============================================================
 
 function criarGraficoArea(
