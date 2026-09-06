@@ -4627,6 +4627,30 @@ function alternarPainelVetor() {
 // ============================================================
 // 27. CONTROLE MUNICIPAL
 // ============================================================
+//
+// A pasta dos municípios está dentro de:
+//
+// main/
+// ├── index.html
+// └── municipios_ranking/
+//      ├── AC_01.geojson
+//      ├── AC_02.geojson
+//      ├── ...
+//      ├── SP_01.geojson
+//      └── ...
+//
+// Como o HTML está em "main", usamos:
+//
+// ./municipios_ranking/
+//
+// ============================================================
+
+const BASE_MUNICIPIOS =
+    new URL(
+        "municipios_ranking/",
+        document.baseURI
+    ).href;
+
 
 const municipiosCarregados =
     new Set();
@@ -4638,6 +4662,13 @@ const municipiosEmCarregamento =
 
 let estadoMunicipiosAtual =
     null;
+
+
+// Token para impedir que um carregamento antigo
+// continue aparecendo depois que outro estado foi clicado.
+
+let municipioLoadToken =
+    0;
 
 
 // ============================================================
@@ -4683,28 +4714,32 @@ function esconderStatusMunicipios() {
 
 
 // ============================================================
-// 30. GERAR ARQUIVOS MUNICIPAIS
+// 30. GERAR NOMES DOS ARQUIVOS MUNICIPAIS
 // ============================================================
 //
-// Mantemos a estrutura dos seus arquivos:
+// O sistema aceita os dois formatos:
 //
 // AC_01.geojson
-// AC_02.geojson
-// ...
+// AC_1.geojson
 //
-// O sistema testa até 50 arquivos.
-// Arquivos inexistentes são ignorados.
+// e assim por diante.
+//
+// Testamos até 100 arquivos.
+//
+// Isso evita que o sistema dependa de uma quantidade
+// fixa de arquivos por estado.
 //
 // ============================================================
 
 function gerarArquivosMunicipios(sigla) {
 
-    const arquivos = [];
+    const arquivos =
+        [];
 
 
     for (
         let i = 1;
-        i <= 50;
+        i <= 100;
         i++
     ) {
 
@@ -4715,9 +4750,29 @@ function gerarArquivosMunicipios(sigla) {
             );
 
 
+        // Formato principal
         arquivos.push(
             `${sigla}_${numero}.geojson`
         );
+
+
+        // Formato alternativo
+        // somente quando for diferente
+
+        const alternativo =
+            `${sigla}_${i}.geojson`;
+
+
+        if (
+            alternativo !==
+            `${sigla}_${numero}.geojson`
+        ) {
+
+            arquivos.push(
+                alternativo
+            );
+
+        }
 
     }
 
@@ -4734,32 +4789,84 @@ function gerarArquivosMunicipios(sigla) {
 async function carregarArquivoMunicipio(
 
     arquivo,
-    sigla
+    sigla,
+    token
 
 ) {
 
+    // ========================================================
+    // Se o usuário clicou em outro estado enquanto este
+    // arquivo estava sendo carregado, interrompemos o
+    // processamento visual.
+    // ========================================================
+
+    if (
+        token !== municipioLoadToken
+    ) {
+
+        return {
+
+            cancelado:
+                true,
+
+            quantidade:
+                0
+
+        };
+
+    }
+
+
     const url =
-        BASE_MUNICIPIOS +
-        arquivo;
+        new URL(
+            arquivo,
+            BASE_MUNICIPIOS
+        ).href;
 
 
     console.log(
-        "Tentando carregar município:",
+        "[MUNICÍPIOS] Tentando:",
         url
     );
 
 
-    const resposta =
-        await fetch(
+    let resposta;
 
-            url,
 
-            {
-                cache:
-                    "no-cache"
-            }
+    try {
 
+        resposta =
+            await fetch(
+
+                url,
+
+                {
+                    method:
+                        "GET",
+
+                    cache:
+                        "no-cache"
+
+                }
+
+            );
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "[MUNICÍPIOS] Erro de rede:",
+            arquivo,
+            erro
         );
+
+
+        throw new Error(
+            `${arquivo}: falha de conexão`
+        );
+
+    }
 
 
     if (
@@ -4773,8 +4880,23 @@ async function carregarArquivoMunicipio(
     }
 
 
-    const bruto =
-        await resposta.json();
+    let bruto;
+
+
+    try {
+
+        bruto =
+            await resposta.json();
+
+    }
+
+    catch (erro) {
+
+        throw new Error(
+            `${arquivo}: resposta não é um GeoJSON válido`
+        );
+
+    }
 
 
     const dados =
@@ -4795,13 +4917,53 @@ async function carregarArquivoMunicipio(
     }
 
 
+    // ========================================================
+    // Verificação novamente após o await
+    // ========================================================
+
+    if (
+        token !== municipioLoadToken
+    ) {
+
+        return {
+
+            cancelado:
+                true,
+
+            quantidade:
+                0
+
+        };
+
+    }
+
+
     criarCamadaMunicipios(
         dados,
         sigla
     );
 
 
-    return dados.features.length;
+    console.log(
+        "[MUNICÍPIOS] ✓ Carregado:",
+        arquivo,
+        "| feições:",
+        dados.features.length
+    );
+
+
+    return {
+
+        cancelado:
+            false,
+
+        quantidade:
+            dados.features.length,
+
+        arquivo:
+            arquivo
+
+    };
 
 }
 
@@ -4822,7 +4984,7 @@ async function carregarMunicipiosEstado(
     ) {
 
         console.warn(
-            "UF inválida:",
+            "[MUNICÍPIOS] UF inválida:",
             sigla
         );
 
@@ -4831,20 +4993,30 @@ async function carregarMunicipiosEstado(
     }
 
 
+    // ========================================================
+    // Criar novo token.
+    //
+    // Qualquer carregamento anterior fica automaticamente
+    // inválido.
+    // ========================================================
+
+    const token =
+        ++municipioLoadToken;
+
+
     estadoMunicipiosAtual =
         sigla;
 
 
     // ========================================================
-    // IMPORTANTE:
-    // remover os municípios da UF anterior.
+    // REMOVER MUNICÍPIOS ANTERIORES
     // ========================================================
 
     grupoMunicipios.clearLayers();
 
 
     // ========================================================
-    // Se já carregou anteriormente, não baixar novamente.
+    // Se já foi carregado anteriormente
     // ========================================================
 
     if (
@@ -4863,9 +5035,17 @@ async function carregarMunicipiosEstado(
         );
 
 
+        console.log(
+            `[MUNICÍPIOS] ${sigla} já estava carregado.`
+        );
+
+
         setTimeout(
+
             esconderStatusMunicipios,
+
             1800
+
         );
 
 
@@ -4873,6 +5053,10 @@ async function carregarMunicipiosEstado(
 
     }
 
+
+    // ========================================================
+    // Evitar dois carregamentos simultâneos da mesma UF
+    // ========================================================
 
     if (
         municipiosEmCarregamento.has(sigla)
@@ -4890,8 +5074,41 @@ async function carregarMunicipiosEstado(
 
     mostrarStatusMunicipios(
 
-        `Carregando municípios de ${ESTADOS_BRASIL[sigla]}...`
+        `Localizando municípios de ${ESTADOS_BRASIL[sigla]}...`
 
+    );
+
+
+    console.log(
+        "================================================"
+    );
+
+
+    console.log(
+        "[MUNICÍPIOS] INÍCIO DO CARREGAMENTO"
+    );
+
+
+    console.log(
+        "[MUNICÍPIOS] Estado:",
+        sigla
+    );
+
+
+    console.log(
+        "[MUNICÍPIOS] Pasta:",
+        BASE_MUNICIPIOS
+    );
+
+
+    console.log(
+        "[MUNICÍPIOS] Página:",
+        window.location.href
+    );
+
+
+    console.log(
+        "================================================"
     );
 
 
@@ -4910,7 +5127,9 @@ async function carregarMunicipiosEstado(
 
 
     // ========================================================
-    // Fazer as requisições em paralelo.
+    // Executar as requisições em paralelo.
+    //
+    // Arquivos inexistentes são simplesmente ignorados.
     // ========================================================
 
     const resultados =
@@ -4923,38 +5142,42 @@ async function carregarMunicipiosEstado(
 
                     try {
 
-                        const quantidade =
+                        return await
+                            carregarArquivoMunicipio(
 
-                            await carregarArquivoMunicipio(
                                 arquivo,
-                                sigla
+
+                                sigla,
+
+                                token
+
                             );
-
-
-                        return {
-
-                            sucesso:
-                                true,
-
-                            arquivo:
-                                arquivo,
-
-                            quantidade:
-                                quantidade
-
-                        };
 
                     }
 
                     catch (erro) {
 
+                        console.warn(
+
+                            "[MUNICÍPIOS] Não encontrado:",
+                            arquivo
+
+                        );
+
+
                         return {
+
+                            cancelado:
+                                false,
 
                             sucesso:
                                 false,
 
                             arquivo:
                                 arquivo,
+
+                            quantidade:
+                                0,
 
                             erro:
                                 erro.message
@@ -4970,25 +5193,48 @@ async function carregarMunicipiosEstado(
         );
 
 
+    // ========================================================
+    // Se outro estado foi clicado durante o carregamento,
+    // não usamos mais este resultado.
+    // ========================================================
+
+    if (
+        token !== municipioLoadToken
+    ) {
+
+        municipiosEmCarregamento.delete(
+            sigla
+        );
+
+
+        console.log(
+            `[MUNICÍPIOS] Carregamento de ${sigla} cancelado visualmente.`
+        );
+
+
+        return;
+
+    }
+
+
+    // ========================================================
+    // Somar resultados
+    // ========================================================
+
     resultados.forEach(
 
         resultado => {
 
             if (
-                resultado.sucesso
+                resultado &&
+                resultado.quantidade > 0
             ) {
 
                 encontrados +=
                     resultado.quantidade;
 
-                arquivosEncontrados++;
 
-                console.log(
-                    "Arquivo municipal carregado:",
-                    resultado.arquivo,
-                    resultado.quantidade,
-                    "feições"
-                );
+                arquivosEncontrados++;
 
             }
 
@@ -5003,7 +5249,7 @@ async function carregarMunicipiosEstado(
 
 
     // ========================================================
-    // MOSTRAR RESULTADO
+    // MUNICÍPIOS ENCONTRADOS
     // ========================================================
 
     if (
@@ -5028,13 +5274,38 @@ async function carregarMunicipiosEstado(
 
 
         console.log(
-            `${sigla}: ${arquivosEncontrados} arquivo(s) municipal(is) carregado(s).`
+            "================================================"
+        );
+
+
+        console.log(
+            `[MUNICÍPIOS] ✓ ${sigla} CONCLUÍDO`
+        );
+
+
+        console.log(
+            "[MUNICÍPIOS] Arquivos encontrados:",
+            arquivosEncontrados
+        );
+
+
+        console.log(
+            "[MUNICÍPIOS] Feições encontradas:",
+            encontrados
+        );
+
+
+        console.log(
+            "================================================"
         );
 
 
         setTimeout(
+
             esconderStatusMunicipios,
+
             3000
+
         );
 
     }
@@ -5043,7 +5314,7 @@ async function carregarMunicipiosEstado(
 
         mostrarStatusMunicipios(
 
-            `Nenhum município encontrado para ${sigla}.`
+            `Nenhum município encontrado para ${ESTADOS_BRASIL[sigla]}.`
 
         );
 
@@ -5052,26 +5323,38 @@ async function carregarMunicipiosEstado(
             "================================================"
         );
 
-        console.error(
-            "ERRO AO CARREGAR MUNICÍPIOS"
-        );
 
         console.error(
-            "UF:",
+            "[MUNICÍPIOS] ✗ NENHUM ARQUIVO ENCONTRADO"
+        );
+
+
+        console.error(
+            "[MUNICÍPIOS] UF:",
             sigla
         );
 
+
         console.error(
-            "Pasta:",
+            "[MUNICÍPIOS] Pasta:",
             BASE_MUNICIPIOS
         );
 
+
         console.error(
-            "Exemplo procurado:",
-            BASE_MUNICIPIOS +
-            sigla +
-            "_01.geojson"
+            "[MUNICÍPIOS] Primeiro arquivo testado:",
+            new URL(
+                `${sigla}_01.geojson`,
+                BASE_MUNICIPIOS
+            ).href
         );
+
+
+        console.error(
+            "[MUNICÍPIOS] URL atual:",
+            window.location.href
+        );
+
 
         console.error(
             "================================================"
@@ -5079,8 +5362,11 @@ async function carregarMunicipiosEstado(
 
 
         setTimeout(
+
             esconderStatusMunicipios,
+
             5000
+
         );
 
     }
@@ -5110,11 +5396,10 @@ function marcarCamadaMunicipal(
 // ============================================================
 
 function ajustarMunicipiosAoEstado(
-    sigla
-) {
 
-    // Mantido para compatibilidade
-    // com o restante do dashboard.
+    sigla
+
+) {
 
     const camadas =
         grupoMunicipios
@@ -5130,12 +5415,13 @@ function ajustarMunicipiosAoEstado(
 
 
     console.log(
-        `Camadas municipais de ${sigla}:`,
+
+        `[MUNICÍPIOS] Camadas municipais de ${sigla}:`,
         camadas.length
+
     );
 
 }
-
 
 // ============================================================
 // 35. CONTROLE DE CAMADAS
