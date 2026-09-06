@@ -2703,28 +2703,7 @@
 
 
 // ============================================================
-// 1. CONFIGURAÇÃO DOS MUNICÍPIOS
-// ============================================================
-//
-// A pasta deve estar junto do HTML:
-//
-// index.html
-// municipios_ranking/
-//     AC_01.geojson
-//     AC_02.geojson
-//     AM_01.geojson
-//     AM_02.geojson
-//     ...
-//
-// O "./" é importante.
-// ============================================================
-
-const BASE_MUNICIPIOS =
-    "./municipios_ranking/";
-
-
-// ============================================================
-// 2. CONFIGURAÇÃO DO MAPA
+// 1. CONFIGURAÇÃO DO MAPA
 // ============================================================
 
 const map = L.map(
@@ -2767,7 +2746,7 @@ L.tileLayer(
 
 
 // ============================================================
-// 3. GRUPOS PRINCIPAIS
+// 2. GRUPOS PRINCIPAIS
 // ============================================================
 
 const grupoEstados =
@@ -2783,7 +2762,7 @@ const grupoMunicipios =
 
 
 // ============================================================
-// 4. ARQUIVOS ESTADOS
+// 3. ARQUIVOS ESTADOS
 // ============================================================
 
 const arquivosEstados = [
@@ -2796,7 +2775,7 @@ const arquivosEstados = [
 
 
 // ============================================================
-// 5. ARQUIVOS BIOMAS
+// 4. ARQUIVOS BIOMAS
 // ============================================================
 
 const arquivosBiomas = [
@@ -2811,7 +2790,7 @@ const arquivosBiomas = [
 
 
 // ============================================================
-// 6. CORES DO RANKING
+// 5. CORES DO RANKING
 // ============================================================
 
 const coresRanking = {
@@ -2847,7 +2826,7 @@ const coresRanking = {
 
 
 // ============================================================
-// 7. ESTADOS
+// 6. ESTADOS
 // ============================================================
 
 const ESTADOS_BRASIL = {
@@ -2931,13 +2910,12 @@ Object.entries(
 
 
 // ============================================================
-// 8. PROPRIEDADE
+// 7. PROPRIEDADE
 // ============================================================
 
 function obterPropriedade(
 
     feature,
-
     nomes
 
 ) {
@@ -2975,7 +2953,7 @@ function obterPropriedade(
 
 
 // ============================================================
-// 9. NOME
+// 8. NOME
 // ============================================================
 
 function obterNome(feature) {
@@ -3021,7 +2999,7 @@ function obterNome(feature) {
 
 
 // ============================================================
-// 10. SIGLA DO ESTADO
+// 9. SIGLA DO ESTADO
 // ============================================================
 
 function obterSiglaEstado(feature) {
@@ -3141,7 +3119,7 @@ function obterSiglaEstado(feature) {
 
 
 // ============================================================
-// 11. NOME PADRONIZADO DO ESTADO
+// 10. NOME PADRONIZADO DO ESTADO
 // ============================================================
 
 function obterNomeEstadoPadronizado(feature) {
@@ -3156,6 +3134,27 @@ function obterNomeEstadoPadronizado(feature) {
 
 
     return ESTADOS_BRASIL[sigla];
+
+}
+
+
+// ============================================================
+// 11. VERIFICAR SE A FEIÇÃO É ESTADO DO BRASIL
+// ============================================================
+
+function ehEstadoDoBrasil(feature) {
+
+    const sigla =
+        obterSiglaEstado(feature);
+
+
+    return (
+
+        sigla !== null &&
+
+        ESTADOS_BRASIL[sigla] !== undefined
+
+    );
 
 }
 
@@ -3227,6 +3226,7 @@ function obterArea(feature) {
 
                 "Burned Area (km^2)",
                 "Burned Area (km²)",
+                "Burned Area (km2)",
                 "Burned_Area_km2",
                 "Burned Area",
                 "burned_area",
@@ -4050,11 +4050,6 @@ function criarCamadaMunicipios(
         );
 
 
-    // ========================================================
-    // CORREÇÃO IMPORTANTE:
-    // registrar a UF na própria camada.
-    // ========================================================
-
     marcarCamadaMunicipal(
         camada,
         sigla
@@ -4625,27 +4620,29 @@ function alternarPainelVetor() {
 
 
 // ============================================================
-// 27. CONTROLE MUNICIPAL
+// 27. CONFIGURAÇÃO DOS MUNICÍPIOS
 // ============================================================
 //
-// A pasta dos municípios está dentro de:
+// IMPORTANTE:
+//
+// index.html
+// municipios_ranking/
+//     AC_01.geojson
+//     AC_02.geojson
+//     ...
+//
+// Portanto:
 //
 // main/
 // ├── index.html
 // └── municipios_ranking/
-//      ├── AC_01.geojson
-//      ├── AC_02.geojson
-//      ├── ...
-//      ├── SP_01.geojson
-//      └── ...
 //
-// Como o HTML está em "main", usamos:
-//
-// ./municipios_ranking/
+// O caminho abaixo é relativo ao index.html.
 //
 // ============================================================
 
 const BASE_MUNICIPIOS =
+
     new URL(
         "municipios_ranking/",
         document.baseURI
@@ -4664,9 +4661,6 @@ let estadoMunicipiosAtual =
     null;
 
 
-// Token para impedir que um carregamento antigo
-// continue aparecendo depois que outro estado foi clicado.
-
 let municipioLoadToken =
     0;
 
@@ -4681,6 +4675,11 @@ function mostrarStatusMunicipios(texto) {
         document.getElementById(
             "municipios-status"
         );
+
+
+    if (!elemento) {
+        return;
+    }
 
 
     elemento.innerText =
@@ -4706,6 +4705,11 @@ function esconderStatusMunicipios() {
         );
 
 
+    if (!elemento) {
+        return;
+    }
+
+
     elemento.classList.remove(
         "visivel"
     );
@@ -4715,20 +4719,6 @@ function esconderStatusMunicipios() {
 
 // ============================================================
 // 30. GERAR NOMES DOS ARQUIVOS MUNICIPAIS
-// ============================================================
-//
-// O sistema aceita os dois formatos:
-//
-// AC_01.geojson
-// AC_1.geojson
-//
-// e assim por diante.
-//
-// Testamos até 100 arquivos.
-//
-// Isso evita que o sistema dependa de uma quantidade
-// fixa de arquivos por estado.
-//
 // ============================================================
 
 function gerarArquivosMunicipios(sigla) {
@@ -4750,26 +4740,26 @@ function gerarArquivosMunicipios(sigla) {
             );
 
 
-        // Formato principal
+        const nomePrincipal =
+            `${sigla}_${numero}.geojson`;
+
+
         arquivos.push(
-            `${sigla}_${numero}.geojson`
+            nomePrincipal
         );
 
 
-        // Formato alternativo
-        // somente quando for diferente
-
-        const alternativo =
+        const nomeAlternativo =
             `${sigla}_${i}.geojson`;
 
 
         if (
-            alternativo !==
-            `${sigla}_${numero}.geojson`
+            nomeAlternativo !==
+            nomePrincipal
         ) {
 
             arquivos.push(
-                alternativo
+                nomeAlternativo
             );
 
         }
@@ -4793,12 +4783,6 @@ async function carregarArquivoMunicipio(
     token
 
 ) {
-
-    // ========================================================
-    // Se o usuário clicou em outro estado enquanto este
-    // arquivo estava sendo carregado, interrompemos o
-    // processamento visual.
-    // ========================================================
 
     if (
         token !== municipioLoadToken
@@ -4841,6 +4825,7 @@ async function carregarArquivoMunicipio(
                 url,
 
                 {
+
                     method:
                         "GET",
 
@@ -4856,8 +4841,8 @@ async function carregarArquivoMunicipio(
     catch (erro) {
 
         console.error(
-            "[MUNICÍPIOS] Erro de rede:",
-            arquivo,
+            "[MUNICÍPIOS] Falha de rede:",
+            url,
             erro
         );
 
@@ -4893,7 +4878,7 @@ async function carregarArquivoMunicipio(
     catch (erro) {
 
         throw new Error(
-            `${arquivo}: resposta não é um GeoJSON válido`
+            `${arquivo}: arquivo não contém JSON válido`
         );
 
     }
@@ -4916,10 +4901,6 @@ async function carregarArquivoMunicipio(
 
     }
 
-
-    // ========================================================
-    // Verificação novamente após o await
-    // ========================================================
 
     if (
         token !== municipioLoadToken
@@ -4957,6 +4938,9 @@ async function carregarArquivoMunicipio(
         cancelado:
             false,
 
+        sucesso:
+            true,
+
         quantidade:
             dados.features.length,
 
@@ -4993,13 +4977,6 @@ async function carregarMunicipiosEstado(
     }
 
 
-    // ========================================================
-    // Criar novo token.
-    //
-    // Qualquer carregamento anterior fica automaticamente
-    // inválido.
-    // ========================================================
-
     const token =
         ++municipioLoadToken;
 
@@ -5008,15 +4985,11 @@ async function carregarMunicipiosEstado(
         sigla;
 
 
-    // ========================================================
-    // REMOVER MUNICÍPIOS ANTERIORES
-    // ========================================================
-
     grupoMunicipios.clearLayers();
 
 
     // ========================================================
-    // Se já foi carregado anteriormente
+    // SE JÁ FOI CARREGADO
     // ========================================================
 
     if (
@@ -5035,11 +5008,6 @@ async function carregarMunicipiosEstado(
         );
 
 
-        console.log(
-            `[MUNICÍPIOS] ${sigla} já estava carregado.`
-        );
-
-
         setTimeout(
 
             esconderStatusMunicipios,
@@ -5055,7 +5023,7 @@ async function carregarMunicipiosEstado(
 
 
     // ========================================================
-    // Evitar dois carregamentos simultâneos da mesma UF
+    // EVITAR DUPLICAÇÃO
     // ========================================================
 
     if (
@@ -5108,6 +5076,15 @@ async function carregarMunicipiosEstado(
 
 
     console.log(
+        "[MUNICÍPIOS] Primeiro arquivo:",
+        new URL(
+            `${sigla}_01.geojson`,
+            BASE_MUNICIPIOS
+        ).href
+    );
+
+
+    console.log(
         "================================================"
     );
 
@@ -5127,75 +5104,114 @@ async function carregarMunicipiosEstado(
 
 
     // ========================================================
-    // Executar as requisições em paralelo.
+    // IMPORTANTE:
+    // Não fazemos 200 requisições simultâneas.
     //
-    // Arquivos inexistentes são simplesmente ignorados.
+    // O carregamento é feito em pequenos grupos.
     // ========================================================
 
+    const tamanhoBloco =
+        10;
+
+
     const resultados =
+        [];
 
-        await Promise.all(
 
-            arquivos.map(
+    for (
+        let inicio = 0;
+        inicio < arquivos.length;
+        inicio += tamanhoBloco
+    ) {
 
-                async arquivo => {
+        if (
+            token !== municipioLoadToken
+        ) {
 
-                    try {
+            municipiosEmCarregamento.delete(
+                sigla
+            );
 
-                        return await
-                            carregarArquivoMunicipio(
+            return;
 
-                                arquivo,
+        }
 
-                                sigla,
 
-                                token
+        const bloco =
+            arquivos.slice(
+                inicio,
+                inicio + tamanhoBloco
+            );
+
+
+        const blocoResultados =
+
+            await Promise.all(
+
+                bloco.map(
+
+                    async arquivo => {
+
+                        try {
+
+                            return await
+                                carregarArquivoMunicipio(
+
+                                    arquivo,
+                                    sigla,
+                                    token
+
+                                );
+
+                        }
+
+                        catch (erro) {
+
+                            console.warn(
+
+                                "[MUNICÍPIOS] Não encontrado:",
+                                arquivo
 
                             );
 
-                    }
 
-                    catch (erro) {
+                            return {
 
-                        console.warn(
+                                cancelado:
+                                    false,
 
-                            "[MUNICÍPIOS] Não encontrado:",
-                            arquivo
+                                sucesso:
+                                    false,
 
-                        );
+                                arquivo:
+                                    arquivo,
 
+                                quantidade:
+                                    0,
 
-                        return {
+                                erro:
+                                    erro.message
 
-                            cancelado:
-                                false,
+                            };
 
-                            sucesso:
-                                false,
-
-                            arquivo:
-                                arquivo,
-
-                            quantidade:
-                                0,
-
-                            erro:
-                                erro.message
-
-                        };
+                        }
 
                     }
 
-                }
+                )
 
-            )
+            );
 
+
+        resultados.push(
+            ...blocoResultados
         );
+
+    }
 
 
     // ========================================================
-    // Se outro estado foi clicado durante o carregamento,
-    // não usamos mais este resultado.
+    // VERIFICAR TOKEN
     // ========================================================
 
     if (
@@ -5207,18 +5223,13 @@ async function carregarMunicipiosEstado(
         );
 
 
-        console.log(
-            `[MUNICÍPIOS] Carregamento de ${sigla} cancelado visualmente.`
-        );
-
-
         return;
 
     }
 
 
     // ========================================================
-    // Somar resultados
+    // SOMAR RESULTADOS
     // ========================================================
 
     resultados.forEach(
@@ -5226,8 +5237,10 @@ async function carregarMunicipiosEstado(
         resultado => {
 
             if (
+
                 resultado &&
                 resultado.quantidade > 0
+
             ) {
 
                 encontrados +=
@@ -5268,7 +5281,7 @@ async function carregarMunicipiosEstado(
 
         mostrarStatusMunicipios(
 
-            `${ESTADOS_BRASIL[sigla]}: ${formatarNumero(encontrados)} municípios carregados`
+            `${ESTADOS_BRASIL[sigla]}: ${formatarNumero(encontrados)} feições municipais carregadas`
 
         );
 
@@ -5342,7 +5355,7 @@ async function carregarMunicipiosEstado(
 
 
         console.error(
-            "[MUNICÍPIOS] Primeiro arquivo testado:",
+            "[MUNICÍPIOS] Testado:",
             new URL(
                 `${sigla}_01.geojson`,
                 BASE_MUNICIPIOS
@@ -5351,7 +5364,7 @@ async function carregarMunicipiosEstado(
 
 
         console.error(
-            "[MUNICÍPIOS] URL atual:",
+            "[MUNICÍPIOS] Página:",
             window.location.href
         );
 
@@ -5422,6 +5435,7 @@ function ajustarMunicipiosAoEstado(
     );
 
 }
+
 
 // ============================================================
 // 35. CONTROLE DE CAMADAS
@@ -5517,8 +5531,10 @@ function ajustarMapa() {
             grupo.getBounds(),
 
             {
+
                 padding:
                     [30, 30]
+
             }
 
         );
@@ -5561,8 +5577,10 @@ async function carregarArquivo(
             arquivo,
 
             {
+
                 cache:
                     "force-cache"
+
             }
 
         );
@@ -5728,6 +5746,7 @@ async function carregarTodosDados() {
                 catch (erro) {
 
                     console.error(
+                        "[DADOS PRINCIPAIS]",
                         erro
                     );
 
@@ -5896,7 +5915,9 @@ function construirRankings(resultados) {
 
             }
 
-            else {
+            else if (
+                resultado.tipo === "biomas"
+            ) {
 
                 resultado.features.forEach(
 
@@ -6443,16 +6464,28 @@ function atualizarLoading(
         );
 
 
-    barra.style.width =
-        `${percentual}%`;
+    if (barra) {
+
+        barra.style.width =
+            `${percentual}%`;
+
+    }
 
 
-    porcentagem.innerText =
-        `${Math.round(percentual)}%`;
+    if (porcentagem) {
+
+        porcentagem.innerText =
+            `${Math.round(percentual)}%`;
+
+    }
 
 
-    mensagem.innerText =
-        texto;
+    if (mensagem) {
+
+        mensagem.innerText =
+            texto;
+
+    }
 
 }
 
@@ -6463,89 +6496,142 @@ function atualizarLoading(
 
 async function inicializar() {
 
-    atualizarLoading(
+    try {
 
-        3,
+        atualizarLoading(
 
-        "Inicializando mapa..."
+            3,
 
-    );
+            "Inicializando mapa..."
 
-
-    const resultados =
-        await carregarTodosDados();
+        );
 
 
-    atualizarLoading(
-
-        96,
-
-        "Organizando classificação da área queimada..."
-
-    );
+        const resultados =
+            await carregarTodosDados();
 
 
-    construirRankings(
-        resultados
-    );
+        atualizarLoading(
+
+            96,
+
+            "Organizando classificação da área queimada..."
+
+        );
 
 
-    if (
-        grupoEstados.getLayers().length > 0
-    ) {
+        construirRankings(
+            resultados
+        );
 
-        grupoEstados.addTo(
+
+        if (
+            grupoEstados.getLayers().length > 0
+        ) {
+
+            grupoEstados.addTo(
+                map
+            );
+
+        }
+
+
+        if (
+            grupoBiomas.getLayers().length > 0
+        ) {
+
+            grupoBiomas.addTo(
+                map
+            );
+
+        }
+
+
+        controleCamadas.addTo(
             map
+        );
+
+
+        ajustarMapa();
+
+
+        atualizarLoading(
+
+            100,
+
+            "Ranqueamento da área queimada pronto."
+
+        );
+
+
+        setTimeout(
+
+            function() {
+
+                const loading =
+                    document.getElementById(
+                        "loading"
+                    );
+
+
+                if (loading) {
+
+                    loading.classList.add(
+                        "oculto"
+                    );
+
+                }
+
+            },
+
+            350
+
         );
 
     }
 
+    catch (erro) {
 
-    if (
-        grupoBiomas.getLayers().length > 0
-    ) {
+        console.error(
+            "[INICIALIZAÇÃO]",
+            erro
+        );
 
-        grupoBiomas.addTo(
-            map
+
+        atualizarLoading(
+
+            100,
+
+            "Erro ao carregar os dados. Verifique o console."
+
+        );
+
+
+        setTimeout(
+
+            function() {
+
+                const loading =
+                    document.getElementById(
+                        "loading"
+                    );
+
+
+                if (loading) {
+
+                    loading.classList.add(
+                        "oculto"
+                    );
+
+                }
+
+            },
+
+            1500
+
         );
 
     }
-
-
-    controleCamadas.addTo(
-        map
-    );
-
-
-    ajustarMapa();
-
-
-    atualizarLoading(
-
-        100,
-
-        "Ranqueamento da área queimada pronto."
-
-    );
-
-
-    setTimeout(
-
-        function() {
-
-            document
-                .getElementById(
-                    "loading"
-                )
-                .classList.add(
-                    "oculto"
-                );
-
-        },
-
-        350
-
-    );
 
 }
 
