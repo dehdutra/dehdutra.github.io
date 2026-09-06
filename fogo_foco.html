@@ -10,7 +10,10 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Ranqueamento da Área Queimada no Brasil</title>
+    <title>
+        Ranqueamento da Área Queimada no Brasil
+    </title>
+
 
     <!-- ==========================================================
          LEAFLET
@@ -24,6 +27,7 @@
     <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
     </script>
+
 
     <!-- ==========================================================
          ESTILO
@@ -66,9 +70,11 @@
         body {
 
             width: 100%;
+
             height: 100%;
 
             margin: 0;
+
             padding: 0;
 
             overflow: hidden;
@@ -98,7 +104,9 @@
             position: absolute;
 
             top: 0;
+
             left: 0;
+
             right: 0;
 
             height: 82px;
@@ -145,6 +153,7 @@
         #icone-fogo {
 
             width: 42px;
+
             height: 42px;
 
             display: flex;
@@ -176,9 +185,7 @@
 
 
         #titulo-area {
-
             min-width: 0;
-
         }
 
 
@@ -291,8 +298,11 @@
             position: absolute;
 
             top: 82px;
+
             left: 0;
+
             right: 0;
+
             bottom: 0;
 
             z-index: 1;
@@ -400,9 +410,7 @@
 
 
         .info-item:last-child {
-
             margin-bottom: 0;
-
         }
 
 
@@ -536,9 +544,7 @@
 
 
         .legenda-item:last-child {
-
             margin-bottom: 0;
-
         }
 
 
@@ -584,7 +590,7 @@
         .leaflet-control-layers-expanded {
 
             min-width:
-                155px;
+                180px;
 
         }
 
@@ -684,6 +690,7 @@
         #loading-logo {
 
             width: 50px;
+
             height: 50px;
 
             margin:
@@ -788,7 +795,50 @@
 
 
         /* ======================================================
-           MODAL GERAL
+           INDICADOR DE MUNICÍPIOS
+        ====================================================== */
+
+        #municipios-status {
+
+            position: absolute;
+
+            top: 96px;
+
+            right: 245px;
+
+            z-index: 1100;
+
+            display: none;
+
+            padding:
+                8px 12px;
+
+            background:
+                rgba(255,255,255,0.96);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 5px 18px rgba(16,24,40,0.12);
+
+            font-size: 10px;
+
+            color:
+                #475467;
+
+        }
+
+
+        #municipios-status.visivel {
+            display: block;
+        }
+
+
+        /* ======================================================
+           MODAIS
         ====================================================== */
 
         .modal {
@@ -817,15 +867,9 @@
 
 
         .modal.aberto {
-
             display: flex;
-
         }
 
-
-        /* ======================================================
-           MODAL CITAÇÃO
-        ====================================================== */
 
         #modal-card {
 
@@ -879,6 +923,7 @@
         #fechar-modal {
 
             width: 30px;
+
             height: 30px;
 
             border: none;
@@ -1005,6 +1050,7 @@
         #ranking-icon {
 
             width: 40px;
+
             height: 40px;
 
             display: flex;
@@ -1054,6 +1100,7 @@
         #fechar-ranking {
 
             width: 32px;
+
             height: 32px;
 
             border: none;
@@ -1196,8 +1243,7 @@
             border:
                 1px solid var(--border);
 
-            border-radius:
-                9px;
+            border-radius: 9px;
 
             background:
                 #fafafa;
@@ -1231,7 +1277,7 @@
 
 
         /* ======================================================
-           ITEM DO RANKING
+           ITEM RANKING
         ====================================================== */
 
         .ranking-item {
@@ -1270,6 +1316,7 @@
         .ranking-posicao {
 
             width: 30px;
+
             height: 30px;
 
             display: flex;
@@ -1666,10 +1713,8 @@
 
 
         .vetor-info-item:last-child {
-
             border-bottom:
                 none;
-
         }
 
 
@@ -1745,6 +1790,7 @@
             #icone-fogo {
 
                 width: 36px;
+
                 height: 36px;
 
                 font-size: 17px;
@@ -1864,6 +1910,13 @@
             #painel-vetor.recolhido {
 
                 width: 220px;
+
+            }
+
+
+            #municipios-status {
+
+                right: 10px;
 
             }
 
@@ -2036,7 +2089,7 @@
 
                 State of Wildfire Brasil |
                 Distribuição e classificação da área queimada
-                por estados e biomas | 2024–2025
+                por estados, municípios e biomas | 2024–2025
 
             </div>
 
@@ -2089,7 +2142,16 @@
 
 
 <!-- ==========================================================
-     PAINEL PRINCIPAL DE INFORMAÇÕES
+     STATUS MUNICÍPIOS
+=========================================================== -->
+
+<div id="municipios-status">
+    Carregando municípios...
+</div>
+
+
+<!-- ==========================================================
+     PAINEL PRINCIPAL
 =========================================================== -->
 
 <section id="painel-info">
@@ -2103,7 +2165,7 @@
         <p id="painel-descricao">
 
             Distribuição espacial e ranqueamento da área
-            queimada por estados e biomas.
+            queimada por estados, municípios e biomas.
 
         </p>
 
@@ -2111,11 +2173,6 @@
 
 
     <div id="painel-corpo">
-
-
-        <!-- ==================================================
-             FONTE PRINCIPAL
-        =================================================== -->
 
         <div class="info-item">
 
@@ -2130,10 +2187,6 @@
         </div>
 
 
-        <!-- ==================================================
-             DADOS ESPACIAIS
-        =================================================== -->
-
         <div class="info-item">
 
             <div class="info-label">
@@ -2146,10 +2199,6 @@
 
         </div>
 
-
-        <!-- ==================================================
-             PERÍODO
-        =================================================== -->
 
         <div class="info-item">
 
@@ -2164,10 +2213,6 @@
         </div>
 
 
-        <!-- ==================================================
-             COMPARAÇÃO
-        =================================================== -->
-
         <div class="info-item">
 
             <div class="info-label">
@@ -2180,10 +2225,6 @@
 
         </div>
 
-
-        <!-- ==================================================
-             PRODUTO
-        =================================================== -->
 
         <div class="info-item">
 
@@ -2198,10 +2239,6 @@
         </div>
 
 
-        <!-- ==================================================
-             ESCALA
-        =================================================== -->
-
         <div class="info-item">
 
             <div class="info-label">
@@ -2214,7 +2251,7 @@
                     Brasil
                 </span>
 
-                Estados e Biomas
+                Estados, Municípios e Biomas
 
             </div>
 
@@ -2277,10 +2314,6 @@
             5º
         </div>
 
-        <!-- ==================================================
-             6º–19º — CINZA
-        =================================================== -->
-
         <div class="legenda-item">
             <span
                 class="legenda-cor"
@@ -2288,10 +2321,6 @@
             ></span>
             6º–19º
         </div>
-
-        <!-- ==================================================
-             20º–24º — AZUL
-        =================================================== -->
 
         <div class="legenda-item">
             <span
@@ -2389,8 +2418,10 @@
             </span>
 
             <span id="vetor-tipo">
+
                 Clique em um polígono do mapa para visualizar
-                suas informações de área queimada e ranqueamento.
+                suas informações.
+
             </span>
 
         </div>
@@ -2423,7 +2454,6 @@
 
     <div id="modal-card">
 
-
         <div id="modal-header">
 
             <h2>
@@ -2442,7 +2472,6 @@
 
 
         <div id="modal-body">
-
 
             <p>
 
@@ -2489,7 +2518,7 @@
 
                 Ranqueamento e espacialização da área queimada
                 no Brasil, com organização dos resultados por
-                estados e biomas.
+                estados, municípios e biomas.
 
             </div>
 
@@ -2599,7 +2628,6 @@
 
             </div>
 
-
         </div>
 
     </div>
@@ -2619,7 +2647,6 @@
 
     <div id="modal-ranking-card">
 
-
         <div id="ranking-header">
 
             <div id="ranking-header-left">
@@ -2637,7 +2664,7 @@
                     <div id="ranking-subtitulo">
 
                         Ordenação decrescente da área queimada
-                        por estados e biomas no período analisado
+                        por estados e biomas
 
                     </div>
 
@@ -2656,10 +2683,6 @@
 
         </div>
 
-
-        <!-- ==================================================
-             ABAS
-        =================================================== -->
 
         <div id="ranking-tabs">
 
@@ -2682,10 +2705,6 @@
 
         </div>
 
-
-        <!-- ==================================================
-             CORPO
-        =================================================== -->
 
         <div id="ranking-body">
 
@@ -2762,7 +2781,65 @@
 
 
 // ============================================================
-// 1. MAPA
+// 1. CONFIGURAÇÃO PRINCIPAL DOS MUNICÍPIOS
+// ============================================================
+//
+// IMPORTANTE:
+//
+// Seus arquivos municipais estão organizados na pasta:
+//
+// municipios_ranking/
+//
+// Exemplos:
+//
+// municipios_ranking/AC_01.geojson
+// municipios_ranking/AM_01.geojson
+// municipios_ranking/AM_02.geojson
+//
+// COLOQUE AQUI A URL RAW DA PASTA.
+//
+// Exemplo:
+//
+// https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/municipios_ranking/
+//
+// NÃO coloque "AC_01.geojson" no final.
+//
+// ============================================================
+
+const BASE_MUNICIPIOS =
+
+    "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/municipios_ranking/";
+
+
+// ============================================================
+// 2. CONFIGURAÇÃO DOS ARQUIVOS MUNICIPAIS
+// ============================================================
+//
+// Quantidade de arquivos por estado.
+//
+// Se cada UF tiver arquivos 01, 02, 03 etc.,
+// o sistema tentará automaticamente.
+//
+// Por exemplo:
+//
+// AC_01.geojson
+//
+// AM_01.geojson
+// AM_02.geojson
+//
+// SP_01.geojson
+// SP_02.geojson
+// ...
+//
+// Caso algum arquivo não exista, ele é ignorado.
+//
+// ============================================================
+
+const MAX_ARQUIVOS_MUNICIPIOS = 30;
+
+
+// ============================================================
+// 3. MAPA
 // ============================================================
 
 const map = L.map(
@@ -2805,7 +2882,7 @@ L.tileLayer(
 
 
 // ============================================================
-// 2. GRUPOS
+// 4. GRUPOS PRINCIPAIS
 // ============================================================
 
 const grupoEstados =
@@ -2816,8 +2893,12 @@ const grupoBiomas =
     L.featureGroup();
 
 
+const grupoMunicipios =
+    L.featureGroup();
+
+
 // ============================================================
-// 3. ARQUIVOS
+// 5. ARQUIVOS ESTADOS
 // ============================================================
 
 const arquivosEstados = [
@@ -2830,6 +2911,10 @@ const arquivosEstados = [
 
 ];
 
+
+// ============================================================
+// 6. ARQUIVOS BIOMAS
+// ============================================================
 
 const arquivosBiomas = [
 
@@ -2847,22 +2932,7 @@ const arquivosBiomas = [
 
 
 // ============================================================
-// 4. CORES
-// ============================================================
-// CLASSIFICAÇÃO:
-//
-// 1º       #7f0000
-// 2º       #b30000
-// 3º       #d7301f
-// 4º       #ef6548
-// 5º       #fdae61
-// 6º–19º   #bdbdbd
-// 20º      #9ecae1
-// 21º      #6baed6
-// 22º      #4292c6
-// 23º      #2171b5
-// 24º      #084594
-//
+// 7. CORES DO RANKING
 // ============================================================
 
 const coresRanking = {
@@ -2876,11 +2946,6 @@ const coresRanking = {
     4: "#ef6548",
 
     5: "#fdae61",
-
-
-    // ========================================================
-    // 6º AO 19º — CINZA
-    // ========================================================
 
     6: "#bdbdbd",
 
@@ -2910,11 +2975,6 @@ const coresRanking = {
 
     19: "#bdbdbd",
 
-
-    // ========================================================
-    // 20º AO 24º — AZUL
-    // ========================================================
-
     20: "#9ecae1",
 
     21: "#6baed6",
@@ -2926,124 +2986,6 @@ const coresRanking = {
     24: "#084594"
 
 };
-
-
-// ============================================================
-// 5. OBTER PROPRIEDADE
-// ============================================================
-
-function obterPropriedade(
-
-    feature,
-
-    nomes
-
-) {
-
-    const props =
-        feature?.properties || {};
-
-
-    for (
-        const nome of nomes
-    ) {
-
-        if (
-
-            props[nome] !== undefined &&
-
-            props[nome] !== null &&
-
-            props[nome] !== ""
-
-        ) {
-
-            return props[nome];
-
-        }
-
-    }
-
-
-    return null;
-
-}
-
-
-// ============================================================
-// 6. NOME
-// ============================================================
-
-function obterNome(feature) {
-
-    return obterPropriedade(
-
-        feature,
-
-        [
-
-            "region_nam",
-
-            "Region Name",
-
-            "NAME_1",
-
-            "NM_ESTADO",
-
-            "NM_UF",
-
-            "NAME",
-
-            "nome",
-
-            "Nome",
-
-            "name",
-
-            "NAME_0",
-
-            "Region",
-
-            "Bioma",
-
-            "bioma",
-
-            "BIOMA",
-
-            "name_1",
-
-            "NOME",
-
-            "NOME_BIOMA",
-
-            "nome_bioma"
-
-        ]
-
-    );
-
-}
-
-
-// ============================================================
-// 7. NORMALIZAR TEXTO
-// ============================================================
-
-function normalizarTexto(texto) {
-
-    return String(texto)
-
-        .normalize("NFD")
-
-        .replace(/[\u0300-\u036f]/g, "")
-
-        .toUpperCase()
-
-        .trim()
-
-        .replace(/\s+/g, " ");
-
-}
 
 
 // ============================================================
@@ -3113,7 +3055,9 @@ const NOME_ESTADO_PARA_SIGLA = {};
 
 
 Object.entries(
+
     ESTADOS_BRASIL
+
 ).forEach(
 
     ([sigla, nome]) => {
@@ -3132,7 +3076,149 @@ Object.entries(
 
 
 // ============================================================
-// 9. SIGLA DO ESTADO
+// 9. OBTER PROPRIEDADE
+// ============================================================
+
+function obterPropriedade(
+
+    feature,
+
+    nomes
+
+) {
+
+    const props =
+        feature?.properties || {};
+
+
+    for (
+
+        const nome of nomes
+
+    ) {
+
+        if (
+
+            props[nome] !== undefined &&
+
+            props[nome] !== null &&
+
+            props[nome] !== ""
+
+        ) {
+
+            return props[nome];
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ============================================================
+// 10. NORMALIZAR TEXTO
+// ============================================================
+
+function normalizarTexto(texto) {
+
+    return String(texto)
+
+        .normalize("NFD")
+
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+
+        .toUpperCase()
+
+        .trim()
+
+        .replace(
+            /\s+/g,
+            " "
+        );
+
+}
+
+
+// ============================================================
+// 11. NOME
+// ============================================================
+
+function obterNome(feature) {
+
+    return obterPropriedade(
+
+        feature,
+
+        [
+
+            "region_nam",
+
+            "Region Name",
+
+            "NAME_1",
+
+            "NM_ESTADO",
+
+            "NM_UF",
+
+            "NAME",
+
+            "nome",
+
+            "Nome",
+
+            "name",
+
+            "NAME_0",
+
+            "Region",
+
+            "Bioma",
+
+            "bioma",
+
+            "BIOMA",
+
+            "name_1",
+
+            "NOME",
+
+            "NOME_BIOMA",
+
+            "nome_bioma",
+
+            "NM_MUN",
+
+            "NM_MUNICIP",
+
+            "NM_MUNICIPIO",
+
+            "NOME_MUN",
+
+            "NOME_MUNICIPIO",
+
+            "municipio",
+
+            "Municipio",
+
+            "MUNICIPIO"
+
+        ]
+
+    );
+
+}
+
+
+// ============================================================
+// 12. SIGLA ESTADO
 // ============================================================
 
 function obterSiglaEstado(feature) {
@@ -3163,13 +3249,19 @@ function obterSiglaEstado(feature) {
 
 
     for (
+
         const valor of candidatosUF
+
     ) {
 
         if (
+
             valor === undefined ||
+
             valor === null ||
+
             valor === ""
+
         ) {
 
             continue;
@@ -3182,7 +3274,9 @@ function obterSiglaEstado(feature) {
 
 
         if (
+
             ESTADOS_BRASIL[texto]
+
         ) {
 
             return texto;
@@ -3220,13 +3314,19 @@ function obterSiglaEstado(feature) {
 
 
     for (
+
         const valor of candidatosNome
+
     ) {
 
         if (
+
             valor === undefined ||
+
             valor === null ||
+
             valor === ""
+
         ) {
 
             continue;
@@ -3239,7 +3339,9 @@ function obterSiglaEstado(feature) {
 
 
         if (
+
             NOME_ESTADO_PARA_SIGLA[texto]
+
         ) {
 
             return NOME_ESTADO_PARA_SIGLA[
@@ -3257,15 +3359,13 @@ function obterSiglaEstado(feature) {
 
 
 // ============================================================
-// 10. VERIFICAR ESTADO
+// 13. ESTADO VÁLIDO
 // ============================================================
 
 function ehEstadoDoBrasil(feature) {
 
     const sigla =
-        obterSiglaEstado(
-            feature
-        );
+        obterSiglaEstado(feature);
 
 
     return (
@@ -3280,19 +3380,19 @@ function ehEstadoDoBrasil(feature) {
 
 
 // ============================================================
-// 11. NOME PADRONIZADO
+// 14. NOME ESTADO
 // ============================================================
 
 function obterNomeEstadoPadronizado(feature) {
 
     const sigla =
-        obterSiglaEstado(
-            feature
-        );
+        obterSiglaEstado(feature);
 
 
     if (
+
         sigla === null
+
     ) {
 
         return null;
@@ -3308,7 +3408,7 @@ function obterNomeEstadoPadronizado(feature) {
 
 
 // ============================================================
-// 12. RANKING
+// 15. RANKING
 // ============================================================
 
 function obterRanking(feature) {
@@ -3360,7 +3460,9 @@ function obterRanking(feature) {
 
 
     if (
+
         valor === null
+
     ) {
 
         return null;
@@ -3373,14 +3475,16 @@ function obterRanking(feature) {
 
 
     return Number.isFinite(numero)
+
         ? numero
+
         : null;
 
 }
 
 
 // ============================================================
-// 13. ÁREA
+// 16. ÁREA
 // ============================================================
 
 function obterArea(feature) {
@@ -3393,6 +3497,8 @@ function obterArea(feature) {
             [
 
                 "Burned Area (km^2)",
+
+                "Burned Area (km²)",
 
                 "Burned_Area_km2",
 
@@ -3424,7 +3530,9 @@ function obterArea(feature) {
 
 
     if (
+
         valor === null
+
     ) {
 
         return null;
@@ -3433,21 +3541,27 @@ function obterArea(feature) {
 
 
     const numero =
+
         Number(
+
             String(valor)
+
                 .replace(",", ".")
+
         );
 
 
     return Number.isFinite(numero)
+
         ? numero
+
         : null;
 
 }
 
 
 // ============================================================
-// 14. ESTILO
+// 17. ESTILO ESTADO/BIOMA
 // ============================================================
 
 function estiloFeature(
@@ -3469,33 +3583,52 @@ function estiloFeature(
     return {
 
         color:
+
             tipo === "biomas"
+
                 ? "#3f3f3f"
+
                 : "#555555",
 
         weight:
+
             tipo === "biomas"
+
                 ? 1.2
+
                 : 1.5,
 
         opacity:
             1,
 
         fillColor:
+
             temRanking
+
                 ? (
+
                     coresRanking[ranking]
+
                     || "#bdbdbd"
+
                   )
+
                 : "#9e9e9e",
 
         fillOpacity:
+
             temRanking
+
                 ? (
+
                     tipo === "biomas"
+
                         ? 0.68
+
                         : 0.76
+
                   )
+
                 : 0.22
 
     };
@@ -3504,14 +3637,66 @@ function estiloFeature(
 
 
 // ============================================================
-// 15. NORMALIZAR GEOJSON
+// 18. ESTILO MUNICÍPIOS
+// ============================================================
+
+function estiloMunicipio(feature) {
+
+    const ranking =
+        obterRanking(feature);
+
+
+    const temRanking =
+        ranking !== null;
+
+
+    return {
+
+        color:
+            "#555555",
+
+        weight:
+            0.65,
+
+        opacity:
+            0.9,
+
+        fillColor:
+
+            temRanking
+
+                ? (
+
+                    coresRanking[ranking]
+
+                    || "#bdbdbd"
+
+                  )
+
+                : "#d0d0d0",
+
+        fillOpacity:
+
+            temRanking
+                ? 0.60
+                : 0.15
+
+    };
+
+}
+
+
+// ============================================================
+// 19. NORMALIZAR GEOJSON
 // ============================================================
 
 function normalizarGeoJSON(dados) {
 
     if (
+
         dados.type ===
         "FeatureCollection"
+
     ) {
 
         return dados;
@@ -3520,8 +3705,10 @@ function normalizarGeoJSON(dados) {
 
 
     if (
+
         dados.type ===
         "Feature"
+
     ) {
 
         return {
@@ -3538,8 +3725,10 @@ function normalizarGeoJSON(dados) {
 
 
     if (
+
         dados.type ===
         "GeometryCollection"
+
     ) {
 
         return {
@@ -3548,8 +3737,11 @@ function normalizarGeoJSON(dados) {
                 "FeatureCollection",
 
             features:
+
                 (dados.geometries || [])
+
                     .map(
+
                         geometry => ({
 
                             type:
@@ -3562,6 +3754,7 @@ function normalizarGeoJSON(dados) {
                                 geometry
 
                         })
+
                     )
 
         };
@@ -3597,246 +3790,13 @@ function normalizarGeoJSON(dados) {
 
 
 // ============================================================
-// 16. CRIAR CAMADA
-// ============================================================
-
-function criarCamada(
-
-    dados,
-
-    grupo,
-
-    tipo
-
-) {
-
-    const camada =
-        L.geoJSON(
-
-            dados,
-
-            {
-
-                style:
-                    feature =>
-                        estiloFeature(
-                            feature,
-                            tipo
-                        ),
-
-
-                onEachFeature:
-                    function(
-                        feature,
-                        layer
-                    ) {
-
-                        layer.on({
-
-                            mouseover:
-                                function(e) {
-
-                                    e.target.setStyle({
-
-                                        weight:
-                                            tipo === "biomas"
-                                                ? 2.5
-                                                : 2.8,
-
-                                        color:
-                                            "#111827",
-
-                                        fillOpacity:
-                                            0.88
-
-                                    });
-
-                                },
-
-
-                            mouseout:
-                                function(e) {
-
-                                    camada.resetStyle(
-                                        e.target
-                                    );
-
-                                },
-
-
-                            click:
-                                function(e) {
-
-                                    mostrarPopup(
-
-                                        e.target.feature,
-
-                                        e.target,
-
-                                        tipo
-
-                                    );
-
-
-                                    atualizarPainelVetor(
-
-                                        e.target.feature,
-
-                                        tipo
-
-                                    );
-
-                                }
-
-                        });
-
-                    }
-
-            }
-
-        );
-
-
-    grupo.addLayer(
-        camada
-    );
-
-}
-
-
-// ============================================================
-// 17. POPUP
-// ============================================================
-
-function mostrarPopup(
-
-    feature,
-
-    layer,
-
-    tipo
-
-) {
-
-    let nome;
-
-
-    if (
-        tipo === "estados"
-    ) {
-
-        nome =
-            obterNomeEstadoPadronizado(
-                feature
-            ) || "Estado";
-
-    }
-
-    else {
-
-        nome =
-            obterNome(feature)
-            || "Sem identificação";
-
-    }
-
-
-    const ranking =
-        obterRanking(feature);
-
-
-    const area =
-        obterArea(feature);
-
-
-    let html = `
-
-        <div style="
-            min-width:200px;
-            font-family:Arial,sans-serif;
-        ">
-
-            <div style="
-                font-size:14px;
-                font-weight:700;
-                margin-bottom:8px;
-                color:#1f2933;
-            ">
-                ${escaparHTML(nome)}
-            </div>
-
-            <div style="
-                font-size:11px;
-                color:#667085;
-                margin-bottom:8px;
-            ">
-                ${
-                    tipo === "estados"
-                        ? "Estado brasileiro"
-                        : "Bioma"
-                }
-            </div>
-
-    `;
-
-
-    if (
-        ranking !== null
-    ) {
-
-        html += `
-
-            <div style="
-                font-size:12px;
-                margin-bottom:5px;
-            ">
-                <b>Ranking:</b>
-                ${ranking}
-            </div>
-
-        `;
-
-    }
-
-
-    if (
-        area !== null
-    ) {
-
-        html += `
-
-            <div style="
-                font-size:12px;
-            ">
-                <b>Área queimada:</b>
-                ${formatarNumero(area)}
-                km²
-            </div>
-
-        `;
-
-    }
-
-
-    html += `
-        </div>
-    `;
-
-
-    layer.bindPopup(
-        html
-    ).openPopup();
-
-}
-
-
-// ============================================================
-// 18. CAMPOS DO VETOR
+// 20. CAMPOS MUNICIPAIS
 // ============================================================
 
 const CAMPOS_VETOR = [
 
     {
+
         chave:
             "Burned Area (km^2)",
 
@@ -3852,6 +3812,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Fraction (%)",
 
@@ -3864,6 +3825,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Rank",
 
@@ -3876,6 +3838,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Fraction Rank",
 
@@ -3888,6 +3851,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Percentile",
 
@@ -3900,6 +3864,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Fraction Percentile",
 
@@ -3912,6 +3877,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Mean Annual (km^2)",
 
@@ -3924,11 +3890,12 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area StDev Annual (km^2)",
 
         rotulo:
-            "Desvio-padrão anual da área queimada",
+            "Desvio-padrão anual",
 
         unidade:
             "km²"
@@ -3936,11 +3903,12 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Fraction Mean Annual (%)",
 
         rotulo:
-            "Média anual da fração da área queimada",
+            "Média anual da fração queimada",
 
         unidade:
             "%"
@@ -3948,11 +3916,12 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Fraction StDev Annual (%)",
 
         rotulo:
-            "Desvio-padrão anual da fração da área queimada",
+            "Desvio-padrão anual da fração",
 
         unidade:
             "%"
@@ -3960,6 +3929,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Anomaly (%)",
 
@@ -3972,11 +3942,12 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Fraction Anomaly (%)",
 
         rotulo:
-            "Anomalia da fração da área queimada",
+            "Anomalia da fração queimada",
 
         unidade:
             "%"
@@ -3984,6 +3955,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Anomaly (Standard Deviations)",
 
@@ -3996,11 +3968,12 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Burned Area Fraction Anomaly (Standard Deviations)",
 
         rotulo:
-            "Anomalia da fração da área queimada",
+            "Anomalia da fração queimada",
 
         unidade:
             "desvios-padrão"
@@ -4008,6 +3981,7 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Month with Peak in Burned Area Anomaly",
 
@@ -4020,11 +3994,12 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Months Prior to Peak with Above-Average Burned Area",
 
         rotulo:
-            "Meses antes do pico com área acima da média",
+            "Meses antes do pico acima da média",
 
         unidade:
             "meses"
@@ -4032,11 +4007,12 @@ const CAMPOS_VETOR = [
     },
 
     {
+
         chave:
             "Months After Peak with Above-Average Burned Area",
 
         rotulo:
-            "Meses após o pico com área acima da média",
+            "Meses após o pico acima da média",
 
         unidade:
             "meses"
@@ -4047,7 +4023,7 @@ const CAMPOS_VETOR = [
 
 
 // ============================================================
-// 19. VALOR DO CAMPO
+// 21. OBTER CAMPO
 // ============================================================
 
 function obterValorCampoVetor(
@@ -4063,9 +4039,13 @@ function obterValorCampoVetor(
 
 
     if (
+
         props[chave] !== undefined &&
+
         props[chave] !== null &&
+
         props[chave] !== ""
+
     ) {
 
         return props[chave];
@@ -4097,7 +4077,13 @@ function obterValorCampoVetor(
 
             "Burned_Area_Rank",
 
-            "Rank_Category"
+            "Rank_Category",
+
+            "ranking",
+
+            "Ranking",
+
+            "rank"
 
         ],
 
@@ -4193,13 +4179,19 @@ function obterValorCampoVetor(
 
 
     for (
+
         const alternativa of alternativas
+
     ) {
 
         if (
+
             props[alternativa] !== undefined &&
+
             props[alternativa] !== null &&
+
             props[alternativa] !== ""
+
         ) {
 
             return props[alternativa];
@@ -4215,7 +4207,7 @@ function obterValorCampoVetor(
 
 
 // ============================================================
-// 20. FORMATAR CAMPO
+// 22. FORMATAR CAMPO
 // ============================================================
 
 function formatarValorCampo(
@@ -4227,9 +4219,13 @@ function formatarValorCampo(
 ) {
 
     if (
+
         valor === null ||
+
         valor === undefined ||
+
         valor === ""
+
     ) {
 
         return "Não informado";
@@ -4238,17 +4234,29 @@ function formatarValorCampo(
 
 
     const numero =
+
         Number(
+
             String(valor)
+
                 .replace(",", ".")
+
         );
 
 
     if (
+
         Number.isFinite(numero)
+
     ) {
 
-        return `${formatarNumero(numero)}${campo.unidade ? " " + campo.unidade : ""}`;
+        return (
+
+            `${formatarNumero(numero)}` +
+
+            `${campo.unidade ? " " + campo.unidade : ""}`
+
+        );
 
     }
 
@@ -4259,7 +4267,595 @@ function formatarValorCampo(
 
 
 // ============================================================
-// 21. ATUALIZAR PAINEL VETOR
+// 23. CRIAR CAMADA ESTADO/BIOMA
+// ============================================================
+
+function criarCamada(
+
+    dados,
+
+    grupo,
+
+    tipo
+
+) {
+
+    const camada =
+
+        L.geoJSON(
+
+            dados,
+
+            {
+
+                style:
+
+                    feature =>
+
+                        estiloFeature(
+
+                            feature,
+
+                            tipo
+
+                        ),
+
+
+                onEachFeature:
+
+                    function(
+
+                        feature,
+
+                        layer
+
+                    ) {
+
+                        layer.on({
+
+                            mouseover:
+
+                                function(e) {
+
+                                    e.target.setStyle({
+
+                                        weight:
+
+                                            tipo === "biomas"
+
+                                                ? 2.5
+
+                                                : 2.8,
+
+                                        color:
+                                            "#111827",
+
+                                        fillOpacity:
+                                            0.88
+
+                                    });
+
+                                },
+
+
+                            mouseout:
+
+                                function(e) {
+
+                                    camada.resetStyle(
+                                        e.target
+                                    );
+
+                                },
+
+
+                            click:
+
+                                function(e) {
+
+                                    mostrarPopup(
+
+                                        e.target.feature,
+
+                                        e.target,
+
+                                        tipo
+
+                                    );
+
+
+                                    atualizarPainelVetor(
+
+                                        e.target.feature,
+
+                                        tipo
+
+                                    );
+
+
+                                    if (
+
+                                        tipo ===
+                                        "estados"
+
+                                    ) {
+
+                                        const sigla =
+
+                                            obterSiglaEstado(
+
+                                                e.target.feature
+
+                                            );
+
+
+                                        if (
+
+                                            sigla
+
+                                        ) {
+
+                                            carregarMunicipiosEstado(
+
+                                                sigla
+
+                                            );
+
+                                        }
+
+                                    }
+
+                                }
+
+                        });
+
+                    }
+
+            }
+
+        );
+
+
+    grupo.addLayer(
+        camada
+    );
+
+}
+
+
+// ============================================================
+// 24. CRIAR CAMADA MUNICIPAL
+// ============================================================
+
+function criarCamadaMunicipios(
+
+    dados,
+
+    sigla
+
+) {
+
+    const camada =
+
+        L.geoJSON(
+
+            dados,
+
+            {
+
+                style:
+                    estiloMunicipio,
+
+
+                onEachFeature:
+
+                    function(
+
+                        feature,
+
+                        layer
+
+                    ) {
+
+                        layer.on({
+
+                            mouseover:
+
+                                function(e) {
+
+                                    e.target.setStyle({
+
+                                        weight:
+                                            1.5,
+
+                                        color:
+                                            "#111827",
+
+                                        fillOpacity:
+                                            0.85
+
+                                    });
+
+                                },
+
+
+                            mouseout:
+
+                                function(e) {
+
+                                    camada.resetStyle(
+                                        e.target
+                                    );
+
+                                },
+
+
+                            click:
+
+                                function(e) {
+
+                                    mostrarPopupMunicipio(
+
+                                        e.target.feature,
+
+                                        e.target,
+
+                                        sigla
+
+                                    );
+
+
+                                    atualizarPainelVetor(
+
+                                        e.target.feature,
+
+                                        "municipios"
+
+                                    );
+
+                                }
+
+                        });
+
+                    }
+
+            }
+
+        );
+
+
+    grupoMunicipios.addLayer(
+        camada
+    );
+
+}
+
+
+// ============================================================
+// 25. POPUP NORMAL
+// ============================================================
+
+function mostrarPopup(
+
+    feature,
+
+    layer,
+
+    tipo
+
+) {
+
+    let nome;
+
+
+    if (
+
+        tipo === "estados"
+
+    ) {
+
+        nome =
+
+            obterNomeEstadoPadronizado(
+
+                feature
+
+            ) || "Estado";
+
+    }
+
+    else {
+
+        nome =
+
+            obterNome(feature)
+
+            || "Sem identificação";
+
+    }
+
+
+    const ranking =
+        obterRanking(feature);
+
+
+    const area =
+        obterArea(feature);
+
+
+    let html = `
+
+        <div style="
+            min-width:200px;
+            font-family:Arial,sans-serif;
+        ">
+
+            <div style="
+                font-size:14px;
+                font-weight:700;
+                margin-bottom:8px;
+                color:#1f2933;
+            ">
+
+                ${escaparHTML(nome)}
+
+            </div>
+
+
+            <div style="
+                font-size:11px;
+                color:#667085;
+                margin-bottom:8px;
+            ">
+
+                ${
+                    tipo === "estados"
+                        ? "Estado brasileiro"
+                        : "Bioma"
+                }
+
+            </div>
+
+    `;
+
+
+    if (
+
+        ranking !== null
+
+    ) {
+
+        html += `
+
+            <div style="
+                font-size:12px;
+                margin-bottom:5px;
+            ">
+
+                <b>Ranking:</b>
+
+                ${ranking}
+
+            </div>
+
+        `;
+
+    }
+
+
+    if (
+
+        area !== null
+
+    ) {
+
+        html += `
+
+            <div style="
+                font-size:12px;
+            ">
+
+                <b>Área queimada:</b>
+
+                ${formatarNumero(area)}
+
+                km²
+
+            </div>
+
+        `;
+
+    }
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    layer.bindPopup(
+        html
+    ).openPopup();
+
+}
+
+
+// ============================================================
+// 26. POPUP MUNICÍPIO
+// ============================================================
+
+function mostrarPopupMunicipio(
+
+    feature,
+
+    layer,
+
+    sigla
+
+) {
+
+    const nome =
+
+        obterNomeMunicipio(feature)
+
+        || "Município";
+
+
+    const ranking =
+        obterRanking(feature);
+
+
+    const area =
+        obterArea(feature);
+
+
+    let html = `
+
+        <div style="
+            min-width:220px;
+            font-family:Arial,sans-serif;
+        ">
+
+            <div style="
+                font-size:14px;
+                font-weight:700;
+                margin-bottom:5px;
+                color:#1f2933;
+            ">
+
+                ${escaparHTML(nome)}
+
+            </div>
+
+
+            <div style="
+                font-size:10px;
+                color:#667085;
+                margin-bottom:9px;
+            ">
+
+                Município de
+                ${escaparHTML(
+                    ESTADOS_BRASIL[sigla] || sigla
+                )}
+
+            </div>
+
+    `;
+
+
+    if (
+
+        ranking !== null
+
+    ) {
+
+        html += `
+
+            <div style="
+                font-size:12px;
+                margin-bottom:5px;
+            ">
+
+                <b>Ranking:</b>
+
+                ${ranking}º
+
+            </div>
+
+        `;
+
+    }
+
+
+    if (
+
+        area !== null
+
+    ) {
+
+        html += `
+
+            <div style="
+                font-size:12px;
+            ">
+
+                <b>Área queimada:</b>
+
+                ${formatarNumero(area)}
+
+                km²
+
+            </div>
+
+        `;
+
+    }
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    layer.bindPopup(
+        html
+    ).openPopup();
+
+}
+
+
+// ============================================================
+// 27. NOME MUNICÍPIO
+// ============================================================
+
+function obterNomeMunicipio(feature) {
+
+    return obterPropriedade(
+
+        feature,
+
+        [
+
+            "NM_MUN",
+
+            "NM_MUNICIP",
+
+            "NM_MUNICIPIO",
+
+            "NOME_MUN",
+
+            "NOME_MUNICIPIO",
+
+            "municipio",
+
+            "Municipio",
+
+            "MUNICIPIO",
+
+            "NAME",
+
+            "name",
+
+            "NOME",
+
+            "nome",
+
+            "Name"
+
+        ]
+
+    );
+
+}
+
+
+// ============================================================
+// 28. ATUALIZAR PAINEL VETOR
 // ============================================================
 
 function atualizarPainelVetor(
@@ -4304,25 +4900,57 @@ function atualizarPainelVetor(
 
 
     if (
+
         tipo === "estados"
+
     ) {
 
         nome =
+
             obterNomeEstadoPadronizado(
+
                 feature
+
             ) || "Estado";
+
 
         tipoElemento.innerText =
             "Estado brasileiro";
 
     }
 
+
+    else if (
+
+        tipo === "municipios"
+
+    ) {
+
+        nome =
+
+            obterNomeMunicipio(
+
+                feature
+
+            ) || "Município";
+
+
+        tipoElemento.innerText =
+            "Município brasileiro";
+
+    }
+
+
     else {
 
         nome =
+
             obterNome(
+
                 feature
+
             ) || "Sem identificação";
+
 
         tipoElemento.innerText =
             "Bioma";
@@ -4347,6 +4975,7 @@ function atualizarPainelVetor(
         campo => {
 
             const valor =
+
                 obterValorCampoVetor(
 
                     feature,
@@ -4357,9 +4986,13 @@ function atualizarPainelVetor(
 
 
             if (
+
                 valor !== null &&
+
                 valor !== undefined &&
+
                 valor !== ""
+
             ) {
 
                 quantidadeInformada++;
@@ -4368,6 +5001,7 @@ function atualizarPainelVetor(
 
 
             const item =
+
                 document.createElement(
                     "div"
                 );
@@ -4378,6 +5012,7 @@ function atualizarPainelVetor(
 
 
             const label =
+
                 document.createElement(
                     "div"
                 );
@@ -4392,6 +5027,7 @@ function atualizarPainelVetor(
 
 
             const valorElemento =
+
                 document.createElement(
                     "div"
                 );
@@ -4402,7 +5038,9 @@ function atualizarPainelVetor(
 
 
             if (
+
                 campo.classe
+
             ) {
 
                 valorElemento.classList.add(
@@ -4413,6 +5051,7 @@ function atualizarPainelVetor(
 
 
             valorElemento.innerText =
+
                 formatarValorCampo(
 
                     valor,
@@ -4442,7 +5081,9 @@ function atualizarPainelVetor(
 
 
     if (
+
         quantidadeInformada > 0
+
     ) {
 
         vazio.style.display =
@@ -4456,6 +5097,7 @@ function atualizarPainelVetor(
             "block";
 
         vazio.innerText =
+
             "Os campos de ranqueamento não foram encontrados nesta feição.";
 
     }
@@ -4477,7 +5119,7 @@ function atualizarPainelVetor(
 
 
 // ============================================================
-// 22. ALTERNAR PAINEL VETOR
+// 29. ALTERNAR PAINEL
 // ============================================================
 
 function alternarPainelVetor() {
@@ -4495,13 +5137,16 @@ function alternarPainelVetor() {
 
 
     const estaRecolhido =
+
         painel.classList.contains(
             "recolhido"
         );
 
 
     if (
+
         estaRecolhido
+
     ) {
 
         painel.classList.remove(
@@ -4528,76 +5173,625 @@ function alternarPainelVetor() {
 
 
 // ============================================================
-// 23. FORMATAR NÚMERO
+// 30. CARREGAMENTO MUNICIPAL DINÂMICO
 // ============================================================
 
-function formatarNumero(valor) {
+const municipiosCarregados =
+    new Set();
 
-    return Number(valor).toLocaleString(
 
-        "pt-BR",
+const municipiosEmCarregamento =
+    new Set();
 
-        {
 
-            minimumFractionDigits:
-                0,
+let estadoMunicipiosAtual =
+    null;
 
-            maximumFractionDigits:
-                2
 
-        }
+// ============================================================
+// 31. GERAR NOMES DOS ARQUIVOS
+// ============================================================
 
+function gerarArquivosMunicipios(sigla) {
+
+    const arquivos = [];
+
+
+    for (
+
+        let i = 1;
+
+        i <= MAX_ARQUIVOS_MUNICIPIOS;
+
+        i++
+
+    ) {
+
+        const numero =
+
+            String(i).padStart(
+                2,
+                "0"
+            );
+
+
+        arquivos.push(
+
+            `${sigla}_${numero}.geojson`
+
+        );
+
+    }
+
+
+    return arquivos;
+
+}
+
+
+// ============================================================
+// 32. MOSTRAR STATUS MUNICÍPIOS
+// ============================================================
+
+function mostrarStatusMunicipios(texto) {
+
+    const elemento =
+
+        document.getElementById(
+            "municipios-status"
+        );
+
+
+    elemento.innerText =
+        texto;
+
+
+    elemento.classList.add(
+        "visivel"
     );
 
 }
 
 
 // ============================================================
-// 24. LOADING
+// 33. ESCONDER STATUS
 // ============================================================
 
-function atualizarLoading(
+function esconderStatusMunicipios() {
 
-    percentual,
+    const elemento =
 
-    texto
-
-) {
-
-    const barra =
         document.getElementById(
-            "barra-progresso"
+            "municipios-status"
         );
 
 
-    const porcentagem =
-        document.getElementById(
-            "loading-percentual"
-        );
-
-
-    const mensagem =
-        document.getElementById(
-            "loading-texto"
-        );
-
-
-    barra.style.width =
-        `${percentual}%`;
-
-
-    porcentagem.innerText =
-        `${Math.round(percentual)}%`;
-
-
-    mensagem.innerText =
-        texto;
+    elemento.classList.remove(
+        "visivel"
+    );
 
 }
 
 
 // ============================================================
-// 25. CARREGAR ARQUIVO
+// 34. CARREGAR UM ARQUIVO MUNICIPAL
+// ============================================================
+
+async function carregarArquivoMunicipio(
+
+    arquivo,
+
+    sigla
+
+) {
+
+    const url =
+
+        BASE_MUNICIPIOS +
+
+        arquivo;
+
+
+    const resposta =
+
+        await fetch(
+
+            url,
+
+            {
+
+                cache:
+                    "force-cache"
+
+            }
+
+        );
+
+
+    if (
+
+        !resposta.ok
+
+    ) {
+
+        throw new Error(
+
+            `${arquivo}: HTTP ${resposta.status}`
+
+        );
+
+    }
+
+
+    const bruto =
+        await resposta.json();
+
+
+    const dados =
+        normalizarGeoJSON(bruto);
+
+
+    if (
+
+        !dados.features ||
+
+        dados.features.length === 0
+
+    ) {
+
+        throw new Error(
+
+            `${arquivo}: nenhuma feição encontrada`
+
+        );
+
+    }
+
+
+    criarCamadaMunicipios(
+
+        dados,
+
+        sigla
+
+    );
+
+
+    return dados.features.length;
+
+}
+
+
+// ============================================================
+// 35. CARREGAR MUNICÍPIOS DO ESTADO
+// ============================================================
+
+async function carregarMunicipiosEstado(
+
+    sigla
+
+) {
+
+    if (
+
+        !sigla ||
+
+        !ESTADOS_BRASIL[sigla]
+
+    ) {
+
+        return;
+
+    }
+
+
+    estadoMunicipiosAtual =
+        sigla;
+
+
+    if (
+
+        municipiosCarregados.has(sigla)
+
+    ) {
+
+        if (
+
+            !map.hasLayer(
+                grupoMunicipios
+            )
+
+        ) {
+
+            grupoMunicipios.addTo(
+                map
+            );
+
+        }
+
+
+        ajustarMunicipiosAoEstado(
+            sigla
+        );
+
+
+        return;
+
+    }
+
+
+    if (
+
+        municipiosEmCarregamento.has(
+            sigla
+        )
+
+    ) {
+
+        return;
+
+    }
+
+
+    municipiosEmCarregamento.add(
+        sigla
+    );
+
+
+    mostrarStatusMunicipios(
+
+        `Carregando municípios de ${ESTADOS_BRASIL[sigla]}...`
+
+    );
+
+
+    const arquivos =
+        gerarArquivosMunicipios(
+            sigla
+        );
+
+
+    let carregados =
+        0;
+
+
+    let encontrados =
+        0;
+
+
+    for (
+
+        const arquivo of arquivos
+
+    ) {
+
+        try {
+
+            const quantidade =
+
+                await carregarArquivoMunicipio(
+
+                    arquivo,
+
+                    sigla
+
+                );
+
+
+            encontrados +=
+                quantidade;
+
+
+            carregados++;
+
+
+            mostrarStatusMunicipios(
+
+                `Carregando municípios de ${ESTADOS_BRASIL[sigla]}... ${carregados} arquivo(s)`
+
+            );
+
+        }
+
+        catch (erro) {
+
+            // HTTP 404 é esperado quando o estado
+            // possui menos arquivos do que MAX_ARQUIVOS_MUNICIPIOS.
+
+            if (
+
+                !String(
+                    erro.message
+                ).includes(
+                    "HTTP 404"
+                )
+
+            ) {
+
+                console.warn(
+                    "Erro ao carregar:",
+                    erro.message
+                );
+
+            }
+
+        }
+
+    }
+
+
+    municipiosEmCarregamento.delete(
+        sigla
+    );
+
+
+    if (
+
+        encontrados > 0
+
+    ) {
+
+        municipiosCarregados.add(
+            sigla
+        );
+
+
+        grupoMunicipios.addTo(
+            map
+        );
+
+
+        mostrarStatusMunicipios(
+
+            `${ESTADOS_BRASIL[sigla]}: ${formatarNumero(encontrados)} municípios carregados`
+
+        );
+
+
+        setTimeout(
+
+            esconderStatusMunicipios,
+
+            2500
+
+        );
+
+    }
+
+    else {
+
+        mostrarStatusMunicipios(
+
+            `Nenhum arquivo municipal encontrado para ${sigla}.`
+
+        );
+
+        console.error(
+
+            "Nenhum município encontrado. " +
+
+            "Verifique BASE_MUNICIPIOS:",
+
+            BASE_MUNICIPIOS
+
+        );
+
+
+        setTimeout(
+
+            esconderStatusMunicipios,
+
+            4000
+
+        );
+
+    }
+
+
+    ajustarMunicipiosAoEstado(
+        sigla
+    );
+
+}
+
+
+// ============================================================
+// 36. AJUSTAR MUNICÍPIOS AO ESTADO
+// ============================================================
+
+function ajustarMunicipiosAoEstado(
+
+    sigla
+
+) {
+
+    const estado =
+
+        grupoMunicipios
+            .getLayers()
+            .filter(
+
+                camada =>
+
+                    camada.options &&
+                    camada.options._sigla === sigla
+
+            );
+
+
+    // Não faz zoom automático aqui.
+    //
+    // O estado já está sendo visualizado
+    // pelo clique do usuário.
+    //
+    // A função fica preparada para futuras
+    // regras de zoom.
+
+}
+
+
+// ============================================================
+// 37. NORMALIZAR CAMADA MUNICIPAL POR UF
+// ============================================================
+
+function marcarCamadaMunicipal(
+
+    camada,
+
+    sigla
+
+) {
+
+    camada.options._sigla =
+        sigla;
+
+}
+
+
+// ============================================================
+// 38. CONTROLE DE CAMADAS
+// ============================================================
+
+const controleCamadas =
+
+    L.control.layers(
+
+        null,
+
+        {
+
+            "Estados":
+                grupoEstados,
+
+            "Municípios":
+                grupoMunicipios,
+
+            "Biomas":
+                grupoBiomas
+
+        },
+
+        {
+
+            collapsed:
+                false,
+
+            position:
+                "topright"
+
+        }
+
+    );
+
+
+// ============================================================
+// 39. AJUSTAR MAPA
+// ============================================================
+
+function ajustarMapa() {
+
+    const camadas = [];
+
+
+    if (
+
+        grupoEstados.getLayers().length
+
+    ) {
+
+        camadas.push(
+
+            ...grupoEstados.getLayers()
+
+        );
+
+    }
+
+
+    if (
+
+        grupoBiomas.getLayers().length
+
+    ) {
+
+        camadas.push(
+
+            ...grupoBiomas.getLayers()
+
+        );
+
+    }
+
+
+    if (
+
+        camadas.length === 0
+
+    ) {
+
+        map.setView(
+
+            [-14.2, -51.9],
+
+            4
+
+        );
+
+        return;
+
+    }
+
+
+    const grupo =
+
+        L.featureGroup(
+            camadas
+        );
+
+
+    try {
+
+        map.fitBounds(
+
+            grupo.getBounds(),
+
+            {
+
+                padding:
+                    [30, 30]
+
+            }
+
+        );
+
+    }
+
+    catch (erro) {
+
+        console.warn(
+
+            "Erro ao ajustar mapa:",
+
+            erro
+
+        );
+
+
+        map.setView(
+
+            [-14.2, -51.9],
+
+            4
+
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// 40. CARREGAR ARQUIVO
 // ============================================================
 
 async function carregarArquivo(
@@ -4611,6 +5805,7 @@ async function carregarArquivo(
 ) {
 
     const resposta =
+
         await fetch(
 
             arquivo,
@@ -4626,7 +5821,9 @@ async function carregarArquivo(
 
 
     if (
+
         !resposta.ok
+
     ) {
 
         throw new Error(
@@ -4649,8 +5846,11 @@ async function carregarArquivo(
 
 
     if (
+
         !dados.features ||
+
         dados.features.length === 0
+
     ) {
 
         throw new Error(
@@ -4690,7 +5890,7 @@ async function carregarArquivo(
 
 
 // ============================================================
-// 26. CARREGAR TODOS OS DADOS
+// 41. CARREGAR DADOS PRINCIPAIS
 // ============================================================
 
 async function carregarTodosDados() {
@@ -4698,6 +5898,7 @@ async function carregarTodosDados() {
     const arquivos = [
 
         ...arquivosEstados.map(
+
             arquivo => ({
 
                 arquivo,
@@ -4709,9 +5910,11 @@ async function carregarTodosDados() {
                     "estados"
 
             })
+
         ),
 
         ...arquivosBiomas.map(
+
             arquivo => ({
 
                 arquivo,
@@ -4723,6 +5926,7 @@ async function carregarTodosDados() {
                     "biomas"
 
             })
+
         )
 
     ];
@@ -4733,6 +5937,7 @@ async function carregarTodosDados() {
 
 
     const promessas =
+
         arquivos.map(
 
             async item => {
@@ -4740,6 +5945,7 @@ async function carregarTodosDados() {
                 try {
 
                     const resultado =
+
                         await carregarArquivo(
 
                             item.arquivo,
@@ -4757,8 +5963,11 @@ async function carregarTodosDados() {
                     atualizarLoading(
 
                         (
+
                             concluidos /
+
                             arquivos.length
+
                         ) * 100,
 
                         `Carregando ${item.arquivo}`
@@ -4787,7 +5996,6 @@ async function carregarTodosDados() {
 
                 }
 
-
                 catch (erro) {
 
                     console.error(
@@ -4801,8 +6009,11 @@ async function carregarTodosDados() {
                     atualizarLoading(
 
                         (
+
                             concluidos /
+
                             arquivos.length
+
                         ) * 100,
 
                         "Processando dados espaciais..."
@@ -4844,172 +6055,7 @@ async function carregarTodosDados() {
 
 
 // ============================================================
-// 27. CONTROLE DE CAMADAS
-// ============================================================
-
-const controleCamadas =
-    L.control.layers(
-
-        null,
-
-        {
-
-            "Estados":
-                grupoEstados,
-
-            "Biomas":
-                grupoBiomas
-
-        },
-
-        {
-
-            collapsed:
-                false,
-
-            position:
-                "topright"
-
-        }
-
-    );
-
-
-// ============================================================
-// 28. AJUSTAR MAPA
-// ============================================================
-
-function ajustarMapa() {
-
-    const camadas = [];
-
-
-    if (
-        grupoEstados.getLayers().length
-    ) {
-
-        camadas.push(
-            ...grupoEstados.getLayers()
-        );
-
-    }
-
-
-    if (
-        grupoBiomas.getLayers().length
-    ) {
-
-        camadas.push(
-            ...grupoBiomas.getLayers()
-        );
-
-    }
-
-
-    if (
-        camadas.length === 0
-    ) {
-
-        map.setView(
-            [-14.2, -51.9],
-            4
-        );
-
-        return;
-
-    }
-
-
-    const grupo =
-        L.featureGroup(
-            camadas
-        );
-
-
-    try {
-
-        map.fitBounds(
-
-            grupo.getBounds(),
-
-            {
-
-                padding:
-                    [30, 30]
-
-            }
-
-        );
-
-    }
-
-    catch (erro) {
-
-        console.warn(
-            "Erro ao ajustar mapa:",
-            erro
-        );
-
-        map.setView(
-            [-14.2, -51.9],
-            4
-        );
-
-    }
-
-}
-
-
-// ============================================================
-// 29. ABRIR CITAÇÃO
-// ============================================================
-
-function abrirCitacao() {
-
-    document
-        .getElementById(
-            "modal-citacao"
-        )
-        .classList.add(
-            "aberto"
-        );
-
-}
-
-
-// ============================================================
-// 30. FECHAR CITAÇÃO
-// ============================================================
-
-function fecharCitacao() {
-
-    document
-        .getElementById(
-            "modal-citacao"
-        )
-        .classList.remove(
-            "aberto"
-        );
-
-}
-
-
-function fecharModalFora(event) {
-
-    if (
-        event.target.id ===
-        "modal-citacao"
-    ) {
-
-        fecharCitacao();
-
-    }
-
-}
-
-
-// ============================================================
-// 31. DADOS RANKING
+// 42. DADOS RANKING
 // ============================================================
 
 let dadosRankingEstados = [];
@@ -5018,13 +6064,14 @@ let dadosRankingBiomas = [];
 
 
 // ============================================================
-// 32. CONSTRUIR RANKINGS
+// 43. CONSTRUIR RANKINGS
 // ============================================================
 
 function construirRankings(resultados) {
 
     const estados =
         new Map();
+
 
     const biomas =
         new Map();
@@ -5035,7 +6082,9 @@ function construirRankings(resultados) {
         resultado => {
 
             if (
+
                 !resultado.sucesso
+
             ) {
 
                 return;
@@ -5044,8 +6093,10 @@ function construirRankings(resultados) {
 
 
             if (
+
                 resultado.tipo ===
                 "estados"
+
             ) {
 
                 resultado.features.forEach(
@@ -5053,9 +6104,11 @@ function construirRankings(resultados) {
                     feature => {
 
                         if (
+
                             !ehEstadoDoBrasil(
                                 feature
                             )
+
                         ) {
 
                             return;
@@ -5064,30 +6117,38 @@ function construirRankings(resultados) {
 
 
                         const sigla =
+
                             obterSiglaEstado(
                                 feature
                             );
 
 
                         const nome =
+
                             ESTADOS_BRASIL[
                                 sigla
                             ];
 
 
                         const area =
+
                             obterArea(
                                 feature
                             );
 
 
                         if (
+
                             !nome ||
+
                             area === null ||
+
                             !Number.isFinite(
                                 Number(area)
                             ) ||
+
                             Number(area) < 0
+
                         ) {
 
                             return;
@@ -5096,9 +6157,11 @@ function construirRankings(resultados) {
 
 
                         if (
+
                             !estados.has(
                                 sigla
                             )
+
                         ) {
 
                             estados.set(
@@ -5126,6 +6189,7 @@ function construirRankings(resultados) {
                         estados.get(
                             sigla
                         ).area +=
+
                             Number(area);
 
                     }
@@ -5154,12 +6218,17 @@ function construirRankings(resultados) {
 
 
                         if (
+
                             !nome ||
+
                             area === null ||
+
                             !Number.isFinite(
                                 Number(area)
                             ) ||
+
                             Number(area) < 0
+
                         ) {
 
                             return;
@@ -5168,15 +6237,18 @@ function construirRankings(resultados) {
 
 
                         const chave =
+
                             normalizarTexto(
                                 nome
                             );
 
 
                         if (
+
                             !biomas.has(
                                 chave
                             )
+
                         ) {
 
                             biomas.set(
@@ -5203,6 +6275,7 @@ function construirRankings(resultados) {
                         biomas.get(
                             chave
                         ).area +=
+
                             Number(area);
 
                     }
@@ -5217,15 +6290,14 @@ function construirRankings(resultados) {
 
 
     dadosRankingEstados =
+
         Array
             .from(
                 estados.values()
             )
             .sort(
-
                 (a, b) =>
                     b.area - a.area
-
             )
             .slice(
                 0,
@@ -5234,34 +6306,39 @@ function construirRankings(resultados) {
 
 
     dadosRankingBiomas =
+
         Array
             .from(
                 biomas.values()
             )
             .sort(
-
                 (a, b) =>
                     b.area - a.area
-
             );
 
 
     console.log(
+
         "Ranking Estados:",
+
         dadosRankingEstados
+
     );
 
 
     console.log(
+
         "Ranking Biomas:",
+
         dadosRankingBiomas
+
     );
 
 }
 
 
 // ============================================================
-// 33. ABRIR RANKING
+// 44. RANKING
 // ============================================================
 
 function abrirRanking() {
@@ -5282,10 +6359,6 @@ function abrirRanking() {
 }
 
 
-// ============================================================
-// 34. FECHAR RANKING
-// ============================================================
-
 function fecharRanking() {
 
     document
@@ -5302,8 +6375,10 @@ function fecharRanking() {
 function fecharRankingFora(event) {
 
     if (
+
         event.target.id ===
         "modal-ranking"
+
     ) {
 
         fecharRanking();
@@ -5314,30 +6389,34 @@ function fecharRankingFora(event) {
 
 
 // ============================================================
-// 35. MOSTRAR RANKING
+// 45. MOSTRAR RANKING
 // ============================================================
 
 function mostrarRanking(tipo) {
 
     const lista =
+
         document.getElementById(
             "ranking-lista"
         );
 
 
     const vazio =
+
         document.getElementById(
             "ranking-vazio"
         );
 
 
     const tabEstados =
+
         document.getElementById(
             "tab-estados"
         );
 
 
     const tabBiomas =
+
         document.getElementById(
             "tab-biomas"
         );
@@ -5347,15 +6426,19 @@ function mostrarRanking(tipo) {
 
 
     if (
+
         tipo === "estados"
+
     ) {
 
         dados =
             dadosRankingEstados;
 
+
         tabEstados.classList.add(
             "ativo"
         );
+
 
         tabBiomas.classList.remove(
             "ativo"
@@ -5368,9 +6451,11 @@ function mostrarRanking(tipo) {
         dados =
             dadosRankingBiomas;
 
+
         tabBiomas.classList.add(
             "ativo"
         );
+
 
         tabEstados.classList.remove(
             "ativo"
@@ -5384,7 +6469,9 @@ function mostrarRanking(tipo) {
 
 
     if (
+
         dados.length === 0
+
     ) {
 
         vazio.style.display =
@@ -5425,15 +6512,22 @@ function mostrarRanking(tipo) {
 
 
             const percentual =
+
                 maiorArea > 0
+
                     ? (
+
                         item.area /
+
                         maiorArea
-                    ) * 100
+
+                      ) * 100
+
                     : 0;
 
 
             const div =
+
                 document.createElement(
                     "div"
                 );
@@ -5446,7 +6540,9 @@ function mostrarRanking(tipo) {
             div.innerHTML = `
 
                 <div class="ranking-posicao">
+
                     ${posicao}
+
                 </div>
 
 
@@ -5454,7 +6550,9 @@ function mostrarRanking(tipo) {
                     class="ranking-nome"
                     title="${escaparHTML(item.nome)}"
                 >
+
                     ${escaparHTML(item.nome)}
+
                 </div>
 
 
@@ -5495,34 +6593,42 @@ function mostrarRanking(tipo) {
 
 
 // ============================================================
-// 36. RESUMO
+// 46. RESUMO
 // ============================================================
 
 function atualizarResumo(
+
     dados,
+
     tipo
+
 ) {
 
     const maior =
+
         document.getElementById(
             "resumo-maior"
         );
 
 
     const area =
+
         document.getElementById(
             "resumo-area"
         );
 
 
     const total =
+
         document.getElementById(
             "resumo-total"
         );
 
 
     if (
+
         dados.length === 0
+
     ) {
 
         maior.innerText =
@@ -5544,6 +6650,7 @@ function atualizarResumo(
 
 
     area.innerText =
+
         `${formatarNumero(
             dados[0].area
         )} km²`;
@@ -5556,7 +6663,53 @@ function atualizarResumo(
 
 
 // ============================================================
-// 37. ESCAPAR HTML
+// 47. CITAR
+// ============================================================
+
+function abrirCitacao() {
+
+    document
+        .getElementById(
+            "modal-citacao"
+        )
+        .classList.add(
+            "aberto"
+        );
+
+}
+
+
+function fecharCitacao() {
+
+    document
+        .getElementById(
+            "modal-citacao"
+        )
+        .classList.remove(
+            "aberto"
+        );
+
+}
+
+
+function fecharModalFora(event) {
+
+    if (
+
+        event.target.id ===
+        "modal-citacao"
+
+    ) {
+
+        fecharCitacao();
+
+    }
+
+}
+
+
+// ============================================================
+// 48. ESCAPAR HTML
 // ============================================================
 
 function escaparHTML(texto) {
@@ -5592,33 +6745,79 @@ function escaparHTML(texto) {
 
 
 // ============================================================
-// 38. ESC
+// 49. FORMATAR NÚMERO
 // ============================================================
 
-document.addEventListener(
+function formatarNumero(valor) {
 
-    "keydown",
+    return Number(valor).toLocaleString(
 
-    function(event) {
+        "pt-BR",
 
-        if (
-            event.key ===
-            "Escape"
-        ) {
+        {
 
-            fecharCitacao();
+            minimumFractionDigits:
+                0,
 
-            fecharRanking();
+            maximumFractionDigits:
+                2
 
         }
 
-    }
+    );
 
-);
+}
 
 
 // ============================================================
-// 39. INICIALIZAÇÃO
+// 50. LOADING
+// ============================================================
+
+function atualizarLoading(
+
+    percentual,
+
+    texto
+
+) {
+
+    const barra =
+
+        document.getElementById(
+            "barra-progresso"
+        );
+
+
+    const porcentagem =
+
+        document.getElementById(
+            "loading-percentual"
+        );
+
+
+    const mensagem =
+
+        document.getElementById(
+            "loading-texto"
+        );
+
+
+    barra.style.width =
+        `${percentual}%`;
+
+
+    porcentagem.innerText =
+        `${Math.round(percentual)}%`;
+
+
+    mensagem.innerText =
+        texto;
+
+}
+
+
+// ============================================================
+// 51. INICIALIZAÇÃO
 // ============================================================
 
 async function inicializar() {
@@ -5633,6 +6832,7 @@ async function inicializar() {
 
 
     const resultados =
+
         await carregarTodosDados();
 
 
@@ -5651,7 +6851,9 @@ async function inicializar() {
 
 
     if (
+
         grupoEstados.getLayers().length > 0
+
     ) {
 
         grupoEstados.addTo(
@@ -5662,7 +6864,9 @@ async function inicializar() {
 
 
     if (
+
         grupoBiomas.getLayers().length > 0
+
     ) {
 
         grupoBiomas.addTo(
@@ -5711,7 +6915,35 @@ async function inicializar() {
 
 
 // ============================================================
-// 40. EXECUTAR
+// 52. ESC
+// ============================================================
+
+document.addEventListener(
+
+    "keydown",
+
+    function(event) {
+
+        if (
+
+            event.key ===
+            "Escape"
+
+        ) {
+
+            fecharCitacao();
+
+            fecharRanking();
+
+        }
+
+    }
+
+);
+
+
+// ============================================================
+// 53. EXECUTAR
 // ============================================================
 
 window.addEventListener(
@@ -5721,6 +6953,7 @@ window.addEventListener(
     inicializar
 
 );
+
 
 </script>
 
