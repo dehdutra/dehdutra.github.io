@@ -1,1 +1,397 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Qualidade do Ar e Fogo | Dashboard Científico</title>
+
+  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js"></script>
+
+  <style>
+    :root {
+      --fundo: #f3f6f8;
+      --painel: #ffffff;
+      --texto: #243447;
+      --secundario: #667788;
+      --destaque: #117864;
+      --borda: #dce4e9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--fundo);
+      color: var(--texto);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 28px 5%;
+      background: linear-gradient(120deg, #123b46, #117864);
+      color: white;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+    }
+
+    header p {
+      margin: 0;
+      line-height: 1.6;
+      color: #e0f2ef;
+    }
+
+    main {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 28px 3%;
+    }
+
+    .titulo-secao {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    .descricao {
+      color: var(--secundario);
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .indicadores {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .indicador {
+      background: var(--painel);
+      border: 1px solid var(--borda);
+      border-radius: 12px;
+      padding: 18px;
+      min-height: 100px;
+    }
+
+    .indicador span {
+      display: block;
+      color: var(--secundario);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .indicador strong {
+      font-size: 1.15rem;
+    }
+
+    .painel-mapa {
+      background: var(--painel);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(30, 50, 60, 0.05);
+    }
+
+    .cabecalho-mapa {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .cabecalho-mapa h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    select, button {
+      font: inherit;
+      border: 1px solid var(--borda);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: white;
+      color: var(--texto);
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:hover {
+      border-color: var(--destaque);
+    }
+
+    #mapa-mundi {
+      width: 100%;
+      height: min(65vh, 650px);
+      min-height: 380px;
+    }
+
+    .nota {
+      color: var(--secundario);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin: 12px 0 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--secundario);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 700px) {
+      .indicadores {
+        grid-template-columns: 1fr;
+      }
+
+      #mapa-mundi {
+        min-height: 350px;
+        height: 55vh;
+      }
+
+      .painel-mapa {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Qualidade do Ar e Fogo</h1>
+    <p>
+      Plataforma científica para exploração espacial de informações
+      sobre qualidade do ar, queimadas e processos ambientais.
+    </p>
+  </header>
+
+  <main>
+
+    <h2 class="titulo-secao">Exploração geográfica global</h2>
+
+    <p class="descricao">
+      Mapa-múndi com fronteiras nacionais, navegação interativa
+      e seleção de regiões para orientar as próximas análises.
+    </p>
+
+    <section class="indicadores">
+
+      <div class="indicador">
+        <span>Área de estudo</span>
+        <strong>Mundo</strong>
+      </div>
+
+      <div class="indicador">
+        <span>Camada cartográfica</span>
+        <strong>Países e fronteiras</strong>
+      </div>
+
+      <div class="indicador">
+        <span>Dados ambientais</span>
+        <strong>A integrar</strong>
+      </div>
+
+    </section>
+
+    <section class="painel-mapa">
+
+      <div class="cabecalho-mapa">
+
+        <h2>Mapa-múndi</h2>
+
+        <div>
+          <label for="regiao">Região inicial: </label>
+
+          <select id="regiao">
+            <option value="world">Mundo</option>
+            <option value="south-america">América do Sul</option>
+            <option value="north-america">América do Norte</option>
+            <option value="europe">Europa</option>
+            <option value="africa">África</option>
+            <option value="asia">Ásia</option>
+            <option value="oceania">Oceania</option>
+          </select>
+
+          <button id="btn-resetar" type="button">
+            Ver mundo
+          </button>
+        </div>
+
+      </div>
+
+      <div id="mapa-mundi"></div>
+
+      <p class="nota">
+        Mapa-base sem dados de concentração de poluentes ou ocorrência
+        de fogo. Use o zoom e arraste o mapa para explorar os países.
+        A disponibilidade do mapa depende da conexão com a internet.
+      </p>
+
+    </section>
+
+  </main>
+
+  <footer>
+    Dashboard científico | Qualidade do Ar e Fogo
+  </footer>
+
+  <script>
+    const regioes = {
+      "world": {
+        projection: "natural earth",
+        lon: 0,
+        lat: 10,
+        scale: 1
+      },
+
+      "south-america": {
+        projection: "mercator",
+        lon: -60,
+        lat: -15,
+        scale: 1.45
+      },
+
+      "north-america": {
+        projection: "mercator",
+        lon: -100,
+        lat: 40,
+        scale: 1.3
+      },
+
+      "europe": {
+        projection: "mercator",
+        lon: 15,
+        lat: 52,
+        scale: 2.1
+      },
+
+      "africa": {
+        projection: "mercator",
+        lon: 20,
+        lat: 0,
+        scale: 1.5
+      },
+
+      "asia": {
+        projection: "mercator",
+        lon: 95,
+        lat: 35,
+        scale: 1.2
+      },
+
+      "oceania": {
+        projection: "mercator",
+        lon: 135,
+        lat: -25,
+        scale: 1.7
+      }
+    };
+
+    function configurarMapa(regiao = "world") {
+      const r = regioes[regiao];
+
+      const dados = [{
+        type: "scattergeo",
+        mode: "markers",
+        lon: [],
+        lat: [],
+        hoverinfo: "skip",
+        showlegend: false
+      }];
+
+      const layout = {
+        autosize: true,
+        margin: {
+          l: 0,
+          r: 0,
+          t: 5,
+          b: 0
+        },
+
+        paper_bgcolor: "#ffffff",
+        plot_bgcolor: "#ffffff",
+
+        geo: {
+          scope: "world",
+          projection: {
+            type: r.projection,
+            scale: r.scale
+          },
+
+          center: {
+            lon: r.lon,
+            lat: r.lat
+          },
+
+          showland: true,
+          landcolor: "#e4ebe7",
+
+          showocean: true,
+          oceancolor: "#eaf3f8",
+
+          showlakes: true,
+          lakecolor: "#eaf3f8",
+
+          showcountries: true,
+          countrycolor: "#788d91",
+          countrywidth: 0.7,
+
+          showcoastlines: true,
+          coastlinecolor: "#657d83",
+          coastlinewidth: 0.8,
+
+          showframe: false,
+          bgcolor: "#ffffff",
+          resolution: 50
+        }
+      };
+
+      const config = {
+        responsive: true,
+        displaylogo: false,
+        scrollZoom: true,
+
+        modeBarButtonsToRemove: [
+          "select2d",
+          "lasso2d"
+        ]
+      };
+
+      Plotly.react(
+        "mapa-mundi",
+        dados,
+        layout,
+        config
+      );
+    }
+
+    document
+      .getElementById("regiao")
+      .addEventListener("change", function () {
+        configurarMapa(this.value);
+      });
+
+    document
+      .getElementById("btn-resetar")
+      .addEventListener("click", function () {
+        document.getElementById("regiao").value = "world";
+        configurarMapa("world");
+      });
+
+    configurarMapa("world");
+  </script>
+
+</body>
+</html>
+
