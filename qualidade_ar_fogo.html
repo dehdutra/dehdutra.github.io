@@ -19,9 +19,7 @@
       --borda: #dce4e9;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -77,6 +75,7 @@
       border-radius: 12px;
       padding: 18px;
       min-height: 100px;
+      overflow-wrap: anywhere;
     }
 
     .indicador span {
@@ -112,6 +111,13 @@
       font-size: 1.15rem;
     }
 
+    .controles {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     select, button {
       font: inherit;
       border: 1px solid var(--borda);
@@ -121,11 +127,18 @@
       color: var(--texto);
     }
 
-    button {
-      cursor: pointer;
+    button { cursor: pointer; }
+
+    button:hover { border-color: var(--destaque); }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.6;
     }
 
-    button:hover {
+    #btn-atualizar {
+      color: white;
+      background: var(--destaque);
       border-color: var(--destaque);
     }
 
@@ -134,6 +147,30 @@
       height: min(65vh, 650px);
       min-height: 380px;
     }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #f5f8f8;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .ponto-status {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 9px;
+      border-radius: 50%;
+      background: #d99a20;
+    }
+
+    .ponto-status.ok { background: #18875b; }
+    .ponto-status.erro { background: #c0392b; }
 
     .nota {
       color: var(--secundario);
@@ -150,248 +187,749 @@
     }
 
     @media (max-width: 700px) {
-      .indicadores {
-        grid-template-columns: 1fr;
-      }
-
-      #mapa-mundi {
-        min-height: 350px;
-        height: 55vh;
-      }
-
-      .painel-mapa {
-        padding: 12px;
-      }
+      .indicadores { grid-template-columns: 1fr; }
+      #mapa-mundi { min-height: 350px; height: 55vh; }
+      .painel-mapa { padding: 12px; }
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>Qualidade do Ar e Fogo</h1>
-    <p>
-      Plataforma científica para exploração espacial de informações
-      sobre qualidade do ar, queimadas e processos ambientais.
+<header>
+  <h1>Qualidade do Ar e Fogo</h1>
+  <p>
+    Monitoramento de focos de fogo ativo com dados do Programa
+    Queimadas do Instituto Nacional de Pesquisas Espaciais (INPE).
+  </p>
+</header>
+
+<main>
+
+  <h2 class="titulo-secao">Monitoramento de focos de fogo</h2>
+
+  <p class="descricao">
+    Explore a distribuição espacial dos focos registrados no Brasil.
+    Os dados são consultados diretamente no repositório oficial do INPE.
+  </p>
+
+  <section class="indicadores">
+
+    <div class="indicador">
+      <span>Focos carregados no mapa</span>
+      <strong id="total-focos">Aguardando dados</strong>
+    </div>
+
+    <div class="indicador">
+      <span>Data do arquivo de focos</span>
+      <strong id="data-dados">Aguardando dados</strong>
+    </div>
+
+    <div class="indicador">
+      <span>Última consulta bem-sucedida</span>
+      <strong id="ultima-consulta">Ainda não realizada</strong>
+    </div>
+
+  </section>
+
+  <section class="painel-mapa">
+
+    <div class="cabecalho-mapa">
+
+      <h2>Mapa de focos de fogo ativo</h2>
+
+      <div class="controles">
+        <label for="regiao">Região:</label>
+
+        <select id="regiao">
+          <option value="world">Mundo</option>
+          <option value="south-america">América do Sul</option>
+          <option value="brazil">Brasil</option>
+          <option value="north-america">América do Norte</option>
+          <option value="europe">Europa</option>
+          <option value="africa">África</option>
+          <option value="asia">Ásia</option>
+          <option value="oceania">Oceania</option>
+        </select>
+
+        <button id="btn-resetar" type="button">
+          Ver mundo
+        </button>
+
+        <button id="btn-atualizar" type="button">
+          ↻ Atualizar focos
+        </button>
+      </div>
+
+    </div>
+
+    <div id="mapa-mundi"></div>
+
+    <div class="status" role="status" aria-live="polite">
+      <span id="ponto-status" class="ponto-status"></span>
+      <span id="mensagem-status">
+        Preparando conexão com os dados do INPE...
+      </span>
+    </div>
+
+    <p class="nota">
+      Fonte: Programa Queimadas do INPE. O mapa utiliza o arquivo
+      diário mais recente encontrado no diretório oficial do Brasil.
+      Os registros correspondem a detecções de fogo ativo, não a
+      polígonos de área queimada nem a uma contagem de incêndios únicos.
+      A frequência de consulta deste painel é de 15 minutos.
     </p>
-  </header>
 
-  <main>
-
-    <h2 class="titulo-secao">Exploração geográfica global</h2>
-
-    <p class="descricao">
-      Mapa-múndi com fronteiras nacionais, navegação interativa
-      e seleção de regiões para orientar as próximas análises.
+    <p class="nota">
+      A disponibilidade dos dados depende do servidor do INPE e da
+      permissão de acesso do navegador. A atualização é executada
+      enquanto esta página está aberta.
     </p>
 
-    <section class="indicadores">
+  </section>
 
-      <div class="indicador">
-        <span>Área de estudo</span>
-        <strong>Mundo</strong>
-      </div>
+</main>
 
-      <div class="indicador">
-        <span>Camada cartográfica</span>
-        <strong>Países e fronteiras</strong>
-      </div>
+<footer>
+  Dashboard científico | Qualidade do Ar e Fogo
+</footer>
 
-      <div class="indicador">
-        <span>Dados ambientais</span>
-        <strong>A integrar</strong>
-      </div>
+<script>
+"use strict";
 
-    </section>
+// ============================================================
+// 1. FONTE OFICIAL
+// ============================================================
 
-    <section class="painel-mapa">
+const URL_DIRETORIO =
+  "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/Brasil/";
 
-      <div class="cabecalho-mapa">
+const INTERVALO_ATUALIZACAO = 15 * 60 * 1000;
 
-        <h2>Mapa-múndi</h2>
+// Limite de segurança para a renderização no navegador.
+// Se o arquivo tiver mais registros, a amostra será espacialmente
+// distribuída, e o total original continuará sendo informado.
 
-        <div>
-          <label for="regiao">Região inicial: </label>
+const MAX_PONTOS_MAPA = 50000;
 
-          <select id="regiao">
-            <option value="world">Mundo</option>
-            <option value="south-america">América do Sul</option>
-            <option value="north-america">América do Norte</option>
-            <option value="europe">Europa</option>
-            <option value="africa">África</option>
-            <option value="asia">Ásia</option>
-            <option value="oceania">Oceania</option>
-          </select>
+let focos = [];
+let arquivoAtual = "";
+let consultaEmAndamento = false;
+let timerAtualizacao = null;
 
-          <button id="btn-resetar" type="button">
-            Ver mundo
-          </button>
-        </div>
 
-      </div>
+// ============================================================
+// 2. REGIÕES
+// ============================================================
 
-      <div id="mapa-mundi"></div>
+const regioes = {
+  world: {
+    projection: "natural earth",
+    lon: 0,
+    lat: 10,
+    scale: 1
+  },
 
-      <p class="nota">
-        Mapa-base sem dados de concentração de poluentes ou ocorrência
-        de fogo. Use o zoom e arraste o mapa para explorar os países.
-        A disponibilidade do mapa depende da conexão com a internet.
-      </p>
+  "south-america": {
+    projection: "mercator",
+    lon: -60,
+    lat: -15,
+    scale: 1.45
+  },
 
-    </section>
+  brazil: {
+    projection: "mercator",
+    lon: -52,
+    lat: -12,
+    scale: 2.5
+  },
 
-  </main>
+  "north-america": {
+    projection: "mercator",
+    lon: -100,
+    lat: 40,
+    scale: 1.3
+  },
 
-  <footer>
-    Dashboard científico | Qualidade do Ar e Fogo
-  </footer>
+  europe: {
+    projection: "mercator",
+    lon: 15,
+    lat: 52,
+    scale: 2.1
+  },
 
-  <script>
-    const regioes = {
-      "world": {
-        projection: "natural earth",
-        lon: 0,
-        lat: 10,
-        scale: 1
-      },
+  africa: {
+    projection: "mercator",
+    lon: 20,
+    lat: 0,
+    scale: 1.5
+  },
 
-      "south-america": {
-        projection: "mercator",
-        lon: -60,
-        lat: -15,
-        scale: 1.45
-      },
+  asia: {
+    projection: "mercator",
+    lon: 95,
+    lat: 35,
+    scale: 1.2
+  },
 
-      "north-america": {
-        projection: "mercator",
-        lon: -100,
-        lat: 40,
-        scale: 1.3
-      },
+  oceania: {
+    projection: "mercator",
+    lon: 135,
+    lat: -25,
+    scale: 1.7
+  }
+};
 
-      "europe": {
-        projection: "mercator",
-        lon: 15,
-        lat: 52,
-        scale: 2.1
-      },
 
-      "africa": {
-        projection: "mercator",
-        lon: 20,
-        lat: 0,
-        scale: 1.5
-      },
+// ============================================================
+// 3. INTERFACE
+// ============================================================
 
-      "asia": {
-        projection: "mercator",
-        lon: 95,
-        lat: 35,
-        scale: 1.2
-      },
+function mensagem(texto, estado = "normal") {
+  document.getElementById("mensagem-status").textContent = texto;
 
-      "oceania": {
-        projection: "mercator",
-        lon: 135,
-        lat: -25,
-        scale: 1.7
+  const ponto = document.getElementById("ponto-status");
+
+  ponto.className = "ponto-status";
+
+  if (estado === "ok") ponto.classList.add("ok");
+  if (estado === "erro") ponto.classList.add("erro");
+}
+
+
+function dataHoraLocal(data = new Date()) {
+  return data.toLocaleString("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "medium"
+  });
+}
+
+
+function dataArquivoBR(yyyymmdd) {
+  if (!/^\d{8}$/.test(yyyymmdd)) return yyyymmdd;
+
+  return (
+    yyyymmdd.slice(6, 8) + "/" +
+    yyyymmdd.slice(4, 6) + "/" +
+    yyyymmdd.slice(0, 4)
+  );
+}
+
+
+// ============================================================
+// 4. ENCONTRAR O ARQUIVO DIÁRIO MAIS RECENTE
+// ============================================================
+
+async function descobrirArquivoMaisRecente() {
+  const resposta = await fetch(URL_DIRETORIO, {
+    cache: "no-store"
+  });
+
+  if (!resposta.ok) {
+    throw new Error(
+      "O diretório do INPE respondeu com HTTP " + resposta.status
+    );
+  }
+
+  const html = await resposta.text();
+
+  const regex = /focos_diario_br_(\d{8})\.csv/gi;
+
+  const datas = new Set();
+  let resultado;
+
+  while ((resultado = regex.exec(html)) !== null) {
+    datas.add(resultado[1]);
+  }
+
+  const lista = [...datas].sort().reverse();
+
+  if (lista.length === 0) {
+    throw new Error(
+      "Não foi possível identificar arquivos CSV diários no diretório."
+    );
+  }
+
+  const dataMaisRecente = lista[0];
+
+  return {
+    data: dataMaisRecente,
+    url: URL_DIRETORIO +
+      "focos_diario_br_" + dataMaisRecente + ".csv"
+  };
+}
+
+
+// ============================================================
+// 5. LEITOR CSV COM SUPORTE A ASPAS
+// ============================================================
+
+function analisarCSV(texto) {
+  const primeiraLinha = texto.split(/\r?\n/, 1)[0];
+
+  const separador =
+    (primeiraLinha.match(/;/g) || []).length >
+    (primeiraLinha.match(/,/g) || []).length
+      ? ";"
+      : ",";
+
+  const linhas = [];
+  let linha = [];
+  let campo = "";
+  let dentroAspas = false;
+
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+
+    if (c === '"') {
+      if (dentroAspas && texto[i + 1] === '"') {
+        campo += '"';
+        i++;
+      } else {
+        dentroAspas = !dentroAspas;
       }
-    };
+    } else if (c === separador && !dentroAspas) {
+      linha.push(campo);
+      campo = "";
+    } else if ((c === "\n" || c === "\r") && !dentroAspas) {
+      if (c === "\r" && texto[i + 1] === "\n") i++;
 
-    function configurarMapa(regiao = "world") {
-      const r = regioes[regiao];
+      linha.push(campo);
+      campo = "";
 
-      const dados = [{
-        type: "scattergeo",
-        mode: "markers",
-        lon: [],
-        lat: [],
-        hoverinfo: "skip",
-        showlegend: false
-      }];
+      if (linha.some(v => v.trim() !== "")) {
+        linhas.push(linha);
+      }
 
-      const layout = {
-        autosize: true,
-        margin: {
-          l: 0,
-          r: 0,
-          t: 5,
-          b: 0
-        },
+      linha = [];
+    } else {
+      campo += c;
+    }
+  }
 
-        paper_bgcolor: "#ffffff",
-        plot_bgcolor: "#ffffff",
+  if (campo.length > 0 || linha.length > 0) {
+    linha.push(campo);
 
-        geo: {
-          scope: "world",
-          projection: {
-            type: r.projection,
-            scale: r.scale
-          },
+    if (linha.some(v => v.trim() !== "")) {
+      linhas.push(linha);
+    }
+  }
 
-          center: {
-            lon: r.lon,
-            lat: r.lat
-          },
+  if (linhas.length < 2) {
+    throw new Error("O CSV não contém registros suficientes.");
+  }
 
-          showland: true,
-          landcolor: "#e4ebe7",
+  return {
+    cabecalho: linhas[0].map(v => normalizar(v)),
+    linhas: linhas.slice(1)
+  };
+}
 
-          showocean: true,
-          oceancolor: "#eaf3f8",
 
-          showlakes: true,
-          lakecolor: "#eaf3f8",
+function normalizar(valor) {
+  return String(valor ?? "")
+    .replace(/^\uFEFF/, "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+}
 
-          showcountries: true,
-          countrycolor: "#788d91",
-          countrywidth: 0.7,
 
-          showcoastlines: true,
-          coastlinecolor: "#657d83",
-          coastlinewidth: 0.8,
+function indiceColuna(cabecalho, alternativas) {
+  for (const nome of alternativas) {
+    const indice = cabecalho.indexOf(normalizar(nome));
 
-          showframe: false,
-          bgcolor: "#ffffff",
-          resolution: 50
-        }
-      };
+    if (indice !== -1) return indice;
+  }
 
-      const config = {
-        responsive: true,
-        displaylogo: false,
-        scrollZoom: true,
+  return -1;
+}
 
-        modeBarButtonsToRemove: [
-          "select2d",
-          "lasso2d"
-        ]
-      };
 
-      Plotly.react(
-        "mapa-mundi",
-        dados,
-        layout,
-        config
+function numero(valor) {
+  if (valor === undefined || valor === null) return NaN;
+
+  const limpo = String(valor).trim();
+
+  if (limpo === "") return NaN;
+
+  return Number(limpo.replace(",", "."));
+}
+
+
+// ============================================================
+// 6. PROCESSAR OS REGISTROS
+// ============================================================
+
+function processarCSV(texto) {
+  const tabela = analisarCSV(texto);
+  const h = tabela.cabecalho;
+
+  const iLat = indiceColuna(h, [
+    "latitude", "lat"
+  ]);
+
+  const iLon = indiceColuna(h, [
+    "longitude", "lon", "long"
+  ]);
+
+  const iData = indiceColuna(h, [
+    "datahora", "datahoragmt", "datahorautc",
+    "data", "date"
+  ]);
+
+  const iMunicipio = indiceColuna(h, [
+    "municipio", "municipiofoco"
+  ]);
+
+  const iEstado = indiceColuna(h, [
+    "estado", "uf"
+  ]);
+
+  const iBioma = indiceColuna(h, [
+    "bioma"
+  ]);
+
+  const iSatelite = indiceColuna(h, [
+    "satelite", "sateliteid", "sateliteorigem"
+  ]);
+
+  const iFRP = indiceColuna(h, [
+    "frp"
+  ]);
+
+  if (iLat === -1 || iLon === -1) {
+    throw new Error(
+      "As colunas de latitude e longitude não foram identificadas. " +
+      "Cabeçalho encontrado: " + tabela.cabecalho.join(", ")
+    );
+  }
+
+  const registros = [];
+
+  for (const linha of tabela.linhas) {
+    const lat = numero(linha[iLat]);
+    const lon = numero(linha[iLon]);
+
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lon) ||
+      lat < -90 || lat > 90 ||
+      lon < -180 || lon > 180
+    ) {
+      continue;
+    }
+
+    registros.push({
+      lat,
+      lon,
+      data: iData >= 0 ? linha[iData] : "",
+      municipio: iMunicipio >= 0 ? linha[iMunicipio] : "",
+      estado: iEstado >= 0 ? linha[iEstado] : "",
+      bioma: iBioma >= 0 ? linha[iBioma] : "",
+      satelite: iSatelite >= 0 ? linha[iSatelite] : "",
+      frp: iFRP >= 0 ? linha[iFRP] : ""
+    });
+  }
+
+  if (registros.length === 0) {
+    throw new Error(
+      "O arquivo foi lido, mas nenhum registro com coordenadas válidas foi encontrado."
+    );
+  }
+
+  return registros;
+}
+
+
+// ============================================================
+// 7. AMOSTRAGEM PARA RENDERIZAÇÃO
+// ============================================================
+
+function prepararPontos(registros) {
+  if (registros.length <= MAX_PONTOS_MAPA) {
+    return registros;
+  }
+
+  const passo = registros.length / MAX_PONTOS_MAPA;
+  const amostra = [];
+
+  for (let i = 0; i < MAX_PONTOS_MAPA; i++) {
+    amostra.push(registros[Math.floor(i * passo)]);
+  }
+
+  return amostra;
+}
+
+
+// ============================================================
+// 8. MAPA
+// ============================================================
+
+function desenharMapa(regiao = "world") {
+  const r = regioes[regiao] || regioes.world;
+  const pontos = prepararPontos(focos);
+
+  const dados = [{
+    type: "scattergeo",
+    mode: "markers",
+
+    lon: pontos.map(p => p.lon),
+    lat: pontos.map(p => p.lat),
+
+    text: pontos.map(p => {
+      const detalhes = [
+        p.data ? "Data/hora: " + p.data : "",
+        p.municipio ? "Município: " + p.municipio : "",
+        p.estado ? "Estado: " + p.estado : "",
+        p.bioma ? "Bioma: " + p.bioma : "",
+        p.satelite ? "Satélite: " + p.satelite : "",
+        p.frp ? "FRP: " + p.frp : ""
+      ];
+
+      return detalhes.filter(Boolean).join("<br>");
+    }),
+
+    customdata: pontos.map(p => [
+      p.data,
+      p.municipio,
+      p.estado,
+      p.bioma,
+      p.satelite,
+      p.frp
+    ]),
+
+    hovertemplate:
+      "<b>Foco de fogo ativo</b><br>" +
+      "Latitude: %{lat:.4f}<br>" +
+      "Longitude: %{lon:.4f}<br>" +
+      "%{text}<extra></extra>",
+
+    marker: {
+      size: 5,
+      color: "#e53935",
+      opacity: 0.78,
+      line: {
+        width: 0.3,
+        color: "#7f1d1d"
+      }
+    },
+
+    name: "Focos de fogo ativo"
+  }];
+
+  const layout = {
+    autosize: true,
+
+    margin: { l: 0, r: 0, t: 5, b: 0 },
+
+    paper_bgcolor: "#ffffff",
+    plot_bgcolor: "#ffffff",
+
+    showlegend: false,
+
+    uirevision: regiao,
+
+    geo: {
+      scope: "world",
+
+      projection: {
+        type: r.projection,
+        scale: r.scale
+      },
+
+      center: {
+        lon: r.lon,
+        lat: r.lat
+      },
+
+      showland: true,
+      landcolor: "#e4ebe7",
+
+      showocean: true,
+      oceancolor: "#eaf3f8",
+
+      showlakes: true,
+      lakecolor: "#eaf3f8",
+
+      showcountries: true,
+      countrycolor: "#788d91",
+      countrywidth: 0.7,
+
+      showcoastlines: true,
+      coastlinecolor: "#657d83",
+      coastlinewidth: 0.8,
+
+      showframe: false,
+      bgcolor: "#ffffff",
+      resolution: 50
+    }
+  };
+
+  const config = {
+    responsive: true,
+    displaylogo: false,
+    scrollZoom: true,
+
+    modeBarButtonsToRemove: [
+      "select2d",
+      "lasso2d"
+    ]
+  };
+
+  return Plotly.react(
+    "mapa-mundi",
+    dados,
+    layout,
+    config
+  );
+}
+
+
+// ============================================================
+// 9. CONSULTAR E ATUALIZAR
+// ============================================================
+
+async function atualizarFocos() {
+  if (consultaEmAndamento) return;
+
+  consultaEmAndamento = true;
+
+  const botao = document.getElementById("btn-atualizar");
+  botao.disabled = true;
+  botao.textContent = "Consultando...";
+
+  mensagem("Consultando o diretório oficial do INPE...");
+
+  try {
+    const arquivo = await descobrirArquivoMaisRecente();
+
+    // Evita baixar novamente um arquivo que já foi carregado.
+    // A consulta ao diretório continua ocorrendo para detectar
+    // a publicação de um arquivo mais recente.
+
+    if (arquivo.url === arquivoAtual && focos.length > 0) {
+      document.getElementById("ultima-consulta").textContent =
+        dataHoraLocal();
+
+      mensagem(
+        "Consulta concluída. O arquivo diário ainda é o mesmo; " +
+        "os dados exibidos foram mantidos.",
+        "ok"
+      );
+
+      return;
+    }
+
+    mensagem("Baixando o arquivo " +
+      "focos_diario_br_" + arquivo.data + ".csv...");
+
+    const resposta = await fetch(arquivo.url, {
+      cache: "no-store"
+    });
+
+    if (!resposta.ok) {
+      throw new Error(
+        "Falha ao baixar o CSV. HTTP " + resposta.status
       );
     }
 
-    document
-      .getElementById("regiao")
-      .addEventListener("change", function () {
-        configurarMapa(this.value);
-      });
+    const texto = await resposta.text();
+    const novosFocos = processarCSV(texto);
 
-    document
-      .getElementById("btn-resetar")
-      .addEventListener("click", function () {
-        document.getElementById("regiao").value = "world";
-        configurarMapa("world");
-      });
+    // Substitui os dados somente depois de validar o novo arquivo.
+    focos = novosFocos;
+    arquivoAtual = arquivo.url;
 
-    configurarMapa("world");
-  </script>
+    await desenharMapa(
+      document.getElementById("regiao").value
+    );
+
+    document.getElementById("total-focos").textContent =
+      focos.length.toLocaleString("pt-BR");
+
+    document.getElementById("data-dados").textContent =
+      dataArquivoBR(arquivo.data);
+
+    document.getElementById("ultima-consulta").textContent =
+      dataHoraLocal();
+
+    const observacao =
+      focos.length > MAX_PONTOS_MAPA
+        ? " O mapa mostra uma amostra de " +
+          MAX_PONTOS_MAPA.toLocaleString("pt-BR") +
+          " pontos para melhorar o desempenho."
+        : "";
+
+    mensagem(
+      "Dados carregados com sucesso do INPE. " +
+      focos.length.toLocaleString("pt-BR") +
+      " registros válidos no arquivo diário." + observacao,
+      "ok"
+    );
+
+  } catch (erro) {
+    console.error("Erro na atualização dos focos:", erro);
+
+    mensagem(
+      "Não foi possível atualizar os dados: " +
+      erro.message +
+      ". Verifique a conexão e se o servidor permite acesso pelo navegador. " +
+      "Os últimos dados carregados, se houver, foram preservados.",
+      "erro"
+    );
+
+  } finally {
+    consultaEmAndamento = false;
+    botao.disabled = false;
+    botao.textContent = "↻ Atualizar focos";
+  }
+}
+
+
+// ============================================================
+// 10. CONTROLES E INICIALIZAÇÃO
+// ============================================================
+
+document.getElementById("regiao")
+  .addEventListener("change", function () {
+    desenharMapa(this.value);
+  });
+
+document.getElementById("btn-resetar")
+  .addEventListener("click", function () {
+    document.getElementById("regiao").value = "world";
+    desenharMapa("world");
+  });
+
+document.getElementById("btn-atualizar")
+  .addEventListener("click", atualizarFocos);
+
+
+// Desenha primeiro o mapa-base e depois carrega os dados.
+
+desenharMapa("world")
+  .then(() => atualizarFocos())
+  .catch(erro => {
+    console.error(erro);
+    mensagem(
+      "Não foi possível inicializar o mapa. Verifique a conexão.",
+      "erro"
+    );
+  });
+
+
+// Atualiza enquanto a página estiver aberta.
+// Se a aba estiver suspensa, o navegador pode atrasar a execução.
+
+timerAtualizacao = setInterval(
+  atualizarFocos,
+  INTERVALO_ATUALIZACAO
+);
+
+</script>
 
 </body>
 </html>
-
