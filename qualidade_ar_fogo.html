@@ -1,10 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Qualidade do Ar e Fogo | Dashboard Científico</title>
+  <title>Qualidade do Ar e Fogo | Brasil</title>
 
   <script src="https://cdn.plot.ly/plotly-3.1.0.min.js"></script>
 
@@ -117,16 +117,15 @@
       gap: 8px;
     }
 
-    select, button {
+    button {
       font: inherit;
       border: 1px solid var(--borda);
       border-radius: 8px;
       padding: 10px 12px;
       background: white;
       color: var(--texto);
+      cursor: pointer;
     }
-
-    button { cursor: pointer; }
 
     button:hover { border-color: var(--destaque); }
 
@@ -141,10 +140,10 @@
       border-color: var(--destaque);
     }
 
-    #mapa-mundi {
+    #mapa-brasil {
       width: 100%;
-      height: min(65vh, 650px);
-      min-height: 380px;
+      height: min(68vh, 700px);
+      min-height: 400px;
     }
 
     .status {
@@ -187,7 +186,7 @@
 
     @media (max-width: 700px) {
       .indicadores { grid-template-columns: 1fr; }
-      #mapa-mundi { min-height: 350px; height: 55vh; }
+      #mapa-brasil { min-height: 350px; height: 55vh; }
       .painel-mapa { padding: 12px; }
     }
   </style>
@@ -198,24 +197,24 @@
 <header>
   <h1>Qualidade do Ar e Fogo</h1>
   <p>
-    Monitoramento de focos de fogo ativo com dados do Programa
+    Monitoramento de focos de fogo ativo no Brasil utilizando
+    exclusivamente o satélite de referência AQUA, do Programa
     Queimadas do Instituto Nacional de Pesquisas Espaciais (INPE).
   </p>
 </header>
 
 <main>
-
   <h2 class="titulo-secao">Monitoramento de focos de fogo</h2>
 
   <p class="descricao">
-    Explore a distribuição espacial dos focos registrados no Brasil.
-    Os dados são consultados diretamente no repositório oficial do INPE.
+    Distribuição espacial dos focos de fogo ativo detectados pelo
+    satélite AQUA no Brasil. Os registros são consultados no diretório
+    oficial de dados diários do Programa Queimadas do INPE.
   </p>
 
   <section class="indicadores">
-
     <div class="indicador">
-      <span>Focos carregados no mapa</span>
+      <span>Focos AQUA exibidos no mapa</span>
       <strong id="total-focos">Aguardando dados</strong>
     </div>
 
@@ -228,41 +227,24 @@
       <span>Última consulta bem-sucedida</span>
       <strong id="ultima-consulta">Ainda não realizada</strong>
     </div>
-
   </section>
 
   <section class="painel-mapa">
-
     <div class="cabecalho-mapa">
-
-      <h2>Mapa de focos de fogo ativo</h2>
+      <h2>Focos de fogo ativo | Brasil | AQUA</h2>
 
       <div class="controles">
-        <label for="regiao">Região:</label>
-
-        <select id="regiao">
-          <option value="world">Mundo</option>
-          <option value="south-america">América do Sul</option>
-          <option value="brazil">Brasil</option>
-          <option value="north-america">América do Norte</option>
-          <option value="europe">Europa</option>
-          <option value="africa">África</option>
-          <option value="asia">Ásia</option>
-          <option value="oceania">Oceania</option>
-        </select>
-
         <button id="btn-resetar" type="button">
-          Ver mundo
+          Recentrar Brasil
         </button>
 
         <button id="btn-atualizar" type="button">
           ↻ Atualizar focos
         </button>
       </div>
-
     </div>
 
-    <div id="mapa-mundi"></div>
+    <div id="mapa-brasil"></div>
 
     <div class="status" role="status" aria-live="polite">
       <span id="ponto-status" class="ponto-status"></span>
@@ -272,129 +254,74 @@
     </div>
 
     <p class="nota">
-      Fonte: Programa Queimadas do INPE. O mapa utiliza o arquivo
-      diário mais recente encontrado no diretório oficial do Brasil.
-      Os registros correspondem a detecções de fogo ativo, não a
-      polígonos de área queimada nem a uma contagem de incêndios únicos.
-      A frequência de consulta deste painel é de 15 minutos.
+      <strong>Filtro aplicado:</strong> somente registros cujo campo
+      de satélite identifica o AQUA. Os demais satélites são excluídos
+      antes da contagem e da representação cartográfica. A área
+      geográfica também é limitada ao território brasileiro por uma
+      janela aproximada de coordenadas.
     </p>
 
     <p class="nota">
-      A disponibilidade dos dados depende do servidor do INPE e da
-      permissão de acesso do navegador. A atualização é executada
-      enquanto esta página está aberta.
+      <strong>Interpretação:</strong> os pontos representam detecções
+      de fogo ativo, não polígonos de área queimada nem necessariamente
+      incêndios individuais. Um mesmo evento pode gerar várias
+      detecções. O produto de referência AQUA possui características
+      próprias de horário de passagem e resolução espacial.
     </p>
 
+    <p class="nota">
+      Fonte: Programa Queimadas do INPE. A atualização automática
+      ocorre a cada 15 minutos enquanto a página está aberta.
+      A disponibilidade depende do servidor e das permissões de
+      acesso do navegador.
+    </p>
   </section>
-
 </main>
 
 <footer>
-  Dashboard científico | Qualidade do Ar e Fogo
+  Dashboard científico | Qualidade do Ar e Fogo | INPE
 </footer>
 
 <script>
 "use strict";
 
 // ============================================================
-// 1. FONTE OFICIAL
+// 1. FONTE OFICIAL E CONFIGURAÇÕES
 // ============================================================
 
 const URL_DIRETORIO =
   "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/Brasil/";
 
 const INTERVALO_ATUALIZACAO = 15 * 60 * 1000;
-
-// Limite de segurança para a renderização no navegador.
-// Se o arquivo tiver mais registros, a amostra será espacialmente
-// distribuída, e o total original continuará sendo informado.
-
 const MAX_PONTOS_MAPA = 50000;
+
+// Janela geográfica aproximada do Brasil continental.
+// Exclui coordenadas fora desta janela.
+const BRASIL = {
+  latMin: -34.0,
+  latMax: 5.5,
+  lonMin: -74.5,
+  lonMax: -34.0
+};
 
 let focos = [];
 let arquivoAtual = "";
 let consultaEmAndamento = false;
 let timerAtualizacao = null;
 
-
 // ============================================================
-// 2. REGIÕES
-// ============================================================
-
-const regioes = {
-  world: {
-    projection: "natural earth",
-    lon: 0,
-    lat: 10,
-    scale: 1
-  },
-
-  "south-america": {
-    projection: "mercator",
-    lon: -60,
-    lat: -15,
-    scale: 1.45
-  },
-
-  brazil: {
-    projection: "mercator",
-    lon: -52,
-    lat: -12,
-    scale: 2.5
-  },
-
-  "north-america": {
-    projection: "mercator",
-    lon: -100,
-    lat: 40,
-    scale: 1.3
-  },
-
-  europe: {
-    projection: "mercator",
-    lon: 15,
-    lat: 52,
-    scale: 2.1
-  },
-
-  africa: {
-    projection: "mercator",
-    lon: 20,
-    lat: 0,
-    scale: 1.5
-  },
-
-  asia: {
-    projection: "mercator",
-    lon: 95,
-    lat: 35,
-    scale: 1.2
-  },
-
-  oceania: {
-    projection: "mercator",
-    lon: 135,
-    lat: -25,
-    scale: 1.7
-  }
-};
-
-
-// ============================================================
-// 3. INTERFACE
+// 2. INTERFACE
 // ============================================================
 
 function mensagem(texto, estado = "normal") {
   document.getElementById("mensagem-status").textContent = texto;
 
   const ponto = document.getElementById("ponto-status");
-
   ponto.className = "ponto-status";
 
   if (estado === "ok") ponto.classList.add("ok");
   if (estado === "erro") ponto.classList.add("erro");
 }
-
 
 function dataHoraLocal(data = new Date()) {
   return data.toLocaleString("pt-BR", {
@@ -402,7 +329,6 @@ function dataHoraLocal(data = new Date()) {
     timeStyle: "medium"
   });
 }
-
 
 function dataArquivoBR(yyyymmdd) {
   if (!/^\d{8}$/.test(yyyymmdd)) return yyyymmdd;
@@ -414,9 +340,8 @@ function dataArquivoBR(yyyymmdd) {
   );
 }
 
-
 // ============================================================
-// 4. ENCONTRAR O ARQUIVO DIÁRIO MAIS RECENTE
+// 3. IDENTIFICAR O CSV DIÁRIO MAIS RECENTE
 // ============================================================
 
 async function descobrirArquivoMaisRecente() {
@@ -433,8 +358,8 @@ async function descobrirArquivoMaisRecente() {
   const html = await resposta.text();
 
   const regex = /focos_diario_br_(\d{8})\.csv/gi;
-
   const datas = new Set();
+
   let resultado;
 
   while ((resultado = regex.exec(html)) !== null) {
@@ -458,9 +383,8 @@ async function descobrirArquivoMaisRecente() {
   };
 }
 
-
 // ============================================================
-// 5. LEITOR CSV COM SUPORTE A ASPAS
+// 4. LEITOR CSV COM SUPORTE A ASPAS
 // ============================================================
 
 function analisarCSV(texto) {
@@ -490,7 +414,10 @@ function analisarCSV(texto) {
     } else if (c === separador && !dentroAspas) {
       linha.push(campo);
       campo = "";
-    } else if ((c === "\n" || c === "\r") && !dentroAspas) {
+    } else if (
+      (c === "\n" || c === "\r") &&
+      !dentroAspas
+    ) {
       if (c === "\r" && texto[i + 1] === "\n") i++;
 
       linha.push(campo);
@@ -524,7 +451,6 @@ function analisarCSV(texto) {
   };
 }
 
-
 function normalizar(valor) {
   return String(valor ?? "")
     .replace(/^\uFEFF/, "")
@@ -534,7 +460,6 @@ function normalizar(valor) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]/g, "");
 }
-
 
 function indiceColuna(cabecalho, alternativas) {
   for (const nome of alternativas) {
@@ -546,7 +471,6 @@ function indiceColuna(cabecalho, alternativas) {
   return -1;
 }
 
-
 function numero(valor) {
   if (valor === undefined || valor === null) return NaN;
 
@@ -557,58 +481,93 @@ function numero(valor) {
   return Number(limpo.replace(",", "."));
 }
 
+// ============================================================
+// 5. FILTRAR SATÉLITE AQUA E COORDENADAS DO BRASIL
+// ============================================================
 
-// ============================================================
-// 6. PROCESSAR OS REGISTROS
-// ============================================================
+function identificarAQUA(valor) {
+  const satelite = normalizar(valor);
+
+  // Exemplos aceitos: AQUA, AQUAMT, AQUAMT...
+  // O reconhecimento exige a palavra AQUA.
+  return satelite.includes("aqua");
+}
+
+function estaNoBrasil(lat, lon) {
+  return (
+    lat >= BRASIL.latMin &&
+    lat <= BRASIL.latMax &&
+    lon >= BRASIL.lonMin &&
+    lon <= BRASIL.lonMax
+  );
+}
 
 function processarCSV(texto) {
   const tabela = analisarCSV(texto);
   const h = tabela.cabecalho;
 
-  const iLat = indiceColuna(h, [
-    "latitude", "lat"
-  ]);
-
-  const iLon = indiceColuna(h, [
-    "longitude", "lon", "long"
-  ]);
+  const iLat = indiceColuna(h, ["latitude", "lat"]);
+  const iLon = indiceColuna(h, ["longitude", "lon", "long"]);
 
   const iData = indiceColuna(h, [
-    "datahora", "datahoragmt", "datahorautc",
-    "data", "date"
+    "datahora",
+    "datahoragmt",
+    "datahorautc",
+    "data",
+    "date"
   ]);
 
   const iMunicipio = indiceColuna(h, [
-    "municipio", "municipiofoco"
+    "municipio",
+    "municipiofoco"
   ]);
 
   const iEstado = indiceColuna(h, [
-    "estado", "uf"
+    "estado",
+    "uf"
   ]);
 
-  const iBioma = indiceColuna(h, [
-    "bioma"
-  ]);
+  const iBioma = indiceColuna(h, ["bioma"]);
 
   const iSatelite = indiceColuna(h, [
-    "satelite", "sateliteid", "sateliteorigem"
+    "satelite",
+    "sateliteid",
+    "sateliteorigem",
+    "satellite"
   ]);
 
-  const iFRP = indiceColuna(h, [
-    "frp"
-  ]);
+  const iFRP = indiceColuna(h, ["frp"]);
 
   if (iLat === -1 || iLon === -1) {
     throw new Error(
-      "As colunas de latitude e longitude não foram identificadas. " +
-      "Cabeçalho encontrado: " + tabela.cabecalho.join(", ")
+      "Não foram identificadas as colunas de latitude e longitude. " +
+      "Cabeçalho: " + tabela.cabecalho.join(", ")
     );
   }
 
-  const registros = [];
+  // Não permite exibir dados de outros satélites por engano.
+  if (iSatelite === -1) {
+    throw new Error(
+      "O campo do satélite não foi encontrado no CSV. " +
+      "O mapa não foi atualizado porque não é possível confirmar " +
+      "quais registros pertencem ao AQUA. Cabeçalho: " +
+      tabela.cabecalho.join(", ")
+    );
+  }
+
+  const registrosAQUA = [];
+  let totalAQUA = 0;
+  let foraBrasil = 0;
+  let coordenadasInvalidas = 0;
 
   for (const linha of tabela.linhas) {
+    const sateliteOriginal = linha[iSatelite] ?? "";
+
+    // FILTRO 1: somente satélite AQUA.
+    if (!identificarAQUA(sateliteOriginal)) continue;
+
+    totalAQUA++;
+
     const lat = numero(linha[iLat]);
     const lon = numero(linha[iLon]);
 
@@ -618,33 +577,46 @@ function processarCSV(texto) {
       lat < -90 || lat > 90 ||
       lon < -180 || lon > 180
     ) {
+      coordenadasInvalidas++;
       continue;
     }
 
-    registros.push({
+    // FILTRO 2: somente a janela geográfica do Brasil.
+    if (!estaNoBrasil(lat, lon)) {
+      foraBrasil++;
+      continue;
+    }
+
+    registrosAQUA.push({
       lat,
       lon,
       data: iData >= 0 ? linha[iData] : "",
       municipio: iMunicipio >= 0 ? linha[iMunicipio] : "",
       estado: iEstado >= 0 ? linha[iEstado] : "",
       bioma: iBioma >= 0 ? linha[iBioma] : "",
-      satelite: iSatelite >= 0 ? linha[iSatelite] : "",
+      satelite: sateliteOriginal,
       frp: iFRP >= 0 ? linha[iFRP] : ""
     });
   }
 
-  if (registros.length === 0) {
+  if (registrosAQUA.length === 0) {
     throw new Error(
-      "O arquivo foi lido, mas nenhum registro com coordenadas válidas foi encontrado."
+      "Nenhum foco AQUA com coordenadas dentro da janela do Brasil " +
+      "foi encontrado. Verifique os valores do campo do satélite " +
+      "e o formato do CSV."
     );
   }
 
-  return registros;
+  return {
+    registros: registrosAQUA,
+    totalAQUA,
+    foraBrasil,
+    coordenadasInvalidas
+  };
 }
 
-
 // ============================================================
-// 7. AMOSTRAGEM PARA RENDERIZAÇÃO
+// 6. AMOSTRAGEM PARA RENDERIZAÇÃO
 // ============================================================
 
 function prepararPontos(registros) {
@@ -662,13 +634,11 @@ function prepararPontos(registros) {
   return amostra;
 }
 
-
 // ============================================================
-// 8. MAPA
+// 7. MAPA EXCLUSIVO DO BRASIL
 // ============================================================
 
-function desenharMapa(regiao = "world") {
-  const r = regioes[regiao] || regioes.world;
+function desenharMapa() {
   const pontos = prepararPontos(focos);
 
   const dados = [{
@@ -691,17 +661,8 @@ function desenharMapa(regiao = "world") {
       return detalhes.filter(Boolean).join("<br>");
     }),
 
-    customdata: pontos.map(p => [
-      p.data,
-      p.municipio,
-      p.estado,
-      p.bioma,
-      p.satelite,
-      p.frp
-    ]),
-
     hovertemplate:
-      "<b>Foco de fogo ativo</b><br>" +
+      "<b>Foco de fogo ativo | AQUA</b><br>" +
       "Latitude: %{lat:.4f}<br>" +
       "Longitude: %{lon:.4f}<br>" +
       "%{text}<extra></extra>",
@@ -716,32 +677,36 @@ function desenharMapa(regiao = "world") {
       }
     },
 
-    name: "Focos de fogo ativo"
+    name: "Focos AQUA"
   }];
 
   const layout = {
     autosize: true,
-
     margin: { l: 0, r: 0, t: 5, b: 0 },
-
     paper_bgcolor: "#ffffff",
     plot_bgcolor: "#ffffff",
-
     showlegend: false,
-
-    uirevision: regiao,
+    uirevision: "brasil-aqua",
 
     geo: {
-      scope: "world",
+      scope: "south america",
 
       projection: {
-        type: r.projection,
-        scale: r.scale
+        type: "mercator",
+        scale: 2.8
       },
 
       center: {
-        lon: r.lon,
-        lat: r.lat
+        lon: -52,
+        lat: -12
+      },
+
+      lonaxis: {
+        range: [-76, -32]
+      },
+
+      lataxis: {
+        range: [-36, 7]
       },
 
       showland: true,
@@ -771,7 +736,6 @@ function desenharMapa(regiao = "world") {
     responsive: true,
     displaylogo: false,
     scrollZoom: true,
-
     modeBarButtonsToRemove: [
       "select2d",
       "lasso2d"
@@ -779,16 +743,15 @@ function desenharMapa(regiao = "world") {
   };
 
   return Plotly.react(
-    "mapa-mundi",
+    "mapa-brasil",
     dados,
     layout,
     config
   );
 }
 
-
 // ============================================================
-// 9. CONSULTAR E ATUALIZAR
+// 8. CONSULTAR E ATUALIZAR OS FOCOS
 // ============================================================
 
 async function atualizarFocos() {
@@ -797,6 +760,7 @@ async function atualizarFocos() {
   consultaEmAndamento = true;
 
   const botao = document.getElementById("btn-atualizar");
+
   botao.disabled = true;
   botao.textContent = "Consultando...";
 
@@ -805,25 +769,23 @@ async function atualizarFocos() {
   try {
     const arquivo = await descobrirArquivoMaisRecente();
 
-    // Evita baixar novamente um arquivo que já foi carregado.
-    // A consulta ao diretório continua ocorrendo para detectar
-    // a publicação de um arquivo mais recente.
-
+    // Se o arquivo não mudou, não é necessário baixá-lo novamente.
     if (arquivo.url === arquivoAtual && focos.length > 0) {
       document.getElementById("ultima-consulta").textContent =
         dataHoraLocal();
 
       mensagem(
-        "Consulta concluída. O arquivo diário ainda é o mesmo; " +
-        "os dados exibidos foram mantidos.",
+        "Consulta concluída. O arquivo diário continua sendo o mesmo. " +
+        "Os dados AQUA exibidos foram mantidos.",
         "ok"
       );
 
       return;
     }
 
-    mensagem("Baixando o arquivo " +
-      "focos_diario_br_" + arquivo.data + ".csv...");
+    mensagem(
+      "Baixando e filtrando os registros do satélite AQUA..."
+    );
 
     const resposta = await fetch(arquivo.url, {
       cache: "no-store"
@@ -836,15 +798,15 @@ async function atualizarFocos() {
     }
 
     const texto = await resposta.text();
-    const novosFocos = processarCSV(texto);
 
-    // Substitui os dados somente depois de validar o novo arquivo.
-    focos = novosFocos;
+    // O filtro é aplicado antes de atualizar os indicadores e o mapa.
+    const resultado = processarCSV(texto);
+
+    // Atualiza os dados somente após validar o CSV e o filtro.
+    focos = resultado.registros;
     arquivoAtual = arquivo.url;
 
-    await desenharMapa(
-      document.getElementById("regiao").value
-    );
+    await desenharMapa();
 
     document.getElementById("total-focos").textContent =
       focos.length.toLocaleString("pt-BR");
@@ -857,15 +819,21 @@ async function atualizarFocos() {
 
     const observacao =
       focos.length > MAX_PONTOS_MAPA
-        ? " O mapa mostra uma amostra de " +
+        ? " O mapa apresenta uma amostra de " +
           MAX_PONTOS_MAPA.toLocaleString("pt-BR") +
-          " pontos para melhorar o desempenho."
+          " pontos para melhorar o desempenho; o total considera " +
+          "todos os registros AQUA válidos dentro da janela do Brasil."
         : "";
 
     mensagem(
-      "Dados carregados com sucesso do INPE. " +
+      "Dados carregados. " +
       focos.length.toLocaleString("pt-BR") +
-      " registros válidos no arquivo diário." + observacao,
+      " focos AQUA dentro da janela geográfica do Brasil. " +
+      "Registros AQUA identificados no arquivo: " +
+      resultado.totalAQUA.toLocaleString("pt-BR") +
+      ". Excluídos por estarem fora da janela: " +
+      resultado.foraBrasil.toLocaleString("pt-BR") +
+      "." + observacao,
       "ok"
     );
 
@@ -875,8 +843,9 @@ async function atualizarFocos() {
     mensagem(
       "Não foi possível atualizar os dados: " +
       erro.message +
-      ". Verifique a conexão e se o servidor permite acesso pelo navegador. " +
-      "Os últimos dados carregados, se houver, foram preservados.",
+      " Verifique a conexão, o acesso ao servidor do INPE e " +
+      "a estrutura do CSV. Os últimos dados carregados, se houver, " +
+      "foram preservados.",
       "erro"
     );
 
@@ -887,48 +856,40 @@ async function atualizarFocos() {
   }
 }
 
-
 // ============================================================
-// 10. CONTROLES E INICIALIZAÇÃO
+// 9. CONTROLES E INICIALIZAÇÃO
 // ============================================================
-
-document.getElementById("regiao")
-  .addEventListener("change", function () {
-    desenharMapa(this.value);
-  });
 
 document.getElementById("btn-resetar")
-  .addEventListener("click", function () {
-    document.getElementById("regiao").value = "world";
-    desenharMapa("world");
+  .addEventListener("click", async function () {
+    if (focos.length > 0) {
+      await desenharMapa();
+    }
   });
 
 document.getElementById("btn-atualizar")
   .addEventListener("click", atualizarFocos);
 
-
-// Desenha primeiro o mapa-base e depois carrega os dados.
-
-desenharMapa("world")
+// Inicializa o mapa e carrega os dados.
+desenharMapa()
   .then(() => atualizarFocos())
   .catch(erro => {
     console.error(erro);
+
     mensagem(
-      "Não foi possível inicializar o mapa. Verifique a conexão.",
+      "Não foi possível inicializar o mapa. " +
+      "Verifique a conexão com a internet.",
       "erro"
     );
   });
 
-
 // Atualiza enquanto a página estiver aberta.
-// Se a aba estiver suspensa, o navegador pode atrasar a execução.
-
 timerAtualizacao = setInterval(
   atualizarFocos,
   INTERVALO_ATUALIZACAO
 );
-
 </script>
 
 </body>
 </html>
+```
