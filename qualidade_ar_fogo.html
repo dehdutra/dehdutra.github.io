@@ -63,7 +63,7 @@
                     <h5 class="card-title mb-0">Qualidade do Ar (PurpleAir PM2.5)</h5>
                     <span id="status-purpleair" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
-                <p class="text-muted small mb-2">Sensores categorizados pela concentração de PM2.5 (&micro;g/m&sup3;).</p>
+                <p class="text-muted small mb-2">Sensores na América do Sul categorizados por PM2.5 (&micro;g/m&sup3;).</p>
                 <div id="mapa-purpleair" class="map-container"></div>
             </div>
         </div>
@@ -222,7 +222,7 @@
         }
     }
 
-    // --- 2. CARREGAR PURPLEAIR ---
+    // --- 2. CARREGAR PURPLEAIR (AMÉRICA DO SUL) ---
     function getColorPM25(pm) {
         if (pm <= 12.0) return '#00e400';
         if (pm <= 35.4) return '#ffff00';
@@ -234,25 +234,44 @@
 
     async function carregarPurpleAir() {
         const statusEl = document.getElementById('status-purpleair');
-        const url = "https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5_10minute";
+        
+        // Limites geográficos da América do Sul (Bounding Box: nwlat, nwlng, selat, selng)
+        const params = new URLSearchParams({
+            fields: "name,latitude,longitude,pm2.5_10minute",
+            location_type: 0, // Apenas sensores externos
+            nwlng: -82.0,
+            nwlat: 13.0,
+            selng: -32.0,
+            selat: -56.0
+        });
+
+        const url = `https://api.purpleair.com/v1/sensors?${params.toString()}`;
 
         try {
             const resp = await fetch(url, { headers: { "X-API-Key": PURPLEAIR_READ_KEY } });
-            if (!resp.ok) throw new Error();
-            const json = await resp.json();
-            let count = 0;
+            if (!resp.ok) throw new Error(`HTTP Error: ${resp.status}`);
 
-            if (json && json.data) {
+            const json = await resp.json();
+
+            if (json && json.data && json.fields) {
+                // Mapeamento dinâmico do índice de cada campo no array retornado
+                const idxLat = json.fields.indexOf("latitude");
+                const idxLon = json.fields.indexOf("longitude");
+                const idxPm25 = json.fields.indexOf("pm2.5_10minute");
+                const idxName = json.fields.indexOf("name");
+
+                let count = 0;
+
                 json.data.forEach(s => {
-                    const lat = s[1];
-                    const lon = s[2];
-                    const pm25 = s[3];
-                    const nome = s[4] || "Sensor PurpleAir";
+                    const lat = s[idxLat];
+                    const lon = s[idxLon];
+                    const pm25 = s[idxPm25];
+                    const nome = s[idxName] || "Sensor PurpleAir";
 
                     if (lat !== null && lon !== null && pm25 !== null && !isNaN(lat) && !isNaN(lon)) {
                         count++;
                         L.circleMarker([lat, lon], {
-                            radius: 5,
+                            radius: 6,
                             fillColor: getColorPM25(pm25),
                             color: '#222',
                             weight: 1,
@@ -261,16 +280,20 @@
                           .addTo(mapPurpleAir);
                     }
                 });
+
                 statusEl.className = "badge bg-success status-badge";
-                statusEl.textContent = `${count} sensores ativos`;
+                statusEl.textContent = `${count} sensores na América do Sul`;
+            } else {
+                throw new Error("Estrutura de dados inesperada");
             }
         } catch (e) {
+            console.error("Erro no carregamento do PurpleAir:", e);
             statusEl.className = "badge bg-danger status-badge";
             statusEl.textContent = "Falha no PurpleAir";
         }
     }
 
-    // --- 3. PROCESSSAMENTO E GRÁFICOS MENSAIS ---
+    // --- 3. PROCESSAMENTO E GRÁFICOS MENSAIS ---
     let todosDadosMensais = [];
     let chartMun, chartBio, chartFrp, chartSat;
 
@@ -278,7 +301,6 @@
         const hoje = new Date();
         const anoMes = formatarAnoMes(hoje);
         
-        // Tenta o arquivo do mês atual; fallback para arquivo geral se necessário
         const urlCsv = CORS_PROXY + encodeURIComponent(`https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br_${anoMes}.csv`);
 
         Papa.parse(urlCsv, {
@@ -314,7 +336,6 @@
             ? todosDadosMensais 
             : todosDadosMensais.filter(i => i.estado === estadoSelecionado);
 
-        // --- Contadores ---
         const municipios = {};
         const biomas = {};
         const frpPorBioma = {};
@@ -322,33 +343,27 @@
         const satelites = {};
 
         dadosFiltrados.forEach(row => {
-            // Município
             if (row.municipio) {
                 municipios[row.municipio] = (municipios[row.municipio] || 0) + 1;
             }
-            // Bioma
             if (row.bioma) {
                 biomas[row.bioma] = (biomas[row.bioma] || 0) + 1;
                 
-                // FRP (Potência do Fogo)
                 const valFrp = parseFloat(row.frp);
                 if (!isNaN(valFrp)) {
                     frpPorBioma[row.bioma] = (frpPorBioma[row.bioma] || 0) + valFrp;
                     countFrpPorBioma[row.bioma] = (countFrpPorBioma[row.bioma] || 0) + 1;
                 }
             }
-            // Satélite
             if (row.satelite) {
                 satelites[row.satelite] = (satelites[row.satelite] || 0) + 1;
             }
         });
 
-        // Top 10 Municípios
         const topMunicipios = Object.entries(municipios)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 10);
 
-        // Médias de FRP por bioma
         const medFrpBioma = {};
         Object.keys(frpPorBioma).forEach(b => {
             medFrpBioma[b] = (frpPorBioma[b] / countFrpPorBioma[b]).toFixed(1);
@@ -400,4 +415,24 @@
 
         // 4. Gráfico Satélites
         if (chartSat) chartSat.destroy();
-        chartSat = new Chart
+        chartSat = new Chart(document.getElementById('chartSatélites'), {
+            type: 'pie',
+            data: {
+                labels: Object.keys(satelites),
+                datasets: [{
+                    data: Object.values(satelites),
+                    backgroundColor: ['#2980b9', '#8e44ad', '#16a085', '#f39c12', '#d35400']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    // Inicialização
+    carregarFocosDiarios();
+    carregarPurpleAir();
+    carregarDadosMensais();
+</script>
+
+</body>
+</html>
