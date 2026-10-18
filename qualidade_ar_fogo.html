@@ -4,63 +4,466 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Teste do mapa-múndi</title>
+  <title>PurpleAir | Mapas de PM2.5</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  >
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f1f5f9;
     }
 
-    h1 {
+    header {
       padding: 16px;
-      margin: 0;
-      background: #13263e;
       color: white;
+      background: #13263e;
+    }
+
+    header h1 {
+      margin: 0 0 5px;
       font-size: 22px;
     }
 
-    #mapa {
+    header p {
+      margin: 0;
+      font-size: 13px;
+    }
+
+    #status {
+      padding: 12px 16px;
+      background: white;
+      color: #24364b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #atualizar {
+      margin: 0 16px 12px;
+      padding: 9px 14px;
+      border: 0;
+      border-radius: 5px;
+      background: #1769aa;
+      color: white;
+      cursor: pointer;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .painel {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid #dbe3ec;
+      border-radius: 7px;
+      background: white;
+    }
+
+    .painel h2 {
+      margin: 0;
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    .subtitulo {
+      display: block;
+      margin-top: 4px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: normal;
+    }
+
+    .mapa {
       width: 100%;
-      height: calc(100vh - 60px);
+      height: 65vh;
       min-height: 400px;
       background: #dce8ef;
     }
+
+    .legenda {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      padding: 12px;
+      font-size: 11px;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cor {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    #nota {
+      padding: 4px 16px 18px;
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 800px) {
+      main { grid-template-columns: 1fr; }
+      .mapa { height: 55vh; min-height: 350px; }
+    }
   </style>
 </head>
-<body>
 
-  <h1>Mapa-múndi</h1>
-  <div id="mapa"></div>
+<body>
+  <header>
+    <h1>Monitoramento da qualidade do ar</h1>
+    <p>PurpleAir | PM2.5 e estimativa espacial</p>
+  </header>
+
+  <div id="status">Mapas inicializados. Consultando sensores...</div>
+  <button id="atualizar" type="button">Atualizar sensores</button>
+
+  <main>
+    <section class="painel">
+      <h2>
+        Sensores PurpleAir
+        <span class="subtitulo">Média estimada de PM2.5 em 24 horas</span>
+      </h2>
+      <div id="mapa24h" class="mapa"></div>
+      <div class="legenda" id="legenda24h"></div>
+    </section>
+
+    <section class="painel">
+      <h2>
+        Interpolação espacial
+        <span class="subtitulo">Sensores atualizados na última hora</span>
+      </h2>
+      <div id="mapa1h" class="mapa"></div>
+      <div class="legenda" id="legenda1h"></div>
+    </section>
+  </main>
+
+  <div id="nota">
+    A interpolação é uma estimativa espacial baseada nos sensores recentes.
+    Ela não representa medições diretas nos locais sem sensores.
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    const mapa = L.map("mapa", {
-      center: [15, 0],
-      zoom: 2, 
-      minZoom: 1,
-      worldCopyJump: false
-    });
+    // ========================================================
+    // 1. CRIAR OS MAPAS PRIMEIRO, SEM DEPENDER DA API
+    // ========================================================
 
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      {
-        subdomains: "abcd",
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap &copy; CARTO"
+    function criarMapa(id) {
+      const mapa = L.map(id, {
+        center: [15, 0],
+        zoom: 2,
+        minZoom: 1,
+        worldCopyJump: false
+      });
+
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        {
+          subdomains: "abcd",
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap &copy; CARTO"
+        }
+      ).addTo(mapa);
+
+      return mapa;
+    }
+
+    const mapa24h = criarMapa("mapa24h");
+    const mapa1h = criarMapa("mapa1h");
+
+    const pontos24h = L.layerGroup().addTo(mapa24h);
+    const pontos1h = L.layerGroup().addTo(mapa1h);
+
+    // Forçar o Leaflet a recalcular o tamanho após o layout.
+    function ajustarMapas() {
+      mapa24h.invalidateSize(true);
+      mapa1h.invalidateSize(true);
+    }
+
+    window.addEventListener("load", ajustarMapas);
+    window.addEventListener("resize", ajustarMapas);
+    setTimeout(ajustarMapas, 300);
+    setTimeout(ajustarMapas, 1200);
+
+    // ========================================================
+    // 2. LEGENDA E CORES
+    // ========================================================
+
+    const FAIXAS = [
+      { max: 9.0, cor: "#2e9d50", texto: "0–9" },
+      { max: 35.4, cor: "#e8d83e", texto: "9,1–35,4" },
+      { max: 55.4, cor: "#f28e2b", texto: "35,5–55,4" },
+      { max: 125.4, cor: "#df3434", texto: "55,5–125,4" },
+      { max: 225.4, cor: "#8b45ad", texto: "125,5–225,4" },
+      { max: Infinity, cor: "#672020", texto: ">225,4" }
+    ];
+
+    function corPM25(valor) {
+      return FAIXAS.find(f => valor <= f.max)?.cor || "#672020";
+    }
+
+    function criarLegenda(id) {
+      document.getElementById(id).innerHTML = FAIXAS.map(f =>
+        `<span class="item">
+          <span class="cor" style="background:${f.cor}"></span>
+          ${f.texto} µg/m³
+        </span>`
+      ).join("");
+    }
+
+    criarLegenda("legenda24h");
+    criarLegenda("legenda1h");
+
+    function numeroBR(valor) {
+      return Number(valor).toLocaleString("pt-BR", {
+        maximumFractionDigits: 1
+      });
+    }
+
+    function popupSensor(sensor, valor, tipo) {
+      const div = document.createElement("div");
+      const nome = document.createElement("strong");
+      nome.textContent = sensor.name || "Sensor PurpleAir";
+
+      const medida = document.createElement("p");
+      medida.textContent = `${numeroBR(valor)} µg/m³`;
+
+      const descricao = document.createElement("div");
+      descricao.textContent = tipo;
+
+      const horario = document.createElement("small");
+      horario.textContent = sensor.last_seen
+        ? "Última comunicação: " +
+          new Date(sensor.last_seen * 1000).toLocaleString("pt-BR")
+        : "";
+
+      div.append(nome, medida, descricao, horario);
+      return div;
+    }
+
+    // ========================================================
+    // 3. PURPLEAIR
+    // ========================================================
+
+    // Chave fornecida anteriormente na conversa.
+    // Atenção: uma chave no HTML público fica visível aos visitantes.
+    const PURPLEAIR_API_KEY =
+      "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
+
+    const CAMPOS = [
+      "name",
+      "latitude",
+      "longitude",
+      "pm2.5_24hour",
+      "pm2.5_atm",
+      "last_seen"
+    ];
+
+    function interpolarIDW(lat, lon, sensores) {
+      const rad = Math.PI / 180;
+
+      const vizinhos = sensores.map(s => {
+        const x = (s.longitude - lon) *
+          Math.cos((s.latitude + lat) * rad / 2);
+        const y = s.latitude - lat;
+        const distancia = 111.32 * Math.sqrt(x*x + y*y);
+
+        return { sensor: s, distancia };
+      }).sort((a, b) => a.distancia - b.distancia).slice(0, 8);
+
+      if (!vizinhos.length) return null;
+      if (vizinhos[0].distancia < 0.05) {
+        return vizinhos[0].sensor.pmAtual;
       }
-    ).addTo(mapa);
 
-    setTimeout(() => mapa.invalidateSize(), 300);
+      let soma = 0;
+      let pesos = 0;
+
+      vizinhos.forEach(v => {
+        const peso = 1 / Math.pow(Math.max(v.distancia, 0.1), 2);
+        soma += peso * v.sensor.pmAtual;
+        pesos += peso;
+      });
+
+      return pesos ? soma / pesos : null;
+    }
+
+    // Camada de interpolação nativa do Leaflet.
+    // Ela fica no painel do mapa, não no HTML externo do contêiner.
+    const camadaInterpolada = L.layerGroup().addTo(mapa1h);
+
+    function desenharInterpolacao(sensores) {
+      camadaInterpolada.clearLayers();
+
+      if (sensores.length < 3) return;
+
+      // Interpola pontos numa grade geográfica regular.
+      // A grade fica limitada à extensão dos sensores recentes.
+      const latitudes = sensores.map(s => s.latitude);
+      const longitudes = sensores.map(s => s.longitude);
+
+      const minLat = Math.min(...latitudes);
+      const maxLat = Math.max(...latitudes);
+      const minLon = Math.min(...longitudes);
+      const maxLon = Math.max(...longitudes);
+
+      const passos = 35;
+
+      for (let iy = 0; iy <= passos; iy++) {
+        for (let ix = 0; ix <= passos; ix++) {
+          const lat = minLat + (maxLat - minLat) * iy / passos;
+          const lon = minLon + (maxLon - minLon) * ix / passos;
+
+          const valor = interpolarIDW(lat, lon, sensores);
+          if (!Number.isFinite(valor)) continue;
+
+          const tamanhoLat = Math.max((maxLat - minLat) / passos, 0.03);
+          const tamanhoLon = Math.max((maxLon - minLon) / passos, 0.03);
+
+          L.rectangle(
+            [
+              [lat - tamanhoLat / 2, lon - tamanhoLon / 2],
+              [lat + tamanhoLat / 2, lon + tamanhoLon / 2]
+            ],
+            {
+              stroke: false,
+              fillColor: corPM25(valor),
+              fillOpacity: 0.35,
+              interactive: false
+            }
+          ).addTo(camadaInterpolada);
+        }
+      }
+    }
+
+    async function carregarDados() {
+      const status = document.getElementById("status");
+      const botao = document.getElementById("atualizar");
+
+      botao.disabled = true;
+      status.textContent = "Consultando sensores PurpleAir...";
+
+      try {
+        const params = new URLSearchParams({
+          fields: CAMPOS.join(","),
+          location_type: "0",
+          max_age: "86400"
+        });
+
+        const resposta = await fetch(
+          "https://api.purpleair.com/v1/sensors?" + params,
+          { headers: { "X-API-Key": PURPLEAIR_API_KEY } }
+        );
+
+        const json = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(
+            json.description || json.error || `HTTP ${resposta.status}`
+          );
+        }
+
+        const idx = {};
+        json.fields.forEach((campo, i) => idx[campo] = i);
+
+        const agora = Math.floor(Date.now() / 1000);
+
+        const sensores = json.data.map(linha => ({
+          name: linha[idx.name],
+          latitude: Number(linha[idx.latitude]),
+          longitude: Number(linha[idx.longitude]),
+          pm24: Number(linha[idx["pm2.5_24hour"]]),
+          pmAtual: Number(linha[idx["pm2.5_atm"]]),
+          last_seen: Number(linha[idx.last_seen])
+        })).filter(s =>
+          Number.isFinite(s.latitude) &&
+          Number.isFinite(s.longitude) &&
+          s.latitude >= -90 && s.latitude <= 90 &&
+          s.longitude >= -180 && s.longitude <= 180
+        );
+
+        pontos24h.clearLayers();
+        pontos1h.clearLayers();
+        camadaInterpolada.clearLayers();
+
+        let n24 = 0;
+
+        sensores.forEach(s => {
+          if (Number.isFinite(s.pm24) && s.pm24 >= 0) {
+            L.circleMarker([s.latitude, s.longitude], {
+              radius: 5,
+              color: "#fff",
+              weight: 1,
+              fillColor: corPM25(s.pm24),
+              fillOpacity: 0.9
+            })
+              .bindPopup(popupSensor(s, s.pm24, "Média de PM2.5 em 24 horas"))
+              .addTo(pontos24h);
+
+            n24++;
+          }
+        });
+
+        const recentes = sensores.filter(s =>
+          Number.isFinite(s.last_seen) &&
+          agora - s.last_seen >= 0 &&
+          agora - s.last_seen <= 3600 &&
+          Number.isFinite(s.pmAtual) &&
+          s.pmAtual >= 0
+        );
+
+        recentes.forEach(s => {
+          L.circleMarker([s.latitude, s.longitude], {
+            radius: 4,
+            color: "#fff",
+            weight: 1,
+            fillColor: corPM25(s.pmAtual),
+            fillOpacity: 1
+          })
+            .bindPopup(popupSensor(s, s.pmAtual, "PM2.5 recente"))
+            .addTo(pontos1h);
+        });
+
+        desenharInterpolacao(recentes);
+
+        status.textContent =
+          `${n24} sensores com média de 24 h; ` +
+          `${recentes.length} sensores atualizados na última hora.`;
+
+      } catch (erro) {
+        console.error("PurpleAir:", erro);
+        status.textContent =
+          "Os mapas-múndi foram carregados. Falha ao carregar PurpleAir: " +
+          erro.message +
+          ". Verifique o acesso à API ou CORS no console do navegador.";
+      } finally {
+        botao.disabled = false;
+        setTimeout(ajustarMapas, 200);
+      }
+    }
+
+    document.getElementById("atualizar")
+      .addEventListener("click", carregarDados);
+
+    // A criação dos mapas já ocorreu acima.
+    // A falha da API não impede a exibição do mapa-base.
+    carregarDados();
   </script>
-
 </body>
 </html>
-
