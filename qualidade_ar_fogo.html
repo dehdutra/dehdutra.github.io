@@ -24,6 +24,11 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
         .chart-box {
             position: relative;
             height: 320px;
@@ -33,15 +38,18 @@
 <body>
 
 <div class="container-fluid py-4">
-    <h2 class="mb-4 text-center">Dashboard: Queimadas e Qualidade do Ar</h2>
+    <h2 class="mb-4 text-center">Dashboard: Focos de Calor (INPE) & Qualidade do Ar (PurpleAir)</h2>
 
     <!-- Seção de Mapas -->
     <div class="row mb-4">
         <!-- Mapa 1: INPE (Diário) -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
-                <h5 class="card-title">Focos Diários (Satélites AQUA - INPE)</h5>
-                <p class="text-muted small">Exibe focos do satélite AQUA na América do Sul.</p>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">Focos Diários (Satélite AQUA - INPE)</h5>
+                    <span id="status-focos" class="badge bg-secondary status-badge">Carregando...</span>
+                </div>
+                <p class="text-muted small mb-2">Exibe focos do satélite AQUA na América do Sul.</p>
                 <div id="mapa-focos" class="map-container"></div>
             </div>
         </div>
@@ -49,8 +57,11 @@
         <!-- Mapa 2: PurpleAir PM2.5 -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
-                <h5 class="card-title">Qualidade do Ar (PurpleAir PM2.5)</h5>
-                <p class="text-muted small">Sensores na América do Sul (&micro;g/m&sup3;).</p>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">Qualidade do Ar (PurpleAir PM2.5)</h5>
+                    <span id="status-purpleair" class="badge bg-secondary status-badge">Carregando...</span>
+                </div>
+                <p class="text-muted small mb-2">Sensores na América do Sul (&micro;g/m&sup3;).</p>
                 <div id="mapa-purpleair" class="map-container"></div>
             </div>
         </div>
@@ -60,7 +71,10 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="card card-custom p-3 bg-white d-flex flex-row align-items-center justify-content-between flex-wrap">
-                <h5 class="mb-0">Relatório Mensal de Queimadas por Estado</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <h5 class="mb-0">Relatório Mensal de Queimadas</h5>
+                    <span id="status-mensal" class="badge bg-secondary status-badge">Carregando...</span>
+                </div>
                 <div class="col-md-4 col-12 mt-2 mt-md-0">
                     <select id="select-estado" class="form-select fw-bold">
                         <option value="TODOS">Todos os Estados (Brasil)</option>
@@ -107,6 +121,7 @@
 
 <script>
     const PURPLEAIR_READ_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
+    const PROXY_INPE = "https://api.codetabs.com/v1/proxy?quest=";
 
     // Inicialização dos Mapas
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
@@ -115,16 +130,26 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(mapFocos);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(mapPurpleAir);
 
+    // Helper para formatar data AAAAMM
+    function getAnoMesAtual() {
+        const d = new Date();
+        const ano = d.getFullYear();
+        const mes = String(d.getMonth() + 1).padStart(2, '0');
+        return `${ano}${mes}`;
+    }
+
     // --- 1. CARREGAR FOCOS DIÁRIOS (INPE) ---
-    function carregarFocosDiarios() {
-        const urlCsvDiario = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_br.csv";
+    async function carregarFocosDiarios() {
+        const statusEl = document.getElementById('status-focos');
+        const urlCsvDiario = PROXY_INPE + encodeURIComponent("https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_br.csv");
 
         Papa.parse(urlCsvDiario, {
             download: true,
             header: true,
             skipEmptyLines: true,
             complete: function(results) {
-                if (results.data) {
+                if (results.data && results.data.length > 0) {
+                    let totalAqua = 0;
                     results.data.forEach(foco => {
                         const sat = (foco.satelite || '').toUpperCase();
                         if (sat.includes("AQUA")) {
@@ -132,6 +157,7 @@
                             const lon = parseFloat(foco.lon || foco.longitude);
 
                             if (!isNaN(lat) && !isNaN(lon)) {
+                                totalAqua++;
                                 L.circleMarker([lat, lon], {
                                     radius: 4,
                                     fillColor: '#ff2200',
@@ -147,7 +173,16 @@
                             }
                         }
                     });
+                    statusEl.className = "badge bg-success status-badge";
+                    statusEl.textContent = `${totalAqua} focos AQUA`;
+                } else {
+                    statusEl.className = "badge bg-danger status-badge";
+                    statusEl.textContent = "Sem dados";
                 }
+            },
+            error: function() {
+                statusEl.className = "badge bg-danger status-badge";
+                statusEl.textContent = "Erro de conexão";
             }
         });
     }
@@ -163,20 +198,25 @@
     }
 
     async function carregarPurpleAir() {
-        // Limites geográficos da América do Sul
+        const statusEl = document.getElementById('status-purpleair');
+        
         const params = new URLSearchParams({
             fields: "name,latitude,longitude,pm2.5_10minute",
-            location_type: 0,
-            nwlng: -82.0,
-            nwlat: 13.0,
-            selng: -32.0,
-            selat: -56.0
+            location_type: "0",
+            nwlng: "-82.0",
+            nwlat: "13.0",
+            selng: "-32.0",
+            selat: "-56.0"
         });
 
         const url = `https://api.purpleair.com/v1/sensors?${params.toString()}`;
 
         try {
-            const resp = await fetch(url, { headers: { "X-API-Key": PURPLEAIR_READ_KEY } });
+            const resp = await fetch(url, {
+                headers: { "X-API-Key": PURPLEAIR_READ_KEY }
+            });
+
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const json = await resp.json();
 
             if (json && json.data && json.fields) {
@@ -185,6 +225,7 @@
                 const idxPm25 = json.fields.indexOf("pm2.5_10minute");
                 const idxName = json.fields.indexOf("name");
 
+                let count = 0;
                 json.data.forEach(s => {
                     const lat = s[idxLat];
                     const lon = s[idxLon];
@@ -192,6 +233,7 @@
                     const nome = s[idxName] || "Sensor PurpleAir";
 
                     if (lat !== null && lon !== null && pm25 !== null && !isNaN(lat) && !isNaN(lon)) {
+                        count++;
                         L.circleMarker([lat, lon], {
                             radius: 6,
                             fillColor: getColorPM25(pm25),
@@ -202,9 +244,14 @@
                           .addTo(mapPurpleAir);
                     }
                 });
+
+                statusEl.className = "badge bg-success status-badge";
+                statusEl.textContent = `${count} sensores ativos`;
             }
         } catch (e) {
             console.error("Erro no PurpleAir:", e);
+            statusEl.className = "badge bg-danger status-badge";
+            statusEl.textContent = "Erro na API PurpleAir";
         }
     }
 
@@ -213,9 +260,39 @@
     let chartMun, chartBio, chartFrp, chartSat;
 
     function carregarDadosMensais() {
-        const urlCsvMensal = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br.csv";
+        const statusEl = document.getElementById('status-mensal');
+        
+        // Tenta ler o arquivo do mês atual; se não existir, lê o arquivo padrão geral
+        const anoMes = getAnoMesAtual();
+        const urlCsvMensal = PROXY_INPE + encodeURIComponent(`https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br_${anoMes}.csv`);
 
         Papa.parse(urlCsvMensal, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                if (results.data && results.data.length > 0 && results.data[0].estado) {
+                    todosDadosMensais = results.data;
+                    popularFiltroEstados();
+                    renderizarGraficos("TODOS");
+                    statusEl.className = "badge bg-success status-badge";
+                    statusEl.textContent = `${results.data.length} focos`;
+                } else {
+                    // Fallback para arquivo padrão se o do mês específico não estiver gerado
+                    carregarFallbackMensal();
+                }
+            },
+            error: function() {
+                carregarFallbackMensal();
+            }
+        });
+    }
+
+    function carregarFallbackMensal() {
+        const statusEl = document.getElementById('status-mensal');
+        const urlFallback = PROXY_INPE + encodeURIComponent("https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br.csv");
+
+        Papa.parse(urlFallback, {
             download: true,
             header: true,
             skipEmptyLines: true,
@@ -224,6 +301,11 @@
                     todosDadosMensais = results.data;
                     popularFiltroEstados();
                     renderizarGraficos("TODOS");
+                    statusEl.className = "badge bg-success status-badge";
+                    statusEl.textContent = `${results.data.length} focos`;
+                } else {
+                    statusEl.className = "badge bg-danger status-badge";
+                    statusEl.textContent = "Erro ao carregar";
                 }
             }
         });
