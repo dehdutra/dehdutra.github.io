@@ -87,11 +87,6 @@
       margin-top: 7px;
     }
 
-    .section-title {
-      font-size: 19px;
-      margin: 0 0 15px;
-    }
-
     .maps {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -507,15 +502,12 @@ function normalizeKey(value) {
 }
 
 function isReferenceAqua(value) {
-  const satellite = String(value ?? "")
+  const text = String(value ?? "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase()
-    .replace(/[\s-]+/g, "_")
-    .replace(/_+/g, "_")
-    .trim();
+    .toUpperCase();
 
-  return satellite === "AQUA_M_M" || satellite === "AQUA_M_T";
+  return text.includes("AQUA") && (text.includes("M") || text.includes("T"));
 }
 
 function getValue(row, aliases) {
@@ -739,76 +731,4 @@ async function loadRecentFires() {
       })
     );
 
-    results.forEach((result, index) => {
-      if (result.status === "fulfilled") {
-        collected.push(...result.value);
-      } else {
-        errors.push(`${batch[index].url.split("/").pop()}: ${result.reason.message}`);
-      }
-    });
-  }
-
-  const cutoff = Date.now() - RECENT_WINDOW_MS;
-
-  recentFires = filterAquaRows(collected).filter(fire =>
-    fire.date &&
-    fire.date.getTime() >= cutoff &&
-    fire.date.getTime() <= Date.now() + 5 * 60 * 1000 &&
-    isSouthAmerica(fire.lat, fire.lon)
-  );
-
-  setCount("countRecent", recentFires.length);
-  document.getElementById("fireUpdate").textContent =
-    "Atualizado: " + new Date().toLocaleTimeString("pt-BR");
-
-  if (errors.length) {
-    setStatus("fireStatus", `Última hora: ${recentFires.length} focos Aqua. ` + errors.slice(0, 2).join(" | "), "error");
-  } else {
-    setStatus("fireStatus", `Última hora: ${recentFires.length} focos dos satélites Aqua M-M e Aqua M-T.`, "ok");
-  }
-
-  drawFireMap();
-}
-
-async function loadDailyFires() {
-  const day = previousLocalDay();
-  document.getElementById("dailyDate").textContent =
-    `${day.slice(6, 8)}/${day.slice(4, 6)}/${day.slice(0, 4)}`;
-
-  setStatus("fireStatus", "Buscando o CSV diário do INPE...");
-
-  const urls = await getDirectoryFiles(
-    INPE.dailyDir,
-    /^focos_diario_\d{8}\.csv\$/i
-  );
-
-  const target = urls.find(url =>
-    new RegExp(`focos_diario_${day}\\.csv$`, "i").test(decodeURIComponent(url.split("/").pop()))
-  );
-
-  if (!target) {
-    throw new Error(`O CSV diário focos_diario_${day}.csv não foi encontrado.`);
-  }
-
-  const csv = parseCSV(await fetchText(target));
-
-  dailyFires = filterAquaRows(csv.data).filter(fire =>
-    isSouthAmerica(fire.lat, fire.lon)
-  );
-
-  setCount("countDaily", dailyFires.length);
-  setStatus("fireStatus", `Dia anterior: ${dailyFires.length} focos Aqua carregados.`, "ok");
-  drawFireMap();
-}
-
-function drawFireMap() {
-  fireLayer.clearLayers();
-
-  const mode = document.getElementById("fireMode").value;
-  const fires = mode === "daily" ? dailyFires : recentFires;
-
-  for (const fire of fires) {
-    if (!isSouthAmerica(fire.lat, fire.lon)) continue;
-
-    L.circleMarker([fire.lat, fire.lon], {
-      radius:
+    results.forEach((result, index
