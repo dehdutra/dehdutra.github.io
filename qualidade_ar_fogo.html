@@ -305,13 +305,7 @@
       </div>
 
       <div class="controls" style="margin-top:14px">
-        <div class="field" style="flex:1">
-          <label for="purpleKey">Chave de leitura da API PurpleAir</label>
-          <input id="purpleKey" type="password" autocomplete="off"
-                 value="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129"
-                 placeholder="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129">
-        </div>
-        <button id="reloadPurple">Consultar PurpleAir</button>
+        <button id="reloadPurple" style="width: 100%;">Atualizar dados PurpleAir</button>
       </div>
 
       <div id="purpleStatus" class="status">
@@ -410,7 +404,7 @@
    CONFIGURAÇÃO
    ========================================================= */
 
-const DEFAULT_PURPLE_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
+const FIXED_PURPLE_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
 
 const INPE = {
   recentDir:
@@ -533,7 +527,6 @@ function isReferenceAqua(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase();
 
-  // Verifica de forma ampla se contém a palavra AQUA e referência M
   return text.includes("AQUA") && (text.includes("M") || text.includes("T"));
 }
 
@@ -1010,8 +1003,7 @@ function detectStateByCoords(lat, lon) {
 }
 
 async function loadPurpleAir() {
-  let key = document.getElementById("purpleKey").value.trim();
-  if (!key) key = DEFAULT_PURPLE_KEY;
+  const key = FIXED_PURPLE_KEY;
 
   const button = document.getElementById("reloadPurple");
   button.disabled = true;
@@ -1079,7 +1071,7 @@ async function loadPurpleAir() {
     setStatus("purpleStatus", `Falha ao consultar PurpleAir: ${error.message}`, "error");
   } finally {
     button.disabled = false;
-    button.textContent = "Consultar PurpleAir";
+    button.textContent = "Atualizar dados PurpleAir";
   }
 }
 
