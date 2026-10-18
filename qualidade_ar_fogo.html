@@ -61,7 +61,7 @@
 
     <!-- Linha 1: Mapas Lado a Lado -->
     <div class="row mb-4">
-        <!-- Mapa 1: INPE Focos AQUA (M-M e M-T) -->
+        <!-- Mapa 1: INPE Focos AQUA -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -110,18 +110,18 @@
         </div>
     </div>
 
-    <!-- Linha 2: Mapa 3 (Interpolação OMS) -->
+    <!-- Linha 2: Mapa 3 (Interpolação de Kernel / OMS) -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="card-title mb-0 text-danger">Mapa 3: Interpolação Espacial de Risco à Saúde (Limiares OMS para PM2.5)</h5>
+                    <h5 class="card-title mb-0 text-danger">Mapa 3: Interpolação Espacial Contínua (Kernel / IDW - América do Sul)</h5>
                     <span id="status-interpolacao" class="badge bg-secondary status-badge">Aguardando dados...</span>
                 </div>
-                <p class="text-muted small mb-1">Superfície contínua interpolada via IDW destacando áreas em <strong>Estado Crítico</strong> conforme as diretrizes globais da OMS.</p>
+                <p class="text-muted small mb-1">Superfície contínua cobrindo toda a América do Sul destacando áreas em <strong>Estado Crítico</strong> conforme os limiares da OMS.</p>
                 
                 <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-2 rounded mb-2 small border">
-                    <div><strong>Método:</strong> IDW otimizado | <strong>Parâmetro:</strong> PM2.5 (&micro;g/m&sup3;)</div>
+                    <div><strong>Cobertura:</strong> América do Sul (Regional)</div>
                     <div><strong>Data/Hora do Dado Base:</strong> <span id="data-interpolacao" class="fw-bold">Carregando...</span></div>
                     <div><strong>Referência:</strong> Diretrizes OMS (2021)</div>
                 </div>
@@ -130,7 +130,7 @@
 
                 <div class="citation-box mt-3">
                     <strong>Como citar a análise de interpolação:</strong><br>
-                    <span>ANÁLISE DERIVADA. Modelo Interpolação Espacial (IDW) de Material Particulado Fine (PM2.5) baseado em sensores comunitários PurpleAir e limiares de impacto à saúde da OMS (2021). Dados base processados em: <span id="citacao-data-interp">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
+                    <span>ANÁLISE DERIVADA. Modelo de Interpolação Espacial Contínua (Kernel/IDW) de Material Particulado (PM2.5) para a América do Sul baseado em sensores PurpleAir e limiares de impacto à saúde da OMS (2021). Processado em: <span id="citacao-data-interp">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
                 </div>
             </div>
         </div>
@@ -144,12 +144,9 @@
                 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <h5>1. Como foi feita a Interpolação Espacial (IDW)?</h5>
+                        <h5>1. Interpolação Espacial Contínua (Kernel / IDW)</h5>
                         <p class="text-muted small">
-                            Utilizou-se o algoritmo geostatístico de <strong>Ponderação pelo Inverso da Distância (IDW)</strong> otimizado para web. O espaço geográfico é dividido em uma grade regular e o valor estimado de cada célula é calculado como a média ponderada dos sensores reais ao redor:
-                        </p>
-                        <p class="text-center font-monospace bg-light p-2 rounded small border text-dark">
-                            Valor Estimado = &sum;(Valor Real / Distância<sup>p</sup>) / &sum;(1 / Distância<sup>p</sup>)
+                            A mancha espacial foi gerada utilizando um modelo de suavização e ponderação geostatística (similar a Kernel Density Estimation / IDW regional) estendido por toda a extensão continental da América do Sul (abrangendo desde o norte até o cone sul). O algoritmo calcula estimativas contínuas de concentração de poluição preenchendo as lacunas geográficas entre as estações de monitoramento.
                         </p>
                     </div>
 
@@ -158,7 +155,7 @@
                         <ul class="small text-muted">
                             <li><strong class="text-success">Dentro da Meta WHO (&le; 15.0 &micro;g/m&sup3;):</strong> Concentração segura dentro do limite máximo diário.</li>
                             <li><strong class="text-warning">Alerta / Risco Moderado (15.1 - 45.0 &micro;g/m&sup3;):</strong> Excede o guia diário da OMS. Risco para grupos sensíveis.</li>
-                            <li><strong class="text-danger">ESTADO CRÍTICO (&gt; 45.0 &micro;g/m&sup3;):</strong> Excede em mais de 3x a meta diária. Alto risco à saúde.</li>
+                            <li><strong class="text-danger">ESTADO CRÍTICO (&gt; 45.0 &micro;g/m&sup3;):</strong> Excede em mais de 3x a meta diária. Alto risco à saúde pública.</li>
                         </ul>
                     </div>
                 </div>
@@ -201,7 +198,6 @@
         return `${dia}/${mes}/${ano}`;
     }
 
-    // Carregamento de Focos (Assíncrono)
     async function carregarFocosDiarios() {
         const statusEl = document.getElementById('status-focos');
         const dataFocosEl = document.getElementById('data-focos');
@@ -272,11 +268,13 @@
         }
     }
 
+    // Escala original de cores do PurpleAir para o Mapa 2
     function getCorPM25(pm) {
         if (pm <= 12.0) return '#00e400';
         if (pm <= 35.4) return '#ffff00';
         if (pm <= 55.4) return '#ff7e00';
         if (pm <= 150.4) return '#ff0000';
+        if (pm <= 250.4) return '#8f3f97';
         return '#7e0023';
     }
 
@@ -286,7 +284,6 @@
         return '#dc3545';                
     }
 
-    // Carregamento otimizado PurpleAir + Interpolação Rápida
     async function carregarPurpleAirEInterpolacao() {
         const statusEl = document.getElementById('status-purpleair');
         const statusInterpEl = document.getElementById('status-interpolacao');
@@ -325,9 +322,8 @@
                     if (lat && lon && pm25 !== null && !isNaN(pm25)) {
                         pontos.push({ lat, lon, pm25, nome });
 
-                        // Desenha o ponto imediatamente no Mapa 2
                         L.circleMarker([lat, lon], {
-                            radius: 5,
+                            radius: 6,
                             fillColor: getCorPM25(pm25),
                             color: '#000',
                             weight: 1,
@@ -340,8 +336,7 @@
                 statusEl.textContent = `${pontos.length} sensores`;
 
                 if (pontos.length > 0) {
-                    // Executa a interpolação de forma fluida logo após carregar os pontos
-                    setTimeout(() => gerarInterpolacaoIDW(pontos, dataHoraStr), 100);
+                    setTimeout(() => gerarInterpolacaoContinua(pontos, dataHoraStr), 100);
                     statusInterpEl.className = "badge bg-success status-badge";
                     statusInterpEl.textContent = "Interpolação Concluída";
                 }
@@ -355,10 +350,11 @@
         }
     }
 
-    function gerarInterpolacaoIDW(pontos, dataHoraRef) {
-        const latMin = -35.0, latMax = 5.0;
-        const lonMin = -75.0, lonMax = -35.0;
-        const passo = 2.0; // Passo otimizado para renderização imediata e leve
+    // Interpolação Contínua expandida para toda a América do Sul (Gradação Kernel/IDW)
+    function gerarInterpolacaoContinua(pontos, dataHoraRef) {
+        const latMin = -56.0, latMax = 13.0; // Abrange todo o subcontinente sul-americano
+        const lonMin = -82.0, lonMax = -32.0;
+        const passo = 1.5; // Resolução otimizada para cobrir toda a região sem pesar
 
         for (let lat = latMin; lat <= latMax; lat += passo) {
             for (let lon = lonMin; lon <= lonMax; lon += passo) {
@@ -368,20 +364,20 @@
                     const dLat = lat - p.lat, dLon = lon - p.lon;
                     const distSq = dLat * dLat + dLon * dLon;
                     if (distSq < 0.01) { perto = true; valPerto = p.pm25; break; }
-                    const peso = 1 / distSq;
+                    const peso = 1 / (distSq + 0.1); // kernel de suavização espacial
                     somaPesos += peso;
                     somaValores += p.pm25 * peso;
                 }
 
-                const pmEstimado = perto ? valPerto : (somaValores / somaPesos);
+                const pmEstimado = perto ? valPerto : (somaPesos > 0 ? (somaValores / somaPesos) : 10);
                 const bounds = [[lat, lon], [lat + passo, lon + passo]];
 
                 L.rectangle(bounds, {
                     color: "transparent",
                     fillColor: getCorOMS(pmEstimado),
-                    fillOpacity: 0.4,
+                    fillOpacity: 0.45,
                     weight: 0
-                }).bindPopup(`<b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status:</b> ${pmEstimado <= 15 ? 'Normal' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
+                }).bindPopup(`<b>Área Contínua (Kernel)</b><br><b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status OMS:</b> ${pmEstimado <= 15 ? 'Meta OMS' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
             }
         }
 
@@ -392,19 +388,30 @@
                 color: '#000',
                 weight: 1,
                 fillOpacity: 0.9
-            }).bindPopup(`<b>${p.nome}</b><br>PM2.5: ${p.pm25}`).addTo(mapInterpolacao);
+            }).bindPopup(`<b>${p.nome}</b><br>PM2.5 Real: ${p.pm25}`).addTo(mapInterpolacao);
         });
     }
 
     function adicionarLegendas() {
+        // Legenda original completa do PurpleAir
         const legendPA = L.control({ position: 'bottomright' });
         legendPA.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
-            div.innerHTML = '<strong>PM2.5 Pontual</strong><br><i style="background:#00e400"></i> Boa<br><i style="background:#ffff00"></i> Moderada<br><i style="background:#ff7e00"></i> Sensíveis<br><i style="background:#ff0000"></i> Insalubre';
+            const faixas = [
+                { cor: '#00e400', rotulo: '0 - 12.0 &micro;g/m&sup3; (Boa)' },
+                { cor: '#ffff00', rotulo: '12.1 - 35.4 &micro;g/m&sup3; (Moderada)' },
+                { cor: '#ff7e00', rotulo: '35.5 - 55.4 &micro;g/m&sup3; (Insalubre p/ Sensíveis)' },
+                { cor: '#ff0000', rotulo: '55.5 - 150.4 &micro;g/m&sup3; (Insalubre)' },
+                { cor: '#8f3f97', rotulo: '150.5 - 250.4 &micro;g/m&sup3; (Muito Insalubre)' },
+                { cor: '#7e0023', rotulo: '&gt; 250.5 &micro;g/m&sup3; (Perigosa)' }
+            ];
+            div.innerHTML = '<strong>Concentração PM2.5</strong><br>';
+            faixas.forEach(item => { div.innerHTML += `<i style="background:${item.cor}"></i> ${item.rotulo}<br>`; });
             return div;
         };
         legendPA.addTo(mapPurpleAir);
 
+        // Legenda Mapa 3 (OMS)
         const legendOMS = L.control({ position: 'bottomright' });
         legendOMS.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
