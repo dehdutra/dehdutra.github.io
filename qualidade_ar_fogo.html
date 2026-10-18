@@ -1,341 +1,231 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monitoramento de Focos de Calor e Qualidade do Ar</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoramento Ambiental | Fogo e Qualidade do Ar</title>
 
-  <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-  <style>
-    :root {
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --text: #172033;
-      --muted: #64748b;
-      --border: #dce3ed;
-      --blue: #1d4ed8;
-    }
+<style>
+:root {
+  --bg: #f4f7fb;
+  --card: #fff;
+  --text: #172033;
+  --muted: #64748b;
+  --border: #dce3ed;
+  --blue: #1d4ed8;
+}
+* { box-sizing: border-box; }
 
-    * { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+header {
+  padding: 24px 20px;
+  background: #10243a;
+  color: white;
+}
+header h1 { margin: 0 0 8px; font-size: clamp(22px, 3vw, 32px); }
+header p { margin: 0; color: #dbeafe; line-height: 1.5; }
 
-    header {
-      padding: 24px 20px;
-      color: white;
-      background: #10243a;
-    }
+main { max-width: 1600px; margin: auto; padding: 20px; }
 
-    header h1 {
-      margin: 0 0 8px;
-      font-size: clamp(22px, 3vw, 32px);
-    }
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
 
-    header p {
-      margin: 0;
-      color: #dbeafe;
-      line-height: 1.5;
-    }
+button {
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:disabled { opacity: .6; cursor: wait; }
 
-    main {
-      max-width: 1600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+#atualizacao { color: var(--muted); font-size: 13px; }
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
+.status-grid, .map-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
 
-    button {
-      padding: 11px 16px;
-      border: 0;
-      border-radius: 8px;
-      background: var(--blue);
-      color: white;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.status-card, .map-card {
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
+.status-card { padding: 15px; }
+.status-card strong { display: block; margin-bottom: 7px; }
+.status-value { font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
 
-    #atualizacao {
-      color: var(--muted);
-      font-size: 13px;
-    }
+.section-title { margin: 28px 0 14px; font-size: 22px; }
 
-    .status-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 22px;
-    }
+.map-heading { padding: 15px 16px 12px; }
+.map-heading h3 { margin: 0 0 7px; font-size: 17px; }
+.map-heading p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
-    .status-card {
-      padding: 15px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      min-width: 0;
-    }
+.map { height: 440px; width: 100%; background: #e8eef4; }
 
-    .status-card strong {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 14px;
-    }
+.map-status {
+  min-height: 36px;
+  padding: 9px 14px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  border-top: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
 
-    .status-value {
-      font-size: 14px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 
-    .section-title {
-      margin: 26px 0 14px;
-      font-size: 22px;
-    }
+footer {
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
 
-    .map-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
+.leaflet-popup-content { line-height: 1.6; }
 
-    .map-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      min-width: 0;
-    }
-
-    .map-heading {
-      padding: 15px 16px 12px;
-    }
-
-    .map-heading h3 {
-      margin: 0 0 7px;
-      font-size: 17px;
-    }
-
-    .map-heading p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .map {
-      height: 440px;
-      width: 100%;
-      background: #e8eef4;
-    }
-
-    .map-status {
-      min-height: 36px;
-      padding: 9px 14px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-      border-top: 1px solid var(--border);
-      overflow-wrap: anywhere;
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    footer {
-      padding: 24px 20px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-      text-align: center;
-    }
-
-    @media (max-width: 850px) {
-      .map-grid,
-      .status-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .map { height: 380px; }
-      main { padding: 12px; }
-    }
-  </style>
+@media (max-width: 850px) {
+  .map-grid, .status-grid { grid-template-columns: 1fr; }
+  .map { height: 380px; }
+  main { padding: 12px; }
+}
+</style>
 </head>
 
 <body>
 <header>
-  <h1>Monitoramento Ambiental do Brasil</h1>
-  <p>Focos de calor do INPE e qualidade do ar PurpleAir.</p>
+  <h1>Monitoramento Ambiental da América do Sul</h1>
+  <p>Focos de calor do INPE e qualidade do ar monitorada pela PurpleAir.</p>
 </header>
 
 <main>
   <div class="toolbar">
     <button id="atualizarBtn" type="button">Atualizar dados</button>
-    <span id="atualizacao">Aguardando a primeira consulta...</span>
+    <span id="atualizacao">Aguardando consulta...</span>
   </div>
 
   <div class="status-grid">
     <div class="status-card">
-      <strong>INPE · Ontem e hoje</strong>
+      <strong>INPE · Arquivo de 10 minutos</strong>
       <div class="status-value" id="statusINPE">Aguardando consulta.</div>
     </div>
-
     <div class="status-card">
-      <strong>PurpleAir · Média móvel de PM2.5 de 24 horas</strong>
+      <strong>INPE · Arquivo diário</strong>
+      <div class="status-value" id="statusINPEDiario">Aguardando consulta.</div>
+    </div>
+    <div class="status-card">
+      <strong>PurpleAir · PM2.5 de 24 horas</strong>
       <div class="status-value" id="statusPA24">Aguardando consulta.</div>
     </div>
-
     <div class="status-card">
-      <strong>PurpleAir · Sensores atualizados hoje</strong>
+      <strong>PurpleAir · Sensores recentes</strong>
       <div class="status-value" id="statusPA1">Aguardando consulta.</div>
     </div>
   </div>
 
   <h2 class="section-title">Focos de calor · INPE</h2>
-
   <div class="map-grid">
     <section class="map-card">
       <div class="map-heading">
-        <h3 id="tituloINPE24">Focos detectados ontem</h3>
-        <p>
-          Arquivo diário do INPE para ontem, filtrado para o satélite
-          de referência AQUA_M-T. A cor representa o tempo desde a detecção.
-        </p>
+        <h3>Focos no último arquivo de 10 minutos</h3>
+        <p>Localização dos focos presentes no arquivo mais recente retornado pelo serviço.</p>
       </div>
-
       <div id="mapaINPE24" class="map"></div>
-
       <div class="legend">
         <span><i class="dot" style="background:#16a34a"></i> Até 10 min</span>
         <span><i class="dot" style="background:#eab308"></i> 10–60 min</span>
         <span><i class="dot" style="background:#f97316"></i> 1–6 h</span>
-        <span><i class="dot" style="background:#dc2626"></i> Mais de 6 h</span>
+        <span><i class="dot" style="background:#dc2626"></i> Mais de 6 h ou horário indisponível</span>
       </div>
-
-      <div id="mapaINPE24Status" class="map-status">
-        Aguardando dados do INPE.
-      </div>
+      <div id="mapaINPE24Status" class="map-status">Aguardando dados.</div>
     </section>
 
     <section class="map-card">
       <div class="map-heading">
-        <h3 id="tituloINPE1">Concentração de focos hoje</h3>
-        <p>
-          Mapa de calor dos focos AQUA_M-T registrados no arquivo diário
-          de hoje. O arquivo pode estar incompleto durante o dia.
-        </p>
+        <h3>Concentração de focos no arquivo diário</h3>
+        <p>Mapa de calor baseado nos registros do CSV diário da América do Sul.</p>
       </div>
-
       <div id="mapaINPE1" class="map"></div>
-
       <div class="legend">
         <span>Menor concentração</span>
         <span style="color:#dc2626">●</span>
         <span>Maior concentração</span>
       </div>
-
-      <div id="mapaINPE1Status" class="map-status">
-        Aguardando dados do INPE.
-      </div>
+      <div id="mapaINPE1Status" class="map-status">Aguardando dados.</div>
     </section>
   </div>
 
   <h2 class="section-title">Qualidade do ar · PurpleAir</h2>
-
   <div class="map-grid">
     <section class="map-card">
       <div class="map-heading">
         <h3>PM2.5 · Média móvel de 24 horas</h3>
-        <p>
-          Média móvel informada pelos sensores. A interpolação é uma
-          estimativa espacial, não uma medição em cada ponto do mapa.
-        </p>
+        <p>Valores reportados pelos sensores disponíveis. Os círculos representam medições, não uma interpolação.</p>
       </div>
-
       <div id="mapaPA24" class="map"></div>
-
       <div class="legend">
         <span><i class="dot" style="background:#22c55e"></i> 0–8,9 µg/m³</span>
         <span><i class="dot" style="background:#eab308"></i> 9–24,9 µg/m³</span>
         <span><i class="dot" style="background:#f97316"></i> 25–49,9 µg/m³</span>
         <span><i class="dot" style="background:#dc2626"></i> ≥ 50 µg/m³</span>
       </div>
-
-      <div id="mapaPA24Status" class="map-status">
-        Aguardando dados PurpleAir.
-      </div>
+      <div id="mapaPA24Status" class="map-status">Aguardando dados.</div>
     </section>
 
     <section class="map-card">
       <div class="map-heading">
-        <h3 id="tituloPA1">PM2.5 · Sensores atualizados na última hora</h3>
-        <p>
-          Sensores com registro nos últimos 60 minutos.
-          O valor exibido é a leitura atual disponível, não uma média diária.
-        </p>
+        <h3>PM2.5 · Leitura mais recente</h3>
+        <p>Sensores com registro recente. O horário da medição é apresentado no marcador.</p>
       </div>
-
       <div id="mapaPA1" class="map"></div>
-
       <div class="legend">
         <span><i class="dot" style="background:#22c55e"></i> 0–8,9 µg/m³</span>
         <span><i class="dot" style="background:#eab308"></i> 9–24,9 µg/m³</span>
         <span><i class="dot" style="background:#f97316"></i> 25–49,9 µg/m³</span>
         <span><i class="dot" style="background:#dc2626"></i> ≥ 50 µg/m³</span>
       </div>
-
-      <div id="mapaPA1Status" class="map-status">
-        Aguardando dados PurpleAir.
-      </div>
+      <div id="mapaPA1Status" class="map-status">Aguardando dados.</div>
     </section>
   </div>
 </main>
 
 <footer>
   Fontes: Programa Queimadas/INPE e PurpleAir.
-  Os horários do INPE são apresentados em UTC.
-  A média móvel de 24 horas do PurpleAir não equivale ao valor histórico
-  de ontem. A interpolação é uma estimativa baseada nos sensores disponíveis.
-  <br>
-  Mapa-base © OpenStreetMap contributors.
+  Horários de leitura são convertidos para o fuso de Brasília quando aplicável.
+  A cobertura depende da disponibilidade e da atualização das fontes.
+  <br>Mapa-base © OpenStreetMap contributors.
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -344,148 +234,101 @@
 <script>
 "use strict";
 
-// ============================================================
-// CONFIGURAÇÃO
-// ============================================================
+/* =========================================================
+   CONFIGURAÇÃO
+   Publique o Worker antes de preencher esta URL.
+   Não coloque a chave PurpleAir neste arquivo.
+   ========================================================= */
 
-// A chave PurpleAir fica no servidor Python, NÃO neste HTML.
-// O marcador fictício que representa a chave está no app.py.
+const API_BASE = "COLOQUE_AQUI_A_URL_DO_WORKER";
+const FUSO = "America/Sao_Paulo";
+const CENTRO = [-14.2, -51.9];
+const BOUNDS = L.latLngBounds([ -56, -82 ], [ 13, -32 ]);
 
-const FUSO_BRASIL = "America/Sao_Paulo";
-const CENTRO_BRASIL = [-14.2, -51.9];
+let ocupado = false;
 
-const BRASIL_BOUNDS = L.latLngBounds(
-  [-34.0, -74.0],
-  [5.5, -34.0]
-);
-
-// Interpolação mais espaçada para reduzir o custo de processamento.
-const PASSO_INTERPOLACAO = 1.2;
-const RAIO_INTERPOLACAO_KM = 250;
-
-let atualizacaoEmAndamento = false;
-let timerAtualizacao = null;
-let calorINPE = null;
-
+const mapas = {};
 const camadas = {};
-
-// ============================================================
-// MAPAS
-// ============================================================
 
 function criarMapa(id) {
   const mapa = L.map(id, {
-    center: CENTRO_BRASIL,
+    center: CENTRO,
     zoom: 4,
     minZoom: 3,
-    maxZoom: 12,
-    worldCopyJump: false
+    maxZoom: 13
   });
 
-  // Se o servidor de tiles falhar, os dados e os marcadores
-  // ainda podem ser carregados e consultados.
-  L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      minZoom: 3,
-      maxZoom: 19,
-      attribution: "&copy; OpenStreetMap contributors"
-    }
-  ).addTo(mapa);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(mapa);
 
-  mapa.fitBounds(BRASIL_BOUNDS, { padding: [8, 8] });
-
-  mapa.on("tileerror", () => {
-    console.warn("Não foi possível carregar um tile do mapa-base:", id);
-  });
-
+  mapa.fitBounds(BOUNDS, { padding: [8, 8] });
   return mapa;
 }
 
-const mapaINPE24 = criarMapa("mapaINPE24");
-const mapaINPE1 = criarMapa("mapaINPE1");
-const mapaPA24 = criarMapa("mapaPA24");
-const mapaPA1 = criarMapa("mapaPA1");
+mapas.inpe10 = criarMapa("mapaINPE24");
+mapas.inpeDia = criarMapa("mapaINPE1");
+mapas.pa24 = criarMapa("mapaPA24");
+mapas.paAtual = criarMapa("mapaPA1");
 
-camadas.inpe24 = L.layerGroup().addTo(mapaINPE24);
-camadas.inpe1 = L.layerGroup().addTo(mapaINPE1);
-camadas.pa24 = L.layerGroup().addTo(mapaPA24);
-camadas.pa1 = L.layerGroup().addTo(mapaPA1);
-
-function ajustarTamanhoMapas() {
-  [mapaINPE24, mapaINPE1, mapaPA24, mapaPA1]
-    .forEach(mapa => mapa.invalidateSize(true));
+for (const chave of Object.keys(mapas)) {
+  camadas[chave] = L.layerGroup().addTo(mapas[chave]);
 }
 
-window.addEventListener("load", ajustarTamanhoMapas);
-window.addEventListener("resize", ajustarTamanhoMapas);
-setTimeout(ajustarTamanhoMapas, 300);
-setTimeout(ajustarTamanhoMapas, 1200);
+const calorDiario = L.heatLayer([], {
+  radius: 20,
+  blur: 15,
+  maxZoom: 8,
+  max: 1
+}).addTo(mapas.inpeDia);
 
-// ============================================================
-// DATAS
-// ============================================================
-
-function dataBrasil(data = new Date()) {
-  const partes = new Intl.DateTimeFormat("en-CA", {
-    timeZone: FUSO_BRASIL,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).formatToParts(data);
-
-  const p = {};
-  partes.forEach(item => p[item.type] = item.value);
-
-  return `${p.year}-${p.month}-${p.day}`;
+function texto(id, valor) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = valor;
 }
 
-function deslocarData(dataISO, dias) {
-  const [ano, mes, dia] = dataISO.split("-").map(Number);
-  const data = new Date(Date.UTC(ano, mes - 1, dia, 12));
-
-  data.setUTCDate(data.getUTCDate() + dias);
-
-  return [
-    data.getUTCFullYear(),
-    String(data.getUTCMonth() + 1).padStart(2, "0"),
-    String(data.getUTCDate()).padStart(2, "0")
-  ].join("-");
+function numero(v) {
+  if (v === null || v === undefined || v === "") return NaN;
+  const n = Number(String(v).replace(",", "."));
+  return Number.isFinite(n) ? n : NaN;
 }
 
-function formatarDataBR(dataISO) {
-  const [ano, mes, dia] = dataISO.split("-");
-  return `${dia}/${mes}/${ano}`;
-}
-
-function inicioDiaBrasil(dataISO) {
-  return new Date(`${dataISO}T00:00:00-03:00`).getTime() / 1000;
-}
-
-// ============================================================
-// AUXILIARES
-// ============================================================
-
-function definirTexto(id, mensagem) {
-  const elemento = document.getElementById(id);
-  if (elemento) elemento.textContent = mensagem;
-}
-
-function formatarNumero(valor, casas = 1) {
-  return Number(valor).toLocaleString("pt-BR", {
+function formatarNumero(v, casas = 1) {
+  return Number(v).toLocaleString("pt-BR", {
     maximumFractionDigits: casas
   });
 }
 
-function dentroDoBrasil(lat, lon) {
-  return Number.isFinite(lat) &&
-    Number.isFinite(lon) &&
-    lat >= -34 && lat <= 5.5 &&
-    lon >= -74 && lon <= -34;
+function dataHora(v) {
+  if (v === null || v === undefined || v === "") return "Indisponível";
+  let d;
+
+  // Unix em segundos ou milissegundos.
+  if (typeof v === "number" || /^\d+(\.\d+)?$/.test(String(v))) {
+    let n = Number(v);
+    if (n > 1e12) n /= 1000;
+    d = new Date(n * 1000);
+  } else {
+    d = new Date(v);
+  }
+
+  if (!Number.isFinite(d.getTime())) return String(v);
+
+  return d.toLocaleString("pt-BR", {
+    timeZone: FUSO,
+    dateStyle: "short",
+    timeStyle: "short"
+  });
 }
 
-function escaparHTML(valor) {
-  return String(valor ?? "").replace(/[&<>"']/g, c => ({
+function dentroDaAmericaDoSul(lat, lon) {
+  return Number.isFinite(lat) && Number.isFinite(lon) &&
+    lat >= -56 && lat <= 13 && lon >= -82 && lon <= -32;
+}
+
+function escaparHTML(v) {
+  return String(v ?? "").replace(/[&<>"']/g, c => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -494,49 +337,334 @@ function escaparHTML(valor) {
   })[c]);
 }
 
-function corPM25(valor) {
-  if (valor < 9) return "#22c55e";
-  if (valor < 25) return "#eab308";
-  if (valor < 50) return "#f97316";
+function corPM25(v) {
+  if (!Number.isFinite(v) || v < 0) return "#64748b";
+  if (v < 9) return "#22c55e";
+  if (v < 25) return "#eab308";
+  if (v < 50) return "#f97316";
   return "#dc2626";
 }
 
-function corIdadeFoco(minutos) {
+function corIdade(minutos) {
+  if (!Number.isFinite(minutos) || minutos < 0) return "#dc2626";
   if (minutos <= 10) return "#16a34a";
   if (minutos <= 60) return "#eab308";
   if (minutos <= 360) return "#f97316";
   return "#dc2626";
 }
 
-function distanciaKm(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const rad = Math.PI / 180;
-  const dLat = (lat2 - lat1) * rad;
-  const dLon = (lon2 - lon1) * rad;
+async function buscarJSON(url) {
+  const resposta = await fetch(url, {
+    cache: "no-store",
+    headers: { Accept: "application/json" }
+  });
 
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * rad) *
-    Math.cos(lat2 * rad) *
-    Math.sin(dLon / 2) ** 2;
+  const dados = await resposta.json().catch(() => ({}));
 
-  return 2 * R * Math.asin(Math.sqrt(a));
-}
-
-function formatarDataUnix(segundos) {
-  if (!Number.isFinite(Number(segundos)) || Number(segundos) <= 0) {
-    return "Horário indisponível";
+  if (!resposta.ok) {
+    throw new Error(dados.erro || dados.detail ||
+      `Erro HTTP ${resposta.status}`);
   }
 
-  return new Date(Number(segundos) * 1000).toLocaleString("pt-BR", {
-    timeZone: FUSO_BRASIL
+  return dados;
+}
+
+/* CSV: respeita vírgulas e quebras de linha dentro de aspas. */
+function interpretarCSV(csv) {
+  const linhas = [];
+  let linha = [], campo = "", aspas = false;
+
+  for (let i = 0; i < csv.length; i++) {
+    const c = csv[i];
+
+    if (c === '"') {
+      if (aspas && csv[i + 1] === '"') {
+        campo += '"';
+        i++;
+      } else {
+        aspas = !aspas;
+      }
+    } else if (c === "," && !aspas) {
+      linha.push(campo.trim());
+      campo = "";
+    } else if ((c === "\n" || c === "\r") && !aspas) {
+      if (c === "\r" && csv[i + 1] === "\n") i++;
+      linha.push(campo.trim());
+      if (linha.some(x => x !== "")) linhas.push(linha);
+      linha = [];
+      campo = "";
+    } else {
+      campo += c;
+    }
+  }
+
+  if (campo.length || linha.length) {
+    linha.push(campo.trim());
+    linhas.push(linha);
+  }
+
+  if (linhas.length < 2) return [];
+
+  const cabecalho = linhas.shift().map(x =>
+    x.replace(/^\uFEFF/, "").trim().toLowerCase()
+  );
+
+  return linhas.map(valores => {
+    const obj = {};
+    cabecalho.forEach((nome, i) => obj[nome] = valores[i] ?? "");
+    return obj;
   });
 }
 
-async function buscarJSON(url) {
-  const resposta = await fetch(url, { cache: "no-store" });
+function primeiroCampo(obj, nomes) {
+  for (const nome of nomes) {
+    if (obj[nome] !== undefined && obj[nome] !== "") return obj[nome];
+  }
+  return null;
+}
 
-  const json = await resposta.json().catch(() => ({}));
+function normalizarFoco(f) {
+  const lat = numero(primeiroCampo(f, [
+    "latitude", "lat", "y"
+  ]));
+  const lon = numero(primeiroCampo(f, [
+    "longitude", "lon", "long", "longitud", "x"
+  ]));
 
-  if (!resposta.ok) {
-    const detalhe = json.detail || json.error
+  const data = primeiroCampo(f, [
+    "datahora", "data_hora", "data hora", "data", "datetime",
+    "date", "satelite_data"
+  ]);
+
+  const satelite = primeiroCampo(f, [
+    "satelite", "satellite", "satelite_referencia"
+  ]);
+
+  return { bruto: f, lat, lon, data, satelite };
+}
+
+async function carregarINPE(tipo) {
+  const dados = await buscarJSON(
+    `${API_BASE}/api/inpe?tipo=${encodeURIComponent(tipo)}`
+  );
+
+  const focos = interpretarCSV(dados.csv || "")
+    .map(normalizarFoco)
+    .filter(f => dentroDaAmericaDoSul(f.lat, f.lon));
+
+  return { ...dados, focos };
+}
+
+function desenharFocos10(focos) {
+  camadas.inpe10.clearLayers();
+
+  const agora = Date.now();
+
+  focos.forEach(f => {
+    const instante = f.data ? new Date(f.data).getTime() : NaN;
+    const idade = Number.isFinite(instante)
+      ? (agora - instante) / 60000
+      : NaN;
+
+    const marcador = L.circleMarker([f.lat, f.lon], {
+      radius: 5,
+      color: corIdade(idade),
+      fillColor: corIdade(idade),
+      fillOpacity: .8,
+      weight: 1
+    });
+
+    marcador.bindPopup(
+      `<strong>Foco de calor · INPE</strong><br>` +
+      `Data/hora: ${escaparHTML(f.data || "Indisponível")}<br>` +
+      `Satélite: ${escaparHTML(f.satelite || "Não informado")}<br>` +
+      `Latitude: ${f.lat.toFixed(4)}<br>` +
+      `Longitude: ${f.lon.toFixed(4)}`
+    );
+
+    marcador.addTo(camadas.inpe10);
+  });
+
+  texto("mapaINPE24Status",
+    `${focos.length.toLocaleString("pt-BR")} registros com coordenadas válidas na América do Sul.`);
+}
+
+function desenharFocosDiarios(focos) {
+  calorDiario.setLatLngs(focos.map(f => [f.lat, f.lon, 1]));
+
+  texto("mapaINPE1Status",
+    `${focos.length.toLocaleString("pt-BR")} registros diários válidos. O mapa de calor mostra a distribuição dos registros, não uma contagem agregada por célula.`);
+}
+
+function normalizarSensor(s) {
+  const lat = numero(s.latitude);
+  const lon = numero(s.longitude);
+
+  const atual = numero(
+    s["pm2.5_atm"] ?? s["pm2.5"] ?? s["pm2.5_cf_1"]
+  );
+
+  const media24 = numero(
+    s["pm2.5_24hour"] ?? s["pm2.5_24hour_atm"]
+  );
+
+  const ultima = numero(s.last_seen);
+
+  return {
+    ...s,
+    lat,
+    lon,
+    pm25Atual: atual,
+    pm2524: media24,
+    ultima
+  };
+}
+
+function desenharSensores(sensores) {
+  camadas.pa24.clearLayers();
+  camadas.paAtual.clearLayers();
+
+  const validos = sensores.filter(s =>
+    dentroDaAmericaDoSul(s.lat, s.lon)
+  );
+
+  let n24 = 0, nAtual = 0;
+
+  validos.forEach(s => {
+    const nome = escaparHTML(s.name || "Sensor sem nome");
+    const hora = dataHora(s.ultima);
+
+    if (Number.isFinite(s.pm2524) && s.pm2524 >= 0) {
+      n24++;
+
+      L.circleMarker([s.lat, s.lon], {
+        radius: 6,
+        color: corPM25(s.pm2524),
+        fillColor: corPM25(s.pm2524),
+        fillOpacity: .82,
+        weight: 1
+      }).bindPopup(
+        `<strong>${nome}</strong><br>` +
+        `PM2.5 · média de 24 h: ${formatarNumero(s.pm2524)} µg/m³<br>` +
+        `Última atualização: ${hora}`
+      ).addTo(camadas.pa24);
+    }
+
+    if (Number.isFinite(s.pm25Atual) && s.pm25Atual >= 0) {
+      nAtual++;
+
+      L.circleMarker([s.lat, s.lon], {
+        radius: 6,
+        color: corPM25(s.pm25Atual),
+        fillColor: corPM25(s.pm25Atual),
+        fillOpacity: .82,
+        weight: 1
+      }).bindPopup(
+        `<strong>${nome}</strong><br>` +
+        `PM2.5 atual: ${formatarNumero(s.pm25Atual)} µg/m³<br>` +
+        `Última atualização: ${hora}`
+      ).addTo(camadas.paAtual);
+    }
+  });
+
+  texto("mapaPA24Status",
+    `${n24.toLocaleString("pt-BR")} sensores com média de 24 h válida na área.`);
+  texto("mapaPA1Status",
+    `${nAtual.toLocaleString("pt-BR")} sensores com leitura atual válida na área.`);
+
+  return { validos, n24, nAtual };
+}
+
+async function atualizar() {
+  if (ocupado) return;
+
+  if (!API_BASE.startsWith("https://") ||
+      API_BASE.includes("COLOQUE_AQUI")) {
+    texto("atualizacao",
+      "Configure primeiro a URL HTTPS do Worker no código.");
+    return;
+  }
+
+  ocupado = true;
+  const botao = document.getElementById("atualizarBtn");
+  botao.disabled = true;
+  botao.textContent = "Consultando...";
+  texto("atualizacao", "Consultando INPE e PurpleAir...");
+
+  const tarefas = await Promise.allSettled([
+    carregarINPE("10min"),
+    carregarINPE("diario"),
+    buscarJSON(`${API_BASE}/api/purpleair`)
+  ]);
+
+  let sucessos = 0;
+
+  if (tarefas[0].status === "fulfilled") {
+    const d = tarefas[0].value;
+    desenharFocos10(d.focos);
+    texto("statusINPE",
+      `${d.arquivo || "Arquivo consultado"} · ${d.focos.length} focos válidos · consulta: ${dataHora(d.atualizado_em)}`);
+    sucessos++;
+  } else {
+    texto("statusINPE", `Falha: ${tarefas[0].reason.message}`);
+    texto("mapaINPE24Status", `Erro ao carregar dados: ${tarefas[0].reason.message}`);
+  }
+
+  if (tarefas[1].status === "fulfilled") {
+    const d = tarefas[1].value;
+    desenharFocosDiarios(d.focos);
+    texto("statusINPEDiario",
+      `${d.arquivo || "Arquivo consultado"} · ${d.focos.length} focos válidos · consulta: ${dataHora(d.atualizado_em)}`);
+    sucessos++;
+  } else {
+    texto("statusINPEDiario", `Falha: ${tarefas[1].reason.message}`);
+    texto("mapaINPE1Status", `Erro ao carregar dados: ${tarefas[1].reason.message}`);
+  }
+
+  if (tarefas[2].status === "fulfilled") {
+    const d = tarefas[2].value;
+    const sensores = (d.sensores || []).map(normalizarSensor);
+    const r = desenharSensores(sensores);
+
+    texto("statusPA24",
+      `${r.n24} sensores com média de 24 h válida. Consulta: ${dataHora(d.atualizado_em)}`);
+    texto("statusPA1",
+      `${r.nAtual} sensores com leitura atual válida. Consulta: ${dataHora(d.atualizado_em)}`);
+    sucessos++;
+  } else {
+    texto("statusPA24", `Falha: ${tarefas[2].reason.message}`);
+    texto("statusPA1", `Falha: ${tarefas[2].reason.message}`);
+    texto("mapaPA24Status", `Erro ao carregar PurpleAir: ${tarefas[2].reason.message}`);
+    texto("mapaPA1Status", `Erro ao carregar PurpleAir: ${tarefas[2].reason.message}`);
+  }
+
+  texto("atualizacao",
+    `${sucessos}/3 consultas concluídas · ${new Date().toLocaleString("pt-BR", { timeZone: FUSO })}`);
+
+  ocupado = false;
+  botao.disabled = false;
+  botao.textContent = "Atualizar dados";
+
+  setTimeout(() => {
+    Object.values(mapas).forEach(m => m.invalidateSize());
+  }, 100);
+}
+
+document.getElementById("atualizarBtn").addEventListener("click", atualizar);
+
+window.addEventListener("load", () => {
+  Object.values(mapas).forEach(m => m.invalidateSize());
+  atualizar();
+});
+
+window.addEventListener("resize", () => {
+  Object.values(mapas).forEach(m => m.invalidateSize());
+});
+
+// Atualiza automaticamente a cada 10 minutos.
+setInterval(() => {
+  if (!document.hidden) atualizar();
+}, 10 * 60 * 1000);
+</script>
+</body>
+</html>
