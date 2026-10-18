@@ -2,398 +2,181 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Monitoramento de Focos de Calor | Aqua</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Focos de calor Aqua | América do Sul</title>
 
-  <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-  <style>
-    :root {
-      --bg: #f3f6fa;
-      --card: #fff;
-      --text: #172536;
-      --muted: #66768a;
-      --border: #e0e7ef;
-      --navy: #13263e;
-      --blue: #2563eb;
-    }
+<style>
+* { box-sizing: border-box; }
 
-    * { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #f1f5f9;
+  color: #172536;
+  font-family: Arial, sans-serif;
+}
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Segoe UI", Arial, sans-serif;
-    }
+header {
+  background: #13263e;
+  color: white;
+  padding: 22px;
+}
 
-    header {
-      background: var(--navy);
-      color: white;
-      padding: 22px 28px;
-    }
+header h1 { margin: 0 0 8px; font-size: 26px; }
+header p { margin: 0; color: #d5e0ee; line-height: 1.5; }
 
-    .header-content {
-      max-width: 1800px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 18px;
-    }
+main { max-width: 1800px; margin: auto; padding: 20px; }
 
-    .eyebrow {
-      color: #a9c7f5;
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 8px;
-    }
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
 
-    h1 {
-      font-size: clamp(22px, 3vw, 32px);
-      margin: 0;
-    }
+.metric, .panel, .status {
+  background: white;
+  border: 1px solid #dbe3ed;
+  border-radius: 10px;
+}
 
-    .subtitle {
-      margin-top: 8px;
-      color: #cfdaea;
-      font-size: 13px;
-      line-height: 1.5;
-    }
+.metric { padding: 16px; }
+.metric-label { font-size: 11px; color: #64748b; font-weight: bold; }
+.metric-value { font-size: 26px; font-weight: bold; margin-top: 8px; overflow-wrap: anywhere; }
 
-    .badge {
-      border: 1px solid #435770;
-      border-radius: 30px;
-      padding: 9px 13px;
-      color: #e5edf7;
-      font-size: 12px;
-    }
+.maps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
 
-    main {
-      max-width: 1800px;
-      margin: auto;
-      padding: 22px;
-    }
+.panel { overflow: hidden; min-width: 0; }
+.panel-head { padding: 16px; border-bottom: 1px solid #dbe3ed; }
+.panel-head h2 { font-size: 17px; margin: 0 0 8px; }
+.panel-head p { font-size: 12px; line-height: 1.5; color: #64748b; margin: 0; }
 
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
+.map {
+  width: 100%;
+  height: 560px;
+  min-height: 400px;
+  background: #dce8ef;
+  position: relative;
+}
 
-    button {
-      height: 40px;
-      border: 0;
-      border-radius: 8px;
-      padding: 0 18px;
-      background: var(--blue);
-      color: white;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 14px;
+  font-size: 12px;
+  border-top: 1px solid #dbe3ed;
+}
 
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
-    }
+.heat-gradient {
+  width: 180px;
+  height: 11px;
+  border-radius: 8px;
+  background: linear-gradient(to right, #313695, #4575b4, #74add1, #ffffbf, #fdae61, #f46d43, #a50026);
+}
 
-    .metric {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 17px 19px;
-      min-width: 0;
-    }
+.status { margin-top: 16px; padding: 14px; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+#error { color: #b91c1c; white-space: pre-wrap; }
+button { padding: 11px 16px; border: 0; border-radius: 7px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; margin-bottom: 16px; }
+button:disabled { opacity: .6; }
+.note { color: #64748b; font-size: 11px; line-height: 1.7; margin-top: 14px; }
 
-    .metric-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      font-weight: 800;
-      color: var(--muted);
-    }
+@media (max-width: 950px) {
+  .maps { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .map { height: 480px; }
+}
 
-    .metric-value {
-      font-size: clamp(23px, 3vw, 31px);
-      font-weight: 800;
-      margin-top: 9px;
-      overflow-wrap: anywhere;
-    }
-
-    .metric-note {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 5px;
-    }
-
-    .maps-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .map-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      min-width: 0;
-    }
-
-    .map-heading {
-      padding: 17px 18px 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .map-heading h2 {
-      font-size: 16px;
-      margin: 0;
-    }
-
-    .map-heading p {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-      margin: 7px 0 0;
-    }
-
-    .map-tag {
-      display: inline-block;
-      margin-top: 10px;
-      background: #edf4ff;
-      color: #2459a9;
-      border-radius: 5px;
-      padding: 5px 8px;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .map {
-      width: 100%;
-      height: 550px;
-      min-height: 390px;
-      background: #e8edf2;
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 15px;
-      padding: 14px 17px;
-      border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: #46566b;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .heat-gradient {
-      height: 10px;
-      width: 180px;
-      border-radius: 8px;
-      background: linear-gradient(
-        to right,
-        #313695, #4575b4, #74add1, #ffffbf,
-        #fdae61, #f46d43, #a50026
-      );
-    }
-
-    .heat-scale {
-      display: flex;
-      justify-content: space-between;
-      width: 180px;
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 5px;
-    }
-
-    .status-panel {
-      margin-top: 18px;
-      padding: 14px 16px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: white;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
-
-    #status {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    #error {
-      color: #b91c1c;
-      white-space: pre-wrap;
-    }
-
-    .method-note {
-      margin-top: 15px;
-      font-size: 11px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-
-    @media (max-width: 1000px) {
-      .maps-grid { grid-template-columns: 1fr; }
-      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .map { height: 55vh; min-height: 350px; }
-    }
-
-    @media (max-width: 520px) {
-      header { padding: 20px 16px; }
-      main { padding: 14px; }
-      .metrics { gap: 9px; }
-      .metric { padding: 13px; }
-    }
-  </style>
+@media (max-width: 500px) {
+  main { padding: 10px; }
+  .metrics { gap: 8px; }
+  .metric { padding: 12px; }
+  .metric-value { font-size: 22px; }
+}
+</style>
 </head>
 
 <body>
 <header>
-  <div class="header-content">
-    <div>
-      <div class="eyebrow">Monitoramento ambiental · América do Sul</div>
-      <h1>Focos de calor detectados pelo Aqua</h1>
-      <div class="subtitle">
-        Dados do INPE · Focos nas últimas 24 horas e densidade nos últimos 60 minutos
-      </div>
-    </div>
-    <div class="badge">Satélite de referência: AQUA</div>
-  </div>
+  <h1>Monitoramento de focos de calor</h1>
+  <p>Satélite de referência: Aqua · INPE · América do Sul</p>
+  <p>Focos das últimas 24 horas e densidade espacial dos últimos 60 minutos.</p>
 </header>
 
 <main>
-  <div class="toolbar">
-    <button id="refreshButton" type="button">Atualizar dados</button>
-  </div>
+  <button id="refreshButton">Atualizar dados</button>
 
   <section class="metrics">
     <div class="metric">
-      <div class="metric-label">Focos Aqua · últimas 24 h</div>
+      <div class="metric-label">Aqua · últimas 24 horas</div>
       <div class="metric-value" id="total24">—</div>
-      <div class="metric-note">Detecções únicas após filtragem</div>
     </div>
-
     <div class="metric">
-      <div class="metric-label">Focos Aqua · últimos 60 min</div>
+      <div class="metric-label">Aqua · últimos 60 minutos</div>
       <div class="metric-value" id="total60">—</div>
-      <div class="metric-note">Pontos usados na superfície de densidade</div>
     </div>
-
     <div class="metric">
-      <div class="metric-label">Focos Aqua · últimos 10 min</div>
+      <div class="metric-label">Aqua · últimos 10 minutos</div>
       <div class="metric-value" id="total10">—</div>
-      <div class="metric-note">Detecções mais recentes disponíveis</div>
     </div>
-
     <div class="metric">
       <div class="metric-label">Detecção mais recente</div>
-      <div class="metric-value" id="latestTime" style="font-size:18px">—</div>
-      <div class="metric-note" id="latestSatellite">Aguardando dados</div>
+      <div class="metric-value" id="latestTime" style="font-size:17px">—</div>
     </div>
   </section>
 
-  <section class="maps-grid">
-    <article class="map-card">
-      <div class="map-heading">
-        <h2>01 · Distribuição dos focos Aqua</h2>
-        <p>
-          Pontos das últimas 24 horas coloridos pelo tempo transcorrido
-          desde a detecção.
-        </p>
-        <span class="map-tag">ÚLTIMAS 24 HORAS</span>
+  <section class="maps">
+    <article class="panel">
+      <div class="panel-head">
+        <h2>01 · Focos individuais</h2>
+        <p>Detecções Aqua nas últimas 24 horas, coloridas por idade.</p>
       </div>
-
       <div id="mapFocos" class="map"></div>
-
       <div class="legend">
-        <div class="legend-item">
-          <span class="legend-dot" style="background:#dc2626"></span>0–10 min
-        </div>
-        <div class="legend-item">
-          <span class="legend-dot" style="background:#f97316"></span>10–60 min
-        </div>
-        <div class="legend-item">
-          <span class="legend-dot" style="background:#eab308"></span>1–3 h
-        </div>
-        <div class="legend-item">
-          <span class="legend-dot" style="background:#16a34a"></span>3–6 h
-        </div>
-        <div class="legend-item">
-          <span class="legend-dot" style="background:#2563eb"></span>6–24 h
-        </div>
+        <span><i class="dot" style="background:#dc2626"></i>0–10 min</span>
+        <span><i class="dot" style="background:#f97316"></i>10–60 min</span>
+        <span><i class="dot" style="background:#eab308"></i>1–3 h</span>
+        <span><i class="dot" style="background:#16a34a"></i>3–6 h</span>
+        <span><i class="dot" style="background:#2563eb"></i>6–24 h</span>
       </div>
     </article>
 
-    <article class="map-card">
-      <div class="map-heading">
-        <h2>02 · Densidade espacial dos focos Aqua</h2>
-        <p>
-          Superfície suavizada calculada apenas com os focos Aqua
-          detectados nos últimos 60 minutos.
-        </p>
-        <span class="map-tag">ÚLTIMOS 60 MINUTOS</span>
+    <article class="panel">
+      <div class="panel-head">
+        <h2>02 · Densidade espacial</h2>
+        <p>Superfície suavizada baseada somente nos focos Aqua dos últimos 60 minutos.</p>
       </div>
-
       <div id="mapDensidade" class="map"></div>
-
       <div class="legend">
-        <div>
-          <div class="heat-gradient"></div>
-          <div class="heat-scale">
-            <span>Menor densidade relativa</span>
-            <span>Maior densidade</span>
-          </div>
-        </div>
+        <span>
+          <i class="heat-gradient"></i>
+          Menor → maior densidade relativa
+        </span>
       </div>
     </article>
   </section>
 
-  <section class="status-panel">
-    <div><strong>Status:</strong> <span id="status">Preparando consulta...</span></div>
+  <section class="status">
+    <div><strong>Status:</strong> <span id="status">Inicializando mapas...</span></div>
     <div id="lastUpdate">Última atualização: —</div>
     <div id="fileInfo">Arquivos consultados: —</div>
     <div id="error"></div>
   </section>
 
-  <div class="method-note">
-    <strong>Fonte:</strong>
-    <a href="https://data.inpe.br/queimadas/dados-abertos/#da-focos"
-       target="_blank" rel="noopener noreferrer">INPE · Dados abertos de focos</a>.
-    O mapa de densidade é uma superfície suavizada da distribuição dos pontos,
-    não um raster oficial, uma estimativa de área queimada ou uma medida direta
-    da intensidade do fogo. Os resultados dependem da disponibilidade e do
-    horário de atualização dos arquivos de origem.
-  </div>
+  <p class="note">
+    Fonte: <a href="https://data.inpe.br/queimadas/dados-abertos/#da-focos" target="_blank" rel="noopener noreferrer">INPE, dados abertos de focos</a>.
+    A camada de densidade representa a concentração espacial relativa dos pontos,
+    não um raster oficial, área queimada ou intensidade direta do fogo.
+  </p>
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -403,83 +186,107 @@
 <script>
 "use strict";
 
-// ============================================================
+// ------------------------------------------------------------
 // CONFIGURAÇÕES
-// ============================================================
+// ------------------------------------------------------------
 
 const BASE_URL =
   "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/";
 
-const JANELA_24H = 24 * 60 * 60 * 1000;
-const JANELA_60MIN = 60 * 60 * 1000;
-const JANELA_10MIN = 10 * 60 * 1000;
-const INTERVALO_ATUALIZACAO = 10 * 60 * 1000;
+const MS_10MIN = 10 * 60 * 1000;
+const MS_60MIN = 60 * 60 * 1000;
+const MS_24H = 24 * 60 * 60 * 1000;
 
-const MAX_ARQUIVOS = 180;
-const CONCORRENCIA = 8;
+const REFRESH_MS = 10 * 60 * 1000;
+const MAX_FILES = 180;
+const CONCURRENCY = 8;
 
-// Limites geográficos abrangendo a América do Sul.
-const LIMITES_AMERICA_SUL = L.latLngBounds(
-  L.latLng(-60, -90),
-  L.latLng(15, -25)
-);
+// Centro e zoom são definidos diretamente, sem depender dos focos.
+// O enquadramento inclui o continente sul-americano.
+const SOUTH_AMERICA_CENTER = [-20, -60];
+const SOUTH_AMERICA_ZOOM = 3;
 
-let mapaFocos;
-let mapaDensidade;
-let camadaFocos;
-let camadaDensidade;
-let focosBrutos = [];
-let atualizando = false;
+let mapFocos;
+let mapDensidade;
+let markersLayer;
+let heatLayer;
+let focos = [];
+let busy = false;
 
 const $ = id => document.getElementById(id);
 
-// ============================================================
-// MAPAS: ENQUADRAMENTO FIXO DA AMÉRICA DO SUL
-// ============================================================
+// ------------------------------------------------------------
+// MAPAS
+// ------------------------------------------------------------
 
 function criarMapa(id) {
   const map = L.map(id, {
-    preferCanvas: true,
-    zoomControl: true,
+    center: SOUTH_AMERICA_CENTER,
+    zoom: SOUTH_AMERICA_ZOOM,
+    zoomSnap: 0.5,
     minZoom: 2,
     maxZoom: 12,
+    preferCanvas: true,
     worldCopyJump: false
   });
 
-  L.tileLayer(
+  // A camada de fundo é independente dos dados de focos.
+  const carto = L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
     {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
       subdomains: "abcd",
       maxZoom: 19,
-      noWrap: true
+      noWrap: true,
+      attribution: "&copy; OpenStreetMap &copy; CARTO"
     }
-  ).addTo(map);
+  );
+
+  // Alternativa caso o servidor CARTO não carregue os tiles.
+  const osm = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom: 19,
+      noWrap: true,
+      attribution: "&copy; OpenStreetMap contributors"
+    }
+  );
+
+  let fallbackAtivado = false;
+
+  carto.on("tileerror", () => {
+    if (!fallbackAtivado) {
+      fallbackAtivado = true;
+      if (map.hasLayer(carto)) map.removeLayer(carto);
+      osm.addTo(map);
+    }
+  });
+
+  carto.addTo(map);
+
+  // Mantém o enquadramento inicial mesmo se não houver dados.
+  map.setView(SOUTH_AMERICA_CENTER, SOUTH_AMERICA_ZOOM);
 
   return map;
 }
 
-function enquadrarAmericaSul(map) {
-  map.invalidateSize(true);
-
-  map.fitBounds(LIMITES_AMERICA_SUL, {
-    padding: [12, 12],
-    maxZoom: 4,
+function fixarEnquadramento(map) {
+  map.invalidateSize({ pan: false, animate: false });
+  map.setView(SOUTH_AMERICA_CENTER, SOUTH_AMERICA_ZOOM, {
     animate: false
   });
 }
 
 function iniciarMapas() {
-  mapaFocos = criarMapa("mapFocos");
-  mapaDensidade = criarMapa("mapDensidade");
+  mapFocos = criarMapa("mapFocos");
+  mapDensidade = criarMapa("mapDensidade");
 
-  camadaFocos = L.layerGroup().addTo(mapaFocos);
+  markersLayer = L.layerGroup().addTo(mapFocos);
 
-  camadaDensidade = L.heatLayer([], {
+  heatLayer = L.heatLayer([], {
     radius: 27,
     blur: 24,
-    maxZoom: 9,
     minOpacity: 0.22,
+    maxZoom: 9,
     max: 1,
     gradient: {
       0.10: "#313695",
@@ -490,27 +297,26 @@ function iniciarMapas() {
       0.85: "#f46d43",
       1.00: "#a50026"
     }
-  }).addTo(mapaDensidade);
+  }).addTo(mapDensidade);
 
-  // Aguarda o navegador calcular o tamanho real dos painéis.
+  // Refaz o dimensionamento depois que o navegador renderizar os painéis.
   requestAnimationFrame(() => {
-    enquadrarAmericaSul(mapaFocos);
-    enquadrarAmericaSul(mapaDensidade);
+    fixarEnquadramento(mapFocos);
+    fixarEnquadramento(mapDensidade);
   });
 
-  // Recalcula o tamanho e o enquadramento quando a tela muda.
   window.addEventListener("resize", () => {
-    enquadrarAmericaSul(mapaFocos);
-    enquadrarAmericaSul(mapaDensidade);
+    mapFocos.invalidateSize({ pan: false });
+    mapDensidade.invalidateSize({ pan: false });
   });
 }
 
-// ============================================================
-// NORMALIZAÇÃO DOS CAMPOS CSV
-// ============================================================
+// ------------------------------------------------------------
+// CAMPOS, SATÉLITE E DATA
+// ------------------------------------------------------------
 
-function normalizarChave(valor) {
-  return String(valor ?? "")
+function norm(s) {
+  return String(s ?? "")
     .replace(/^\uFEFF/, "")
     .trim()
     .toLowerCase()
@@ -519,103 +325,77 @@ function normalizarChave(valor) {
     .replace(/[^a-z0-9]/g, "");
 }
 
-function encontrarCampo(obj, nomes) {
-  const mapa = new Map(
-    Object.keys(obj || {}).map(chave => [
-      normalizarChave(chave),
-      chave
-    ])
+function campo(obj, nomes) {
+  const keys = new Map(
+    Object.keys(obj || {}).map(k => [norm(k), k])
   );
 
   for (const nome of nomes) {
-    const chave = mapa.get(normalizarChave(nome));
-
-    if (chave !== undefined && obj[chave] != null) {
-      const valor = String(obj[chave]).trim();
-      if (valor !== "") return obj[chave];
+    const k = keys.get(norm(nome));
+    if (k !== undefined && obj[k] != null && String(obj[k]).trim() !== "") {
+      return obj[k];
     }
   }
 
   return null;
 }
 
-function numeroValido(valor) {
-  if (valor === null || valor === undefined || valor === "") return null;
-
-  const numero = Number(String(valor).trim().replace(",", "."));
-  return Number.isFinite(numero) ? numero : null;
+function num(v) {
+  if (v == null || v === "") return null;
+  const n = Number(String(v).trim().replace(",", "."));
+  return Number.isFinite(n) ? n : null;
 }
 
-// ============================================================
-// FILTRO DO SATÉLITE AQUA
-// ============================================================
+function isAqua(v) {
+  const s = norm(v);
 
-function ehAqua(valor) {
-  const sat = normalizarChave(valor);
+  // Não aceitar registros identificados como TERRA.
+  if (!s || s.includes("terra")) return false;
 
-  // Aceita AQUA, MODIS_AQUA e identificações como AQUA_M-T.
-  // Exclui expressamente referências a TERRA.
-  if (sat.includes("terra")) return false;
-
-  return sat === "aqua" ||
-         sat.includes("modisaqua") ||
-         sat.includes("aquam") ||
-         sat.startsWith("aqua") ||
-         sat.includes("aqua");
+  // Inclui nomes usuais do Aqua/MODIS Aqua.
+  return s.includes("aqua") || s.includes("modisa");
 }
 
-// ============================================================
-// DATAS E HORÁRIOS
-// ============================================================
+function parseDate(v) {
+  if (v == null || !String(v).trim()) return null;
 
-function interpretarData(valor) {
-  if (valor === null || valor === undefined) return null;
+  const s = String(v).trim();
 
-  const texto = String(valor).trim();
-  if (!texto) return null;
-
-  // Datas sem fuso são interpretadas como UTC/GMT.
-  const m = texto.match(
+  // Campo de data/hora sem fuso: interpretar como GMT/UTC.
+  const m = s.match(
     /^(\d{4})[-/](\d{2})[-/](\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/
   );
 
   if (m) {
-    const [, ano, mes, dia, hora, minuto, segundo = "0"] = m;
+    const [, y, mo, d, h, mi, se = "0"] = m;
 
     return Date.UTC(
-      Number(ano),
-      Number(mes) - 1,
-      Number(dia),
-      Number(hora),
-      Number(minuto),
-      Number(segundo)
+      Number(y), Number(mo) - 1, Number(d),
+      Number(h), Number(mi), Number(se)
     );
   }
 
-  const data = new Date(texto);
-  return Number.isNaN(data.getTime()) ? null : data.getTime();
+  const t = new Date(s).getTime();
+  return Number.isFinite(t) ? t : null;
 }
 
-function timestampDoArquivo(nome) {
-  const m = nome.match(
+function fileTimestamp(filename) {
+  const m = filename.match(
     /focos_10min_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})\.csv$/i
   );
 
   if (!m) return null;
 
-  const [, ano, mes, dia, hora, minuto] = m;
+  const [, y, mo, d, h, mi] = m;
 
   return Date.UTC(
-    Number(ano),
-    Number(mes) - 1,
-    Number(dia),
-    Number(hora),
-    Number(minuto)
+    Number(y), Number(mo) - 1, Number(d),
+    Number(h), Number(mi)
   );
 }
 
-function formatarData(timestamp) {
-  if (!Number.isFinite(timestamp)) return "—";
+function formatDate(t) {
+  if (!Number.isFinite(t)) return "—";
 
   return new Intl.DateTimeFormat("pt-BR", {
     timeZone: "America/Sao_Paulo",
@@ -625,216 +405,31 @@ function formatarData(timestamp) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit"
-  }).format(new Date(timestamp));
+  }).format(new Date(t));
 }
 
-function idadeTexto(ms) {
-  const minutos = Math.max(0, Math.floor(ms / 60000));
+function ageLabel(ms) {
+  const minutes = Math.max(0, Math.floor(ms / 60000));
 
-  if (minutos < 1) return "Menos de 1 minuto";
-  if (minutos < 60) return `${minutos} min`;
+  if (minutes < 1) return "Menos de 1 minuto";
+  if (minutes < 60) return `${minutes} min`;
 
-  const h = Math.floor(minutos / 60);
-  const resto = minutos % 60;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
 
-  return resto ? `${h} h ${resto} min` : `${h} h`;
+  return rest ? `${hours} h ${rest} min` : `${hours} h`;
 }
 
-function corPorIdade(ms) {
-  if (ms <= JANELA_10MIN) return "#dc2626";
-  if (ms <= 60 * 60 * 1000) return "#f97316";
+function ageColor(ms) {
+  if (ms <= MS_10MIN) return "#dc2626";
+  if (ms <= MS_60MIN) return "#f97316";
   if (ms <= 3 * 60 * 60 * 1000) return "#eab308";
   if (ms <= 6 * 60 * 60 * 1000) return "#16a34a";
   return "#2563eb";
 }
 
-// ============================================================
-// LEITURA DA LISTAGEM DE ARQUIVOS
-// ============================================================
-
-async function listarArquivos() {
-  const resposta = await fetch(BASE_URL, { cache: "no-store" });
-
-  if (!resposta.ok) {
-    throw new Error(`Servidor INPE: HTTP ${resposta.status}`);
-  }
-
-  const html = await resposta.text();
-  const encontrados = new Set();
-
-  const regex = /focos_10min_\d{8}_\d{4}\.csv/gi;
-  let m;
-
-  while ((m = regex.exec(html)) !== null) {
-    encontrados.add(m[0]);
-  }
-
-  const arquivos = [...encontrados]
-    .map(nome => ({ nome, timestamp: timestampDoArquivo(nome) }))
-    .filter(a => a.timestamp !== null)
-    .sort((a, b) => b.timestamp - a.timestamp)
-    .slice(0, MAX_ARQUIVOS);
-
-  if (!arquivos.length) {
-    throw new Error(
-      "Não foram encontrados arquivos focos_10min_YYYYMMDD_HHMM.csv. " +
-      "Verifique a listagem do servidor do INPE."
-    );
-  }
-
-  return arquivos;
-}
-
-// ============================================================
-// CONVERSÃO DAS LINHAS CSV
-// ============================================================
-
-function normalizarFoco(linha, arquivo) {
-  const lat = numeroValido(encontrarCampo(linha, ["latitude", "lat"]));
-  const lon = numeroValido(encontrarCampo(linha, [
-    "longitude", "lon", "long", "lng"
-  ]));
-
-  if (
-    lat === null || lon === null ||
-    lat < -90 || lat > 90 ||
-    lon < -180 || lon > 180
-  ) {
-    return null;
-  }
-
-  const satelite = String(encontrarCampo(linha, [
-    "satelite", "satellite", "satelite_nome", "satellite_name"
-  ]) ?? "").trim();
-
-  // O dashboard usa exclusivamente detecções Aqua.
-  if (!satelite || !ehAqua(satelite)) return null;
-
-  let timestamp = interpretarData(encontrarCampo(linha, [
-    "data_hora_gmt",
-    "datahora_gmt",
-    "data_hora_utc",
-    "datahora_utc",
-    "data_hora",
-    "datahora",
-    "datetime",
-    "date_time"
-  ]));
-
-  if (timestamp === null) {
-    const data = encontrarCampo(linha, ["data", "date"]);
-    const hora = encontrarCampo(linha, [
-      "hora_gmt", "hora_utc", "hora", "time"
-    ]);
-
-    if (data && hora) {
-      timestamp = interpretarData(`${data} ${hora}`);
-    }
-  }
-
-  if (timestamp === null) timestamp = arquivo.timestamp;
-  if (!Number.isFinite(timestamp)) return null;
-
-  return {
-    lat,
-    lon,
-    timestamp,
-    satelite,
-    municipio: String(encontrarCampo(linha, [
-      "municipio", "municipality"
-    ]) ?? "").trim(),
-    estado: String(encontrarCampo(linha, [
-      "estado", "uf", "state"
-    ]) ?? "").trim(),
-    bioma: String(encontrarCampo(linha, [
-      "bioma", "biome"
-    ]) ?? "").trim(),
-    pais: String(encontrarCampo(linha, [
-      "pais", "country"
-    ]) ?? "").trim(),
-    frp: numeroValido(encontrarCampo(linha, ["frp"]))
-  };
-}
-
-async function baixarCSV(arquivo) {
-  const resposta = await fetch(
-    BASE_URL + encodeURIComponent(arquivo.nome),
-    { cache: "no-store" }
-  );
-
-  if (!resposta.ok) {
-    throw new Error(`${arquivo.nome}: HTTP ${resposta.status}`);
-  }
-
-  const texto = await resposta.text();
-  if (!texto.trim()) return [];
-
-  const resultado = Papa.parse(texto, {
-    header: true,
-    skipEmptyLines: "greedy",
-    transformHeader: h => h.replace(/^\uFEFF/, "").trim()
-  });
-
-  return (resultado.data || [])
-    .map(linha => normalizarFoco(linha, arquivo))
-    .filter(Boolean);
-}
-
-async function baixarEmLotes(arquivos) {
-  const todos = [];
-  let falhas = 0;
-  let concluidos = 0;
-
-  for (let i = 0; i < arquivos.length; i += CONCORRENCIA) {
-    const lote = arquivos.slice(i, i + CONCORRENCIA);
-
-    const resultados = await Promise.all(lote.map(async arquivo => {
-      try {
-        return await baixarCSV(arquivo);
-      } catch (erro) {
-        falhas++;
-        console.warn("Falha no arquivo:", arquivo.nome, erro);
-        return [];
-      } finally {
-        concluidos++;
-        $("status").textContent =
-          `Lendo arquivos: ${concluidos}/${arquivos.length}`;
-      }
-    }));
-
-    resultados.forEach(arr => todos.push(...arr));
-  }
-
-  return { todos, falhas };
-}
-
-// ============================================================
-// DEDUPLICAÇÃO
-// ============================================================
-
-function deduplicarFocos(focos) {
-  const unicos = new Map();
-
-  for (const foco of focos) {
-    const chave = [
-      foco.lat.toFixed(5),
-      foco.lon.toFixed(5),
-      foco.timestamp,
-      normalizarChave(foco.satelite)
-    ].join("|");
-
-    if (!unicos.has(chave)) unicos.set(chave, foco);
-  }
-
-  return [...unicos.values()];
-}
-
-// ============================================================
-// DESENHO DOS FOCOS NAS ÚLTIMAS 24 HORAS
-// ============================================================
-
-function escaparHTML(valor) {
-  return String(valor).replace(/[&<>"']/g, c => ({
+function escapeHTML(v) {
+  return String(v).replace(/[&<>"']/g, c => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -843,137 +438,271 @@ function escaparHTML(valor) {
   })[c]);
 }
 
-function desenharFocos(focos) {
-  camadaFocos.clearLayers();
+// ------------------------------------------------------------
+// LISTAGEM E DOWNLOAD DOS CSVs
+// ------------------------------------------------------------
 
-  const agora = Date.now();
+async function listarArquivos() {
+  const response = await fetch(BASE_URL, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Servidor INPE: HTTP ${response.status}`);
+  }
+
+  const html = await response.text();
+  const names = new Set();
+  const regex = /focos_10min_\d{8}_\d{4}\.csv/gi;
+
+  let m;
+  while ((m = regex.exec(html)) !== null) names.add(m[0]);
+
+  const files = [...names]
+    .map(nome => ({ nome, timestamp: fileTimestamp(nome) }))
+    .filter(f => f.timestamp !== null)
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .slice(0, MAX_FILES);
+
+  if (!files.length) {
+    throw new Error("Não foi encontrada a listagem dos CSVs de 10 minutos do INPE.");
+  }
+
+  return files;
+}
+
+function normalizarLinha(row, file) {
+  const lat = num(campo(row, ["latitude", "lat"]));
+  const lon = num(campo(row, ["longitude", "lon", "long", "lng"]));
+
+  if (
+    lat === null || lon === null ||
+    lat < -90 || lat > 90 || lon < -180 || lon > 180
+  ) return null;
+
+  const satellite = String(campo(row, [
+    "satelite", "satellite", "satelite_nome", "satellite_name"
+  ]) ?? "").trim();
+
+  // Filtro exclusivo do satélite Aqua.
+  if (!isAqua(satellite)) return null;
+
+  let timestamp = parseDate(campo(row, [
+    "data_hora_gmt", "datahora_gmt",
+    "data_hora_utc", "datahora_utc",
+    "data_hora", "datahora", "datetime", "date_time"
+  ]));
+
+  if (timestamp === null) {
+    const d = campo(row, ["data", "date"]);
+    const h = campo(row, ["hora_gmt", "hora_utc", "hora", "time"]);
+
+    if (d && h) timestamp = parseDate(`${d} ${h}`);
+  }
+
+  // Usa o timestamp do arquivo apenas como último recurso.
+  if (timestamp === null) timestamp = file.timestamp;
+  if (!Number.isFinite(timestamp)) return null;
+
+  return {
+    lat,
+    lon,
+    timestamp,
+    satellite,
+    municipio: String(campo(row, ["municipio", "municipality"]) ?? "").trim(),
+    uf: String(campo(row, ["estado", "uf", "state"]) ?? "").trim(),
+    pais: String(campo(row, ["pais", "country"]) ?? "").trim(),
+    bioma: String(campo(row, ["bioma", "biome"]) ?? "").trim(),
+    frp: num(campo(row, ["frp"]))
+  };
+}
+
+async function baixarCSV(file) {
+  const response = await fetch(
+    BASE_URL + encodeURIComponent(file.nome),
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) throw new Error(`${file.nome}: HTTP ${response.status}`);
+
+  const csv = await response.text();
+  if (!csv.trim()) return [];
+
+  const parsed = Papa.parse(csv, {
+    header: true,
+    skipEmptyLines: "greedy",
+    transformHeader: h => h.replace(/^\uFEFF/, "").trim()
+  });
+
+  return (parsed.data || [])
+    .map(row => normalizarLinha(row, file))
+    .filter(Boolean);
+}
+
+async function baixarLotes(files) {
+  const all = [];
+  let failed = 0;
+  let done = 0;
+
+  for (let i = 0; i < files.length; i += CONCURRENCY) {
+    const batch = files.slice(i, i + CONCURRENCY);
+
+    const results = await Promise.all(batch.map(async file => {
+      try {
+        return await baixarCSV(file);
+      } catch (e) {
+        failed++;
+        console.warn("Falha ao baixar:", file.nome, e);
+        return [];
+      } finally {
+        done++;
+        $("status").textContent = `Lendo arquivos ${done}/${files.length}...`;
+      }
+    }));
+
+    results.forEach(rows => all.push(...rows));
+  }
+
+  return { all, failed };
+}
+
+// ------------------------------------------------------------
+// DEDUPLICAÇÃO
+// ------------------------------------------------------------
+
+function deduplicate(rows) {
+  const unique = new Map();
+
+  for (const f of rows) {
+    const key = [
+      f.lat.toFixed(5),
+      f.lon.toFixed(5),
+      f.timestamp,
+      norm(f.satellite)
+    ].join("|");
+
+    if (!unique.has(key)) unique.set(key, f);
+  }
+
+  return [...unique.values()];
+}
+
+// ------------------------------------------------------------
+// MAPA DE PONTOS: ÚLTIMAS 24 HORAS
+// ------------------------------------------------------------
+
+function drawFocos(rows) {
+  markersLayer.clearLayers();
+
+  const now = Date.now();
   const renderer = L.canvas({ padding: 0.5 });
 
-  for (const foco of focos) {
-    const idade = agora - foco.timestamp;
-    const cor = corPorIdade(idade);
+  for (const f of rows) {
+    const age = now - f.timestamp;
+    const color = ageColor(age);
 
-    const marcador = L.circleMarker([foco.lat, foco.lon], {
+    const marker = L.circleMarker([f.lat, f.lon], {
       renderer,
       radius: 4,
-      color: cor,
+      color,
       weight: 1,
-      opacity: 0.95,
-      fillColor: cor,
-      fillOpacity: 0.78
+      fillColor: color,
+      fillOpacity: 0.8
     });
 
-    const local = [
-      foco.municipio,
-      foco.estado,
-      foco.pais
-    ].filter(Boolean).join(", ");
+    const location = [f.municipio, f.uf, f.pais]
+      .filter(Boolean).join(", ");
 
     const popup = [
-      `<strong>Satélite:</strong> ${escaparHTML(foco.satelite)}`,
-      `<strong>Detecção:</strong> ${formatarData(foco.timestamp)}`,
-      `<strong>Idade:</strong> ${idadeTexto(idade)}`,
-      `<strong>Coordenadas:</strong> ${foco.lat.toFixed(4)}, ${foco.lon.toFixed(4)}`,
-      local ? `<strong>Local:</strong> ${escaparHTML(local)}` : "",
-      foco.bioma ? `<strong>Bioma:</strong> ${escaparHTML(foco.bioma)}` : "",
-      foco.frp !== null ? `<strong>FRP:</strong> ${foco.frp}` : ""
+      `<b>Satélite:</b> ${escapeHTML(f.satellite)}`,
+      `<b>Data/hora:</b> ${formatDate(f.timestamp)}`,
+      `<b>Idade:</b> ${ageLabel(age)}`,
+      `<b>Coordenadas:</b> ${f.lat.toFixed(4)}, ${f.lon.toFixed(4)}`,
+      location ? `<b>Local:</b> ${escapeHTML(location)}` : "",
+      f.bioma ? `<b>Bioma:</b> ${escapeHTML(f.bioma)}` : "",
+      f.frp !== null ? `<b>FRP:</b> ${f.frp}` : ""
     ].filter(Boolean).join("<br>");
 
-    marcador.bindPopup(popup);
-    marcador.addTo(camadaFocos);
+    marker.bindPopup(popup).addTo(markersLayer);
   }
 }
 
-// ============================================================
-// DENSIDADE: EXCLUSIVAMENTE OS ÚLTIMOS 60 MINUTOS
-// ============================================================
+// ------------------------------------------------------------
+// DENSIDADE: SOMENTE OS ÚLTIMOS 60 MINUTOS
+// ------------------------------------------------------------
 
-function desenharDensidade(focos24h) {
-  const agora = Date.now();
+function drawDensity(rows) {
+  const now = Date.now();
 
-  const focos60min = focos24h.filter(foco => {
-    const idade = agora - foco.timestamp;
-    return idade >= 0 && idade <= JANELA_60MIN;
+  const recent = rows.filter(f => {
+    const age = now - f.timestamp;
+    return age >= 0 && age <= MS_60MIN;
   });
 
-  camadaDensidade.setLatLngs(
-    focos60min.map(foco => [foco.lat, foco.lon, 1])
+  heatLayer.setLatLngs(
+    recent.map(f => [f.lat, f.lon, 1])
   );
 
-  return focos60min;
+  return recent;
 }
 
-// ============================================================
-// INDICADORES E RENDERIZAÇÃO
-// ============================================================
+// ------------------------------------------------------------
+// INDICADORES
+// ------------------------------------------------------------
 
-function atualizarIndicadores(focos24h) {
-  const agora = Date.now();
+function updateMetrics(rows) {
+  const now = Date.now();
 
-  const focos60 = focos24h.filter(f => {
-    const idade = agora - f.timestamp;
-    return idade >= 0 && idade <= JANELA_60MIN;
+  const last60 = rows.filter(f => {
+    const age = now - f.timestamp;
+    return age >= 0 && age <= MS_60MIN;
   });
 
-  const focos10 = focos24h.filter(f => {
-    const idade = agora - f.timestamp;
-    return idade >= 0 && idade <= JANELA_10MIN;
+  const last10 = rows.filter(f => {
+    const age = now - f.timestamp;
+    return age >= 0 && age <= MS_10MIN;
   });
 
-  $("total24").textContent = focos24h.length.toLocaleString("pt-BR");
-  $("total60").textContent = focos60.length.toLocaleString("pt-BR");
-  $("total10").textContent = focos10.length.toLocaleString("pt-BR");
+  $("total24").textContent = rows.length.toLocaleString("pt-BR");
+  $("total60").textContent = last60.length.toLocaleString("pt-BR");
+  $("total10").textContent = last10.length.toLocaleString("pt-BR");
 
-  const recente = focos24h.reduce((maisNovo, foco) =>
-    !maisNovo || foco.timestamp > maisNovo.timestamp ? foco : maisNovo,
+  const latest = rows.reduce(
+    (best, f) => !best || f.timestamp > best.timestamp ? f : best,
     null
   );
 
-  $("latestTime").textContent = recente
-    ? formatarData(recente.timestamp)
+  $("latestTime").textContent = latest
+    ? formatDate(latest.timestamp)
     : "Sem dados";
-
-  $("latestSatellite").textContent = recente
-    ? `Satélite: ${recente.satelite}`
-    : "Nenhuma detecção Aqua nas últimas 24 horas";
 }
 
-function renderizar() {
-  const agora = Date.now();
+function render() {
+  const now = Date.now();
 
-  // Todos os registros já foram filtrados para o satélite Aqua.
-  const focos24h = focosBrutos.filter(foco => {
-    const idade = agora - foco.timestamp;
-    return idade >= 0 && idade <= JANELA_24H;
+  const rows24 = focos.filter(f => {
+    const age = now - f.timestamp;
+    return age >= 0 && age <= MS_24H;
   });
 
-  desenharFocos(focos24h);
-
-  const focos60 = desenharDensidade(focos24h);
-  atualizarIndicadores(focos24h);
+  drawFocos(rows24);
+  const rows60 = drawDensity(rows24);
+  updateMetrics(rows24);
 
   $("status").textContent =
-    `${focos24h.length.toLocaleString("pt-BR")} focos Aqua nas últimas 24 h; ` +
-    `${focos60.length.toLocaleString("pt-BR")} utilizados na densidade de 60 min.`;
+    `${rows24.length.toLocaleString("pt-BR")} focos Aqua nas últimas 24 h; ` +
+    `${rows60.length.toLocaleString("pt-BR")} usados na densidade de 60 min.`;
 
   $("lastUpdate").textContent =
-    `Última atualização: ${formatarData(Date.now())}`;
-
-  // Preserva o enquadramento da América do Sul após renderizar.
-  requestAnimationFrame(() => {
-    enquadrarAmericaSul(mapaFocos);
-    enquadrarAmericaSul(mapaDensidade);
-  });
+    `Última atualização: ${formatDate(Date.now())}`;
 }
 
-// ============================================================
-// CONSULTA E ATUALIZAÇÃO AUTOMÁTICA
-// ============================================================
+// ------------------------------------------------------------
+// ATUALIZAÇÃO
+// ------------------------------------------------------------
 
 async function atualizarDados() {
-  if (atualizando) return;
+  if (busy) return;
 
-  atualizando = true;
+  busy = true;
   $("refreshButton").disabled = true;
   $("refreshButton").textContent = "Atualizando...";
   $("error").textContent = "";
@@ -981,72 +710,71 @@ async function atualizarDados() {
   try {
     $("status").textContent = "Consultando arquivos do INPE...";
 
-    const arquivos = await listarArquivos();
+    const files = await listarArquivos();
 
     $("fileInfo").textContent =
-      `Arquivos encontrados: ${arquivos.length}. ` +
-      `Arquivo mais antigo da consulta: ` +
-      `${formatarData(arquivos[arquivos.length - 1].timestamp)}.`;
+      `Arquivos encontrados: ${files.length}; arquivo mais antigo consultado: ` +
+      formatDate(files[files.length - 1].timestamp);
 
-    const { todos, falhas } = await baixarEmLotes(arquivos);
-    const unicos = deduplicarFocos(todos);
-    const agora = Date.now();
+    const { all, failed } = await baixarLotes(files);
+    const unique = deduplicate(all);
+    const now = Date.now();
 
-    focosBrutos = unicos.filter(foco => {
-      const idade = agora - foco.timestamp;
-      return idade >= -5 * 60 * 1000 && idade <= JANELA_24H;
+    focos = unique.filter(f => {
+      const age = now - f.timestamp;
+      return age >= -5 * 60 * 1000 && age <= MS_24H;
     });
 
-    renderizar();
+    render();
 
-    if (falhas > 0) {
+    if (failed > 0) {
       $("error").textContent =
-        `${falhas} arquivo(s) não puderam ser lidos. ` +
-        "O dashboard usa os dados disponíveis.";
+        `${failed} arquivo(s) não puderam ser lidos. Os dados disponíveis foram usados.`;
     }
 
-    if (todos.length === 0) {
+    if (all.length === 0) {
       $("status").textContent =
-        "Nenhum foco Aqua foi interpretado. Confira as colunas de satélite, latitude, longitude e data dos CSVs.";
+        "Nenhum registro Aqua interpretado. Verifique a coluna do satélite e as datas dos CSVs.";
     }
 
     console.info("Diagnóstico Aqua", {
-      arquivosEncontrados: arquivos.length,
-      linhasAquaInterpretadas: todos.length,
-      focosUnicos: unicos.length,
-      focosNasUltimas24h: focosBrutos.length,
-      falhas
+      arquivos: files.length,
+      registrosAqua: all.length,
+      focosUnicos: unique.length,
+      focosNasUltimas24h: focos.length,
+      falhas: failed
     });
 
-  } catch (erro) {
-    console.error(erro);
-    $("status").textContent = "Falha na consulta aos dados.";
+  } catch (e) {
+    console.error(e);
+    $("status").textContent = "Erro ao consultar os dados do INPE.";
     $("error").textContent =
-      `${erro.message}\nVerifique a conexão e o Console do navegador.`;
+      `${e.message}\nO mapa-base continua disponível se os tiles carregarem.`;
 
   } finally {
-    atualizando = false;
+    busy = false;
     $("refreshButton").disabled = false;
     $("refreshButton").textContent = "Atualizar dados";
+
+    // O enquadramento não depende da consulta nem da quantidade de focos.
+    fixarEnquadramento(mapFocos);
+    fixarEnquadramento(mapDensidade);
   }
 }
 
-// ============================================================
+// ------------------------------------------------------------
 // INICIALIZAÇÃO
-// ============================================================
-
-$("refreshButton").addEventListener("click", atualizarDados);
+// ------------------------------------------------------------
 
 iniciarMapas();
+$("refreshButton").addEventListener("click", atualizarDados);
+
 atualizarDados();
+setInterval(atualizarDados, REFRESH_MS);
 
-// Consulta novamente a cada 10 minutos.
-setInterval(atualizarDados, INTERVALO_ATUALIZACAO);
-
-// Atualiza a idade dos focos e a janela móvel de 60 minutos
-// a cada minuto, mesmo entre as consultas ao servidor.
+// Atualiza as janelas temporais a cada minuto sem baixar CSVs novamente.
 setInterval(() => {
-  if (focosBrutos.length) renderizar();
+  if (focos.length) render();
 }, 60 * 1000);
 </script>
 </body>
