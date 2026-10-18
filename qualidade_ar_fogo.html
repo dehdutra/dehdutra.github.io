@@ -15,23 +15,25 @@
         .map-container { height: 450px; width: 100%; border-radius: 8px; }
         .card-custom { border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
         
-        /* Legenda Leaflet para o PurpleAir */
+        /* Legenda Leaflet com faixas de concentração PM2.5 */
         .info.legend {
-            background: white;
-            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 14px;
             font-size: 12px;
-            line-height: 18px;
+            line-height: 20px;
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            border-radius: 5px;
-            color: #333;
+            border-radius: 6px;
+            color: #222;
         }
         .info.legend i {
             width: 14px;
             height: 14px;
             float: left;
             margin-right: 8px;
-            opacity: 0.85;
+            margin-top: 3px;
+            opacity: 0.9;
             border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -104,7 +106,6 @@
             const resp = await fetch(PROXY + encodeURIComponent(urlDiretorio));
             const html = await resp.text();
             
-            // Procura links de arquivos .csv no HTML da pasta do INPE
             const regex = /href="([^"]+\.csv)"/g;
             let match;
             let arquivos = [];
@@ -116,7 +117,6 @@
             }
 
             if (arquivos.length > 0) {
-                // Pega o último arquivo da lista (mais recente)
                 const ultimoArquivo = arquivos[arquivos.length - 1];
                 return urlDiretorio + ultimoArquivo;
             }
@@ -164,17 +164,17 @@
         });
     }
 
-    // 3. Cores para o PM2.5 (PurpleAir) - MANTIDO
+    // 3. Cores para o PM2.5 (PurpleAir)
     function getCorPM25(pm) {
-        if (pm <= 12.0) return '#00e400';
-        if (pm <= 35.4) return '#ffff00';
-        if (pm <= 55.4) return '#ff7e00';
-        if (pm <= 150.4) return '#ff0000';
-        if (pm <= 250.4) return '#8f3f97';
-        return '#7e0023';
+        if (pm <= 12.0) return '#00e400'; // Boa (0.0 a 12.0)
+        if (pm <= 35.4) return '#ffff00'; // Moderada (12.1 a 35.4)
+        if (pm <= 55.4) return '#ff7e00'; // Ruim p/ grupos sensíveis (35.5 a 55.4)
+        if (pm <= 150.4) return '#ff0000'; // Insalubre (55.5 a 150.4)
+        if (pm <= 250.4) return '#8f3f97'; // Muito Insalubre (150.5 a 250.4)
+        return '#7e0023'; // Perigosa (> 250.5)
     }
 
-    // 4. Ler Pontos do PurpleAir (América do Sul) - MANTIDO
+    // 4. Ler Pontos do PurpleAir (América do Sul)
     async function carregarPurpleAir() {
         const url = "https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5_10minute&location_type=0&nwlng=-82.0&nwlat=13.0&selng=-32.0&selat=-56.0";
 
@@ -210,20 +210,27 @@
         }
     }
 
-    // Legenda PurpleAir - MANTIDO
+    // Legenda com Faixas Exatas de Concentração PM2.5
     function adicionarLegendaPurpleAir() {
         const legend = L.control({ position: 'bottomright' });
 
         legend.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
-            const faixas = [0, 12.1, 35.5, 55.5, 150.5, 250.5];
-            const rotulos = ['Boa', 'Moderada', 'Insalubre (Grupos Sensíveis)', 'Insalubre', 'Muito Insalubre', 'Perigosa'];
+            
+            const faixas = [
+                { cor: '#00e400', rotulo: '0 - 12.0 &micro;g/m&sup3; (Boa)' },
+                { cor: '#ffff00', rotulo: '12.1 - 35.4 &micro;g/m&sup3; (Moderada)' },
+                { cor: '#ff7e00', rotulo: '35.5 - 55.4 &micro;g/m&sup3; (Insalubre p/ Sensíveis)' },
+                { cor: '#ff0000', rotulo: '55.5 - 150.4 &micro;g/m&sup3; (Insalubre)' },
+                { cor: '#8f3f97', rotulo: '150.5 - 250.4 &micro;g/m&sup3; (Muito Insalubre)' },
+                { cor: '#7e0023', rotulo: '&gt; 250.5 &micro;g/m&sup3; (Perigosa)' }
+            ];
 
-            div.innerHTML = '<strong>PM2.5 (&micro;g/m&sup3;)</strong><br>';
-            for (let i = 0; i < faixas.length; i++) {
-                const cor = getCorPM25(faixas[i]);
-                div.innerHTML += `<i style="background:${cor}"></i> ${rotulos[i]}<br>`;
-            }
+            div.innerHTML = '<strong>Concentração PM2.5</strong><br>';
+            faixas.forEach(item => {
+                div.innerHTML += `<i style="background:${item.cor}"></i> ${item.rotulo}<br>`;
+            });
+
             return div;
         };
 
