@@ -54,7 +54,7 @@
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="card-title mb-0">Focos Diários (Satélites AQUA - INPE)</h5>
-                    <span id="status-focos" class="badge bg-secondary status-badge">Carregando dados...</span>
+                    <span id="status-focos" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
                 <p class="text-muted small">Pontos de calor detectados na América do Sul pelo satélite Aqua.</p>
                 <div id="mapa-focos" class="map-container"></div>
@@ -66,7 +66,7 @@
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="card-title mb-0">Qualidade do Ar (PurpleAir - PM2.5)</h5>
-                    <span id="status-purpleair" class="badge bg-secondary status-badge">Carregando dados...</span>
+                    <span id="status-purpleair" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
                 <p class="text-muted small">Sensores coloridos pela concentração de partículas PM2.5.</p>
                 <div id="mapa-purpleair" class="map-container"></div>
@@ -82,8 +82,7 @@
 
 <script>
     const PURPLEAIR_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
-    // Endpoint do CORS Proxy transparente para habilitar acesso dinâmico do INPE pelo navegador
-    const PROXY = "https://corsproxy.io/?";
+    const PROXY_CORS = "https://corsproxy.io/?";
 
     // 1. Inicializar os Mapas
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
@@ -92,7 +91,7 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapFocos);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapPurpleAir);
 
-    // Formatar data em AAAAMMDD (ex: 20261018)
+    // Formatar data em AAAAMMDD
     function formatarDataAAAAMMDD(d) {
         const ano = d.getFullYear();
         const mes = String(d.getMonth() + 1).padStart(2, '0');
@@ -100,7 +99,7 @@
         return `${ano}${mes}${dia}`;
     }
 
-    // 2. Leitura Autônoma do CSV do INPE (Busca retroativa de até 5 dias para o caso de atraso na atualização do servidor)
+    // 2. Leitura dos Focos Diários do INPE
     async function carregarFocosDiarios() {
         const statusEl = document.getElementById('status-focos');
         const baseUrl = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/";
@@ -112,13 +111,13 @@
             datasTestar.push(`${baseUrl}focos_diario_${formatarDataAAAAMMDD(d)}.csv`);
         }
 
-        let leuComSucesso = false;
+        let sucesso = false;
 
         for (const targetUrl of datasTestar) {
-            if (leuComSucesso) break;
+            if (sucesso) break;
 
             try {
-                const proxyUrl = PROXY + encodeURIComponent(targetUrl);
+                const proxyUrl = PROXY_CORS + encodeURIComponent(targetUrl);
                 const response = await fetch(proxyUrl);
 
                 if (response.ok) {
@@ -128,13 +127,12 @@
                         header: true,
                         skipEmptyLines: true,
                         complete: function(res) {
-                            if (res.data && res.data.length > 0 && res.data[0].lat) {
+                            if (res.data && res.data.length > 0) {
                                 let totalAqua = 0;
 
                                 res.data.forEach(item => {
                                     const sat = (item.satelite || '').toUpperCase();
                                     
-                                    // Filtra qualquer variação do satélite Aqua
                                     if (sat.includes("AQUA")) {
                                         const lat = parseFloat(item.lat || item.latitude);
                                         const lon = parseFloat(item.lon || item.longitude);
@@ -157,25 +155,27 @@
                                     }
                                 });
 
-                                statusEl.className = "badge bg-success status-badge";
-                                statusEl.textContent = `${totalAqua} focos AQUA carregados`;
-                                leuComSucesso = true;
+                                if (totalAqua > 0) {
+                                    statusEl.className = "badge bg-success status-badge";
+                                    statusEl.textContent = `${totalAqua} focos AQUA`;
+                                    sucesso = true;
+                                }
                             }
                         }
                     });
                 }
             } catch (err) {
-                console.warn("Tentando data anterior do INPE...", err);
+                console.warn("Buscando CSV anterior...", err);
             }
         }
 
-        if (!leuComSucesso) {
+        if (!sucesso) {
             statusEl.className = "badge bg-danger status-badge";
-            statusEl.textContent = "Erro de conexão com o INPE";
+            statusEl.textContent = "Erro ao carregar INPE";
         }
     }
 
-    // 3. Cores para o PM2.5 (PurpleAir) - MANTIDO
+    // 3. Cores para o PM2.5 (PurpleAir) - MANTIDO INTEGRO
     function getCorPM25(pm) {
         if (pm <= 12.0) return '#00e400';
         if (pm <= 35.4) return '#ffff00';
@@ -185,7 +185,7 @@
         return '#7e0023';
     }
 
-    // 4. Ler Pontos do PurpleAir (América do Sul) - MANTIDO
+    // 4. Ler Pontos do PurpleAir (América do Sul) - MANTIDO INTEGRO
     async function carregarPurpleAir() {
         const statusEl = document.getElementById('status-purpleair');
         const url = "https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5_10minute&location_type=0&nwlng=-82.0&nwlat=13.0&selng=-32.0&selat=-56.0";
@@ -223,13 +223,13 @@
                 statusEl.textContent = `${totalSensores} sensores ativos`;
             }
         } catch (e) {
-            console.error("Erro ao carregar PurpleAir:", e);
+            console.error("Erro no PurpleAir:", e);
             statusEl.className = "badge bg-danger status-badge";
             statusEl.textContent = "Erro na API PurpleAir";
         }
     }
 
-    // 5. Legenda do PurpleAir - MANTIDO
+    // 5. Legenda do PurpleAir - MANTIDO INTEGRO
     function adicionarLegendaPurpleAir() {
         const legend = L.control({ position: 'bottomright' });
 
@@ -256,7 +256,7 @@
         legend.addTo(mapPurpleAir);
     }
 
-    // Executa no carregamento da página
+    // Execução
     carregarFocosDiarios();
     carregarPurpleAir();
     adicionarLegendaPurpleAir();
