@@ -61,18 +61,18 @@
 
     <!-- Linha 1: Mapas Originais Lado a Lado -->
     <div class="row mb-4">
-        <!-- Mapa 1: INPE Focos AQUA -->
+        <!-- Mapa 1: INPE Focos AQUA (M-M e M-T) -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="card-title mb-0">Focos Diários (Satélites AQUA - INPE)</h5>
+                    <h5 class="card-title mb-0">Focos Diários (Satélite AQUA M-M & M-T - INPE)</h5>
                     <span id="status-focos" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
-                <p class="text-muted small mb-1">Pontos de calor detectados na América do Sul pelo satélite Aqua.</p>
+                <p class="text-muted small mb-1">Pontos de calor detectados na América do Sul pelas passagens diurnas e noturnas/vespertinas do satélite Aqua (AQUA_M-M e AQUA_M-T).</p>
                 
                 <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-2 rounded mb-2 small border">
                     <div><strong>Período de Análise:</strong> Diário</div>
-                    <div><strong>Data/Hora do Dado:</strong> <span id="data-focos" class="fw-bold">Carregando...</span></div>
+                    <div><strong>Data do Dado:</strong> <span id="data-focos" class="fw-bold">Carregando...</span></div>
                     <div><strong>Fonte:</strong> INPE / BDQueimadas</div>
                 </div>
 
@@ -80,7 +80,7 @@
 
                 <div class="citation-box mt-3">
                     <strong>Como citar estas informações:</strong><br>
-                    <span>INPE - Instituto Nacional de Pesquisas Espaciais. Monitoramento de Focos de Calor via Satélite AQUA Tarde (Período Diário). Dados coletados em: <span id="citacao-data-focos">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
+                    <span>INPE - Instituto Nacional de Pesquisas Espaciais. Monitoramento de Focos de Calor via Satélite AQUA (Passagens AQUA_M-M e AQUA_M-T - Período Diário). Dados coletados em: <span id="citacao-data-focos">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
                 </div>
             </div>
         </div>
@@ -110,7 +110,7 @@
         </div>
     </div>
 
-    <!-- Linha 2: Novo Mapa 3 (Interpolação de Risco à Saúde - Limiares OMS) -->
+    <!-- Linha 2: Mapa 3 (Interpolação OMS) -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card card-custom p-3">
@@ -179,337 +179,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <script>
-    const PURPLEAIR_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
-
-    // Registrar data e hora do acesso atual
-    const agora = new Date();
-    const dataHoraAcessoStr = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR');
-    document.querySelectorAll('.data-acesso').forEach(el => el.textContent = dataHoraAcessoStr);
-
-    // 1. Inicializar os Mapas
-    const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
-    const mapPurpleAir = L.map('mapa-purpleair').setView([-14.235, -51.925], 4);
-    const mapInterpolacao = L.map('mapa-interpolacao').setView([-14.235, -51.925], 4);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapFocos);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapPurpleAir);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapInterpolacao);
-
-    function formatarDataAAAAMMDD(d) {
-        const ano = d.getFullYear();
-        const mes = String(d.getMonth() + 1).padStart(2, '0');
-        const dia = String(d.getDate()).padStart(2, '0');
-        return `${ano}${mes}${dia}`;
-    }
-
-    function formatarDataBR(d) {
-        const dia = String(d.getDate()).padStart(2, '0');
-        const mes = String(d.getMonth() + 1).padStart(2, '0');
-        const ano = d.getFullYear();
-        return `${dia}/${mes}/${ano}`;
-    }
-
-    // 2. Leitura Direta dos Dados de Focos (INPE)
-    async function carregarFocosDiarios() {
-        const statusEl = document.getElementById('status-focos');
-        const dataFocosEl = document.getElementById('data-focos');
-        const citacaoDataFocosEl = document.getElementById('citacao-data-focos');
-        
-        let fontes = [];
-        for (let i = 0; i < 5; i++) {
-            let d = new Date();
-            d.setDate(d.getDate() - i);
-            const dt = formatarDataAAAAMMDD(d);
-            const dtBR = formatarDataBR(d);
-            
-            fontes.push({
-                dataBR: dtBR,
-                url: `https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${dt}.csv`
-            });
-            fontes.push({
-                dataBR: dtBR,
-                url: `https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${dt}.csv`
-            });
-        }
-
-        let sucesso = false;
-
-        for (const fonte of fontes) {
-            if (sucesso) break;
-            const urlTarget = fonte.url;
-
-            try {
-                let response = await fetch(urlTarget, { mode: 'cors' }).catch(() => null);
-
-                if (!response || !response.ok) {
-                    const urlCdn = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlTarget)}`;
-                    response = await fetch(urlCdn).catch(() => null);
-                }
-
-                if (response && response.ok) {
-                    const textoCsv = await response.text();
-
-                    Papa.parse(textoCsv, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: function(res) {
-                            if (res.data && res.data.length > 0) {
-                                let totalAqua = 0;
-
-                                res.data.forEach(item => {
-                                    const sat = (item.satelite || '').toUpperCase();
-                                    
-                                    if (sat.includes("AQUA")) {
-                                        const lat = parseFloat(item.lat || item.latitude);
-                                        const lon = parseFloat(item.lon || item.longitude);
-
-                                        if (!isNaN(lat) && !isNaN(lon)) {
-                                            totalAqua++;
-                                            L.circleMarker([lat, lon], {
-                                                radius: 4,
-                                                fillColor: '#ff2200',
-                                                color: '#880000',
-                                                weight: 1,
-                                                fillOpacity: 0.8
-                                            }).bindPopup(`
-                                                <b>Satélite:</b> ${item.satelite}<br>
-                                                <b>Data da Detecção:</b> ${fonte.dataBR}<br>
-                                                <b>Data/Hora GMT:</b> ${item.data_hora_gmt || ''}<br>
-                                                <b>Local:</b> ${item.municipio || ''} - ${item.estado || ''}<br>
-                                                <b>FRP:</b> ${item.frp || 'N/A'} MW
-                                            `).addTo(mapFocos);
-                                        }
-                                    }
-                                });
-
-                                if (totalAqua > 0) {
-                                    statusEl.className = "badge bg-success status-badge";
-                                    statusEl.textContent = `${totalAqua} focos AQUA`;
-                                    dataFocosEl.textContent = fonte.dataBR + " (Diário)";
-                                    citacaoDataFocosEl.textContent = fonte.dataBR;
-                                    sucesso = true;
-                                }
-                            }
-                        }
-                    });
-                }
-            } catch (err) {
-                console.warn("Testando próxima fonte de dados...", err);
-            }
-        }
-
-        if (!sucesso) {
-            statusEl.className = "badge bg-danger status-badge";
-            statusEl.textContent = "Erro ao carregar INPE";
-            dataFocosEl.textContent = "Indisponível";
-            citacaoDataFocosEl.textContent = "Indisponível";
-        }
-    }
-
-    // 3. Cores para o PM2.5 (PurpleAir Padrão)
-    function getCorPM25(pm) {
-        if (pm <= 12.0) return '#00e400';
-        if (pm <= 35.4) return '#ffff00';
-        if (pm <= 55.4) return '#ff7e00';
-        if (pm <= 150.4) return '#ff0000';
-        if (pm <= 250.4) return '#8f3f97';
-        return '#7e0023';
-    }
-
-    // Cores específicas baseadas nos Limiares da OMS (2021)
-    function getCorOMS(pm) {
-        if (pm <= 15.0) return '#28a745'; // Dentro da Meta OMS (Verde)
-        if (pm <= 45.0) return '#ffc107'; // Alerta / Acima do Guia Diário (Amarelo)
-        return '#dc3545';                // CRÍTICO / Alto Risco à Saúde (Vermelho)
-    }
-
-    // 4. Ler Pontos do PurpleAir & Executar Interpolação IDW com Registro de Data/Hora
-    async function carregarPurpleAirEInterpolacao() {
-        const statusEl = document.getElementById('status-purpleair');
-        const statusInterpEl = document.getElementById('status-interpolacao');
-        
-        const dataPurpleAirEl = document.getElementById('data-purpleair');
-        const dataInterpolacaoEl = document.getElementById('data-interpolacao');
-        
-        const citacaoPurpleAirEl = document.getElementById('citacao-data-purpleair');
-        const citacaoInterpEl = document.getElementById('citacao-data-interp');
-
-        const url = "https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5_10minute,last_seen&location_type=0&nwlng=-82.0&nwlat=13.0&selng=-32.0&selat=-56.0";
-
-        try {
-            const resp = await fetch(url, { headers: { "X-API-Key": PURPLEAIR_KEY } });
-            const json = await resp.json();
-
-            // Obter timestamp exato do envio do dado da API
-            const timeStampAPI = json.time_stamp ? new Date(json.time_stamp * 1000) : new Date();
-            const dataHoraDadoStr = timeStampAPI.toLocaleDateString('pt-BR') + ' ' + timeStampAPI.toLocaleTimeString('pt-BR');
-
-            // Atualizar os campos informativos no HTML
-            dataPurpleAirEl.textContent = dataHoraDadoStr;
-            dataInterpolacaoEl.textContent = dataHoraDadoStr;
-            citacaoPurpleAirEl.textContent = dataHoraDadoStr;
-            citacaoInterpEl.textContent = dataHoraDadoStr;
-
-            if (json && json.data && json.fields) {
-                const iLat = json.fields.indexOf("latitude");
-                const iLon = json.fields.indexOf("longitude");
-                const iPm = json.fields.indexOf("pm2.5_10minute");
-                const iNome = json.fields.indexOf("name");
-
-                let pontos = [];
-
-                json.data.forEach(s => {
-                    const lat = s[iLat];
-                    const lon = s[iLon];
-                    const pm25 = s[iPm];
-                    const nome = s[iNome] || "Sensor";
-
-                    if (lat && lon && pm25 !== null && !isNaN(pm25)) {
-                        pontos.push({ lat, lon, pm25, nome });
-
-                        // Plotar no Mapa 2 (Pontual)
-                        L.circleMarker([lat, lon], {
-                            radius: 6,
-                            fillColor: getCorPM25(pm25),
-                            color: '#000',
-                            weight: 1,
-                            fillOpacity: 0.85
-                        }).bindPopup(`
-                            <b>${nome}</b><br>
-                            <b>Data/Hora da Leitura:</b> ${dataHoraDadoStr}<br>
-                            <b>PM2.5:</b> ${pm25} &micro;g/m&sup3;
-                        `).addTo(mapPurpleAir);
-                    }
-                });
-
-                statusEl.className = "badge bg-success status-badge";
-                statusEl.textContent = `${pontos.length} sensores ativos`;
-
-                // Gerar Mapa 3: Interpolação IDW
-                if (pontos.length > 0) {
-                    gerarInterpolacaoIDW(pontos, dataHoraDadoStr);
-                    statusInterpEl.className = "badge bg-success status-badge";
-                    statusInterpEl.textContent = "Interpolação Concluída";
-                } else {
-                    statusInterpEl.className = "badge bg-warning status-badge";
-                    statusInterpEl.textContent = "Sem pontos suficientes";
-                }
-            }
-        } catch (e) {
-            console.error("Erro no PurpleAir:", e);
-            statusEl.className = "badge bg-danger status-badge";
-            statusEl.textContent = "Erro na API PurpleAir";
-            statusInterpEl.className = "badge bg-danger status-badge";
-            statusInterpEl.textContent = "Falha na interpolação";
-            
-            dataPurpleAirEl.textContent = "Indisponível";
-            dataInterpolacaoEl.textContent = "Indisponível";
-        }
-    }
-
-    // Algoritmo de Interpolação IDW (Inverse Distance Weighting)
-    function gerarInterpolacaoIDW(pontos, dataHoraRef) {
-        const latMin = -35.0, latMax = 5.0;
-        const lonMin = -75.0, lonMax = -35.0;
-        const passo = 1.2;
-
-        for (let lat = latMin; lat <= latMax; lat += passo) {
-            for (let lon = lonMin; lon <= lonMax; lon += passo) {
-                let somaPesos = 0;
-                let somaValores = 0;
-                let sensorMuitoProximo = false;
-                let valorProximo = 0;
-
-                for (let p of pontos) {
-                    const dLat = lat - p.lat;
-                    const dLon = lon - p.lon;
-                    const distSq = dLat * dLat + dLon * dLon;
-
-                    if (distSq < 0.01) {
-                        sensorMuitoProximo = true;
-                        valorProximo = p.pm25;
-                        break;
-                    }
-
-                    const peso = 1 / distSq;
-                    somaPesos += peso;
-                    somaValores += p.pm25 * peso;
-                }
-
-                const pmEstimado = sensorMuitoProximo ? valorProximo : (somaValores / somaPesos);
-
-                const bounds = [[lat, lon], [lat + passo, lon + passo]];
-                const cor = getCorOMS(pmEstimado);
-
-                L.rectangle(bounds, {
-                    color: "transparent",
-                    fillColor: cor,
-                    fillOpacity: 0.45,
-                    weight: 0
-                }).bindPopup(`
-                    <strong>Região Interpolada (IDW)</strong><br>
-                    <b>Data/Hora Referência:</b> ${dataHoraRef}<br>
-                    <b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br>
-                    <b>Status OMS:</b> ${
-                        pmEstimado <= 15 ? '<span class="text-success">Dentro do Recomendado</span>' :
-                        pmEstimado <= 45 ? '<span class="text-warning">Alerta (Moderado/Alto)</span>' :
-                        '<span class="text-danger"><b>ESTADO CRÍTICO</b></span>'
-                    }
-                `).addTo(mapInterpolacao);
-            }
-        }
-
-        // Plotar os sensores originais por cima para referência
-        pontos.forEach(p => {
-            L.circleMarker([p.lat, p.lon], {
-                radius: 3,
-                fillColor: '#ffffff',
-                color: '#000',
-                weight: 1,
-                fillOpacity: 0.9
-            }).bindPopup(`<b>Estação Base:</b> ${p.nome}<br><b>PM2.5 Real:</b> ${p.pm25} &micro;g/m&sup3;<br><b>Data/Hora:</b> ${dataHoraRef}`).addTo(mapInterpolacao);
-        });
-    }
-
-    // 5. Legendas dos Mapas
-    function adicionarLegendas() {
-        const legendPA = L.control({ position: 'bottomright' });
-        legendPA.onAdd = function () {
-            const div = L.DomUtil.create('div', 'info legend');
-            const faixas = [
-                { cor: '#00e400', rotulo: '0 - 12.0 &micro;g/m&sup3; (Boa)' },
-                { cor: '#ffff00', rotulo: '12.1 - 35.4 &micro;g/m&sup3; (Moderada)' },
-                { cor: '#ff7e00', rotulo: '35.5 - 55.4 &micro;g/m&sup3; (Insalubre p/ Sensíveis)' },
-                { cor: '#ff0000', rotulo: '55.5 - 150.4 &micro;g/m&sup3; (Insalubre)' },
-                { cor: '#8f3f97', rotulo: '150.5 - 250.4 &micro;g/m&sup3; (Muito Insalubre)' },
-                { cor: '#7e0023', rotulo: '&gt; 250.5 &micro;g/m&sup3; (Perigosa)' }
-            ];
-            div.innerHTML = '<strong>Concentração PM2.5</strong><br>';
-            faixas.forEach(item => { div.innerHTML += `<i style="background:${item.cor}"></i> ${item.rotulo}<br>`; });
-            return div;
-        };
-        legendPA.addTo(mapPurpleAir);
-
-        const legendOMS = L.control({ position: 'bottomright' });
-        legendOMS.onAdd = function () {
-            const div = L.DomUtil.create('div', 'info legend');
-            const faixas = [
-                { cor: '#28a745', rotulo: '&le; 15.0 &micro;g/m&sup3; (Meta OMS 24h)' },
-                { cor: '#ffc107', rotulo: '15.1 - 45.0 &micro;g/m&sup3; (Alerta / Risco Moderado)' },
-                { cor: '#dc3545', rotulo: '&gt; 45.0 &micro;g/m&sup3; (CRÍTICO - Alto Risco)' }
-            ];
-            div.innerHTML = '<strong>Limiares de Saúde OMS</strong><br>';
-            faixas.forEach(item => { div.innerHTML += `<i style="background:${item.cor}"></i> ${item.rotulo}<br>`; });
-            return div;
-        };
-        legendOMS.addTo(mapInterpolacao);
-    }
-
-    // Execução
-    carregarFocosDiarios();
-    carregarPurpleAirEInterpolacao();
-    adicionarLegendas();
-</script>
-
-</body>
-</html>
+    const PURPLEAIR_KEY = "A8B62FCE
