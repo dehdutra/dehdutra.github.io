@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monitoramento de Focos de Calor e Qualidade do Ar</title>
 
-  <!-- Leaflet: mapas -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -366,8 +365,8 @@
     // CONFIGURAÇÃO
     // ============================================================
 
-    // Cole sua chave PurpleAir entre as aspas.
-    // ATENÇÃO: em um site público, essa chave ficará visível no HTML.
+    // Insira uma chave válida da API PurpleAir.
+    // Não publique uma chave de API diretamente no HTML de um site público.
     const PURPLEAIR_API_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
 
     const INPE_DIRETORIO =
@@ -376,7 +375,6 @@
     const PURPLEAIR_API =
       "https://api.purpleair.com/v1/sensors";
 
-    // Limites aproximados do território brasileiro.
     const BRASIL_BOUNDS = L.latLngBounds(
       [-34.0, -74.0],
       [5.5, -34.0]
@@ -385,11 +383,12 @@
     const CENTRO_BRASIL = [-14.2, -51.9];
     const ZOOM_INICIAL = 4;
 
-    // Interpolação: grade de aproximadamente 0,8 grau.
     const PASSO_INTERPOLACAO = 0.8;
-
-    // Raio máximo aproximado usado na interpolação.
     const RAIO_INTERPOLACAO_KM = 250;
+
+    // Janelas móveis em milissegundos.
+    const JANELA_24H_MS = 24 * 60 * 60 * 1000;
+    const JANELA_1H_MS = 60 * 60 * 1000;
 
     // ============================================================
     // MAPAS
@@ -628,7 +627,7 @@
     function dataHoraINPE(valor) {
       if (!valor) return NaN;
 
-      // O campo DataHora do INPE representa o horário em GMT/UTC.
+      // O campo DataHora do INPE representa o horário em UTC.
       const normalizado = valor.trim().replace(/\//g, "-");
 
       const data = new Date(
@@ -641,7 +640,7 @@
     }
 
     // ============================================================
-    // INPE: ARQUIVOS CSV DOS ÚLTIMOS 10 MINUTOS
+    // INPE: SELEÇÃO DE ARQUIVOS E JANELA MÓVEL DE 24 HORAS
     // ============================================================
 
     function listarArquivosINPE(html) {
@@ -685,9 +684,12 @@
       const html = await buscarTexto(INPE_DIRETORIO);
       const arquivos = listarArquivosINPE(html);
 
+      // O horário de referência é capturado uma vez.
       const agora = Date.now();
-      const limite = agora - 24 * 60 * 60 * 1000;
+      const limite = agora - JANELA_24H_MS;
 
+      // A tolerância de 10 minutos evita excluir um arquivo recente
+      // cujo horário nominal esteja ligeiramente adiantado.
       const recentes = arquivos
         .filter(arquivo =>
           arquivo.timestamp >= limite &&
@@ -701,9 +703,9 @@
         );
       }
 
-      // Limita a concorrência para evitar muitas requisições simultâneas.
       const resultados = [];
 
+      // Limita a concorrência para evitar muitas requisições simultâneas.
       for (let i = 0; i < recentes.length; i += 8) {
         const lote = recentes.slice(i, i + 8);
 
@@ -801,20 +803,35 @@
     }
 
     async function atualizarINPE() {
-      definirTexto("statusINPE", "Consultando arquivos oficiais do INPE...");
-      definirTexto("mapaINPE24Status", "Carregando arquivos CSV do INPE...");
-      definirTexto("mapaINPE1Status", "Filtrando focos da última hora...");
+      definirTexto(
+        "statusINPE",
+        "Consultando arquivos oficiais do INPE..."
+      );
+
+      definirTexto(
+        "mapaINPE24Status",
+        "Carregando arquivos CSV do INPE..."
+      );
+
+      definirTexto(
+        "mapaINPE1Status",
+        "Filtrando focos da última hora..."
+      );
 
       try {
         const registros = await buscarArquivosINPE24h();
+
+        // Instante de referência único para os dois mapas do INPE.
         const agora = Date.now();
+        const limite24h = agora - JANELA_24H_MS;
+        const limite1h = agora - JANELA_1H_MS;
 
         const focos = registros
           .map(normalizarFocoINPE)
           .filter(Boolean)
           .filter(foco =>
-            foco.timestamp <= agora &&
-            foco.timestamp >= agora - 24 * 60 * 60 * 1000
+            foco.timestamp >= limite24h &&
+            foco.timestamp <= agora
           );
 
         limparCamada(camadas.inpe24);
@@ -841,7 +858,7 @@
           );
 
           const detalhes = [
-            `<strong>Foco de calor · INPE</strong>`,
+            "<strong>Foco de calor · INPE</strong>",
             `Satélite: ${escaparHTML(foco.satelite)}`,
             `Data/hora UTC: ${new Date(foco.timestamp).toISOString().replace("T", " ").replace("Z", "")}`,
             `Idade: ${formatarNumero(idadeMin, 0)} min`,
@@ -855,8 +872,10 @@
           marcador.addTo(camadas.inpe24);
         });
 
+        // Últimos 60 minutos, contados para trás a partir de agora.
         const focosUmaHora = focos.filter(foco =>
-          foco.timestamp >= agora - 60 * 60 * 1000
+          foco.timestamp >= limite1h &&
+          foco.timestamp <= agora
         );
 
         const pontosCalor = focosUmaHora.map(foco => {
@@ -927,7 +946,7 @@
     async function buscarSensoresPurpleAir() {
       if (
         !PURPLEAIR_API_KEY ||
-        PURPLEAIR_API_KEY === "COLE_SUA_CHAVE_PURPLEAIR_AQUI"
+        PURPLEAIR_API_KEY === "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129"
       ) {
         throw new Error(
           "Insira sua chave da API PurpleAir no início do código."
@@ -974,11 +993,13 @@
 
       if (!json.fields || !json.data) {
         throw new Error(
-          json.description || "A resposta da API PurpleAir não contém os campos esperados."
+          json.description ||
+          "A resposta da API PurpleAir não contém os campos esperados."
         );
       }
 
       const indices = {};
+
       json.fields.forEach((campo, indice) => {
         indices[campo] = indice;
       });
@@ -1085,7 +1106,6 @@
 
             if (distancia > RAIO_INTERPOLACAO_KM) continue;
 
-            // IDW com potência 2.
             const peso = 1 / (distancia * distancia);
 
             somaPesos += peso;
@@ -1137,16 +1157,28 @@
 
       try {
         const sensores = await buscarSensoresPurpleAir();
+
+        // last_seen é um timestamp Unix em segundos.
+        // A referência é capturada uma única vez para os dois períodos.
         const agora = Math.floor(Date.now() / 1000);
 
+        const limite24h = agora - 24 * 60 * 60;
+        const limite1h = agora - 60 * 60;
+
+        // Janela móvel de 24 horas:
+        // exclui timestamps futuros e dados com mais de 24 horas.
         const sensores24h = sensores.filter(sensor =>
-          agora - sensor.last_seen <= 24 * 60 * 60 &&
+          sensor.last_seen >= limite24h &&
+          sensor.last_seen <= agora &&
           Number.isFinite(sensor.pm24) &&
           sensor.pm24 >= 0
         );
 
+        // Janela móvel de 60 minutos:
+        // exclui timestamps futuros e dados com mais de uma hora.
         const sensores1h = sensores.filter(sensor =>
-          agora - sensor.last_seen <= 60 * 60 &&
+          sensor.last_seen >= limite1h &&
+          sensor.last_seen <= agora &&
           Number.isFinite(sensor.pmAtual) &&
           sensor.pmAtual >= 0
         );
@@ -1167,7 +1199,7 @@
           "pm24"
         );
 
-        // Mapa de uma hora: usa apenas sensores atualizados na última hora.
+        // Mapa de uma hora: somente sensores atualizados nos últimos 60 min.
         const celulas1 = interpolarIDW(
           camadas.pa1,
           sensores1h,
@@ -1238,6 +1270,10 @@
     async function atualizarTudo() {
       const botao = document.getElementById("atualizarBtn");
 
+      // Evita consultas simultâneas quando o usuário clica no botão
+      // durante uma atualização automática.
+      if (botao.disabled) return;
+
       botao.disabled = true;
       botao.textContent = "Atualizando...";
 
@@ -1247,8 +1283,6 @@
       );
 
       try {
-        // As consultas são independentes: uma fonte pode falhar
-        // sem impedir a tentativa de atualização da outra.
         await Promise.allSettled([
           atualizarINPE(),
           atualizarPurpleAir()
@@ -1270,7 +1304,6 @@
       .getElementById("atualizarBtn")
       .addEventListener("click", atualizarTudo);
 
-    // Inicializa os mapas independentemente das APIs.
     atualizarTudo();
 
     // Atualiza a cada 10 minutos.
