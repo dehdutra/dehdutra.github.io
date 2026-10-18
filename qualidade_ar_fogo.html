@@ -87,6 +87,11 @@
       margin-top: 7px;
     }
 
+    .section-title {
+      font-size: 19px;
+      margin: 0 0 15px;
+    }
+
     .maps {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -236,7 +241,7 @@
 <main>
   <section class="cards">
     <div class="card">
-      <div class="card-label">Focos recentes</div>
+      <div class="card-label">Focos na última hora</div>
       <div class="card-value" id="countRecent">—</div>
       <div class="card-note">Satélites Aqua M-M e Aqua M-T</div>
     </div>
@@ -271,7 +276,7 @@
         <div class="field">
           <label for="fireMode">Período exibido</label>
           <select id="fireMode">
-            <option value="recent">Recentes (10 min)</option>
+            <option value="recent">Última hora</option>
             <option value="daily">Dia anterior</option>
           </select>
         </div>
@@ -299,7 +304,11 @@
         <span><i class="dot" style="background:#c52b35"></i> ≥50 µg/m³</span>
       </div>
 
-      <div id="purpleStatus" class="status" style="margin-top: 14px;">
+      <div class="controls" style="margin-top:14px">
+        <button id="reloadPurple" style="width: 100%;">Atualizar dados PurpleAir</button>
+      </div>
+
+      <div id="purpleStatus" class="status">
         Carregando dados da API PurpleAir automaticamente...
       </div>
     </div>
@@ -363,27 +372,37 @@
 
     <p class="footnote">
       A série considera os registros dos satélites Aqua M-M e Aqua M-T.
-      Meses sem registros são exibidos como zero quando o arquivo é lido com sucesso.
+      Meses sem arquivos ou com falha de download são exibidos como valor zero.
     </p>
   </section>
 
   <p class="footnote">
     Fonte dos focos: INPE/BDQueimadas. Fonte da qualidade do ar: PurpleAir.
+    A disponibilidade dos dados depende dos servidores de origem e das permissões
+    de acesso do navegador.
   </p>
 </main>
 
 <script>
 "use strict";
 
+/* =========================================================
+   CONFIGURAÇÃO
+   ========================================================= */
+
 const FIXED_PURPLE_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
 
 const INPE = {
-  recentDir: "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/",
-  dailyDir: "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/",
-  monthlyDir: "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/"
+  recentDir:
+    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/",
+  dailyDir:
+    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/",
+  monthlyDir:
+    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/"
 };
 
 const REFRESH_MS = 10 * 60 * 1000;
+const RECENT_WINDOW_MS = 60 * 60 * 1000;
 const MONTH_NAMES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
   "Jul", "Ago", "Set", "Out", "Nov", "Dez"
@@ -402,6 +421,36 @@ const STATE_NAMES = {
   SE: "SERGIPE", TO: "TOCANTINS"
 };
 
+const STATE_BOUNDS = {
+  AC: { minLat: -11.15, maxLat: -7.11, minLon: -73.99, maxLon: -66.62 },
+  AL: { minLat: -10.50, maxLat: -8.81, minLon: -38.24, maxLon: -35.15 },
+  AM: { minLat: -9.82, maxLat: 2.25, minLon: -73.80, maxLon: -56.10 },
+  AP: { minLat: -1.24, maxLat: 4.48, minLon: -54.87, maxLon: -49.87 },
+  BA: { minLat: -18.35, maxLat: -8.53, minLon: -46.62, maxLon: -37.34 },
+  CE: { minLat: -7.86, maxLat: -2.78, minLon: -41.42, maxLon: -37.25 },
+  DF: { minLat: -16.05, maxLat: -15.50, minLon: -48.28, maxLon: -47.30 },
+  ES: { minLat: -21.30, maxLat: -17.89, minLon: -41.88, maxLon: -39.67 },
+  GO: { minLat: -19.50, maxLat: -12.39, minLon: -53.25, maxLon: -45.90 },
+  MA: { minLat: -10.26, maxLat: -1.05, minLon: -48.75, maxLon: -41.79 },
+  MG: { minLat: -22.92, maxLat: -14.23, minLon: -51.05, maxLon: -39.85 },
+  MS: { minLat: -24.08, maxLat: -17.16, minLon: -58.17, maxLon: -50.92 },
+  MT: { minLat: -18.04, maxLat: -7.35, minLon: -61.63, maxLon: -50.22 },
+  PA: { minLat: -9.84, maxLat: 2.59, minLon: -58.90, maxLon: -46.06 },
+  PB: { minLat: -8.30, maxLat: -6.03, minLon: -38.77, maxLon: -34.79 },
+  PE: { minLat: -9.48, maxLat: -7.38, minLon: -41.35, maxLon: -34.80 },
+  PI: { minLat: -10.93, maxLat: -2.75, minLon: -45.99, maxLon: -40.37 },
+  PR: { minLat: -26.72, maxLat: -22.52, minLon: -54.62, maxLon: -48.03 },
+  RJ: { minLat: -23.37, maxLat: -20.76, minLon: -44.89, maxLon: -40.96 },
+  RN: { minLat: -6.98, maxLat: -4.83, minLon: -38.58, maxLon: -34.97 },
+  RO: { minLat: -13.70, maxLat: -7.97, minLon: -66.81, maxLon: -59.77 },
+  RR: { minLat: -1.58, maxLat: 5.27, minLon: -64.82, maxLon: -59.87 },
+  RS: { minLat: -33.75, maxLat: -27.08, minLon: -57.64, maxLon: -49.69 },
+  SC: { minLat: -29.35, maxLat: -25.96, minLon: -53.84, maxLon: -48.35 },
+  SE: { minLat: -11.57, maxLat: -9.51, minLon: -38.24, maxLon: -36.39 },
+  SP: { minLat: -25.31, maxLat: -19.78, minLon: -53.11, maxLon: -44.16 },
+  TO: { minLat: -13.47, maxLat: -5.16, minLon: -50.74, maxLon: -45.69 }
+};
+
 const STATE_ABBREVIATIONS = Object.fromEntries(
   Object.entries(STATE_NAMES).map(([uf, name]) => [name, uf])
 );
@@ -414,24 +463,41 @@ let fireLayer = null;
 let purpleLayer = null;
 let monthlyCache = new Map();
 
-/* ================== MAPAS ================== */
-const southAmericaBounds = L.latLngBounds([-57, -82], [15, -34]);
+/* =========================================================
+   MAPAS LEAFLET
+   ========================================================= */
 
-const fireMap = L.map("fireMap", { preferCanvas: true }).fitBounds(southAmericaBounds);
+const southAmericaBounds = L.latLngBounds(
+  [-57, -82],
+  [15, -34]
+);
+
+const fireMap = L.map("fireMap", {
+  preferCanvas: true
+}).fitBounds(southAmericaBounds);
+
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 12,
   attribution: "&copy; OpenStreetMap contributors"
 }).addTo(fireMap);
+
 fireLayer = L.layerGroup().addTo(fireMap);
 
-const purpleMap = L.map("purpleMap", { preferCanvas: true }).fitBounds(southAmericaBounds);
+const purpleMap = L.map("purpleMap", {
+  preferCanvas: true
+}).fitBounds(southAmericaBounds);
+
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 12,
   attribution: "&copy; OpenStreetMap contributors"
 }).addTo(purpleMap);
+
 purpleLayer = L.layerGroup().addTo(purpleMap);
 
-/* ================== UTILITÁRIOS ================== */
+/* =========================================================
+   FUNÇÕES DE NORMALIZAÇÃO E LEITURA CSV (UTF-8)
+   ========================================================= */
+
 function normalizeKey(value) {
   return String(value ?? "")
     .normalize("NFD")
@@ -441,21 +507,24 @@ function normalizeKey(value) {
 }
 
 function isReferenceAqua(value) {
-  const sat = String(value ?? "")
+  const satellite = String(value ?? "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase()
     .replace(/[\s-]+/g, "_")
+    .replace(/_+/g, "_")
     .trim();
-  return sat === "AQUA_M_M" || sat === "AQUA_M_T";
+
+  return satellite === "AQUA_M_M" || satellite === "AQUA_M_T";
 }
 
 function getValue(row, aliases) {
   const keys = Object.keys(row || {});
   for (const alias of aliases) {
     const wanted = normalizeKey(alias);
-    const actual = keys.find(k => normalizeKey(k) === wanted);
-    if (actual !== undefined && row[actual] !== undefined && row[actual] !== null && String(row[actual]).trim() !== "") {
+    const actual = keys.find(key => normalizeKey(key) === wanted);
+    if (actual !== undefined && row[actual] !== undefined &&
+        row[actual] !== null && String(row[actual]).trim() !== "") {
       return row[actual];
     }
   }
@@ -468,321 +537,278 @@ function parseCSV(text) {
     skipEmptyLines: "greedy",
     transformHeader: header => String(header).replace(/^\uFEFF/, "").trim()
   });
-  return { fields: result.meta.fields || [], data: result.data || [] };
+
+  if (!result.meta.fields || result.meta.fields.length === 0) {
+    throw new Error("CSV sem cabeçalho reconhecível.");
+  }
+
+  return { fields: result.meta.fields, data: result.data || [] };
 }
 
-async function fetchText(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const buffer = await response.arrayBuffer();
-  return new TextDecoder("utf-8").decode(buffer);
+async function fetchText(url, timeoutMs = 45000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const buffer = await response.arrayBuffer();
+    const decoder = new TextDecoder("utf-8");
+    return decoder.decode(buffer);
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function setStatus(id, message, kind = "") {
-  const el = document.getElementById(id);
-  el.textContent = message;
-  el.className = "status" + (kind ? " " + kind : "");
+  const element = document.getElementById(id);
+  element.textContent = message;
+  element.className = "status" + (kind ? " " + kind : "");
 }
 
 function setCount(id, value) {
-  document.getElementById(id).textContent = Number(value).toLocaleString("pt-BR");
+  document.getElementById(id).textContent =
+    Number(value).toLocaleString("pt-BR");
 }
 
-function asNumber(val) {
-  if (val === null || val === undefined || val === "") return null;
-  const n = Number(String(val).replace(",", "."));
+function asNumber(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(String(value).replace(",", "."));
   return Number.isFinite(n) ? n : null;
 }
 
-function parseDate(val) {
-  if (!val) return null;
-  const text = String(val).trim();
-  const d = new Date(text);
-  if (!Number.isNaN(d.getTime())) return d;
-  const match = text.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?\$/);
+function parseDate(value) {
+  if (!value) return null;
+  let text = String(value).trim();
+  let date = new Date(text);
+  if (!Number.isNaN(date.getTime())) return date;
+
+  const match = text.match(
+    /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?\$/
+  );
+
   if (match) {
-    return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]), Number(match[4] || 0), Number(match[5] || 0), Number(match[6] || 0));
+    return new Date(
+      Number(match[3]), Number(match[2]) - 1, Number(match[1]),
+      Number(match[4] || 0), Number(match[5] || 0),
+      Number(match[6] || 0)
+    );
   }
+
   return null;
 }
 
 function normalizeFire(row) {
+  const satellite = getValue(row, ["Satelite", "Satélite", "satelite", "satellite"]);
+  const lat = asNumber(getValue(row, ["Latitude", "lat", "latitude"]));
+  const lon = asNumber(getValue(row, ["Longitude", "lon", "long", "longitude"]));
+  const dateValue = getValue(row, ["DataHora", "Data_Hora", "datahora", "date", "data"]);
+  const uf = getValue(row, ["Estado", "UF", "sigla_uf", "estado"]);
+  const municipality = getValue(row, ["Municipio", "Município", "municipio"]);
+  const frp = asNumber(getValue(row, ["FRP", "frp"]));
+
   return {
-    satellite: String(getValue(row, ["Satelite", "Satélite", "satellite"]) || "").trim(),
-    lat: asNumber(getValue(row, ["Latitude", "lat", "latitude"])),
-    lon: asNumber(getValue(row, ["Longitude", "lon", "long", "longitude"])),
-    date: parseDate(getValue(row, ["DataHora", "Data_Hora", "data", "date"])),
-    uf: String(getValue(row, ["Estado", "UF", "sigla_uf"]) || "").trim(),
-    municipality: String(getValue(row, ["Municipio", "Município"]) || "").trim(),
-    frp: asNumber(getValue(row, ["FRP", "frp"]))
+    raw: row,
+    satellite: satellite === null ? "" : String(satellite).trim(),
+    lat,
+    lon,
+    date: parseDate(dateValue),
+    uf: uf === null ? "" : String(uf).trim(),
+    municipality: municipality === null ? "" : String(municipality).trim(),
+    frp
   };
 }
 
 function isSouthAmerica(lat, lon) {
-  return Number.isFinite(lat) && Number.isFinite(lon) && lat >= -57 && lat <= 15 && lon >= -82 && lon <= -34;
+  return Number.isFinite(lat) && Number.isFinite(lon) &&
+    lat >= -57 && lat <= 15 && lon >= -82 && lon <= -34;
 }
 
 function filterAquaRows(rows) {
-  return rows.map(normalizeFire).filter(r => isReferenceAqua(r.satellite));
+  return rows
+    .map(normalizeFire)
+    .filter(row => isReferenceAqua(row.satellite));
 }
 
 function firePopup(fire) {
-  const dateStr = fire.date ? fire.date.toLocaleString("pt-BR") : "Não informada";
-  return `<b>Foco de calor</b><br>Satélite: ${fire.satellite}<br>Data: ${dateStr}<br>Estado: ${fire.uf}<br>Município: ${fire.municipality}<br>FRP: ${fire.frp ?? "N/I"}`;
+  const date = fire.date
+    ? fire.date.toLocaleString("pt-BR")
+    : "Data não informada";
+
+  return `
+    <b>Foco de calor</b><br>
+    Satélite: ${escapeHTML(fire.satellite || "Não informado")}<br>
+    Data: ${escapeHTML(date)}<br>
+    Estado: ${escapeHTML(fire.uf || "Não informado")}<br>
+    Município: ${escapeHTML(fire.municipality || "Não informado")}<br>
+    FRP: ${fire.frp === null ? "Não informado" : fire.frp}
+  `;
 }
 
-/* ================== CARREGAMENTO INPE ================== */
-async function loadRecentFires() {
-  setStatus("fireStatus", "Buscando arquivo de 10 min mais recente do INPE...");
-  
-  // Monta o padrão dos arquivos recentes gerados a cada 10 min baseando-se nas últimas horas atuais
-  const now = new Date();
-  const urls = [];
-  
-  // Tenta as últimas 6 horas em intervalos de 10 minutos
-  for (let i = 0; i < 36; i++) {
-    const d = new Date(now.getTime() - i * 10 * 60 * 1000);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    const hh = String(d.getHours()).padStart(2, "0");
-    const min = String(Math.floor(d.getMinutes() / 10) * 10).padStart(2, "0");
-    
-    const filename = `focos_10min_${yyyy}${mm}${dd}_${hh}${min}.csv`;
-    const url = INPE.recentDir + filename;
-    if (!urls.includes(url)) urls.push(url);
-  }
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[char]);
+}
 
-  let collected = [];
-  let loadedCount = 0;
+/* =========================================================
+   ARQUIVOS RECENTES E DIÁRIOS DO INPE
+   ========================================================= */
 
-  for (const url of urls.slice(0, 4)) { // Tenta baixar os 4 mais recentes disponíveis
-    try {
-      const text = await fetchText(url);
-      const csv = parseCSV(text);
-      if (csv.data.length > 0) {
-        collected.push(...csv.data);
-        loadedCount++;
+async function getDirectoryFiles(directory, pattern) {
+  const html = await fetchText(directory);
+  const doc = new DOMParser().parseFromString(html, "text/html");
+
+  return [...doc.querySelectorAll("a[href]")]
+    .map(a => {
+      try {
+        return new URL(a.getAttribute("href"), directory).href;
+      } catch {
+        return null;
       }
-    } catch (e) {
-      // Ignora arquivos que ainda não existam no servidor
-    }
+    })
+    .filter(Boolean)
+    .filter(url => pattern.test(decodeURIComponent(url.split("/").pop())));
+}
+
+function filenameDateTime(filename) {
+  const match = filename.match(/focos_10min_(\d{8})_(\d{4})\.csv\$/i);
+  if (!match) return null;
+
+  const y = Number(match[1].slice(0, 4));
+  const m = Number(match[1].slice(4, 6)) - 1;
+  const d = Number(match[1].slice(6, 8));
+  const hh = Number(match[2].slice(0, 2));
+  const mm = Number(match[2].slice(2, 4));
+
+  return new Date(y, m, d, hh, mm);
+}
+
+function previousLocalDay() {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("");
+}
+
+async function loadRecentFires() {
+  setStatus("fireStatus", "Buscando arquivos recentes do INPE...");
+
+  const urls = await getDirectoryFiles(
+    INPE.recentDir,
+    /^focos_10min_\d{8}_\d{4}\.csv\$/i
+  );
+
+  const now = Date.now();
+  const earliest = now - 85 * 60 * 1000;
+
+  const candidates = urls
+    .map(url => ({
+      url,
+      date: filenameDateTime(decodeURIComponent(url.split("/").pop()))
+    }))
+    .filter(item => item.date &&
+      item.date.getTime() >= earliest &&
+      item.date.getTime() <= now + 5 * 60 * 1000)
+    .sort((a, b) => b.date - a.date);
+
+  if (!candidates.length) {
+    throw new Error("Nenhum CSV recente foi encontrado no diretório 10min do INPE.");
   }
 
-  if (collected.length === 0) {
-    throw new Error("Não foi possível carregar os arquivos de 10 min recentes.");
+  const collected = [];
+  const errors = [];
+
+  for (let i = 0; i < candidates.length; i += 3) {
+    const batch = candidates.slice(i, i + 3);
+    const results = await Promise.allSettled(
+      batch.map(async item => {
+        const csv = parseCSV(await fetchText(item.url));
+        return csv.data;
+      })
+    );
+
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled") {
+        collected.push(...result.value);
+      } else {
+        errors.push(`${batch[index].url.split("/").pop()}: ${result.reason.message}`);
+      }
+    });
   }
 
-  recentFires = filterAquaRows(collected).filter(f => isSouthAmerica(f.lat, f.lon));
+  const cutoff = Date.now() - RECENT_WINDOW_MS;
+
+  recentFires = filterAquaRows(collected).filter(fire =>
+    fire.date &&
+    fire.date.getTime() >= cutoff &&
+    fire.date.getTime() <= Date.now() + 5 * 60 * 1000 &&
+    isSouthAmerica(fire.lat, fire.lon)
+  );
+
   setCount("countRecent", recentFires.length);
-  document.getElementById("fireUpdate").textContent = "Atualizado: " + new Date().toLocaleTimeString("pt-BR");
-  setStatus("fireStatus", `Focos recentes carregados com sucesso (${recentFires.length} registros Aqua).`, "ok");
+  document.getElementById("fireUpdate").textContent =
+    "Atualizado: " + new Date().toLocaleTimeString("pt-BR");
+
+  if (errors.length) {
+    setStatus("fireStatus", `Última hora: ${recentFires.length} focos Aqua. ` + errors.slice(0, 2).join(" | "), "error");
+  } else {
+    setStatus("fireStatus", `Última hora: ${recentFires.length} focos dos satélites Aqua M-M e Aqua M-T.`, "ok");
+  }
+
   drawFireMap();
 }
 
 async function loadDailyFires() {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const dayStr = `${yyyy}${mm}${dd}`;
+  const day = previousLocalDay();
+  document.getElementById("dailyDate").textContent =
+    `${day.slice(6, 8)}/${day.slice(4, 6)}/${day.slice(0, 4)}`;
 
-  document.getElementById("dailyDate").textContent = `${dd}/${mm}/${yyyy}`;
   setStatus("fireStatus", "Buscando o CSV diário do INPE...");
 
-  const filename = `focos_diario_${dayStr}.csv`;
-  const url = INPE.dailyDir + filename;
+  const urls = await getDirectoryFiles(
+    INPE.dailyDir,
+    /^focos_diario_\d{8}\.csv\$/i
+  );
 
-  try {
-    const text = await fetchText(url);
-    const csv = parseCSV(text);
-    dailyFires = filterAquaRows(csv.data).filter(f => isSouthAmerica(f.lat, f.lon));
-    setCount("countDaily", dailyFires.length);
-    setStatus("fireStatus", `Dia anterior (${dd}/${mm}/${yyyy}): ${dailyFires.length} focos Aqua carregados.`, "ok");
-  } catch (err) {
-    // Fallback: se o de ontem exato falhar, tenta tentar o dia anterior menos 1
-    dailyFires = [];
-    setCount("countDaily", 0);
-    setStatus("fireStatus", `Arquivo diário de ${dd}/${mm}/${yyyy} indisponível no servidor do INPE no momento.`, "error");
+  const target = urls.find(url =>
+    new RegExp(`focos_diario_${day}\\.csv$`, "i").test(decodeURIComponent(url.split("/").pop()))
+  );
+
+  if (!target) {
+    throw new Error(`O CSV diário focos_diario_${day}.csv não foi encontrado.`);
   }
+
+  const csv = parseCSV(await fetchText(target));
+
+  dailyFires = filterAquaRows(csv.data).filter(fire =>
+    isSouthAmerica(fire.lat, fire.lon)
+  );
+
+  setCount("countDaily", dailyFires.length);
+  setStatus("fireStatus", `Dia anterior: ${dailyFires.length} focos Aqua carregados.`, "ok");
   drawFireMap();
 }
 
 function drawFireMap() {
   fireLayer.clearLayers();
+
   const mode = document.getElementById("fireMode").value;
   const fires = mode === "daily" ? dailyFires : recentFires;
 
   for (const fire of fires) {
     if (!isSouthAmerica(fire.lat, fire.lon)) continue;
+
     L.circleMarker([fire.lat, fire.lon], {
-      radius: 5,
-      color: "#a31e1e",
-      weight: 1,
-      fillColor: "#e23b35",
-      fillOpacity: 0.8
-    })
-    .bindPopup(firePopup(fire))
-    .addTo(fireLayer);
-  }
-
-  setCount("countMapped", fires.length);
-  document.getElementById("mapModeNote").textContent = mode === "daily" ? "Dia anterior" : "Recentes (10 min)";
-}
-
-/* ================== HISTÓRICO MENSAL ================== */
-async function loadMonthlyFile(year, month) {
-  const cacheKey = `${year}-${String(month).padStart(2, "0")}`;
-  if (monthlyCache.has(cacheKey)) return monthlyCache.get(cacheKey);
-
-  const filename = `focos_mensal_br_${year}${String(month).padStart(2, "0")}.csv`;
-  const text = await fetchText(INPE.monthlyDir + filename);
-  const parsed = parseCSV(text);
-
-  const records = parsed.data.filter(row => isReferenceAqua(getValue(row, ["Satelite", "Satélite", "satellite"])));
-  const result = { records };
-  monthlyCache.set(cacheKey, result);
-  return result;
-}
-
-async function loadMonthlyHistory() {
-  const year = Number(document.getElementById("historyYear").value);
-  const selectedState = document.getElementById("historyState").value;
-  const button = document.getElementById("loadHistory");
-
-  button.disabled = true;
-  button.textContent = "Carregando...";
-  setStatus("monthlyStatus", `Carregando histórico mensal de ${year}...`);
-
-  const monthlyCounts = Array(12).fill(0);
-
-  for (let month = 1; month <= 12; month++) {
-    try {
-      const res = await loadMonthlyFile(year, month);
-      let count = 0;
-      for (const row of res.records) {
-        const st = normalizeKey(getValue(row, ["Estado", "UF", "sigla_uf"]) || "");
-        const ufMatch = STATE_NAMES[st] ? st : STATE_ABBREVIATIONS[st];
-        if (selectedState === "TODOS" || ufMatch === selectedState) {
-          count++;
-        }
-      }
-      monthlyCounts[month - 1] = count;
-    } catch {
-      monthlyCounts[month - 1] = 0;
-    }
-  }
-
-  updateMonthlyChart(monthlyCounts, year, selectedState);
-  setStatus("monthlyStatus", `Histórico mensal de ${year} carregado com sucesso.`, "ok");
-  button.disabled = false;
-  button.textContent = "Carregar 12 meses";
-}
-
-function updateMonthlyChart(values, year, state) {
-  const ctx = document.getElementById("monthlyChart").getContext("2d");
-  const stateLabel = state === "TODOS" ? "Brasil" : state;
-
-  if (monthlyChart) monthlyChart.destroy();
-  monthlyChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: MONTH_NAMES,
-      datasets: [{
-        label: `Focos Aqua · ${stateLabel} · ${year}`,
-        data: values,
-        backgroundColor: "rgba(36, 89, 169, 0.75)",
-        borderColor: "#2459a9",
-        borderWidth: 1,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { grid: { display: false } },
-        y: { beginAtZero: true, ticks: { precision: 0 } }
-      }
-    }
-  });
-}
-
-/* ================== PURPLEAIR ================== */
-function pmColor(pm) {
-  if (pm === null || pm === undefined || !Number.isFinite(pm)) return "#64748b";
-  if (pm < 9) return "#25855a";
-  if (pm < 25) return "#e2b82d";
-  if (pm < 50) return "#e67e22";
-  return "#c52b35";
-}
-
-async function loadPurpleAir() {
-  setStatus("purpleStatus", "Consultando sensores PurpleAir...");
-  try {
-    const params = new URLSearchParams({
-      fields: "name,latitude,longitude,pm2.5_atm,humidity,temperature",
-      location_type: "0",
-      nwlat: "15", nwlng: "-82", selat: "-57", selng: "-34"
-    });
-
-    const response = await fetch(`https://api.purpleair.com/v1/sensors?${params}`, {
-      headers: { "X-API-Key": FIXED_PURPLE_KEY },
-      cache: "no-store"
-    });
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const json = await response.json();
-
-    purpleSensors = json.data.map(vals => {
-      const row = Object.fromEntries(json.fields.map((f, i) => [f, vals[i]]));
-      return {
-        name: row.name || "Sensor",
-        lat: asNumber(row.latitude),
-        lon: asNumber(row.longitude),
-        pm: asNumber(row.pm2.5_atm),
-        humidity: asNumber(row.humidity),
-        temperature: asNumber(row.temperature)
-      };
-    }).filter(s => isSouthAmerica(s.lat, s.lon));
-
-    purpleLayer.clearLayers();
-    for (const s of purpleSensors) {
-      L.circleMarker([s.lat, s.lon], {
-        radius: 6, color: pmColor(s.pm), weight: 1, fillColor: pmColor(s.pm), fillOpacity: 0.85
-      }).bindPopup(`<b>${s.name}</b><br>PM2.5: ${s.pm ?? "N/I"} µg/m³`).addTo(purpleLayer);
-    }
-
-    setCount("countPurple", purpleSensors.length);
-    setStatus("purpleStatus", `${purpleSensors.length} sensores carregados.`, "ok");
-  } catch (err) {
-    setStatus("purpleStatus", `Erro PurpleAir: ${err.message}`, "error");
-  }
-}
-
-/* ================== INICIALIZAÇÃO ================== */
-function init() {
-  const sel = document.getElementById("historyYear");
-  const yr = new Date().getFullYear();
-  for (let y = yr; y >= 2000; y--) {
-    const opt = document.createElement("option");
-    opt.value = y; opt.textContent = y;
-    sel.appendChild(opt);
-  }
-  sel.value = yr;
-
-  document.getElementById("fireMode").addEventListener("change", drawFireMap);
-  document.getElementById("reloadFire").addEventListener("click", () => { loadRecentFires(); loadDailyFires(); });
-  document.getElementById("loadHistory").addEventListener("click", loadMonthlyHistory);
-
-  loadRecentFires();
-  loadDailyFires();
-  loadPurpleAir();
-  setInterval(() => { loadRecentFires(); }, REFRESH_MS);
-}
-
-init();
-</script>
-</body>
-</html>
+      radius:
