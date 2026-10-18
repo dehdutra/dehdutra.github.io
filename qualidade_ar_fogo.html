@@ -3,81 +3,61 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Monitoramento de Focos de Calor | América do Sul</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoramento de Focos de Calor e Qualidade do Ar</title>
 
-  <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
   <style>
     :root {
-      --bg: #f3f6f8;
+      --bg: #f4f6f9;
       --card: #ffffff;
-      --text: #1c2935;
-      --muted: #637383;
-      --border: #dce4ea;
-      --accent: #b93820;
-      --blue: #1769aa;
-      --green: #18794e;
+      --text: #1d2733;
+      --muted: #687586;
+      --border: #e1e6ed;
+      --primary: #2459a9;
+      --danger: #d94343;
+      --success: #25855a;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
     }
 
     header {
-      background: #172b3a;
+      background: #183b69;
       color: white;
       padding: 22px 24px;
     }
 
     header h1 {
       margin: 0 0 7px;
-      font-size: clamp(20px, 3vw, 29px);
+      font-size: clamp(21px, 3vw, 29px);
     }
 
     header p {
       margin: 0;
-      color: #d5e1e9;
-      line-height: 1.5;
+      opacity: .88;
+      font-size: 14px;
     }
 
     main {
       max-width: 1500px;
-      padding: 20px;
       margin: auto;
-    }
-
-    .status {
-      padding: 12px 15px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      margin-bottom: 16px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-
-    .status.error {
-      color: #9e241b;
-      background: #fff2f0;
-      border-color: #f0c4be;
-    }
-
-    .status.ok {
-      color: #155d3a;
-      background: #effaf3;
-      border-color: #c6e8d2;
+      padding: 20px;
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
       margin-bottom: 18px;
     }
@@ -85,208 +65,276 @@
     .card, .panel {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 11px;
-      box-shadow: 0 2px 7px #1525360b;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(20, 40, 70, .045);
     }
 
-    .card { padding: 18px; }
+    .card { padding: 17px; }
 
-    .card .label {
-      color: var(--muted);
+    .card-label {
       font-size: 13px;
-      margin-bottom: 9px;
+      color: var(--muted);
+      margin-bottom: 10px;
     }
 
-    .card .number {
-      font-size: clamp(25px, 3vw, 36px);
+    .card-value {
+      font-size: clamp(23px, 2.7vw, 32px);
       font-weight: 700;
     }
 
-    .card .detail {
+    .card-note {
       color: var(--muted);
       font-size: 12px;
-      margin-top: 8px;
+      margin-top: 7px;
     }
 
-    .panel {
-      padding: 18px;
-      margin-bottom: 18px;
-      min-width: 0;
-    }
-
-    .panel h2 {
-      margin: 0 0 8px;
+    .section-title {
       font-size: 19px;
+      margin: 0 0 15px;
     }
 
-    .description {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin: 0 0 14px;
+    .maps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
     }
 
-    #map {
+    .panel { padding: 18px; margin-bottom: 18px; }
+
+    .map {
+      height: 430px;
       width: 100%;
-      height: min(68vh, 690px);
-      min-height: 390px;
       border-radius: 8px;
-      background: #e7edf1;
+      overflow: hidden;
+      background: #e9eef3;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 18px;
     }
 
     .controls {
       display: flex;
-      gap: 12px;
       flex-wrap: wrap;
       align-items: end;
-      margin: 14px 0;
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
     .field {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-width: 150px;
+      gap: 5px;
+      min-width: 145px;
     }
 
     label {
-      font-size: 13px;
-      font-weight: 600;
+      color: var(--muted);
+      font-size: 12px;
     }
 
-    select, button {
-      min-height: 40px;
-      padding: 9px 12px;
-      border: 1px solid #c7d2dc;
+    select, input, button {
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid #cbd4df;
       border-radius: 7px;
+      font: inherit;
       background: white;
       color: var(--text);
-      font-size: 14px;
     }
 
     button {
       cursor: pointer;
+      background: var(--primary);
       color: white;
-      background: #1e526f;
-      border-color: #1e526f;
+      border-color: var(--primary);
       font-weight: 600;
     }
 
-    button:disabled {
-      opacity: .55;
-      cursor: wait;
+    button:disabled { opacity: .6; cursor: wait; }
+
+    .chart-container {
+      position: relative;
+      height: 340px;
+      width: 100%;
     }
 
-    #chartWrap {
-      height: 360px;
-      position: relative;
+    .status {
+      padding: 10px 12px;
+      margin-top: 10px;
+      border-radius: 7px;
+      background: #f1f5fa;
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .status.error {
+      background: #fff0f0;
+      color: #9f2525;
+    }
+
+    .status.ok {
+      background: #eaf7ef;
+      color: #176b43;
     }
 
     .legend {
       display: flex;
-      gap: 18px;
       flex-wrap: wrap;
+      gap: 12px;
       margin-top: 12px;
+      font-size: 12px;
       color: var(--muted);
-      font-size: 13px;
     }
+
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
 
     .dot {
+      width: 11px;
+      height: 11px;
       display: inline-block;
-      width: 10px;
-      height: 10px;
       border-radius: 50%;
-      margin-right: 6px;
     }
 
-    footer {
-      color: var(--muted);
-      text-align: center;
-      padding: 15px;
+    .footnote {
       font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+      margin-top: 12px;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 900px) {
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .maps { grid-template-columns: 1fr; }
+      .map { height: 350px; }
+    }
+
+    @media (max-width: 520px) {
       main { padding: 12px; }
-      header { padding: 18px 15px; }
-      .cards { grid-template-columns: 1fr; }
-      #map { height: 55vh; min-height: 350px; }
-      .panel { padding: 13px; }
-      #chartWrap { height: 300px; }
+      header { padding: 18px 14px; }
+      .cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .card { padding: 12px; }
+      .panel { padding: 12px; }
+      .chart-container { height: 300px; }
     }
   </style>
 </head>
 
 <body>
 <header>
-  <h1>Monitoramento de Focos de Calor</h1>
-  <p>América do Sul | BDQueimadas/INPE | Satélites de referência Aqua_M-M e Aqua_M-T</p>
+  <h1>Monitoramento de Focos de Calor e Qualidade do Ar</h1>
+  <p>América do Sul · BDQueimadas/INPE e sensores PurpleAir</p>
 </header>
 
 <main>
-  <div id="globalStatus" class="status">
-    Inicializando o dashboard...
-  </div>
-
   <section class="cards">
     <div class="card">
-      <div class="label">Focos na última hora</div>
-      <div id="recentCount" class="number">--</div>
-      <div id="recentDetail" class="detail">Aguardando dados do INPE</div>
+      <div class="card-label">Focos na última hora</div>
+      <div class="card-value" id="countRecent">—</div>
+      <div class="card-note">Satélites Aqua M-M e Aqua M-T</div>
     </div>
 
     <div class="card">
-      <div class="label">Focos do dia anterior</div>
-      <div id="dailyCount" class="number">--</div>
-      <div id="dailyDetail" class="detail">Aguardando dados do INPE</div>
+      <div class="card-label">Focos no dia anterior</div>
+      <div class="card-value" id="countDaily">—</div>
+      <div class="card-note" id="dailyDate">Aguardando dados</div>
     </div>
 
     <div class="card">
-      <div class="label">Focos visíveis no mapa</div>
-      <div id="mapCount" class="number">0</div>
-      <div class="detail">Camada selecionada abaixo do mapa</div>
+      <div class="card-label">Focos exibidos no mapa</div>
+      <div class="card-value" id="countMapped">—</div>
+      <div class="card-note" id="mapModeNote">Última hora</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Sensores PurpleAir</div>
+      <div class="card-value" id="countPurple">—</div>
+      <div class="card-note">Sensores retornados pela API</div>
     </div>
   </section>
 
-  <section class="panel">
-    <h2>Distribuição espacial dos focos</h2>
-    <p class="description">
-      Mapa da América do Sul sem limites estaduais brasileiros.
-      Clique em um ponto para consultar os atributos disponíveis do foco.
-    </p>
-
-    <div class="controls">
-      <div class="field">
-        <label for="mapMode">Dados exibidos no mapa</label>
-        <select id="mapMode">
-          <option value="recent">Última hora</option>
-          <option value="daily">Dia anterior</option>
-        </select>
+  <section class="maps">
+    <div class="panel">
+      <div class="panel-heading">
+        <h2>Focos de calor</h2>
+        <span id="fireUpdate" class="card-note">Aguardando atualização</span>
       </div>
 
-      <button id="refreshBtn" type="button">Atualizar dados</button>
+      <div class="controls">
+        <div class="field">
+          <label for="fireMode">Período exibido</label>
+          <select id="fireMode">
+            <option value="recent">Última hora</option>
+            <option value="daily">Dia anterior</option>
+          </select>
+        </div>
+        <button id="reloadFire">Atualizar focos</button>
+      </div>
+
+      <div id="fireMap" class="map"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:#e23b35"></i> Foco de calor</span>
+      </div>
+      <div id="fireStatus" class="status">Carregando arquivos do INPE...</div>
     </div>
 
-    <div id="map" aria-label="Mapa de focos de calor na América do Sul"></div>
+    <div class="panel">
+      <div class="panel-heading">
+        <h2>Qualidade do ar · PurpleAir</h2>
+        <span class="card-note">PM2.5</span>
+      </div>
 
-    <div class="legend">
-      <span><i class="dot" style="background:#e0442e"></i>Focos Aqua_M-M e Aqua_M-T</span>
-      <span>Fonte: Programa Queimadas/INPE</span>
+      <div id="purpleMap" class="map"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:#25855a"></i> 0–8,9</span>
+        <span><i class="dot" style="background:#e2b82d"></i> 9–24,9</span>
+        <span><i class="dot" style="background:#e67e22"></i> 25–49,9</span>
+        <span><i class="dot" style="background:#c52b35"></i> ≥50 µg/m³</span>
+      </div>
+
+      <div class="controls" style="margin-top:14px">
+        <div class="field" style="flex:1">
+          <label for="purpleKey">Chave de leitura da API PurpleAir</label>
+          <input id="purpleKey" type="password" autocomplete="off"
+                 placeholder="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129">
+        </div>
+        <button id="reloadPurple">Consultar PurpleAir</button>
+      </div>
+
+      <div id="purpleStatus" class="status">
+        Insira sua chave e consulte os sensores.
+      </div>
     </div>
   </section>
 
   <section class="panel">
-    <h2>Histórico mensal por estado</h2>
-    <p class="description">
-      Selecione uma unidade federativa e um ano. O gráfico consulta os
-      arquivos mensais do Brasil e contabiliza os registros Aqua_M-M e
-      Aqua_M-T para o estado selecionado.
-    </p>
+    <div class="panel-heading">
+      <h2>Histórico mensal de focos por estado</h2>
+    </div>
 
     <div class="controls">
       <div class="field">
-        <label for="stateSelect">Estado brasileiro</label>
-        <select id="stateSelect">
+        <label for="historyYear">Ano</label>
+        <select id="historyYear"></select>
+      </div>
+
+      <div class="field">
+        <label for="historyState">Estado</label>
+        <select id="historyState">
+          <option value="TODOS">Brasil (todos os estados)</option>
           <option value="AC">Acre (AC)</option>
           <option value="AL">Alagoas (AL)</option>
           <option value="AP">Amapá (AP)</option>
@@ -317,818 +365,988 @@
         </select>
       </div>
 
-      <div class="field">
-        <label for="yearSelect">Ano</label>
-        <select id="yearSelect"></select>
-      </div>
-
-      <button id="historyBtn" type="button">Consultar histórico</button>
+      <button id="loadHistory">Carregar 12 meses</button>
     </div>
 
-    <div id="historyStatus" class="status">
-      Selecione o estado e o ano para consultar o histórico mensal.
-    </div>
-
-    <div id="chartWrap">
+    <div class="chart-container">
       <canvas id="monthlyChart"></canvas>
     </div>
+
+    <div id="monthlyStatus" class="status">
+      Selecione o ano e clique em “Carregar 12 meses”.
+    </div>
+
+    <p class="footnote">
+      A série considera os registros dos satélites Aqua M-M e Aqua M-T.
+      Meses sem registros são exibidos como zero somente quando o CSV foi
+      lido com sucesso. Arquivos que falharem na leitura serão identificados
+      separadamente.
+    </p>
   </section>
+
+  <section class="panel">
+    <div class="panel-heading">
+      <h2>Maiores concentrações de PM2.5 · PurpleAir</h2>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="purpleChart"></canvas>
+    </div>
+
+    <div class="footnote">
+      Os valores representam as leituras retornadas pela API no momento da consulta.
+      A disponibilidade depende dos sensores e das permissões da chave utilizada.
+    </div>
+  </section>
+
+  <p class="footnote">
+    Fonte dos focos: INPE/BDQueimadas. Fonte da qualidade do ar: PurpleAir.
+    A disponibilidade dos dados depende dos servidores de origem e das permissões
+    de acesso do navegador.
+  </p>
 </main>
 
-<footer>
-  Dados de focos ativos de fogo. A detecção por satélite não representa,
-  isoladamente, a área queimada nem confirma a ocorrência de um incêndio.
-</footer>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-
 <script>
-(() => {
-  "use strict";
+"use strict";
 
-  // =========================================================
-  // CONFIGURAÇÃO
-  // =========================================================
+/* =========================================================
+   CONFIGURAÇÃO
+   ========================================================= */
 
-  const BASE =
-    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/";
+const INPE = {
+  recentDir:
+    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/",
+  dailyDir:
+    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/",
+  monthlyDir:
+    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/"
+};
 
-  const RECENT_DIR = BASE + "10min/";
-  const DAILY_DIR = BASE + "diario/America_Sul/";
-  const MONTHLY_DIR = BASE + "mensal/Brasil/";
+const REFRESH_MS = 10 * 60 * 1000;
+const RECENT_WINDOW_MS = 60 * 60 * 1000;
+const MONTH_NAMES = [
+  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+  "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+];
 
-  const REFRESH_MS = 10 * 60 * 1000;
-  const RECENT_WINDOW_MS = 60 * 60 * 1000;
+const STATE_NAMES = {
+  AC: "ACRE", AL: "ALAGOAS", AP: "AMAPA", AM: "AMAZONAS",
+  BA: "BAHIA", CE: "CEARA", DF: "DISTRITO FEDERAL",
+  ES: "ESPIRITO SANTO", GO: "GOIAS", MA: "MARANHAO",
+  MT: "MATO GROSSO", MS: "MATO GROSSO DO SUL",
+  MG: "MINAS GERAIS", PA: "PARA", PB: "PARAIBA",
+  PR: "PARANA", PE: "PERNAMBUCO", PI: "PIAUI",
+  RJ: "RIO DE JANEIRO", RN: "RIO GRANDE DO NORTE",
+  RS: "RIO GRANDE DO SUL", RO: "RONDONIA",
+  RR: "RORAIMA", SC: "SANTA CATARINA", SP: "SAO PAULO",
+  SE: "SERGIPE", TO: "TOCANTINS"
+};
 
-  const SATELLITE_LABEL = "Aqua_M-M e Aqua_M-T";
+const STATE_ABBREVIATIONS = Object.fromEntries(
+  Object.entries(STATE_NAMES).map(([uf, name]) => [name, uf])
+);
 
-  const MONTHS = [
-    "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-    "Jul", "Ago", "Set", "Out", "Nov", "Dez"
-  ];
+let recentFires = [];
+let dailyFires = [];
+let purpleSensors = [];
+let monthlyChart = null;
+let purpleChart = null;
+let fireLayer = null;
+let purpleLayer = null;
+let monthlyCache = new Map();
 
-  const STATE_NAMES = {
-    AC: "Acre", AL: "Alagoas", AP: "Amapá",
-    AM: "Amazonas", BA: "Bahia", CE: "Ceará",
-    DF: "Distrito Federal", ES: "Espírito Santo",
-    GO: "Goiás", MA: "Maranhão", MT: "Mato Grosso",
-    MS: "Mato Grosso do Sul", MG: "Minas Gerais",
-    PA: "Pará", PB: "Paraíba", PR: "Paraná",
-    PE: "Pernambuco", PI: "Piauí", RJ: "Rio de Janeiro",
-    RN: "Rio Grande do Norte", RS: "Rio Grande do Sul",
-    RO: "Rondônia", RR: "Roraima", SC: "Santa Catarina",
-    SP: "São Paulo", SE: "Sergipe", TO: "Tocantins"
+/* =========================================================
+   MAPAS LEAFLET
+   Não são adicionadas fronteiras estaduais.
+   ========================================================= */
+
+const southAmericaBounds = L.latLngBounds(
+  [-57, -82],
+  [15, -34]
+);
+
+const fireMap = L.map("fireMap", {
+  preferCanvas: true
+}).fitBounds(southAmericaBounds);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 12,
+  attribution: "&copy; OpenStreetMap contributors"
+}).addTo(fireMap);
+
+fireLayer = L.layerGroup().addTo(fireMap);
+
+const purpleMap = L.map("purpleMap", {
+  preferCanvas: true
+}).fitBounds(southAmericaBounds);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 12,
+  attribution: "&copy; OpenStreetMap contributors"
+}).addTo(purpleMap);
+
+purpleLayer = L.layerGroup().addTo(purpleMap);
+
+/* =========================================================
+   FUNÇÕES DE NORMALIZAÇÃO E LEITURA CSV
+   ========================================================= */
+
+function normalizeKey(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+}
+
+/*
+ * Aceita Aqua_M-M e Aqua_M-T, inclusive quando os separadores
+ * aparecem de outra forma no CSV.
+ */
+function isReferenceAqua(value) {
+  const satellite = String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/[\s-]+/g, "_")
+    .replace(/_+/g, "_")
+    .trim();
+
+  return satellite === "AQUA_M_M" ||
+         satellite === "AQUA_M_T";
+}
+
+function getValue(row, aliases) {
+  const keys = Object.keys(row || {});
+  for (const alias of aliases) {
+    const wanted = normalizeKey(alias);
+    const actual = keys.find(key => normalizeKey(key) === wanted);
+    if (actual !== undefined && row[actual] !== undefined &&
+        row[actual] !== null && String(row[actual]).trim() !== "") {
+      return row[actual];
+    }
+  }
+  return null;
+}
+
+function parseCSV(text) {
+  const result = Papa.parse(text, {
+    header: true,
+    skipEmptyLines: "greedy",
+    transformHeader: header => String(header).replace(/^\uFEFF/, "").trim()
+  });
+
+  if (!result.meta.fields || result.meta.fields.length === 0) {
+    throw new Error("CSV sem cabeçalho reconhecível.");
+  }
+
+  if (!result.data || result.data.length === 0) {
+    return { fields: result.meta.fields, data: [] };
+  }
+
+  return { fields: result.meta.fields, data: result.data };
+}
+
+async function fetchText(url, timeoutMs = 45000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return await response.text();
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function setStatus(id, message, kind = "") {
+  const element = document.getElementById(id);
+  element.textContent = message;
+  element.className = "status" + (kind ? " " + kind : "");
+}
+
+function setCount(id, value) {
+  document.getElementById(id).textContent =
+    Number(value).toLocaleString("pt-BR");
+}
+
+function asNumber(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(String(value).replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
+
+function parseDate(value) {
+  if (!value) return null;
+
+  let text = String(value).trim();
+
+  // Alguns arquivos podem trazer formato ISO sem Z.
+  let date = new Date(text);
+  if (!Number.isNaN(date.getTime())) return date;
+
+  // Formato dd/mm/yyyy HH:mm:ss
+  const match = text.match(
+    /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?$/
+  );
+
+  if (match) {
+    return new Date(
+      Number(match[3]), Number(match[2]) - 1, Number(match[1]),
+      Number(match[4] || 0), Number(match[5] || 0),
+      Number(match[6] || 0)
+    );
+  }
+
+  return null;
+}
+
+function normalizeFire(row) {
+  const satellite = getValue(row, [
+    "Satelite", "Satélite", "satelite", "satellite"
+  ]);
+
+  const lat = asNumber(getValue(row, [
+    "Latitude", "lat", "latitude"
+  ]));
+
+  const lon = asNumber(getValue(row, [
+    "Longitude", "lon", "long", "longitude"
+  ]));
+
+  const dateValue = getValue(row, [
+    "DataHora", "Data_Hora", "datahora", "date", "data"
+  ]);
+
+  const uf = getValue(row, [
+    "Estado", "UF", "sigla_uf", "estado"
+  ]);
+
+  const municipality = getValue(row, [
+    "Municipio", "Município", "municipio"
+  ]);
+
+  const frp = asNumber(getValue(row, ["FRP", "frp"]));
+
+  return {
+    raw: row,
+    satellite: satellite === null ? "" : String(satellite).trim(),
+    lat,
+    lon,
+    date: parseDate(dateValue),
+    uf: uf === null ? "" : String(uf).trim(),
+    municipality: municipality === null ? "" : String(municipality).trim(),
+    frp
+  };
+}
+
+function isSouthAmerica(lat, lon) {
+  return Number.isFinite(lat) && Number.isFinite(lon) &&
+    lat >= -57 && lat <= 15 && lon >= -82 && lon <= -34;
+}
+
+function filterAquaRows(rows) {
+  return rows
+    .map(normalizeFire)
+    .filter(row => isReferenceAqua(row.satellite));
+}
+
+function firePopup(fire) {
+  const date = fire.date
+    ? fire.date.toLocaleString("pt-BR")
+    : "Data não informada";
+
+  return `
+    <b>Foco de calor</b><br>
+    Satélite: ${escapeHTML(fire.satellite || "Não informado")}<br>
+    Data: ${escapeHTML(date)}<br>
+    Estado: ${escapeHTML(fire.uf || "Não informado")}<br>
+    Município: ${escapeHTML(fire.municipality || "Não informado")}<br>
+    FRP: ${fire.frp === null ? "Não informado" : fire.frp}
+  `;
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[char]);
+}
+
+/* =========================================================
+   ARQUIVOS RECENTES E DIÁRIOS DO INPE
+   ========================================================= */
+
+async function getDirectoryFiles(directory, pattern) {
+  const html = await fetchText(directory);
+  const doc = new DOMParser().parseFromString(html, "text/html");
+
+  return [...doc.querySelectorAll("a[href]")]
+    .map(a => {
+      try {
+        return new URL(a.getAttribute("href"), directory).href;
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean)
+    .filter(url => pattern.test(decodeURIComponent(url.split("/").pop())));
+}
+
+function filenameDateTime(filename) {
+  const match = filename.match(/focos_10min_(\d{8})_(\d{4})\.csv$/i);
+  if (!match) return null;
+
+  const y = Number(match[1].slice(0, 4));
+  const m = Number(match[1].slice(4, 6)) - 1;
+  const d = Number(match[1].slice(6, 8));
+  const hh = Number(match[2].slice(0, 2));
+  const mm = Number(match[2].slice(2, 4));
+
+  return new Date(y, m, d, hh, mm);
+}
+
+function previousLocalDay() {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("");
+}
+
+async function loadRecentFires() {
+  setStatus("fireStatus", "Buscando arquivos recentes do INPE...");
+
+  const urls = await getDirectoryFiles(
+    INPE.recentDir,
+    /^focos_10min_\d{8}_\d{4}\.csv$/i
+  );
+
+  const now = Date.now();
+  const earliest = now - 85 * 60 * 1000;
+
+  const candidates = urls
+    .map(url => ({
+      url,
+      date: filenameDateTime(decodeURIComponent(url.split("/").pop()))
+    }))
+    .filter(item => item.date &&
+      item.date.getTime() >= earliest &&
+      item.date.getTime() <= now + 5 * 60 * 1000)
+    .sort((a, b) => b.date - a.date);
+
+  if (!candidates.length) {
+    throw new Error(
+      "Nenhum CSV recente foi encontrado no diretório 10min do INPE."
+    );
+  }
+
+  const collected = [];
+  const errors = [];
+
+  // Limita o número de downloads simultâneos.
+  for (let i = 0; i < candidates.length; i += 3) {
+    const batch = candidates.slice(i, i + 3);
+    const results = await Promise.allSettled(
+      batch.map(async item => {
+        const csv = parseCSV(await fetchText(item.url));
+        return csv.data;
+      })
+    );
+
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled") {
+        collected.push(...result.value);
+      } else {
+        errors.push(
+          `${batch[index].url.split("/").pop()}: ${result.reason.message}`
+        );
+      }
+    });
+  }
+
+  const cutoff = Date.now() - RECENT_WINDOW_MS;
+
+  recentFires = filterAquaRows(collected).filter(fire =>
+    fire.date &&
+    fire.date.getTime() >= cutoff &&
+    fire.date.getTime() <= Date.now() + 5 * 60 * 1000 &&
+    isSouthAmerica(fire.lat, fire.lon)
+  );
+
+  setCount("countRecent", recentFires.length);
+  document.getElementById("fireUpdate").textContent =
+    "Atualizado: " + new Date().toLocaleTimeString("pt-BR");
+
+  if (errors.length) {
+    setStatus(
+      "fireStatus",
+      `Última hora: ${recentFires.length} focos Aqua. ` +
+      `${errors.length} arquivo(s) recente(s) não foram lidos. ` +
+      errors.slice(0, 3).join(" | "),
+      "error"
+    );
+  } else {
+    setStatus(
+      "fireStatus",
+      `Última hora: ${recentFires.length} focos dos satélites Aqua M-M e Aqua M-T.`,
+      "ok"
+    );
+  }
+
+  drawFireMap();
+}
+
+async function loadDailyFires() {
+  const day = previousLocalDay();
+  document.getElementById("dailyDate").textContent =
+    `${day.slice(6, 8)}/${day.slice(4, 6)}/${day.slice(0, 4)}`;
+
+  setStatus("fireStatus", "Buscando o CSV diário do INPE...");
+
+  const urls = await getDirectoryFiles(
+    INPE.dailyDir,
+    /^focos_diario_\d{8}\.csv$/i
+  );
+
+  const target = urls.find(url =>
+    new RegExp(`focos_diario_${day}\\.csv$`, "i")
+      .test(decodeURIComponent(url.split("/").pop()))
+  );
+
+  if (!target) {
+    throw new Error(
+      `O CSV diário focos_diario_${day}.csv não foi encontrado.`
+    );
+  }
+
+  const csv = parseCSV(await fetchText(target));
+
+  dailyFires = filterAquaRows(csv.data).filter(fire =>
+    isSouthAmerica(fire.lat, fire.lon)
+  );
+
+  setCount("countDaily", dailyFires.length);
+
+  setStatus(
+    "fireStatus",
+    `Dia anterior: ${dailyFires.length} focos Aqua carregados.`,
+    "ok"
+  );
+
+  drawFireMap();
+}
+
+function drawFireMap() {
+  fireLayer.clearLayers();
+
+  const mode = document.getElementById("fireMode").value;
+  const fires = mode === "daily" ? dailyFires : recentFires;
+
+  for (const fire of fires) {
+    if (!isSouthAmerica(fire.lat, fire.lon)) continue;
+
+    L.circleMarker([fire.lat, fire.lon], {
+      radius: 5,
+      color: "#a31e1e",
+      weight: 1,
+      fillColor: "#e23b35",
+      fillOpacity: 0.8
+    })
+    .bindPopup(firePopup(fire))
+    .addTo(fireLayer);
+  }
+
+  setCount("countMapped", fires.length);
+  document.getElementById("mapModeNote").textContent =
+    mode === "daily" ? "Dia anterior" : "Última hora";
+}
+
+/* =========================================================
+   HISTÓRICO MENSAL
+   Carrega cada arquivo mensal individualmente.
+   Não depende de baixar um único CSV anual.
+   ========================================================= */
+
+function monthlyFilename(year, month) {
+  return `focos_mensal_br_${year}${String(month).padStart(2, "0")}.csv`;
+}
+
+function getMonthlyUrl(year, month) {
+  return INPE.monthlyDir + monthlyFilename(year, month);
+}
+
+function normalizeState(value) {
+  if (value === null || value === undefined) return "";
+
+  const key = normalizeKey(value);
+
+  if (STATE_NAMES[key]) return key;
+  if (STATE_ABBREVIATIONS[key]) return STATE_ABBREVIATIONS[key];
+
+  // Alguns arquivos podem registrar a sigla dentro de outro campo.
+  if (key.length === 2 && STATE_NAMES[key]) return key;
+
+  const match = Object.entries(STATE_NAMES).find(([, name]) =>
+    normalizeKey(name) === key
+  );
+
+  return match ? match[0] : "";
+}
+
+function getFireState(row) {
+  const value = getValue(row, [
+    "Estado", "UF", "sigla_uf", "estado", "UnidadeFederativa"
+  ]);
+  return normalizeState(value);
+}
+
+function isMonthFileForYear(url, year) {
+  const filename = decodeURIComponent(url.split("/").pop());
+  const match = filename.match(/^focos_mensal_br_(\d{4})(\d{2})\.csv$/i);
+  return match && Number(match[1]) === Number(year);
+}
+
+async function loadMonthlyFile(year, month) {
+  const cacheKey = `${year}-${String(month).padStart(2, "0")}`;
+
+  if (monthlyCache.has(cacheKey)) {
+    return monthlyCache.get(cacheKey);
+  }
+
+  const url = getMonthlyUrl(year, month);
+  const text = await fetchText(url, 90000);
+  const parsed = parseCSV(text);
+
+  /*
+   * Um arquivo vazio pode ser válido, mas um CSV sem campos
+   * essenciais indica que não devemos tratá-lo como zero focos.
+   */
+  const headers = parsed.fields.map(normalizeKey);
+  const satelliteHeader = headers.some(h =>
+    ["SATELITE", "SATELLITE"].includes(h)
+  );
+
+  if (!satelliteHeader) {
+    throw new Error("CSV lido, mas não contém coluna de satélite.");
+  }
+
+  const records = parsed.data.filter(row => {
+    const sat = getValue(row, [
+      "Satelite", "Satélite", "satellite"
+    ]);
+    return isReferenceAqua(sat);
+  });
+
+  const result = {
+    year,
+    month,
+    filename: monthlyFilename(year, month),
+    records,
+    totalAqua: records.length
   };
 
-  let recentData = [];
-  let dailyData = [];
-  let focusLayer = null;
-  let monthlyChart = null;
-  let monthlyFileCache = null;
-  let refreshInProgress = false;
-  let historyInProgress = false;
+  monthlyCache.set(cacheKey, result);
+  return result;
+}
 
-  const $ = id => document.getElementById(id);
+async function loadMonthlyHistory() {
+  const year = Number(document.getElementById("historyYear").value);
+  const selectedState = document.getElementById("historyState").value;
+  const button = document.getElementById("loadHistory");
 
-  // =========================================================
-  // UTILITÁRIOS
-  // =========================================================
+  button.disabled = true;
+  button.textContent = "Carregando...";
 
-  function setStatus(message, type = "") {
-    const el = $("globalStatus");
-    el.textContent = message;
-    el.className = "status" + (type ? " " + type : "");
-  }
+  const monthlyCounts = Array(12).fill(0);
+  const successes = [];
+  const failures = [];
 
-  function setHistoryStatus(message, type = "") {
-    const el = $("historyStatus");
-    el.textContent = message;
-    el.className = "status" + (type ? " " + type : "");
-  }
+  setStatus(
+    "monthlyStatus",
+    `Carregando os arquivos mensais de ${year}. Isso pode levar alguns minutos...`
+  );
 
-  function formatNumber(n) {
-    return Number(n || 0).toLocaleString("pt-BR");
-  }
+  try {
+    /*
+     * Processa sequencialmente para evitar sobrecarregar a conexão
+     * e reduzir falhas de leitura em CSVs grandes.
+     */
+    for (let month = 1; month <= 12; month++) {
+      setStatus(
+        "monthlyStatus",
+        `Lendo ${month}/12: ${monthlyFilename(year, month)}...`
+      );
 
-  function normalizeKey(value) {
-    return String(value ?? "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "");
-  }
+      try {
+        const result = await loadMonthlyFile(year, month);
+        let count = 0;
 
-  function getField(row, candidates) {
-    const keys = Object.keys(row || {});
-    const normalized = new Map(
-      keys.map(k => [normalizeKey(k), k])
+        for (const row of result.records) {
+          if (selectedState === "TODOS") {
+            count++;
+          } else if (getFireState(row) === selectedState) {
+            count++;
+          }
+        }
+
+        monthlyCounts[month - 1] = count;
+        successes.push(month);
+      } catch (error) {
+        failures.push({
+          month,
+          filename: monthlyFilename(year, month),
+          message: error && error.message ? error.message : String(error)
+        });
+      }
+
+      updateMonthlyChart(
+        monthlyCounts,
+        year,
+        selectedState,
+        successes,
+        failures
+      );
+    }
+
+    updateMonthlyChart(
+      monthlyCounts,
+      year,
+      selectedState,
+      successes,
+      failures
     );
 
-    for (const candidate of candidates) {
-      const original = normalized.get(normalizeKey(candidate));
+    const stateLabel = selectedState === "TODOS"
+      ? "Brasil"
+      : selectedState;
 
-      if (original !== undefined && row[original] !== undefined) {
-        return row[original];
+    if (failures.length === 0) {
+      setStatus(
+        "monthlyStatus",
+        `Concluído: 12/12 arquivos mensais lidos para ${year}. ` +
+        `Filtro: ${stateLabel}. Satélites incluídos: Aqua M-M e Aqua M-T.`,
+        "ok"
+      );
+    } else {
+      const failureText = failures.map(item =>
+        `${MONTH_NAMES[item.month - 1]} (${item.filename}: ${item.message})`
+      ).join(" | ");
+
+      setStatus(
+        "monthlyStatus",
+        `Atenção: ${successes.length}/12 arquivos mensais lidos para ${year}. ` +
+        `Os meses que falharam não foram tratados como zero. ` +
+        `Falhas: ${failureText}`,
+        "error"
+      );
+    }
+  } finally {
+    button.disabled = false;
+    button.textContent = "Carregar 12 meses";
+  }
+}
+
+function updateMonthlyChart(values, year, state, successes, failures) {
+  const ctx = document.getElementById("monthlyChart").getContext("2d");
+  const stateLabel = state === "TODOS" ? "Brasil" : state;
+
+  if (monthlyChart) monthlyChart.destroy();
+
+  const loadedMonths = new Set(successes);
+  const plottedValues = values.map((value, index) =>
+    loadedMonths.has(index + 1) ? value : null
+  );
+
+  monthlyChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: MONTH_NAMES,
+      datasets: [{
+        label: `Focos Aqua · ${stateLabel} · ${year}`,
+        data: plottedValues,
+        backgroundColor: "rgba(36, 89, 169, 0.75)",
+        borderColor: "#2459a9",
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: "index" },
+      plugins: {
+        legend: { display: true },
+        tooltip: {
+          callbacks: {
+            label: context => context.raw === null
+              ? "Mês não carregado"
+              : ` ${Number(context.raw).toLocaleString("pt-BR")} focos`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: "Mês" },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Número de focos" },
+          ticks: { precision: 0 }
+        }
       }
     }
+  });
+}
 
-    return "";
-  }
+/* =========================================================
+   PURPLEAIR
+   A consulta é manual para evitar consumo desnecessário da API.
+   ========================================================= */
 
-  function parseNumber(value) {
-    if (value === null || value === undefined || value === "") {
-      return NaN;
+function pmColor(pm) {
+  if (pm === null || pm === undefined || !Number.isFinite(pm)) return "#64748b";
+  if (pm < 9) return "#25855a";
+  if (pm < 25) return "#e2b82d";
+  if (pm < 50) return "#e67e22";
+  return "#c52b35";
+}
+
+function getSensorValue(sensor, aliases) {
+  const keys = Object.keys(sensor || {});
+  for (const alias of aliases) {
+    const key = keys.find(k => normalizeKey(k) === normalizeKey(alias));
+    if (key !== undefined && sensor[key] !== null && sensor[key] !== "") {
+      return sensor[key];
     }
+  }
+  return null;
+}
 
-    const n = Number(String(value).trim().replace(",", "."));
-    return Number.isFinite(n) ? n : NaN;
+async function loadPurpleAir() {
+  const key = document.getElementById("purpleKey").value.trim();
+  const button = document.getElementById("reloadPurple");
+
+  if (!key) {
+    setStatus("purpleStatus", "Insira sua chave de leitura da API PurpleAir.", "error");
+    return;
   }
 
-  function parseDate(value) {
-    if (!value) return null;
+  button.disabled = true;
+  button.textContent = "Consultando...";
+  setStatus("purpleStatus", "Consultando os sensores PurpleAir...");
 
-    const raw = String(value).trim();
-    let date = new Date(raw.replace(" ", "T"));
+  try {
+    const fields = [
+      "name", "latitude", "longitude",
+      "pm2.5_atm", "pm2.5_alt",
+      "humidity", "temperature", "last_seen"
+    ];
 
-    if (!Number.isNaN(date.getTime())) return date;
+    const params = new URLSearchParams({
+      fields: fields.join(","),
+      location_type: "0",
+      nwlat: "15",
+      nwlng: "-82",
+      selat: "-57",
+      selng: "-34",
+      max_age: "3600"
+    });
 
-    const m = raw.match(
-      /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?$/
-    );
+    const url = `https://api.purpleair.com/v1/sensors?${params.toString()}`;
 
-    if (m) {
-      date = new Date(Date.UTC(
-        Number(m[3]),
-        Number(m[2]) - 1,
-        Number(m[1]),
-        Number(m[4] || 0),
-        Number(m[5] || 0),
-        Number(m[6] || 0)
-      ));
-
-      return Number.isNaN(date.getTime()) ? null : date;
-    }
-
-    return null;
-  }
-
-  // =========================================================
-  // FILTRO DOS DOIS SATÉLITES DE REFERÊNCIA
-  //
-  // Aceita Aqua_M-M e Aqua_M-T.
-  // A normalização também aceita variações de maiúsculas,
-  // espaços e hífens.
-  // =========================================================
-
-  function isReferenceAqua(row) {
-    const satellite = String(
-      getField(row, ["Satelite", "Satélite", "satellite"])
-    )
-      .trim()
-      .toUpperCase()
-      .replace(/-/g, "_")
-      .replace(/\s+/g, "");
-
-    return satellite === "AQUA_M_M" ||
-           satellite === "AQUA_M_T";
-  }
-
-  function normalizeRecord(row) {
-    const lat = parseNumber(getField(row, [
-      "Latitude", "lat", "latitude"
-    ]));
-
-    const lon = parseNumber(getField(row, [
-      "Longitude", "lon", "long", "longitude"
-    ]));
-
-    const dateText = getField(row, [
-      "DataHora", "Data_Hora", "datahora", "date"
-    ]);
-
-    const date = parseDate(dateText);
-
-    return {
-      original: row,
-      lat,
-      lon,
-      date,
-      dateText: String(dateText || ""),
-      satellite: String(getField(row, [
-        "Satelite", "Satélite", "satellite"
-      ]) || ""),
-      state: String(getField(row, [
-        "Estado", "UF", "estado", "sigla_uf"
-      ]) || ""),
-      country: String(getField(row, [
-        "Pais", "País", "country"
-      ]) || ""),
-      municipality: String(getField(row, [
-        "Municipio", "Município", "municipality"
-      ]) || "")
-    };
-  }
-
-  function validCoordinates(record) {
-    return Number.isFinite(record.lat) &&
-      Number.isFinite(record.lon) &&
-      record.lat >= -60 && record.lat <= 20 &&
-      record.lon >= -95 && record.lon <= -25;
-  }
-
-  // =========================================================
-  // DOWNLOAD E PARSE DE CSV
-  // =========================================================
-
-  async function fetchText(url) {
     const response = await fetch(url, {
+      headers: { "X-API-Key": key },
       cache: "no-store"
     });
 
     if (!response.ok) {
       throw new Error(
-        "Erro HTTP " + response.status + " ao acessar " + url
+        `API PurpleAir retornou HTTP ${response.status}. Verifique a chave, ` +
+        `as permissões e os limites de consulta.`
       );
     }
 
-    return response.text();
-  }
+    const json = await response.json();
 
-  function parseCSV(text) {
-    const result = Papa.parse(text, {
-      header: true,
-      skipEmptyLines: "greedy",
-      transformHeader: h => String(h).replace(/^\uFEFF/, "").trim()
-    });
-
-    if (result.errors?.length && !result.data?.length) {
-      throw new Error("Não foi possível interpretar o CSV.");
+    if (!Array.isArray(json.fields) || !Array.isArray(json.data)) {
+      throw new Error("A resposta da API não contém os campos e os dados esperados.");
     }
 
-    return result.data || [];
-  }
-
-  async function fetchCSV(url) {
-    return parseCSV(await fetchText(url));
-  }
-
-  async function fetchDirectoryFiles(directory, regex) {
-    const html = await fetchText(directory);
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    const files = new Set();
-
-    for (const link of doc.querySelectorAll("a[href]")) {
-      const href = link.getAttribute("href");
-      if (!href) continue;
-
-      let url;
-
-      try {
-        url = new URL(href, directory);
-      } catch {
-        continue;
-      }
-
-      const filename = decodeURIComponent(
-        url.pathname.split("/").pop() || ""
+    purpleSensors = json.data.map(values => {
+      const row = Object.fromEntries(
+        json.fields.map((field, index) => [field, values[index]])
       );
 
-      if (regex.test(filename)) {
-        files.add(url.href);
-      }
-    }
-
-    if (!files.size) {
-      throw new Error(
-        "Nenhum arquivo compatível encontrado em " + directory
-      );
-    }
-
-    return [...files];
-  }
-
-  // =========================================================
-  // DATAS E NOMES DOS ARQUIVOS
-  // =========================================================
-
-  function utcDateString(date) {
-    return [
-      date.getUTCFullYear(),
-      String(date.getUTCMonth() + 1).padStart(2, "0"),
-      String(date.getUTCDate()).padStart(2, "0")
-    ].join("");
-  }
-
-  function previousUtcDayString() {
-    const d = new Date();
-    d.setUTCHours(0, 0, 0, 0);
-    d.setUTCDate(d.getUTCDate() - 1);
-    return utcDateString(d);
-  }
-
-  function filenameFromURL(url) {
-    return decodeURIComponent(new URL(url).pathname.split("/").pop());
-  }
-
-  function recentFilenameDate(filename) {
-    const m = filename.match(
-      /^focos_10min_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})\.csv$/i
+      return {
+        name: getSensorValue(row, ["name"]) || "Sensor sem nome",
+        lat: asNumber(getSensorValue(row, ["latitude"])),
+        lon: asNumber(getSensorValue(row, ["longitude"])),
+        pm: asNumber(getSensorValue(row, ["pm2.5_atm", "pm2.5_alt"])),
+        humidity: asNumber(getSensorValue(row, ["humidity"])),
+        temperature: asNumber(getSensorValue(row, ["temperature"])),
+        lastSeen: getSensorValue(row, ["last_seen"])
+      };
+    }).filter(sensor =>
+      isSouthAmerica(sensor.lat, sensor.lon)
     );
 
-    if (!m) return null;
+    drawPurpleMap();
+    drawPurpleChart();
+    setCount("countPurple", purpleSensors.length);
 
-    return new Date(Date.UTC(
-      Number(m[1]),
-      Number(m[2]) - 1,
-      Number(m[3]),
-      Number(m[4]),
-      Number(m[5])
-    ));
-  }
-
-  // =========================================================
-  // FOCOS DOS ÚLTIMOS 60 MINUTOS
-  // =========================================================
-
-  async function loadRecent() {
-    const files = await fetchDirectoryFiles(
-      RECENT_DIR,
-      /^focos_10min_\d{8}_\d{4}\.csv$/i
+    setStatus(
+      "purpleStatus",
+      `${purpleSensors.length} sensores retornados na área consultada. ` +
+      `Se a consulta falhar por CORS, será necessário utilizar um intermediário seguro.`,
+      "ok"
     );
+  } catch (error) {
+    setStatus(
+      "purpleStatus",
+      `Não foi possível consultar o PurpleAir: ${error.message}. ` +
+      `A chave não é armazenada pelo dashboard. Se o erro for CORS, ` +
+      `a consulta precisa passar por um backend ou Worker.`,
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "Consultar PurpleAir";
+  }
+}
 
-    const now = Date.now();
-    const lowerBound = now - RECENT_WINDOW_MS;
+function drawPurpleMap() {
+  purpleLayer.clearLayers();
 
-    const selected = files
-      .map(url => ({
-        url,
-        date: recentFilenameDate(filenameFromURL(url))
-      }))
-      .filter(x => x.date &&
-        x.date.getTime() >= lowerBound - 20 * 60 * 1000 &&
-        x.date.getTime() <= now + 5 * 60 * 1000
-      )
-      .sort((a, b) => a.date - b.date);
+  for (const sensor of purpleSensors) {
+    const pm = sensor.pm;
 
-    if (!selected.length) {
-      throw new Error(
-        "Nenhum arquivo de 10 minutos encontrado para a janela recente."
-      );
-    }
+    L.circleMarker([sensor.lat, sensor.lon], {
+      radius: 6,
+      color: pmColor(pm),
+      weight: 1,
+      fillColor: pmColor(pm),
+      fillOpacity: 0.85
+    })
+    .bindPopup(`
+      <b>${escapeHTML(sensor.name)}</b><br>
+      PM2.5: ${pm === null ? "Sem leitura" : pm + " µg/m³"}<br>
+      Umidade: ${sensor.humidity === null ? "Não informado" : sensor.humidity + "%"}<br>
+      Temperatura: ${sensor.temperature === null ? "Não informada" : sensor.temperature + " °C"}
+    `)
+    .addTo(purpleLayer);
+  }
+}
 
-    const allRows = [];
+function drawPurpleChart() {
+  const ctx = document.getElementById("purpleChart").getContext("2d");
 
-    for (let i = 0; i < selected.length; i += 5) {
-      const batch = selected.slice(i, i + 5);
+  const top = [...purpleSensors]
+    .filter(sensor => sensor.pm !== null)
+    .sort((a, b) => b.pm - a.pm)
+    .slice(0, 15);
 
-      const results = await Promise.allSettled(
-        batch.map(item => fetchCSV(item.url))
-      );
+  if (purpleChart) purpleChart.destroy();
 
-      for (const result of results) {
-        if (result.status === "fulfilled") {
-          allRows.push(...result.value);
+  purpleChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: top.map(sensor => sensor.name),
+      datasets: [{
+        label: "PM2.5 (µg/m³)",
+        data: top.map(sensor => sensor.pm),
+        backgroundColor: top.map(sensor => pmColor(sensor.pm)),
+        borderWidth: 0,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: context => ` ${context.raw} µg/m³`
+          }
         }
-      }
-    }
-
-    const unique = new Map();
-
-    for (const row of allRows) {
-      if (!isReferenceAqua(row)) continue;
-
-      const record = normalizeRecord(row);
-      if (!validCoordinates(record)) continue;
-
-      if (!record.date) continue;
-
-      const time = record.date.getTime();
-
-      if (time < lowerBound || time > now + 5 * 60 * 1000) {
-        continue;
-      }
-
-      const key = [
-        record.lat,
-        record.lon,
-        record.dateText,
-        record.satellite
-      ].join("|");
-
-      unique.set(key, record);
-    }
-
-    return [...unique.values()];
-  }
-
-  // =========================================================
-  // FOCOS DO DIA ANTERIOR
-  // =========================================================
-
-  async function loadDaily() {
-    const targetDate = previousUtcDayString();
-
-    const files = await fetchDirectoryFiles(
-      DAILY_DIR,
-      /^focos_diario_\d{8}\.csv$/i
-    );
-
-    const targetURL = files.find(url => {
-      const filename = filenameFromURL(url);
-      const m = filename.match(/^focos_diario_(\d{8})\.csv$/i);
-      return m && m[1] === targetDate;
-    });
-
-    if (!targetURL) {
-      throw new Error(
-        "Arquivo diário de " + targetDate + " não encontrado."
-      );
-    }
-
-    const rows = await fetchCSV(targetURL);
-
-    return rows
-      .filter(isReferenceAqua)
-      .map(normalizeRecord)
-      .filter(validCoordinates);
-  }
-
-  // =========================================================
-  // MAPA DA AMÉRICA DO SUL
-  // =========================================================
-
-  const map = L.map("map", {
-    preferCanvas: true
-  }).setView([-15, -60], 3);
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 12,
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-
-  focusLayer = L.layerGroup().addTo(map);
-
-  function popupContent(record) {
-    const fields = [
-      ["Data/hora", record.dateText],
-      ["Satélite", record.satellite],
-      ["País", record.country],
-      ["Estado/UF", record.state],
-      ["Município", record.municipality],
-      ["Latitude", record.lat],
-      ["Longitude", record.lon]
-    ];
-
-    const container = document.createElement("div");
-
-    for (const [label, value] of fields) {
-      if (value === "" || value === null || value === undefined) {
-        continue;
-      }
-
-      const line = document.createElement("div");
-      const strong = document.createElement("strong");
-
-      strong.textContent = label + ": ";
-      line.appendChild(strong);
-      line.appendChild(document.createTextNode(String(value)));
-      container.appendChild(line);
-    }
-
-    return container;
-  }
-
-  function renderMap() {
-    focusLayer.clearLayers();
-
-    const records = $("mapMode").value === "recent"
-      ? recentData
-      : dailyData;
-
-    const renderer = L.canvas({ padding: 0.5 });
-
-    for (const record of records) {
-      L.circleMarker([record.lat, record.lon], {
-        renderer,
-        radius: 5,
-        color: "#8f2117",
-        weight: 1,
-        fillColor: "#ed4935",
-        fillOpacity: 0.82
-      })
-      .bindPopup(popupContent(record))
-      .addTo(focusLayer);
-    }
-
-    $("mapCount").textContent = formatNumber(records.length);
-  }
-
-  // =========================================================
-  // ATUALIZAÇÃO DOS INDICADORES
-  // =========================================================
-
-  async function refreshDashboard() {
-    if (refreshInProgress) return;
-
-    refreshInProgress = true;
-    $("refreshBtn").disabled = true;
-
-    setStatus("Consultando os arquivos mais recentes do INPE...");
-
-    const errors = [];
-
-    try {
-      const results = await Promise.allSettled([
-        loadRecent(),
-        loadDaily()
-      ]);
-
-      if (results[0].status === "fulfilled") {
-        recentData = results[0].value;
-        $("recentCount").textContent = formatNumber(recentData.length);
-        $("recentDetail").textContent =
-          SATELLITE_LABEL + " | janela móvel de 60 minutos";
-      } else {
-        errors.push("Última hora: " + results[0].reason.message);
-        $("recentDetail").textContent = "Falha ao carregar";
-      }
-
-      if (results[1].status === "fulfilled") {
-        dailyData = results[1].value;
-        $("dailyCount").textContent = formatNumber(dailyData.length);
-        $("dailyDetail").textContent =
-          SATELLITE_LABEL + " | dia anterior (UTC)";
-      } else {
-        errors.push("Dia anterior: " + results[1].reason.message);
-        $("dailyDetail").textContent = "Falha ao carregar";
-      }
-
-      renderMap();
-
-      if (errors.length === 2) {
-        setStatus(
-          "Não foi possível carregar os dados. " + errors.join(" | ") +
-          " Verifique a conexão e as permissões CORS do servidor.",
-          "error"
-        );
-      } else if (errors.length) {
-        setStatus(
-          "Atualização parcial. " + errors.join(" | "),
-          "error"
-        );
-      } else {
-        setStatus(
-          "Dados atualizados em " +
-          new Date().toLocaleString("pt-BR") +
-          ". Satélites filtrados: " + SATELLITE_LABEL + ".",
-          "ok"
-        );
-      }
-    } catch (error) {
-      setStatus("Erro ao consultar o INPE: " + error.message, "error");
-    } finally {
-      refreshInProgress = false;
-      $("refreshBtn").disabled = false;
-    }
-  }
-
-  // =========================================================
-  // HISTÓRICO MENSAL POR ESTADO
-  // =========================================================
-
-  function getMonthlyYearFromURL(url) {
-    const filename = filenameFromURL(url);
-
-    const match = filename.match(
-      /^focos_mensal_br_(20\d{2})(\d{2})\.csv$/i
-    );
-
-    if (!match) return null;
-
-    return {
-      year: Number(match[1]),
-      month: Number(match[2])
-    };
-  }
-
-  async function getMonthlyFiles() {
-    if (monthlyFileCache) return monthlyFileCache;
-
-    monthlyFileCache = await fetchDirectoryFiles(
-      MONTHLY_DIR,
-      /^focos_mensal_br_20\d{4}\.csv$/i
-    );
-
-    return monthlyFileCache;
-  }
-
-  function stateMatches(row, uf) {
-    const rawState = getField(row, [
-      "Estado", "UF", "estado", "sigla_uf"
-    ]);
-
-    const stateValue = normalizeKey(rawState);
-    const stateName = normalizeKey(STATE_NAMES[uf]);
-
-    return stateValue === normalizeKey(uf) ||
-           stateValue === stateName;
-  }
-
-  async function loadMonthlyHistory(uf, year) {
-    const allFiles = await getMonthlyFiles();
-
-    const files = allFiles
-      .map(url => ({
-        url,
-        meta: getMonthlyYearFromURL(url)
-      }))
-      .filter(item => item.meta && item.meta.year === year)
-      .sort((a, b) => a.meta.month - b.meta.month);
-
-    if (!files.length) {
-      throw new Error(
-        "Não foram encontrados arquivos mensais para " + year + "."
-      );
-    }
-
-    const counts = Array(12).fill(0);
-    let successfulFiles = 0;
-
-    for (const item of files) {
-      setHistoryStatus(
-        "Lendo " + MONTHS[item.meta.month - 1] + "/" + year +
-        ". Os arquivos mensais podem ser grandes."
-      );
-
-      try {
-        const rows = await fetchCSV(item.url);
-
-        for (const row of rows) {
-          if (!isReferenceAqua(row)) continue;
-          if (!stateMatches(row, uf)) continue;
-
-          counts[item.meta.month - 1]++;
-        }
-
-        successfulFiles++;
-      } catch (error) {
-        console.error("Erro no arquivo mensal:", item.url, error);
-      }
-    }
-
-    if (!successfulFiles) {
-      throw new Error(
-        "Não foi possível ler os arquivos mensais. " +
-        "Verifique CORS e a disponibilidade do servidor."
-      );
-    }
-
-    return {
-      counts,
-      successfulFiles,
-      totalFiles: files.length
-    };
-  }
-
-  function renderMonthlyChart(counts, uf, year) {
-    const ctx = $("monthlyChart");
-
-    if (monthlyChart) monthlyChart.destroy();
-
-    monthlyChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: MONTHS,
-        datasets: [{
-          label: "Focos " + SATELLITE_LABEL,
-          data: counts,
-          backgroundColor: "#c64b32",
-          borderColor: "#92301f",
-          borderWidth: 1,
-          borderRadius: 4
-        }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          intersect: false,
-          mode: "index"
+      scales: {
+        x: {
+          beginAtZero: true,
+          title: { display: true, text: "PM2.5 (µg/m³)" }
         },
-        plugins: {
-          legend: { display: true },
-          title: {
-            display: true,
-            text: STATE_NAMES[uf] + " (" + uf + ") | " + year
-          },
-          tooltip: {
-            callbacks: {
-              label: context =>
-                "Focos: " + formatNumber(context.parsed.y)
-            }
-          }
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: "Mês"
-            }
-          },
-          y: {
-            beginAtZero: true,
-            ticks: { precision: 0 },
-            title: {
-              display: true,
-              text: "Número de focos"
-            }
-          }
+        y: {
+          grid: { display: false }
         }
       }
-    });
-  }
-
-  async function refreshHistory() {
-    if (historyInProgress) return;
-
-    historyInProgress = true;
-    $("historyBtn").disabled = true;
-
-    const uf = $("stateSelect").value;
-    const year = Number($("yearSelect").value);
-
-    try {
-      setHistoryStatus(
-        "Consultando os arquivos mensais do INPE para " +
-        STATE_NAMES[uf] + " (" + year + ")..."
-      );
-
-      const result = await loadMonthlyHistory(uf, year);
-
-      renderMonthlyChart(result.counts, uf, year);
-
-      const total = result.counts.reduce(
-        (sum, value) => sum + value, 0
-      );
-
-      if (result.successfulFiles < result.totalFiles) {
-        setHistoryStatus(
-          "Histórico parcial: " + result.successfulFiles + " de " +
-          result.totalFiles + " arquivos lidos. Total contabilizado: " +
-          formatNumber(total) + " focos dos satélites " +
-          SATELLITE_LABEL + ".",
-          "error"
-        );
-      } else {
-        setHistoryStatus(
-          "Consulta concluída. Total no ano: " + formatNumber(total) +
-          " focos dos satélites " + SATELLITE_LABEL +
-          ". Arquivos lidos: " + result.successfulFiles + ".",
-          "ok"
-        );
-      }
-    } catch (error) {
-      setHistoryStatus(
-        "Falha ao carregar o histórico: " + error.message,
-        "error"
-      );
-    } finally {
-      historyInProgress = false;
-      $("historyBtn").disabled = false;
     }
+  });
+}
+
+/* =========================================================
+   INICIALIZAÇÃO E EVENTOS
+   ========================================================= */
+
+function initializeYearSelector() {
+  const select = document.getElementById("historyYear");
+  const currentYear = new Date().getFullYear();
+
+  for (let year = currentYear; year >= 2000; year--) {
+    const option = document.createElement("option");
+    option.value = String(year);
+    option.textContent = String(year);
+    select.appendChild(option);
   }
 
-  // =========================================================
-  // ANOS E EVENTOS
-  // =========================================================
+  select.value = String(currentYear);
+}
 
-  function initializeYears() {
-    const select = $("yearSelect");
-    const currentYear = new Date().getFullYear();
-
-    for (let year = currentYear; year >= 2003; year--) {
-      const option = document.createElement("option");
-      option.value = String(year);
-      option.textContent = String(year);
-      select.appendChild(option);
-    }
+async function refreshFireData() {
+  try {
+    await loadRecentFires();
+  } catch (error) {
+    setStatus(
+      "fireStatus",
+      `Erro ao carregar focos recentes: ${error.message}. ` +
+      `Verifique a conexão e se o servidor INPE permite acesso direto pelo navegador.`,
+      "error"
+    );
   }
 
-  $("mapMode").addEventListener("change", renderMap);
-  $("refreshBtn").addEventListener("click", refreshDashboard);
-  $("historyBtn").addEventListener("click", refreshHistory);
+  try {
+    await loadDailyFires();
+  } catch (error) {
+    setStatus(
+      "fireStatus",
+      `Erro ao carregar focos diários: ${error.message}. ` +
+      `Verifique a conexão e se o servidor INPE permite acesso direto pelo navegador.`,
+      "error"
+    );
+  }
+}
 
-  initializeYears();
-  refreshDashboard();
+document.getElementById("fireMode").addEventListener("change", drawFireMap);
+document.getElementById("reloadFire").addEventListener("click", refreshFireData);
+document.getElementById("loadHistory").addEventListener("click", loadMonthlyHistory);
+document.getElementById("reloadPurple").addEventListener("click", loadPurpleAir);
 
-  // Atualiza os dados recentes a cada 10 minutos.
-  setInterval(refreshDashboard, REFRESH_MS);
+initializeYearSelector();
+refreshFireData();
 
-})();
+setInterval(refreshFireData, REFRESH_MS);
 </script>
 </body>
 </html>
