@@ -372,20 +372,6 @@
     </p>
   </section>
 
-  <section class="panel">
-    <div class="panel-heading">
-      <h2>Cronograma histórico mensal · Média PM2.5 (PurpleAir)</h2>
-    </div>
-
-    <div class="chart-container">
-      <canvas id="purpleChart"></canvas>
-    </div>
-
-    <div class="footnote">
-      Variação da média mensal da concentração de PM2.5 (µg/m³) ao longo do ano com base nos registros temporais dos sensores.
-    </div>
-  </section>
-
   <p class="footnote">
     Fonte dos focos: INPE/BDQueimadas. Fonte da qualidade do ar: PurpleAir.
     A disponibilidade dos dados depende dos servidores de origem e das permissões
@@ -469,7 +455,6 @@ let recentFires = [];
 let dailyFires = [];
 let purpleSensors = [];
 let monthlyChart = null;
-let purpleChart = null;
 let fireLayer = null;
 let purpleLayer = null;
 let monthlyCache = new Map();
@@ -966,7 +951,7 @@ function updateMonthlyChart(values, year, state) {
 }
 
 /* =========================================================
-   PURPLEAIR E CRONOGRAMA HISTÓRICO MENSAL (MÉDIA)
+   PURPLEAIR (APENAS MAPA - SEM GRÁFICO)
    ========================================================= */
 
 function pmColor(pm) {
@@ -1000,7 +985,6 @@ function detectStateByCoords(lat, lon) {
 
 async function loadPurpleAir() {
   const key = FIXED_PURPLE_KEY;
-  setStatus("purpleStatus", "Consultando os sensores PurpleAir automaticamente...");
 
   try {
     const fields = [
@@ -1042,11 +1026,7 @@ async function loadPurpleAir() {
 
       const lat = asNumber(getSensorValue(row, ["latitude"]));
       const lon = asNumber(getSensorValue(row, ["longitude"]));
-      const lastSeen = asNumber(getSensorValue(row, ["last_seen"]));
       const state = detectStateByCoords(lat, lon);
-
-      const date = lastSeen ? new Date(lastSeen * 1000) : new Date();
-      const monthIndex = Number.isNaN(date.getTime()) ? new Date().getMonth() : date.getMonth();
 
       return {
         name: getSensorValue(row, ["name"]) || "Sensor sem nome",
@@ -1054,13 +1034,11 @@ async function loadPurpleAir() {
         pm: asNumber(getSensorValue(row, ["pm2.5_atm", "pm2.5_alt"])),
         humidity: asNumber(getSensorValue(row, ["humidity"])),
         temperature: asNumber(getSensorValue(row, ["temperature"])),
-        state,
-        monthIndex
+        state
       };
     }).filter(sensor => isSouthAmerica(sensor.lat, sensor.lon));
 
     drawPurpleMap();
-    drawPurpleHistoryChart();
     setCount("countPurple", purpleSensors.length);
 
     setStatus("purpleStatus", `${purpleSensors.length} sensores carregados com sucesso.`, "ok");
@@ -1091,61 +1069,6 @@ function drawPurpleMap() {
     `)
     .addTo(purpleLayer);
   }
-}
-
-function drawPurpleHistoryChart() {
-  const ctx = document.getElementById("purpleChart").getContext("2d");
-
-  const monthlyData = Array(12).fill(0).map(() => ({ total: 0, count: 0 }));
-
-  purpleSensors.forEach(sensor => {
-    if (sensor.pm !== null && Number.isFinite(sensor.pm)) {
-      const m = sensor.monthIndex;
-      if (m >= 0 && m < 12) {
-        monthlyData[m].total += sensor.pm;
-        monthlyData[m].count += 1;
-      }
-    }
-  });
-
-  const monthlyAverages = MONTH_NAMES.map((name, index) => {
-    const item = monthlyData[index];
-    if (item.count === 0) return 0;
-    return Number((item.total / item.count).toFixed(1));
-  });
-
-  if (purpleChart) purpleChart.destroy();
-
-  purpleChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: MONTH_NAMES,
-      datasets: [{
-        label: "Média PM2.5 (µg/m³)",
-        data: monthlyAverages,
-        backgroundColor: "rgba(37, 133, 90, 0.75)",
-        borderColor: "#25855a",
-        borderWidth: 1,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true },
-        tooltip: {
-          callbacks: {
-            label: context => ` Média: ${context.raw} µg/m³`
-          }
-        }
-      },
-      scales: {
-        x: { title: { display: true, text: "Mês" }, grid: { display: false } },
-        y: { beginAtZero: true, title: { display: true, text: "Média PM2.5 (µg/m³)" } }
-      }
-    }
-  });
 }
 
 /* =========================================================
