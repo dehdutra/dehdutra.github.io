@@ -117,7 +117,7 @@
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="card-title mb-0 text-danger">Mapa 3: Interpolação por Clusters (Buffer Reduzido)</h5>
-                    <span id="status-interpolacao" class="badge bg-secondary status-badge">Carregando...</span>
+                    <span id="status-interpolacao" class="badge bg-secondary status-badge">Aguardando pontos...</span>
                 </div>
                 <p class="text-muted small mb-1">Superfície contínua restrita ao entorno imediato das estações de monitoramento.</p>
                 
@@ -140,7 +140,7 @@
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="card-title mb-0 text-primary">Mapa 4: Correlação (Focos de Calor x Risco OMS)</h5>
-                    <span id="status-correlacao" class="badge bg-secondary status-badge">Carregando...</span>
+                    <span id="status-correlacao" class="badge bg-secondary status-badge">Aguardando pontos...</span>
                 </div>
                 <p class="text-muted small mb-1">Cruza os limiares de PM2.5 da OMS com a presença de focos de queimadas na mesma área.</p>
                 
@@ -242,7 +242,7 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapInterpolacao);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapCorrelacao);
 
-    // Armazenamento global dos dados
+    // Dados Globais
     let listaFocos = [];
     let listaSensores = [];
 
@@ -275,7 +275,7 @@
         return '#dc3545';                
     }
 
-    // 1. Carregar Focos INPE
+    // PASSO 1: Carrega e plota IMEDIATAMENTE os Focos (Mapa 1)
     async function carregarFocosDiarios() {
         const statusEl = document.getElementById('status-focos');
         const dataFocosEl = document.getElementById('data-focos');
@@ -342,12 +342,9 @@
         }
     }
 
-    // 2. Carregar PurpleAir e Gerar Mapas 2, 3 e 4
-    async function carregarPurpleAirEProcessarMapas() {
+    // PASSO 2: Carrega e plota IMEDIATAMENTE os Pontos do PurpleAir (Mapa 2)
+    async function carregarPurpleAir() {
         const statusEl = document.getElementById('status-purpleair');
-        const statusInterpEl = document.getElementById('status-interpolacao');
-        const statusCorrelEl = document.getElementById('status-correlacao');
-
         const dataPAEl = document.getElementById('data-purpleair');
         const citPAEl = document.getElementById('citacao-data-purpleair');
 
@@ -390,139 +387,155 @@
 
                 statusEl.className = "badge bg-success status-badge";
                 statusEl.textContent = `${listaSensores.length} sensores`;
-
-                if (listaSensores.length > 0) {
-                    gerarMapa3Interpolacao(listaSensores);
-                    statusInterpEl.className = "badge bg-success status-badge";
-                    statusInterpEl.textContent = "Interpolação Concluída";
-
-                    gerarMapa4Correlacao(listaSensores, listaFocos);
-                    statusCorrelEl.className = "badge bg-success status-badge";
-                    statusCorrelEl.textContent = "Correlação Concluída";
-                }
             }
         } catch (e) {
             console.error(e);
             statusEl.className = "badge bg-danger status-badge";
             statusEl.textContent = "Erro na API";
-            statusInterpEl.className = "badge bg-danger status-badge";
-            statusInterpEl.textContent = "Erro";
-            statusCorrelEl.className = "badge bg-danger status-badge";
-            statusCorrelEl.textContent = "Erro";
         }
     }
 
-    // Processamento do Mapa 3 (Buffer Reduzido 1.2°)
-    function gerarMapa3Interpolacao(pontos) {
-        const raio = 1.2;
-        const passo = 0.3;
+    // PASSO 3: Gera o Mapa 3 (Interpolação por Clusters) em background sem congelar a tela
+    function processarMapa3Assincrono() {
+        const statusInterpEl = document.getElementById('status-interpolacao');
+        if (listaSensores.length === 0) {
+            statusInterpEl.className = "badge bg-warning status-badge";
+            statusInterpEl.textContent = "Sem pontos";
+            return;
+        }
 
-        pontos.forEach(p => {
-            for (let lat = p.lat - raio; lat <= p.lat + raio; lat += passo) {
-                for (let lon = p.lon - raio; lon <= p.lon + raio; lon += passo) {
-                    let somaPesos = 0, somaValores = 0;
+        statusInterpEl.className = "badge bg-warning status-badge";
+        statusInterpEl.textContent = "Calculando IDW...";
 
-                    for (let outro of pontos) {
-                        const dLat = lat - outro.lat, dLon = lon - outro.lon;
-                        const distSq = dLat * dLat + dLon * dLon;
-                        if (distSq <= (raio * raio)) {
-                            const peso = 1 / (distSq + 0.01);
-                            somaPesos += peso;
-                            somaValores += outro.pm25 * peso;
+        setTimeout(() => {
+            const raio = 1.2;
+            const passo = 0.3;
+
+            listaSensores.forEach(p => {
+                for (let lat = p.lat - raio; lat <= p.lat + raio; lat += passo) {
+                    for (let lon = p.lon - raio; lon <= p.lon + raio; lon += passo) {
+                        let somaPesos = 0, somaValores = 0;
+
+                        for (let outro of listaSensores) {
+                            const dLat = lat - outro.lat, dLon = lon - outro.lon;
+                            const distSq = dLat * dLat + dLon * dLon;
+                            if (distSq <= (raio * raio)) {
+                                const peso = 1 / (distSq + 0.01);
+                                somaPesos += peso;
+                                somaValores += outro.pm25 * peso;
+                            }
                         }
-                    }
 
-                    if (somaPesos > 0) {
-                        const pmEstimado = somaValores / somaPesos;
-                        const bounds = [[lat, lon], [lat + passo, lon + passo]];
+                        if (somaPesos > 0) {
+                            const pmEstimado = somaValores / somaPesos;
+                            const bounds = [[lat, lon], [lat + passo, lon + passo]];
 
-                        L.rectangle(bounds, {
-                            color: "transparent",
-                            fillColor: getCorOMS(pmEstimado),
-                            fillOpacity: 0.45,
-                            weight: 0
-                        }).bindPopup(`<b>Cluster Local (IDW)</b><br><b>PM2.5:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status:</b> ${pmEstimado <= 15 ? 'Meta OMS' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
+                            L.rectangle(bounds, {
+                                color: "transparent",
+                                fillColor: getCorOMS(pmEstimado),
+                                fillOpacity: 0.45,
+                                weight: 0
+                            }).bindPopup(`<b>Cluster Local (IDW)</b><br><b>PM2.5:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status:</b> ${pmEstimado <= 15 ? 'Meta OMS' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        pontos.forEach(p => {
-            L.circleMarker([p.lat, p.lon], {
-                radius: 4,
-                fillColor: '#ffffff',
-                color: '#000',
-                weight: 1,
-                fillOpacity: 0.9
-            }).bindPopup(`<b>${p.nome}</b><br>PM2.5 Real: ${p.pm25}`).addTo(mapInterpolacao);
-        });
+            listaSensores.forEach(p => {
+                L.circleMarker([p.lat, p.lon], {
+                    radius: 4,
+                    fillColor: '#ffffff',
+                    color: '#000',
+                    weight: 1,
+                    fillOpacity: 0.9
+                }).bindPopup(`<b>${p.nome}</b><br>PM2.5 Real: ${p.pm25}`).addTo(mapInterpolacao);
+            });
+
+            statusInterpEl.className = "badge bg-success status-badge";
+            statusInterpEl.textContent = "Interpolação Concluída";
+        }, 100);
     }
 
-    // Processamento do Mapa 4 (Co-ocorrência Fogo x Fumaça)
-    function gerarMapa4Correlacao(pontos, focos) {
-        const raio = 1.2;
-        const passo = 0.4;
+    // PASSO 4: Gera o Mapa 4 (Correlação Fogo x Fumaça) em background separado
+    function processarMapa4Assincrono() {
+        const statusCorrelEl = document.getElementById('status-correlacao');
+        if (listaSensores.length === 0 || listaFocos.length === 0) {
+            statusCorrelEl.className = "badge bg-warning status-badge";
+            statusCorrelEl.textContent = "Aguardando dados...";
+            return;
+        }
 
-        pontos.forEach(p => {
-            for (let lat = p.lat - raio; lat <= p.lat + raio; lat += passo) {
-                for (let lon = p.lon - raio; lon <= p.lon + raio; lon += passo) {
-                    let somaPesos = 0, somaValores = 0;
+        statusCorrelEl.className = "badge bg-warning status-badge";
+        statusCorrelEl.textContent = "Cruzando dados...";
 
-                    pontos.forEach(outro => {
-                        const dLat = lat - outro.lat, dLon = lon - outro.lon;
-                        const distSq = dLat * dLat + dLon * dLon;
-                        if (distSq <= (raio * raio)) {
-                            const peso = 1 / (distSq + 0.01);
-                            somaPesos += peso;
-                            somaValores += outro.pm25 * peso;
-                        }
-                    });
+        setTimeout(() => {
+            const raio = 1.2;
+            const passo = 0.4;
 
-                    if (somaPesos > 0) {
-                        const pmEstimado = somaValores / somaPesos;
+            listaSensores.forEach(p => {
+                for (let lat = p.lat - raio; lat <= p.lat + raio; lat += passo) {
+                    for (let lon = p.lon - raio; lon <= p.lon + raio; lon += passo) {
+                        let somaPesos = 0, somaValores = 0;
 
-                        let focosNaCelula = 0;
-                        focos.forEach(f => {
-                            if (f.lat >= lat && f.lat < lat + passo && f.lon >= lon && f.lon < lon + passo) {
-                                focosNaCelula++;
+                        listaSensores.forEach(outro => {
+                            const dLat = lat - outro.lat, dLon = lon - outro.lon;
+                            const distSq = dLat * dLat + dLon * dLon;
+                            if (distSq <= (raio * raio)) {
+                                const peso = 1 / (distSq + 0.01);
+                                somaPesos += peso;
+                                somaValores += outro.pm25 * peso;
                             }
                         });
 
-                        let corCelula = getCorOMS(pmEstimado);
-                        let rotulo = "Normal/Seguro";
+                        if (somaPesos > 0) {
+                            const pmEstimado = somaValores / somaPesos;
 
-                        if (pmEstimado > 45.0) {
-                            if (focosNaCelula > 0) {
-                                corCelula = '#8b0000';
-                                rotulo = `CRÍTICO COM FOCO LOCAL (${focosNaCelula} focos)`;
-                            } else {
-                                corCelula = '#660066';
-                                rotulo = 'CRÍTICO POR TRANSPORTE (0 focos locais)';
+                            let focosNaCelula = 0;
+                            listaFocos.forEach(f => {
+                                if (f.lat >= lat && f.lat < lat + passo && f.lon >= lon && f.lon < lon + passo) {
+                                    focosNaCelula++;
+                                }
+                            });
+
+                            let corCelula = getCorOMS(pmEstimado);
+                            let rotulo = "Normal/Seguro";
+
+                            if (pmEstimado > 45.0) {
+                                if (focosNaCelula > 0) {
+                                    corCelula = '#8b0000';
+                                    rotulo = `CRÍTICO COM FOCO LOCAL (${focosNaCelula} focos)`;
+                                } else {
+                                    corCelula = '#660066';
+                                    rotulo = 'CRÍTICO POR TRANSPORTE (0 focos locais)';
+                                }
+                            } else if (focosNaCelula > 0) {
+                                corCelula = '#ff8c00';
+                                rotulo = `Alerta c/ Focos (${focosNaCelula} focos)`;
                             }
-                        } else if (focosNaCelula > 0) {
-                            corCelula = '#ff8c00';
-                            rotulo = `Alerta c/ Focos (${focosNaCelula} focos)`;
-                        }
 
-                        const bounds = [[lat, lon], [lat + passo, lon + passo]];
-                        L.rectangle(bounds, {
-                            color: "transparent",
-                            fillColor: corCelula,
-                            fillOpacity: 0.5,
-                            weight: 0
-                        }).bindPopup(`
-                            <b>Análise de Correlação</b><br>
-                            <b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br>
-                            <b>Focos na Célula:</b> ${focosNaCelula}<br>
-                            <b>Condição:</b> ${rotulo}
-                        `).addTo(mapCorrelacao);
+                            const bounds = [[lat, lon], [lat + passo, lon + passo]];
+                            L.rectangle(bounds, {
+                                color: "transparent",
+                                fillColor: corCelula,
+                                fillOpacity: 0.5,
+                                weight: 0
+                            }).bindPopup(`
+                                <b>Análise de Correlação</b><br>
+                                <b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br>
+                                <b>Focos na Célula:</b> ${focosNaCelula}<br>
+                                <b>Condição:</b> ${rotulo}
+                            `).addTo(mapCorrelacao);
+                        }
                     }
                 }
-            }
-        });
+            });
+
+            statusCorrelEl.className = "badge bg-success status-badge";
+            statusCorrelEl.textContent = "Correlação Concluída";
+        }, 200);
     }
 
-    // Legendas
+    // Legendas dos Mapas
     function adicionarLegendas() {
         const legendFocos = L.control({ position: 'bottomright' });
         legendFocos.onAdd = function () {
@@ -561,14 +574,24 @@
         legendCorrelacao.addTo(mapCorrelacao);
     }
 
-    // Execução ordenada
-    async function inicializar() {
-        await carregarFocosDiarios();
-        await carregarPurpleAirEProcessarMapas();
+    // Fluxo de Execução Estritamente Sequencial / Desacoplado
+    async function inicializarDashboard() {
         adicionarLegendas();
+        
+        // 1. Carrega Focos INPE (Pontos)
+        await carregarFocosDiarios();
+        
+        // 2. Carrega PurpleAir (Pontos)
+        await carregarPurpleAir();
+        
+        // 3. Processa Interpolação (Mapa 3) de forma assíncrona
+        processarMapa3Assincrono();
+        
+        // 4. Processa Correlação (Mapa 4) de forma assíncrona
+        processarMapa4Assincrono();
     }
 
-    inicializar();
+    inicializarDashboard();
 </script>
 
 </body>
