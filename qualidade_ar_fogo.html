@@ -24,11 +24,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
         .chart-box {
             position: relative;
             height: 320px;
@@ -38,18 +33,15 @@
 <body>
 
 <div class="container-fluid py-4">
-    <h2 class="mb-4 text-center">Dashboard: Focos de Calor (INPE) & Qualidade do Ar (PurpleAir)</h2>
+    <h2 class="mb-4 text-center">Dashboard: Queimadas e Qualidade do Ar</h2>
 
     <!-- Seção de Mapas -->
     <div class="row mb-4">
-        <!-- Mapa 1: Focos Diários AQUA -->
+        <!-- Mapa 1: INPE (Diário) -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="card-title mb-0">Focos Diários (Satélites AQUA)</h5>
-                    <span id="status-focos" class="badge bg-secondary status-badge">Buscando dados...</span>
-                </div>
-                <p class="text-muted small mb-2">Focos de queimada na América do Sul detectados pelo satélite AQUA.</p>
+                <h5 class="card-title">Focos Diários (Satélites AQUA - INPE)</h5>
+                <p class="text-muted small">Exibe focos do satélite AQUA na América do Sul.</p>
                 <div id="mapa-focos" class="map-container"></div>
             </div>
         </div>
@@ -57,11 +49,8 @@
         <!-- Mapa 2: PurpleAir PM2.5 -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="card-title mb-0">Qualidade do Ar (PurpleAir PM2.5)</h5>
-                    <span id="status-purpleair" class="badge bg-secondary status-badge">Buscando dados...</span>
-                </div>
-                <p class="text-muted small mb-2">Sensores na América do Sul categorizados por PM2.5 (&micro;g/m&sup3;).</p>
+                <h5 class="card-title">Qualidade do Ar (PurpleAir PM2.5)</h5>
+                <p class="text-muted small">Sensores na América do Sul (&micro;g/m&sup3;).</p>
                 <div id="mapa-purpleair" class="map-container"></div>
             </div>
         </div>
@@ -71,10 +60,7 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="card card-custom p-3 bg-white d-flex flex-row align-items-center justify-content-between flex-wrap">
-                <div class="d-flex align-items-center gap-3">
-                    <h5 class="mb-0">Relatório Mensal do INPE</h5>
-                    <span id="status-mensal" class="badge bg-secondary status-badge">Buscando CSV...</span>
-                </div>
+                <h5 class="mb-0">Relatório Mensal de Queimadas por Estado</h5>
                 <div class="col-md-4 col-12 mt-2 mt-md-0">
                     <select id="select-estado" class="form-select fw-bold">
                         <option value="TODOS">Todos os Estados (Brasil)</option>
@@ -84,45 +70,30 @@
         </div>
     </div>
 
-    <!-- Seção de Relatórios Gráficos -->
+    <!-- Gráficos -->
     <div class="row">
-        <!-- Gráfico 1: Top 10 Municípios -->
         <div class="col-lg-6 mb-4">
             <div class="card card-custom p-3">
                 <h6 class="card-title text-muted mb-3">Top 10 Municípios com Mais Focos</h6>
-                <div class="chart-box">
-                    <canvas id="chartMunicipios"></canvas>
-                </div>
+                <div class="chart-box"><canvas id="chartMunicipios"></canvas></div>
             </div>
         </div>
-
-        <!-- Gráfico 2: Focos por Bioma -->
         <div class="col-lg-6 mb-4">
             <div class="card card-custom p-3">
                 <h6 class="card-title text-muted mb-3">Distribuição por Bioma</h6>
-                <div class="chart-box">
-                    <canvas id="chartBiomas"></canvas>
-                </div>
+                <div class="chart-box"><canvas id="chartBiomas"></canvas></div>
             </div>
         </div>
-
-        <!-- Gráfico 3: Intensidade Média do Fogo (FRP) -->
         <div class="col-lg-6 mb-4">
             <div class="card card-custom p-3">
-                <h6 class="card-title text-muted mb-3">Média da Potência Radiativa (FRP - MW) por Bioma</h6>
-                <div class="chart-box">
-                    <canvas id="chartFRP"></canvas>
-                </div>
+                <h6 class="card-title text-muted mb-3">Média de Potência Radiativa (FRP - MW) por Bioma</h6>
+                <div class="chart-box"><canvas id="chartFRP"></canvas></div>
             </div>
         </div>
-
-        <!-- Gráfico 4: Detecção por Satélite -->
         <div class="col-lg-6 mb-4">
             <div class="card card-custom p-3">
                 <h6 class="card-title text-muted mb-3">Detecção por Satélite</h6>
-                <div class="chart-box">
-                    <canvas id="chartSatélites"></canvas>
-                </div>
+                <div class="chart-box"><canvas id="chartSatélites"></canvas></div>
             </div>
         </div>
     </div>
@@ -137,96 +108,51 @@
 <script>
     const PURPLEAIR_READ_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
 
-    // Proxies com fallback automático
-    function getProxyUrl(url) {
-        return "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
-    }
-
-    // Inicialização dos mapas Leaflet
+    // Inicialização dos Mapas
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
     const mapPurpleAir = L.map('mapa-purpleair').setView([-14.235, -51.925], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(mapFocos);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(mapPurpleAir);
 
-    function formatarData(d) {
-        const ano = d.getFullYear();
-        const mes = String(d.getMonth() + 1).padStart(2, '0');
-        const dia = String(d.getDate()).padStart(2, '0');
-        return `${ano}${mes}${dia}`;
-    }
-
-    function formatarAnoMes(d) {
-        const ano = d.getFullYear();
-        const mes = String(d.getMonth() + 1).padStart(2, '0');
-        return `${ano}${mes}`;
-    }
-
     // --- 1. CARREGAR FOCOS DIÁRIOS (INPE) ---
-    async function carregarFocosDiarios() {
-        const statusEl = document.getElementById('status-focos');
-        const URLs = [];
-        
-        // Testa os últimos 7 dias para encontrar o arquivo mais recente publicado pelo INPE
-        for (let i = 0; i < 7; i++) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            URLs.push(`https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${formatarData(d)}.csv`);
-        }
+    function carregarFocosDiarios() {
+        const urlCsvDiario = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_br.csv";
 
-        let ok = false;
-        for (const targetUrl of URLs) {
-            if (ok) break;
+        Papa.parse(urlCsvDiario, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                if (results.data) {
+                    results.data.forEach(foco => {
+                        const sat = (foco.satelite || '').toUpperCase();
+                        if (sat.includes("AQUA")) {
+                            const lat = parseFloat(foco.lat || foco.latitude);
+                            const lon = parseFloat(foco.lon || foco.longitude);
 
-            await new Promise(resolve => {
-                Papa.parse(getProxyUrl(targetUrl), {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        if (results.data && results.data.length > 0 && results.data[0].lat) {
-                            let totalAqua = 0;
-                            results.data.forEach(foco => {
-                                const sat = (foco.satelite || '').toUpperCase();
-                                if (sat.includes("AQUA")) {
-                                    const lat = parseFloat(foco.lat);
-                                    const lon = parseFloat(foco.lon);
-
-                                    if (!isNaN(lat) && !isNaN(lon)) {
-                                        totalAqua++;
-                                        L.circleMarker([lat, lon], {
-                                            radius: 4,
-                                            fillColor: '#ff2200',
-                                            color: '#880000',
-                                            weight: 1,
-                                            fillOpacity: 0.85
-                                        }).bindPopup(`
-                                            <b>Satélite:</b> ${foco.satelite}<br>
-                                            <b>Data/Hora:</b> ${foco.data_hora_gmt || ''}<br>
-                                            <b>Estado:</b> ${foco.estado || ''}<br>
-                                            <b>Município:</b> ${foco.municipio || ''}
-                                        `).addTo(mapFocos);
-                                    }
-                                }
-                            });
-                            statusEl.className = "badge bg-success status-badge";
-                            statusEl.textContent = `${totalAqua} focos AQUA carregados`;
-                            ok = true;
+                            if (!isNaN(lat) && !isNaN(lon)) {
+                                L.circleMarker([lat, lon], {
+                                    radius: 4,
+                                    fillColor: '#ff2200',
+                                    color: '#880000',
+                                    weight: 1,
+                                    fillOpacity: 0.85
+                                }).bindPopup(`
+                                    <b>Satélite:</b> ${foco.satelite}<br>
+                                    <b>Data/Hora:</b> ${foco.data_hora_gmt || foco.datahora || ''}<br>
+                                    <b>Estado:</b> ${foco.estado || ''}<br>
+                                    <b>Município:</b> ${foco.municipio || ''}
+                                `).addTo(mapFocos);
+                            }
                         }
-                        resolve();
-                    },
-                    error: () => resolve()
-                });
-            });
-        }
-
-        if (!ok) {
-            statusEl.className = "badge bg-danger status-badge";
-            statusEl.textContent = "Erro ao carregar Focos Diários";
-        }
+                    });
+                }
+            }
+        });
     }
 
-    // --- 2. CARREGAR PURPLEAIR (DIRETO DA API OFICIAL) ---
+    // --- 2. CARREGAR PURPLEAIR (AMÉRICA DO SUL) ---
     function getColorPM25(pm) {
         if (pm <= 12.0) return '#00e400';
         if (pm <= 35.4) return '#ffff00';
@@ -237,31 +163,20 @@
     }
 
     async function carregarPurpleAir() {
-        const statusEl = document.getElementById('status-purpleair');
-        
-        // Chamada REST nativa para a API PurpleAir (América do Sul)
+        // Limites geográficos da América do Sul
         const params = new URLSearchParams({
             fields: "name,latitude,longitude,pm2.5_10minute",
-            location_type: "0",
-            nwlng: "-82.0",
-            nwlat: "13.0",
-            selng: "-32.0",
-            selat: "-56.0"
+            location_type: 0,
+            nwlng: -82.0,
+            nwlat: 13.0,
+            selng: -32.0,
+            selat: -56.0
         });
 
-        const targetUrl = `https://api.purpleair.com/v1/sensors?${params.toString()}`;
+        const url = `https://api.purpleair.com/v1/sensors?${params.toString()}`;
 
         try {
-            // Tenta primeiro direto (caso o navegador autorize) ou via proxy se falhar
-            let resp;
-            try {
-                resp = await fetch(targetUrl, { headers: { "X-API-Key": PURPLEAIR_READ_KEY } });
-            } catch (err) {
-                resp = await fetch(getProxyUrl(targetUrl), { headers: { "X-API-Key": PURPLEAIR_READ_KEY } });
-            }
-
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-
+            const resp = await fetch(url, { headers: { "X-API-Key": PURPLEAIR_READ_KEY } });
             const json = await resp.json();
 
             if (json && json.data && json.fields) {
@@ -270,8 +185,6 @@
                 const idxPm25 = json.fields.indexOf("pm2.5_10minute");
                 const idxName = json.fields.indexOf("name");
 
-                let count = 0;
-
                 json.data.forEach(s => {
                     const lat = s[idxLat];
                     const lon = s[idxLon];
@@ -279,7 +192,6 @@
                     const nome = s[idxName] || "Sensor PurpleAir";
 
                     if (lat !== null && lon !== null && pm25 !== null && !isNaN(lat) && !isNaN(lon)) {
-                        count++;
                         L.circleMarker([lat, lon], {
                             radius: 6,
                             fillColor: getColorPM25(pm25),
@@ -290,66 +202,31 @@
                           .addTo(mapPurpleAir);
                     }
                 });
-
-                statusEl.className = "badge bg-success status-badge";
-                statusEl.textContent = `${count} sensores na América do Sul`;
-            } else {
-                throw new Error("Resposta inválida do PurpleAir");
             }
         } catch (e) {
             console.error("Erro no PurpleAir:", e);
-            statusEl.className = "badge bg-danger status-badge";
-            statusEl.textContent = "Falha no PurpleAir";
         }
     }
 
-    // --- 3. DADOS MENSAIS E GRÁFICOS (INPE) ---
+    // --- 3. CARREGAR DADOS MENSAIS E GRÁFICOS (INPE) ---
     let todosDadosMensais = [];
     let chartMun, chartBio, chartFrp, chartSat;
 
-    async function carregarDadosMensais() {
-        const statusEl = document.getElementById('status-mensal');
-        
-        // Busca os últimos 6 meses até encontrar o CSV disponível no INPE
-        const URLs = [];
-        for (let i = 0; i < 6; i++) {
-            const d = new Date();
-            d.setMonth(d.getMonth() - i);
-            const strAnoMes = formatarAnoMes(d);
-            URLs.push(`https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br_${strAnoMes}.csv`);
-        }
+    function carregarDadosMensais() {
+        const urlCsvMensal = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br.csv";
 
-        let ok = false;
-
-        for (const targetUrl of URLs) {
-            if (ok) break;
-
-            await new Promise(resolve => {
-                Papa.parse(getProxyUrl(targetUrl), {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        if (results.data && results.data.length > 0 && (results.data[0].estado || results.data[0].lat)) {
-                            todosDadosMensais = results.data;
-                            popularFiltroEstados();
-                            renderizarGraficos("TODOS");
-                            
-                            statusEl.className = "badge bg-success status-badge";
-                            statusEl.textContent = `${results.data.length} registros carregados`;
-                            ok = true;
-                        }
-                        resolve();
-                    },
-                    error: () => resolve()
-                });
-            });
-        }
-
-        if (!ok) {
-            statusEl.className = "badge bg-danger status-badge";
-            statusEl.textContent = "Erro ao carregar CSV mensal";
-        }
+        Papa.parse(urlCsvMensal, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                if (results.data && results.data.length > 0) {
+                    todosDadosMensais = results.data;
+                    popularFiltroEstados();
+                    renderizarGraficos("TODOS");
+                }
+            }
+        });
     }
 
     function popularFiltroEstados() {
@@ -406,66 +283,52 @@
             medFrpBioma[b] = (frpPorBioma[b] / countFrpPorBioma[b]).toFixed(1);
         });
 
-        // 1. Gráfico Municípios
+        // Chart 1: Municípios
         if (chartMun) chartMun.destroy();
         chartMun = new Chart(document.getElementById('chartMunicipios'), {
             type: 'bar',
             data: {
                 labels: topMunicipios.map(i => i[0]),
-                datasets: [{
-                    label: 'Quantidade de Focos',
-                    data: topMunicipios.map(i => i[1]),
-                    backgroundColor: '#e67e22'
-                }]
+                datasets: [{ label: 'Focos', data: topMunicipios.map(i => i[1]), backgroundColor: '#e67e22' }]
             },
             options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // 2. Gráfico Biomas
+        // Chart 2: Biomas
         if (chartBio) chartBio.destroy();
         chartBio = new Chart(document.getElementById('chartBiomas'), {
             type: 'doughnut',
             data: {
                 labels: Object.keys(biomas),
-                datasets: [{
-                    data: Object.values(biomas),
-                    backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c', '#9b59b6', '#3498db', '#34495e']
-                }]
+                datasets: [{ data: Object.values(biomas), backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c', '#9b59b6', '#3498db', '#34495e'] }]
             },
             options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // 3. Gráfico FRP por Bioma
+        // Chart 3: FRP
         if (chartFrp) chartFrp.destroy();
         chartFrp = new Chart(document.getElementById('chartFRP'), {
             type: 'bar',
             data: {
                 labels: Object.keys(medFrpBioma),
-                datasets: [{
-                    label: 'FRP Médio (MW)',
-                    data: Object.values(medFrpBioma),
-                    backgroundColor: '#c0392b'
-                }]
+                datasets: [{ label: 'FRP Médio (MW)', data: Object.values(medFrpBioma), backgroundColor: '#c0392b' }]
             },
             options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // 4. Gráfico Satélites
+        // Chart 4: Satélites
         if (chartSat) chartSat.destroy();
         chartSat = new Chart(document.getElementById('chartSatélites'), {
             type: 'pie',
             data: {
                 labels: Object.keys(satelites),
-                datasets: [{
-                    data: Object.values(satelites),
-                    backgroundColor: ['#2980b9', '#8e44ad', '#16a085', '#f39c12', '#d35400']
-                }]
+                datasets: [{ data: Object.values(satelites), backgroundColor: ['#2980b9', '#8e44ad', '#16a085', '#f39c12', '#d35400'] }]
             },
             options: { responsive: true, maintainAspectRatio: false }
         });
     }
 
-    // Inicialização
+    // Executar
     carregarFocosDiarios();
     carregarPurpleAir();
     carregarDadosMensais();
