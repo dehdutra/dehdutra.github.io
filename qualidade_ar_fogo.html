@@ -40,6 +40,14 @@
             padding: 4px 8px;
             border-radius: 4px;
         }
+        .citation-box {
+            font-size: 0.75rem;
+            background-color: #f1f3f5;
+            border-left: 3px solid #0d6efd;
+            padding: 8px 12px;
+            margin-top: 12px;
+            border-radius: 0 4px 4px 0;
+        }
     </style>
 </head>
 <body>
@@ -56,8 +64,22 @@
                     <h5 class="card-title mb-0">Focos Diários (Satélites AQUA - INPE)</h5>
                     <span id="status-focos" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
-                <p class="text-muted small">Pontos de calor detectados na América do Sul pelo satélite Aqua.</p>
+                <p class="text-muted small mb-1">Pontos de calor detectados na América do Sul pelo satélite Aqua.</p>
+                
+                <!-- Informações de Período, Data e Fonte -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-2 rounded mb-2 small border">
+                    <div><strong>Período:</strong> Diário</div>
+                    <div><strong>Data do Dado:</strong> <span id="data-focos">Carregando...</span></div>
+                    <div><strong>Fonte:</strong> INPE / BDQueimadas</div>
+                </div>
+
                 <div id="mapa-focos" class="map-container"></div>
+
+                <!-- Como Citar -->
+                <div class="citation-box mt-3">
+                    <strong>Como citar estas informações:</strong><br>
+                    <span id="citacao-focos">INPE - Instituto Nacional de Pesquisas Espaciais. Programa Queimadas: Monitoreamento de Focos de Calor via Satélite AQUA Tarde (Período Diário). Acesso em: <span class="data-acesso"></span>.</span>
+                </div>
             </div>
         </div>
 
@@ -68,8 +90,22 @@
                     <h5 class="card-title mb-0">Qualidade do Ar (PurpleAir - PM2.5)</h5>
                     <span id="status-purpleair" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
-                <p class="text-muted small">Sensores coloridos pela concentração de partículas PM2.5.</p>
+                <p class="text-muted small mb-1">Sensores coloridos pela concentração de partículas PM2.5.</p>
+                
+                <!-- Informações de Período, Data e Fonte -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-2 rounded mb-2 small border">
+                    <div><strong>Período:</strong> Tempo Real / Diário (Média 10 min)</div>
+                    <div><strong>Data do Dado:</strong> <span id="data-purpleair">Carregando...</span></div>
+                    <div><strong>Fonte:</strong> Rede PurpleAir (API v1)</div>
+                </div>
+
                 <div id="mapa-purpleair" class="map-container"></div>
+
+                <!-- Como Citar -->
+                <div class="citation-box mt-3">
+                    <strong>Como citar estas informações:</strong><br>
+                    <span>PURPLEAIR. Monitoramento Comunitário de Qualidade do Ar: Concentração de Material Particulado Fine (PM2.5). Rede de Sensores de América do Sul. Acesso em: <span class="data-acesso"></span>.</span>
+                </div>
             </div>
         </div>
     </div>
@@ -82,6 +118,11 @@
 
 <script>
     const PURPLEAIR_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
+
+    // Atualizar data de acesso nas citações
+    const hojeStr = new Date().toLocaleDateString('pt-BR');
+    document.querySelectorAll('.data-acesso').forEach(el => el.textContent = hojeStr);
+    document.getElementById('data-purpleair').textContent = hojeStr;
 
     // 1. Inicializar os Mapas
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
@@ -98,9 +139,18 @@
         return `${ano}${mes}${dia}`;
     }
 
+    // Formatar data legível BR (DD/MM/AAAA)
+    function formatarDataBR(d) {
+        const dia = String(d.getDate()).padStart(2, '0');
+        const mes = String(d.getMonth + 1 || d.getMonth() + 1).padStart(2, '0');
+        const ano = d.getFullYear();
+        return `${dia}/${mes}/${ano}`;
+    }
+
     // 2. Leitura Direta dos Dados de Focos (Endpoints Oficiais do BDQueimadas / Dados Abertos)
     async function carregarFocosDiarios() {
         const statusEl = document.getElementById('status-focos');
+        const dataFocosEl = document.getElementById('data-focos');
         
         // Fontes oficiais do INPE / Dados Abertos para consumo direto no navegador
         let fontes = [];
@@ -108,14 +158,24 @@
             let d = new Date();
             d.setDate(d.getDate() - i);
             const dt = formatarDataAAAAMMDD(d);
-            fontes.push(`https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${dt}.csv`);
-            fontes.push(`https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${dt}.csv`);
+            const dtBR = formatarDataBR(d);
+            
+            fontes.push({
+                dataBR: dtBR,
+                url: `https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${dt}.csv`
+            });
+            fontes.push({
+                dataBR: dtBR,
+                url: `https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${dt}.csv`
+            });
         }
 
         let sucesso = false;
 
-        for (const urlTarget of fontes) {
+        for (const fonte of fontes) {
             if (sucesso) break;
+
+            const urlTarget = fonte.url;
 
             try {
                 // Tenta fetch direto sem proxy
@@ -165,6 +225,7 @@
                                 if (totalAqua > 0) {
                                     statusEl.className = "badge bg-success status-badge";
                                     statusEl.textContent = `${totalAqua} focos AQUA`;
+                                    dataFocosEl.textContent = fonte.dataBR;
                                     sucesso = true;
                                 }
                             }
@@ -179,6 +240,7 @@
         if (!sucesso) {
             statusEl.className = "badge bg-danger status-badge";
             statusEl.textContent = "Erro ao carregar INPE";
+            dataFocosEl.textContent = "Indisponível";
         }
     }
 
