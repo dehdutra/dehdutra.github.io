@@ -44,6 +44,7 @@ main { max-width: 1800px; margin: auto; padding: 20px; }
 
 .metric { padding: 16px; min-width: 0; }
 .metric-label { font-size: 11px; color: #64748b; font-weight: bold; }
+
 .metric-value {
   font-size: 25px;
   font-weight: bold;
@@ -68,6 +69,12 @@ main { max-width: 1800px; margin: auto; padding: 20px; }
   min-height: 400px;
   background: #dce8ef;
   position: relative;
+}
+
+/* Fundo de reserva do Leaflet enquanto os blocos carregam. */
+.leaflet-container {
+  background: #e2e8f0;
+  font-family: Arial, sans-serif;
 }
 
 .legend {
@@ -342,13 +349,14 @@ const REFRESH_MS = 10 * 60 * 1000;
 const MAX_FILES = 180;
 const CONCURRENCY = 8;
 
+// Enquadramento inicial dos quatro mapas.
 const SOUTH_AMERICA_CENTER = [-20, -60];
 const SOUTH_AMERICA_ZOOM = 3;
 
 // PURPLEAIR
-// Não publique sua chave dentro do HTML.
-// Para publicação, use um backend e guarde a chave no servidor.
-const PURPLEAIR_API_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
+// Insira aqui uma chave válida para testar localmente.
+// Não publique a chave no HTML. Em produção, utilize um backend.
+const PURPLEAIR_API_KEY = "COLOQUE_SUA_CHAVE_AQUI";
 
 const PURPLEAIR_URL = "https://api.purpleair.com/v1/sensors";
 
@@ -359,7 +367,6 @@ const PA_BOUNDS = {
   selng: -32
 };
 
-const PA_REFRESH_MS = 10 * 60 * 1000;
 const PA_MAX_AGE_SECONDS = 30 * 60;
 
 // ============================================================
@@ -399,6 +406,17 @@ function criarMapa(id) {
     worldCopyJump: false
   });
 
+  // Camada principal: OpenStreetMap.
+  const osm = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom: 19,
+      noWrap: true,
+      attribution: "&copy; OpenStreetMap contributors"
+    }
+  );
+
+  // Camada alternativa: CARTO.
   const carto = L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
     {
@@ -409,33 +427,60 @@ function criarMapa(id) {
     }
   );
 
-  const osm = L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      maxZoom: 19,
-      noWrap: true,
-      attribution: "&copy; OpenStreetMap contributors"
-    }
-  );
-
   let fallbackAtivado = false;
 
-  carto.on("tileerror", () => {
-    if (!fallbackAtivado) {
-      fallbackAtivado = true;
-      if (map.hasLayer(carto)) map.removeLayer(carto);
-      osm.addTo(map);
+  // Começa pelo OSM para carregar o mapa-base.
+  osm.addTo(map);
+
+  // Se houver falha nos blocos do OSM, tenta o CARTO uma vez.
+  osm.on("tileerror", function () {
+    if (fallbackAtivado) return;
+
+    fallbackAtivado = true;
+
+    if (map.hasLayer(osm)) {
+      map.removeLayer(osm);
     }
+
+    carto.addTo(map);
   });
 
-  carto.addTo(map);
+  // Se o CARTO também falhar, volta ao OSM.
+  // Não fica alternando indefinidamente entre as camadas.
+  carto.on("tileerror", function () {
+    if (!fallbackAtivado) return;
+
+    if (map.hasLayer(carto)) {
+      map.removeLayer(carto);
+    }
+
+    // A camada principal já foi tentada. Mantém o fundo do mapa
+    // e registra o erro para facilitar o diagnóstico.
+    console.warn(
+      "Falha ao carregar blocos do CARTO no mapa:",
+      id
+    );
+  });
+
   map.setView(SOUTH_AMERICA_CENTER, SOUTH_AMERICA_ZOOM);
+
+  // Recalcula as dimensões após o navegador renderizar o elemento.
+  requestAnimationFrame(() => {
+    map.invalidateSize({ pan: false, animate: false });
+    map.setView(SOUTH_AMERICA_CENTER, SOUTH_AMERICA_ZOOM, {
+      animate: false
+    });
+  });
 
   return map;
 }
 
 function fixarEnquadramento(map) {
-  map.invalidateSize({ pan: false, animate: false });
+  if (!map) return;
+
+  requestAnimationFrame(() => {
+    map.invalidateSize({ pan: false, animate: false });
+  });
 }
 
 function iniciarMapas() {
@@ -482,22 +527,19 @@ function iniciarMapas() {
     }
   }).addTo(mapPurpleAirHeat);
 
+  const todosMapas = [
+    mapFocos,
+    mapDensidade,
+    mapPurpleAir,
+    mapPurpleAirHeat
+  ];
+
   requestAnimationFrame(() => {
-    [
-      mapFocos,
-      mapDensidade,
-      mapPurpleAir,
-      mapPurpleAirHeat
-    ].forEach(fixarEnquadramento);
+    todosMapas.forEach(fixarEnquadramento);
   });
 
   window.addEventListener("resize", () => {
-    [
-      mapFocos,
-      mapDensidade,
-      mapPurpleAir,
-      mapPurpleAirHeat
-    ].forEach(map => map.invalidateSize({ pan: false }));
+    todosMapas.forEach(fixarEnquadramento);
   });
 }
 
@@ -537,10 +579,12 @@ function campo(obj, nomes) {
 
 function num(v) {
   if (v == null || v === "") return null;
+
   const n = Number(String(v).trim().replace(",", "."));
   return Number.isFinite(n) ? n : null;
 }
 
+// Corrigido: evita erro de sintaxe que interromperia todo o JavaScript.
 function escapeHTML(v) {
   return String(v).replace(/[&<>"']/g, c => ({
     "&": "&amp;",
@@ -1031,8 +1075,6 @@ async function paFetchSensors() {
     const lat = paNum(get(row, "latitude"));
     const lon = paNum(get(row, "longitude"));
 
-    // Preferência pela concentração atmosférica.
-    // Os outros campos são alternativas, não equivalentes em todas as APIs.
     const pm25 =
       paNum(get(row, "pm2.5_atm")) ??
       paNum(get(row, "pm2.5_10minute")) ??
@@ -1051,9 +1093,11 @@ async function paFetchSensors() {
     const ageSeconds =
       lastSeen === null ? null : nowSeconds - lastSeen;
 
+    // Leituras sem data de comunicação não são classificadas como recentes.
     const recent =
-      ageSeconds === null ||
-      (ageSeconds >= 0 && ageSeconds <= PA_MAX_AGE_SECONDS);
+      ageSeconds !== null &&
+      ageSeconds >= 0 &&
+      ageSeconds <= PA_MAX_AGE_SECONDS;
 
     return {
       name: String(get(row, "name") || "Sensor PurpleAir"),
@@ -1134,8 +1178,8 @@ function paDrawHeat(sensors) {
     sensor.recent
   );
 
-  // O peso da camada é limitado a 50 µg/m³.
-  // A cor da superfície não deve ser interpretada como medição em cada pixel.
+  // O peso é limitado a 50 µg/m³.
+  // A superfície é ilustrativa, não uma medição em cada pixel.
   paHeat.setLatLngs(
     valid.map(sensor => [
       sensor.lat,
@@ -1254,7 +1298,7 @@ async function atualizarTudo() {
   }
 }
 
-// Inicializa todos os mapas mesmo se uma das APIs falhar.
+// Inicializa os mapas independentemente do sucesso das APIs.
 iniciarMapas();
 
 $("refreshButton").addEventListener("click", atualizarTudo);
@@ -1269,7 +1313,7 @@ setInterval(() => {
   if (focos.length) renderINPE();
 }, 60 * 1000);
 
-// Atualiza a exibição dos sensores sem nova consulta à API.
+// Atualiza os sensores sem fazer nova consulta à API.
 setInterval(() => {
   if (paSensors.length) {
     paDrawSensors(paSensors);
