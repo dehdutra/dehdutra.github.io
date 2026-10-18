@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Monitoramento Ambiental | América do Sul</title>
+
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
   <style>
@@ -18,48 +19,59 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    .container { max-width: 1450px; margin: auto; }
-    h1 { margin: 0 0 8px; font-size: clamp(24px, 3vw, 34px); }
-    h2 { margin: 5px 0 8px; font-size: 21px; }
-    .subtitulo { color: #60716c; line-height: 1.6; }
+    .container {
+      max-width: 1500px;
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 3vw, 34px);
+    }
+
+    h2 {
+      margin: 4px 0 10px;
+      font-size: 20px;
+    }
+
+    h3 {
+      margin-top: 0;
+      font-size: 15px;
+    }
+
+    .subtitulo, .descricao, .nota {
+      color: #60716c;
+      line-height: 1.6;
+    }
 
     .painel {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 12px;
       margin: 20px 0;
     }
 
+    .indicador, .mapa-card, .criterios {
+      background: white;
+      border: 1px solid #dce5e1;
+      border-radius: 12px;
+    }
+
     .indicador {
-      background: white;
-      border: 1px solid #dce5e1;
-      border-radius: 12px;
-      padding: 17px;
-      overflow-wrap: anywhere;
-    }
-
-    .rotulo { color: #64736e; font-size: 13px; margin-bottom: 8px; }
-    .valor { font-size: 25px; font-weight: 700; }
-
-    .mapa-card {
-      background: white;
-      border: 1px solid #dce5e1;
-      border-radius: 12px;
       padding: 16px;
-      margin: 20px 0;
+      min-width: 0;
     }
 
-    .descricao-mapa {
+    .rotulo {
       color: #64736e;
       font-size: 13px;
-      line-height: 1.6;
-      margin: 0 0 8px;
+      margin-bottom: 8px;
     }
 
-    .mapa {
-      width: 100%;
-      height: min(65vh, 680px);
-      min-height: 420px;
+    .valor {
+      font-size: 24px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
     }
 
     .acoes {
@@ -83,15 +95,52 @@
     button:hover { background: #10563f; }
     button:disabled { opacity: .6; cursor: wait; }
 
-    .status { color: #53645e; font-size: 13px; line-height: 1.5; }
+    .status {
+      color: #53645e;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    /* DOIS MAPAS NA PRIMEIRA LINHA */
+    .mapas-superiores {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .mapa-card {
+      padding: 16px;
+      margin: 0 0 20px;
+      min-width: 0;
+    }
+
+    .mapa {
+      width: 100%;
+      height: 480px;
+      min-height: 380px;
+    }
+
+    /* INTERPOLAÇÃO EM LARGURA TOTAL */
+    .mapa-largo {
+      width: 100%;
+      height: min(72vh, 700px);
+      min-height: 440px;
+    }
+
+    .descricao {
+      font-size: 13px;
+      margin: 0 0 10px;
+    }
 
     .legenda {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 10px 18px;
-      margin: 14px 0 5px;
-      padding: 13px;
+      gap: 10px 16px;
+      margin: 12px 0;
+      padding: 12px;
       background: #f7f9f8;
       border: 1px solid #e0e7e3;
       border-radius: 8px;
@@ -120,17 +169,57 @@
       flex-shrink: 0;
     }
 
+    /* CRITÉRIOS CONAMA ABAIXO DO MAPA */
+    .criterios {
+      padding: 20px;
+      margin: 0 0 20px;
+    }
+
+    .conama-grade {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .conama-item {
+      padding: 15px;
+      border: 1px solid #e0e7e3;
+      border-radius: 8px;
+      min-width: 0;
+    }
+
+    .conama-valor {
+      font-size: 23px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+
     .nota {
-      color: #65736e;
       font-size: 12px;
-      line-height: 1.7;
-      margin-top: 18px;
+      margin-top: 14px;
+    }
+
+    .erro-plot {
+      padding: 18px;
+      color: #a12622;
+      background: #fff4f2;
+      border: 1px solid #e8b9b4;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .mapas-superiores { grid-template-columns: 1fr; }
+      .mapa { height: 440px; }
+      .conama-grade { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 600px) {
       body { padding: 10px; }
-      .mapa-card { padding: 8px; }
-      .mapa { min-height: 380px; height: 60vh; }
+      .mapa-card, .criterios { padding: 10px; }
+      .mapa { height: 400px; min-height: 350px; }
+      .mapa-largo { height: 480px; min-height: 400px; }
     }
   </style>
 </head>
@@ -142,8 +231,8 @@
 
   <p class="subtitulo">
     Monitoramento continental de focos de fogo do INPE, sensores
-    PurpleAir e estimativa espacial de PM2,5. Os dados e as escalas
-    de cada mapa são independentes.
+    PurpleAir e estimativa espacial de PM2,5. Os dados são consultados
+    separadamente e apresentados em mapas com escalas independentes.
   </p>
 
   <section class="painel">
@@ -153,12 +242,12 @@
     </div>
 
     <div class="indicador">
-      <div class="rotulo">Sensores PurpleAir encontrados</div>
+      <div class="rotulo">Sensores PurpleAir</div>
       <div class="valor" id="total-sensores">--</div>
     </div>
 
     <div class="indicador">
-      <div class="rotulo">PM2,5 médio de 24 h nos sensores</div>
+      <div class="rotulo">PM2,5 médio de 24 horas</div>
       <div class="valor" id="pm25-medio">--</div>
     </div>
 
@@ -174,142 +263,182 @@
   </section>
 
   <div class="acoes">
-    <button id="btn-atualizar" onclick="atualizarTudo()">
+    <button id="btn-atualizar" type="button" onclick="atualizarTudo()">
       Atualizar dados
     </button>
     <span id="status-inpe" class="status">INPE: aguardando.</span>
     <span id="status-purpleair" class="status">PurpleAir: aguardando.</span>
   </div>
 
-  <!-- MAPA 1: INPE -->
-  <section class="mapa-card">
-    <h2>1. Focos de fogo | INPE</h2>
+  <!-- MAPAS 1 E 2: LADO A LADO -->
+  <div class="mapas-superiores">
 
-    <p class="descricao-mapa">
-      Focos registrados no arquivo diário de América do Sul.
-      O filtro de satélite AQUA é aplicado quando a coluna correspondente
-      está disponível no CSV.
+    <section class="mapa-card">
+      <h2>1. Focos de fogo | INPE</h2>
+
+      <p class="descricao">
+        Focos registrados no arquivo diário da América do Sul.
+        O filtro AQUA é aplicado quando a coluna de satélite está disponível.
+      </p>
+
+      <div class="legenda">
+        <div class="legenda-titulo">Legenda</div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#e53935"></span>
+          Foco de fogo
+        </div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#e4ebe7"></span>
+          Área terrestre
+        </div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#eaf3f8"></span>
+          Oceano
+        </div>
+      </div>
+
+      <div id="mapa-inpe" class="mapa"></div>
+    </section>
+
+    <section class="mapa-card">
+      <h2>2. Qualidade do ar | PurpleAir</h2>
+
+      <p class="descricao">
+        Sensores coloridos conforme a concentração de PM2,5.
+        A média de 24 horas é priorizada quando disponível.
+      </p>
+
+      <div class="legenda">
+        <div class="legenda-titulo">PM2,5 (µg/m³)</div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#2ca25f"></span>≤ 5
+        </div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#f0d32d"></span>&gt; 5 a 15
+        </div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#f28e2b"></span>&gt; 15 a 25
+        </div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#d73027"></span>&gt; 25 a 50
+        </div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#7a0177"></span>&gt; 50
+        </div>
+        <div class="legenda-item">
+          <span class="simbolo" style="background:#808080"></span>Indisponível
+        </div>
+      </div>
+
+      <div id="mapa-purpleair" class="mapa"></div>
+    </section>
+
+  </div>
+
+  <!-- MAPA 3: ABAIXO DOS DOIS PRIMEIROS -->
+  <section class="mapa-card">
+    <h2>3. Distribuição espacial estimada de PM2,5</h2>
+
+    <p class="descricao">
+      Interpolação pelo método IDW a partir de médias válidas de 24 horas.
+      Células sem pelo menos três sensores dentro do raio definido
+      não recebem estimativa.
     </p>
 
     <div class="legenda">
-      <div class="legenda-titulo">Legenda</div>
-      <div class="legenda-item">
-        <span class="simbolo" style="background:#e53935"></span>
-        Foco de fogo
-      </div>
-      <div class="legenda-item">
-        <span class="simbolo" style="background:#e4ebe7"></span>
-        Área terrestre
-      </div>
-      <div class="legenda-item">
-        <span class="simbolo" style="background:#eaf3f8"></span>
-        Oceano
-      </div>
-    </div>
-
-    <div id="mapa-inpe" class="mapa"></div>
-
-    <p class="descricao-mapa">
-      Passe o mouse sobre um foco para consultar os campos disponíveis
-      no arquivo, como data, município, estado, bioma e FRP.
-    </p>
-  </section>
-
-  <!-- MAPA 2: PURPLEAIR -->
-  <section class="mapa-card">
-    <h2>2. Sensores de qualidade do ar | PurpleAir</h2>
-
-    <p class="descricao-mapa">
-      Sensores dentro da área geográfica da América do Sul. A cor usa
-      a média de 24 horas quando disponível; caso contrário, usa a leitura
-      atual e identifica essa diferença no detalhe do sensor.
-    </p>
-
-    <div class="legenda">
-      <div class="legenda-titulo">Faixas visuais de PM2,5 (µg/m³)</div>
-      <div class="legenda-item"><span class="simbolo" style="background:#2ca25f"></span>≤ 5</div>
-      <div class="legenda-item"><span class="simbolo" style="background:#f0d32d"></span>&gt; 5 a 15</div>
-      <div class="legenda-item"><span class="simbolo" style="background:#f28e2b"></span>&gt; 15 a 25</div>
-      <div class="legenda-item"><span class="simbolo" style="background:#d73027"></span>&gt; 25 a 50</div>
-      <div class="legenda-item"><span class="simbolo" style="background:#7a0177"></span>&gt; 50</div>
-      <div class="legenda-item"><span class="simbolo" style="background:#808080"></span>Indisponível</div>
-    </div>
-
-    <div id="mapa-purpleair" class="mapa"></div>
-  </section>
-
-  <!-- MAPA 3: INTERPOLAÇÃO E CONAMA -->
-  <section class="mapa-card">
-    <h2>3. PM2,5 interpolado | Referência CONAMA PI-2</h2>
-
-    <p class="descricao-mapa">
-      Estimativa espacial por IDW a partir de sensores PurpleAir com
-      médias de 24 horas válidas. A superfície só é desenhada onde há
-      pelo menos três sensores dentro do raio de busca definido no código.
-    </p>
-
-    <div class="legenda">
-      <div class="legenda-titulo">
-        PM2,5 estimado em 24 horas (µg/m³)
-      </div>
+      <div class="legenda-titulo">PM2,5 estimado em 24 horas (µg/m³)</div>
       <div class="legenda-item">
         <span class="simbolo" style="background:#2ca25f"></span>
-        ≤ 25: faixa visual inferior
+        ≤ 25
       </div>
       <div class="legenda-item">
         <span class="simbolo" style="background:#f0d32d"></span>
-        &gt; 25 a 50: até o padrão PI-2
+        &gt; 25 a 50
       </div>
       <div class="legenda-item">
         <span class="simbolo" style="background:#d73027"></span>
-        &gt; 50: acima do padrão PI-2
+        &gt; 50
       </div>
       <div class="legenda-item">
         <span class="simbolo" style="background:#263238"></span>
-        Sensores usados na interpolação
+        Sensores utilizados
       </div>
     </div>
 
-    <div id="mapa-interpolado" class="mapa"></div>
+    <div id="mapa-interpolado" class="mapa-largo"></div>
 
-    <p class="descricao-mapa" id="status-interpolacao">
+    <p class="descricao" id="status-interpolacao">
       Interpolação aguardando dados.
     </p>
+  </section>
+
+  <!-- CONAMA ABAIXO DA INTERPOLAÇÃO -->
+  <section class="criterios">
+    <h2>Critérios de qualidade do ar | CONAMA</h2>
+
+    <p class="descricao">
+      Referências de PM2,5 da Resolução CONAMA nº 506/2024.
+      O período de referência deve ser considerado ao interpretar os dados.
+    </p>
+
+    <div class="conama-grade">
+      <div class="conama-item">
+        <h3>PI-2 · 24 horas</h3>
+        <div class="conama-valor">50 µg/m³</div>
+        <p class="descricao">
+          Padrão intermediário de qualidade do ar para PM2,5.
+          É a referência utilizada para a classe superior do mapa interpolado.
+        </p>
+      </div>
+
+      <div class="conama-item">
+        <h3>PI-2 · média anual</h3>
+        <div class="conama-valor">17 µg/m³</div>
+        <p class="descricao">
+          Padrão para a média anual. Não deve ser comparado diretamente
+          com uma leitura instantânea ou com uma média de 24 horas.
+        </p>
+      </div>
+
+      <div class="conama-item">
+        <h3>Como interpretar o mapa</h3>
+        <div class="conama-valor">Estimativa</div>
+        <p class="descricao">
+          A interpolação estima valores entre sensores e não equivale
+          a uma medição oficial ou à confirmação de uma ultrapassagem legal.
+        </p>
+      </div>
+    </div>
 
     <p class="nota">
-      O PI-2 do CONAMA para PM2,5 é 50 µg/m³ para 24 horas. A faixa
-      de 25 µg/m³ é apenas uma divisão visual deste painel, não um
-      limite legal PI-2. A comparação pressupõe que os valores usados
-      sejam médias válidas de 24 horas.
+      A divisão de 25 µg/m³ usada no mapa é apenas uma classe visual,
+      não um limite legal PI-2. A interpretação regulamentar depende
+      de dados válidos, período de referência e requisitos aplicáveis.
     </p>
   </section>
 
   <p class="nota">
     <strong>Fontes:</strong> INPE e PurpleAir.
-
-    A área de consulta é delimitada por longitude de −83° a −30° e
-    latitude de −57° a 13°. A disponibilidade efetiva depende dos
-    dados publicados pelas fontes. A interpolação IDW não equivale a
-    um raster oficial nem substitui estações de referência. Como não
-    há máscara de terra nesta implementação, a estimativa pode aparecer
-    perto de áreas costeiras ou sobre água. Regiões sem sensores
-    suficientes ficam sem estimativa.
+    Área de consulta: longitude −83° a −30° e latitude −57° a 13°.
+    A interpolação não possui máscara terrestre e pode produzir estimativas
+    próximas de áreas costeiras ou sobre água. A cobertura depende da
+    disponibilidade e distribuição dos sensores.
   </p>
+
 </main>
 
 <script>
 "use strict";
 
 // ============================================================
-// 1. CONFIGURAÇÃO
+// CONFIGURAÇÃO
 // ============================================================
 
-// INPE: pasta diária de TODA a América do Sul.
 const INPE_BASE_URL =
   "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/";
 
-// Insira uma chave PurpleAir READ.
-// Não coloque uma chave real em um HTML público.
+// Configure sua chave PurpleAir READ.
+// Não publique uma chave privada em um HTML público.
 const PURPLEAIR_API_KEY = "COLOQUE_SUA_CHAVE_READ_AQUI";
 
 const REGIAO = {
@@ -320,25 +449,21 @@ const REGIAO = {
 };
 
 const INTERVALO_ATUALIZACAO = 15 * 60 * 1000;
-
-// Configuração da interpolação IDW.
 const IDW_NX = 45;
 const IDW_NY = 34;
 const IDW_POTENCIA = 2;
 const IDW_RAIO_KM = 250;
 const IDW_MIN_SENSORES = 3;
-
-// Padrão CONAMA 506/2024, etapa PI-2, PM2,5, 24 horas.
 const CONAMA_PI2_PM25_24H = 50;
 
 let focos = [];
 let sensores = [];
-let dataArquivoINPE = "";
 let atualizando = false;
+let timerAtualizacao = null;
 
 
 // ============================================================
-// 2. FUNÇÕES AUXILIARES
+// FUNÇÕES AUXILIARES
 // ============================================================
 
 function definirStatus(id, mensagem) {
@@ -356,13 +481,6 @@ function numeroBR(valor, casas = 1) {
   });
 }
 
-function valorSeguro(valor) {
-  if (valor === undefined || valor === null || valor === "") {
-    return "Não informado";
-  }
-  return String(valor);
-}
-
 function numeroValido(valor) {
   if (valor === null || valor === undefined || valor === "") return null;
   const n = Number(valor);
@@ -375,6 +493,31 @@ function normalizarTexto(valor) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
+}
+
+function escaparHTML(valor) {
+  return String(valor ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function valorSeguro(valor) {
+  return valor === null || valor === undefined || valor === ""
+    ? "Não informado"
+    : String(valor);
+}
+
+function formatarUnix(valor) {
+  const n = Number(valor);
+  if (!Number.isFinite(n) || n <= 0) return "Não informado";
+
+  const data = new Date(n * 1000);
+  return Number.isNaN(data.getTime())
+    ? "Não informado"
+    : data.toLocaleString("pt-BR");
 }
 
 function dividirCSV(linha) {
@@ -404,358 +547,62 @@ function dividirCSV(linha) {
   return resultado;
 }
 
-function formatarUnix(valor) {
-  const n = Number(valor);
-  if (!Number.isFinite(n) || n <= 0) return "Não informado";
-
-  const data = new Date(n * 1000);
-  if (Number.isNaN(data.getTime())) return "Não informado";
-
-  return data.toLocaleString("pt-BR");
-}
-
-function escaparHTML(valor) {
-  return String(valor ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
 
 // ============================================================
-// 3. INPE: LOCALIZAR O CSV MAIS RECENTE
+// RENDERIZAÇÃO DOS MAPAS
+// Inicializa com newPlot e usa react nas atualizações seguintes.
+// Erros ficam visíveis no próprio cartão.
 // ============================================================
 
-async function localizarArquivoINPE() {
-  // Primeiro tenta listar a pasta e localizar o arquivo mais recente.
-  // Os nomes da pasta América do Sul são focos_diario_YYYYMMDD.csv.
-  try {
-    const resposta = await fetch(INPE_BASE_URL, { cache: "no-store" });
+async function renderizarMapa(id, traces, layout) {
+  const div = document.getElementById(id);
 
-    if (resposta.ok) {
-      const html = await resposta.text();
-      const regex = /focos_diario_(\d{8})\.csv/gi;
-      const datas = new Set();
-      let match;
-
-      while ((match = regex.exec(html)) !== null) {
-        datas.add(match[1]);
-      }
-
-      const lista = [...datas].sort();
-
-      if (lista.length) {
-        const data = lista[lista.length - 1];
-
-        return {
-          data,
-          url: INPE_BASE_URL + "focos_diario_" + data + ".csv"
-        };
-      }
-    }
-  } catch (erro) {
-    console.warn("Não foi possível listar a pasta do INPE:", erro);
+  if (!div) {
+    throw new Error("Elemento do mapa não encontrado: " + id);
   }
 
-  // Alternativa: tenta os dias recentes diretamente.
-  // Isso também ajuda quando a listagem de diretório não está acessível.
-  for (let atraso = 0; atraso <= 7; atraso++) {
-    const dataObj = new Date();
-    dataObj.setUTCHours(0, 0, 0, 0);
-    dataObj.setUTCDate(dataObj.getUTCDate() - atraso);
-
-    const data = [
-      dataObj.getUTCFullYear(),
-      String(dataObj.getUTCMonth() + 1).padStart(2, "0"),
-      String(dataObj.getUTCDate()).padStart(2, "0")
-    ].join("");
-
-    const url = INPE_BASE_URL + "focos_diario_" + data + ".csv";
-
-    try {
-      const resposta = await fetch(url, { cache: "no-store" });
-
-      if (resposta.ok) {
-        return { data, url };
-      }
-    } catch (erro) {
-      console.warn("Tentativa de arquivo INPE falhou:", data, erro);
-    }
-  }
-
-  throw new Error(
-    "Não foi possível localizar um CSV recente. Verifique a conexão e o acesso à pasta do INPE."
-  );
-}
-
-
-// ============================================================
-// 4. INPE: INTERPRETAR CSV DE TODA A AMÉRICA DO SUL
-// ============================================================
-
-function interpretarCSVINPE(csv) {
-  const linhas = csv
-    .replace(/^\uFEFF/, "")
-    .split(/\r?\n/)
-    .filter(l => l.trim() !== "");
-
-  if (linhas.length < 2) return [];
-
-  const cabecalhos = dividirCSV(linhas[0]).map(normalizarTexto);
-
-  const indice = nomes => {
-    const procurados = nomes.map(normalizarTexto);
-    return cabecalhos.findIndex(c => procurados.includes(c));
-  };
-
-  const iLat = indice(["lat", "latitude"]);
-  const iLon = indice(["lon", "longitude"]);
-  const iData = indice(["datahora", "data_hora", "data", "date"]);
-  const iMunicipio = indice(["municipio"]);
-  const iEstado = indice(["estado", "uf", "state"]);
-  const iBioma = indice(["bioma", "biome"]);
-  const iSatelite = indice(["satelite", "satellite"]);
-  const iFRP = indice(["frp"]);
-  const iPais = indice(["pais", "country"]);
-
-  if (iLat < 0 || iLon < 0) {
-    throw new Error(
-      "O CSV não contém colunas reconhecíveis de latitude e longitude."
-    );
-  }
-
-  const resultado = [];
-
-  for (let i = 1; i < linhas.length; i++) {
-    const col = dividirCSV(linhas[i]);
-    const lat = Number(col[iLat]);
-    const lon = Number(col[iLon]);
-
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-
-    // Limites continentais; NÃO restringe os registros ao Brasil.
-    if (
-      lat < REGIAO.selat || lat > REGIAO.nwlat ||
-      lon < REGIAO.nwlng || lon > REGIAO.selng
-    ) continue;
-
-    const valor = j => j >= 0 ? (col[j] || "") : "";
-    const satelite = valor(iSatelite);
-
-    // Se existe a coluna de satélite, mantém somente AQUA.
-    // Se a coluna não existe, mantém os registros disponíveis,
-    // pois não é possível aplicar esse filtro com segurança.
-    if (
-      iSatelite >= 0 &&
-      !normalizarTexto(satelite).includes("aqua")
-    ) continue;
-
-    resultado.push({
-      lat,
-      lon,
-      data: valor(iData),
-      municipio: valor(iMunicipio),
-      estado: valor(iEstado),
-      bioma: valor(iBioma),
-      satelite: satelite || "Não informado no CSV",
-      frp: valor(iFRP),
-      pais: valor(iPais)
-    });
-  }
-
-  return resultado;
-}
-
-
-// ============================================================
-// 5. ATUALIZAR INPE
-// ============================================================
-
-async function atualizarINPE() {
-  definirStatus("status-inpe", "INPE: consultando América do Sul...");
-
-  try {
-    const arquivo = await localizarArquivoINPE();
-    const resposta = await fetch(arquivo.url, { cache: "no-store" });
-
-    if (!resposta.ok) {
-      throw new Error("Falha ao baixar CSV: HTTP " + resposta.status);
-    }
-
-    const csv = await resposta.text();
-    const novosFocos = interpretarCSVINPE(csv);
-
-    // Só substitui os dados anteriores após consulta bem-sucedida.
-    focos = novosFocos;
-    dataArquivoINPE =
-      arquivo.data.slice(6, 8) + "/" +
-      arquivo.data.slice(4, 6) + "/" +
-      arquivo.data.slice(0, 4);
-
-    document.getElementById("total-focos").textContent =
-      focos.length.toLocaleString("pt-BR");
-
-    definirStatus(
-      "status-inpe",
-      "INPE: " + focos.length.toLocaleString("pt-BR") +
-      " focos no arquivo de " + dataArquivoINPE + "."
-    );
-
-  } catch (erro) {
-    console.error("Erro INPE:", erro);
-    definirStatus("status-inpe", "INPE: " + erro.message);
-  }
-}
-
-
-// ============================================================
-// 6. PURPLEAIR: CONSULTA NA EXTENSÃO SUL-AMERICANA
-// ============================================================
-
-async function atualizarPurpleAir() {
-  definirStatus("status-purpleair", "PurpleAir: consultando sensores...");
-
-  if (
-    !PURPLEAIR_API_KEY ||
-    PURPLEAIR_API_KEY === "COLOQUE_SUA_CHAVE_READ_AQUI"
-  ) {
-    definirStatus(
-      "status-purpleair",
-      "PurpleAir: configure uma chave READ na constante PURPLEAIR_API_KEY."
-    );
-    return;
+  if (typeof Plotly === "undefined") {
+    div.innerHTML =
+      '<div class="erro-plot">A biblioteca Plotly não foi carregada. ' +
+      'Verifique a conexão com a internet e o bloqueio de scripts.</div>';
+    throw new Error("Plotly não está disponível.");
   }
 
   try {
-    const campos = [
-      "name",
-      "latitude",
-      "longitude",
-      "location_type",
-      "last_seen",
-      "pm2.5",
-      "pm2.5_24hour",
-      "humidity",
-      "temperature"
-    ].join(",");
-
-    const parametros = new URLSearchParams({
-      fields: campos,
-      location_type: "0",
-      nwlat: String(REGIAO.nwlat),
-      nwlng: String(REGIAO.nwlng),
-      selat: String(REGIAO.selat),
-      selng: String(REGIAO.selng)
-    });
-
-    const url =
-      "https://api.purpleair.com/v1/sensors?" + parametros.toString();
-
-    const resposta = await fetch(url, {
-      method: "GET",
-      headers: { "X-API-Key": PURPLEAIR_API_KEY },
-      cache: "no-store"
-    });
-
-    if (!resposta.ok) {
-      const detalhe = await resposta.text();
-      throw new Error(
-        "HTTP " + resposta.status + ": " + detalhe.slice(0, 250)
-      );
+    if (div._fullLayout) {
+      await Plotly.react(div, traces, layout, {
+        responsive: true,
+        displaylogo: false,
+        scrollZoom: true
+      });
+    } else {
+      await Plotly.newPlot(div, traces, layout, {
+        responsive: true,
+        displaylogo: false,
+        scrollZoom: true
+      });
     }
-
-    const json = await resposta.json();
-
-    if (!Array.isArray(json.fields) || !Array.isArray(json.data)) {
-      throw new Error("Formato inesperado na resposta da PurpleAir.");
-    }
-
-    const posicao = {};
-    json.fields.forEach((campo, i) => { posicao[campo] = i; });
-
-    const ler = (linha, nome) => {
-      const i = posicao[nome];
-      return i === undefined ? null : linha[i];
-    };
-
-    const novosSensores = json.data.map(linha => {
-      const lat = numeroValido(ler(linha, "latitude"));
-      const lon = numeroValido(ler(linha, "longitude"));
-
-      const atualBruto = numeroValido(ler(linha, "pm2.5"));
-      const media24Bruta = numeroValido(ler(linha, "pm2.5_24hour"));
-
-      const pmAtual =
-        atualBruto !== null && atualBruto >= 0 ? atualBruto : null;
-
-      const pm24 =
-        media24Bruta !== null && media24Bruta >= 0
-          ? media24Bruta
-          : null;
-
-      return {
-        nome: ler(linha, "name") || "Sensor PurpleAir",
-        lat,
-        lon,
-        pm25Atual: pmAtual,
-        pm25_24h: pm24,
-        pm25: pm24 !== null ? pm24 : pmAtual,
-        umidade: ler(linha, "humidity"),
-        temperatura: ler(linha, "temperature"),
-        lastSeen: ler(linha, "last_seen")
-      };
-    }).filter(s =>
-      s.lat !== null &&
-      s.lon !== null &&
-      s.lat >= REGIAO.selat &&
-      s.lat <= REGIAO.nwlat &&
-      s.lon >= REGIAO.nwlng &&
-      s.lon <= REGIAO.selng
-    );
-
-    sensores = novosSensores;
-
-    // Indicador de média: usa exclusivamente médias de 24 h válidas.
-    const sensores24h = sensores.filter(s => s.pm25_24h !== null);
-
-    const media = sensores24h.length
-      ? sensores24h.reduce((soma, s) => soma + s.pm25_24h, 0) /
-        sensores24h.length
-      : null;
-
-    document.getElementById("total-sensores").textContent =
-      sensores.length.toLocaleString("pt-BR");
-
-    document.getElementById("pm25-medio").textContent =
-      media === null ? "--" : numeroBR(media, 1) + " µg/m³";
-
-    document.getElementById("sensores-interpolacao").textContent =
-      sensores24h.length.toLocaleString("pt-BR");
-
-    definirStatus(
-      "status-purpleair",
-      "PurpleAir: " + sensores.length.toLocaleString("pt-BR") +
-      " sensores na área; " + sensores24h.length.toLocaleString("pt-BR") +
-      " com média válida de 24 h."
-    );
-
   } catch (erro) {
-    console.error("Erro PurpleAir:", erro);
-    definirStatus("status-purpleair", "PurpleAir: " + erro.message);
+    console.error("Erro ao desenhar " + id + ":", erro);
+
+    div.innerHTML =
+      '<div class="erro-plot"><strong>Não foi possível desenhar este mapa.</strong><br>' +
+      escaparHTML(erro.message || erro) +
+      '<br>Abra o Console do navegador (F12) para ver os detalhes.</div>';
+
+    throw erro;
   }
 }
 
 
 // ============================================================
-// 7. LAYOUT GEOGRÁFICO COMUM
+// LAYOUT GEOGRÁFICO
 // ============================================================
 
 function layoutGeografico() {
   return {
     autosize: true,
-    margin: { l: 5, r: 5, t: 12, b: 12 },
+    margin: { l: 5, r: 5, t: 10, b: 10 },
     paper_bgcolor: "#ffffff",
     plot_bgcolor: "#ffffff",
     showlegend: false,
@@ -787,15 +634,302 @@ function layoutGeografico() {
 
 
 // ============================================================
-// 8. MAPA 1: FOCOS INPE
+// INPE: LOCALIZAR O ARQUIVO DIÁRIO
 // ============================================================
 
-function desenharMapaINPE() {
-  const dados = [{
+async function localizarArquivoINPE() {
+  try {
+    const resposta = await fetch(INPE_BASE_URL, { cache: "no-store" });
+
+    if (resposta.ok) {
+      const html = await resposta.text();
+      const regex = /focos_diario_(\d{8})\.csv/gi;
+      const datas = new Set();
+      let match;
+
+      while ((match = regex.exec(html)) !== null) {
+        datas.add(match[1]);
+      }
+
+      const lista = [...datas].sort();
+
+      if (lista.length) {
+        const data = lista[lista.length - 1];
+        return {
+          data,
+          url: INPE_BASE_URL + "focos_diario_" + data + ".csv"
+        };
+      }
+    }
+  } catch (erro) {
+    console.warn("Listagem da pasta INPE indisponível:", erro);
+  }
+
+  // Alternativa: testar arquivos dos últimos oito dias.
+  for (let atraso = 0; atraso <= 7; atraso++) {
+    const dataObj = new Date();
+    dataObj.setUTCHours(0, 0, 0, 0);
+    dataObj.setUTCDate(dataObj.getUTCDate() - atraso);
+
+    const data =
+      String(dataObj.getUTCFullYear()) +
+      String(dataObj.getUTCMonth() + 1).padStart(2, "0") +
+      String(dataObj.getUTCDate()).padStart(2, "0");
+
+    const url = INPE_BASE_URL + "focos_diario_" + data + ".csv";
+
+    try {
+      const r = await fetch(url, { cache: "no-store" });
+      if (r.ok) return { data, url };
+    } catch (erro) {
+      console.warn("Falha ao testar arquivo INPE", data, erro);
+    }
+  }
+
+  throw new Error(
+    "Não foi possível localizar um CSV recente. Verifique o acesso ao servidor do INPE."
+  );
+}
+
+
+// ============================================================
+// INPE: INTERPRETAR O CSV
+// ============================================================
+
+function interpretarCSVINPE(csv) {
+  const linhas = csv.replace(/^\uFEFF/, "")
+    .split(/\r?\n/)
+    .filter(l => l.trim() !== "");
+
+  if (linhas.length < 2) return [];
+
+  const cabecalhos = dividirCSV(linhas[0]).map(normalizarTexto);
+
+  const indice = nomes => {
+    const procurados = nomes.map(normalizarTexto);
+    return cabecalhos.findIndex(c => procurados.includes(c));
+  };
+
+  const iLat = indice(["lat", "latitude"]);
+  const iLon = indice(["lon", "longitude"]);
+  const iData = indice(["datahora", "data_hora", "data", "date"]);
+  const iMunicipio = indice(["municipio"]);
+  const iEstado = indice(["estado", "uf", "state"]);
+  const iBioma = indice(["bioma", "biome"]);
+  const iSatelite = indice(["satelite", "satellite"]);
+  const iFRP = indice(["frp"]);
+  const iPais = indice(["pais", "country"]);
+
+  if (iLat < 0 || iLon < 0) {
+    throw new Error("O CSV não contém colunas reconhecíveis de latitude e longitude.");
+  }
+
+  const resultado = [];
+
+  for (let i = 1; i < linhas.length; i++) {
+    const col = dividirCSV(linhas[i]);
+    const lat = Number(col[iLat]);
+    const lon = Number(col[iLon]);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+
+    if (
+      lat < REGIAO.selat || lat > REGIAO.nwlat ||
+      lon < REGIAO.nwlng || lon > REGIAO.selng
+    ) continue;
+
+    const valor = j => j >= 0 ? (col[j] || "") : "";
+    const satelite = valor(iSatelite);
+
+    if (iSatelite >= 0 &&
+        !normalizarTexto(satelite).includes("aqua")) {
+      continue;
+    }
+
+    resultado.push({
+      lat,
+      lon,
+      data: valor(iData),
+      municipio: valor(iMunicipio),
+      estado: valor(iEstado),
+      bioma: valor(iBioma),
+      satelite: satelite || "Não informado no CSV",
+      frp: valor(iFRP),
+      pais: valor(iPais)
+    });
+  }
+
+  return resultado;
+}
+
+
+async function atualizarINPE() {
+  definirStatus("status-inpe", "INPE: consultando arquivo diário...");
+
+  try {
+    const arquivo = await localizarArquivoINPE();
+    const resposta = await fetch(arquivo.url, { cache: "no-store" });
+
+    if (!resposta.ok) {
+      throw new Error("HTTP " + resposta.status + " ao baixar o CSV.");
+    }
+
+    const csv = await resposta.text();
+    const novosFocos = interpretarCSVINPE(csv);
+
+    focos = novosFocos;
+
+    const data = arquivo.data;
+    const dataFormatada =
+      data.slice(6, 8) + "/" + data.slice(4, 6) + "/" + data.slice(0, 4);
+
+    document.getElementById("total-focos").textContent =
+      focos.length.toLocaleString("pt-BR");
+
+    definirStatus(
+      "status-inpe",
+      "INPE: " + focos.length.toLocaleString("pt-BR") +
+      " focos no arquivo de " + dataFormatada + "."
+    );
+  } catch (erro) {
+    console.error("Erro INPE:", erro);
+    definirStatus("status-inpe", "INPE: " + erro.message);
+  }
+}
+
+
+// ============================================================
+// PURPLEAIR: CONSULTAR SENSORES
+// ============================================================
+
+async function atualizarPurpleAir() {
+  definirStatus("status-purpleair", "PurpleAir: consultando sensores...");
+
+  if (!PURPLEAIR_API_KEY ||
+      PURPLEAIR_API_KEY === "COLOQUE_SUA_CHAVE_READ_AQUI") {
+    definirStatus(
+      "status-purpleair",
+      "PurpleAir: configure uma chave READ válida na constante PURPLEAIR_API_KEY."
+    );
+    sensores = [];
+    document.getElementById("total-sensores").textContent = "0";
+    document.getElementById("pm25-medio").textContent = "--";
+    document.getElementById("sensores-interpolacao").textContent = "0";
+    return;
+  }
+
+  try {
+    const campos = [
+      "name", "latitude", "longitude", "location_type", "last_seen",
+      "pm2.5", "pm2.5_24hour", "humidity", "temperature"
+    ].join(",");
+
+    const parametros = new URLSearchParams({
+      fields: campos,
+      location_type: "0",
+      nwlat: String(REGIAO.nwlat),
+      nwlng: String(REGIAO.nwlng),
+      selat: String(REGIAO.selat),
+      selng: String(REGIAO.selng)
+    });
+
+    const url =
+      "https://api.purpleair.com/v1/sensors?" + parametros.toString();
+
+    const resposta = await fetch(url, {
+      method: "GET",
+      headers: { "X-API-Key": PURPLEAIR_API_KEY },
+      cache: "no-store"
+    });
+
+    if (!resposta.ok) {
+      const detalhe = await resposta.text();
+      throw new Error(
+        "HTTP " + resposta.status + ": " + detalhe.slice(0, 200)
+      );
+    }
+
+    const json = await resposta.json();
+
+    if (!Array.isArray(json.fields) || !Array.isArray(json.data)) {
+      throw new Error("Formato inesperado na resposta da PurpleAir.");
+    }
+
+    const posicao = {};
+    json.fields.forEach((campo, i) => { posicao[campo] = i; });
+
+    const ler = (linha, nome) =>
+      posicao[nome] === undefined ? null : linha[posicao[nome]];
+
+    const novosSensores = json.data.map(linha => {
+      const lat = numeroValido(ler(linha, "latitude"));
+      const lon = numeroValido(ler(linha, "longitude"));
+
+      const atualBruto = numeroValido(ler(linha, "pm2.5"));
+      const mediaBruta = numeroValido(ler(linha, "pm2.5_24hour"));
+
+      const pmAtual =
+        atualBruto !== null && atualBruto >= 0 ? atualBruto : null;
+
+      const pm24 =
+        mediaBruta !== null && mediaBruta >= 0 ? mediaBruta : null;
+
+      return {
+        nome: ler(linha, "name") || "Sensor PurpleAir",
+        lat,
+        lon,
+        pm25Atual: pmAtual,
+        pm25_24h: pm24,
+        pm25: pm24 !== null ? pm24 : pmAtual,
+        umidade: ler(linha, "humidity"),
+        temperatura: ler(linha, "temperature"),
+        lastSeen: ler(linha, "last_seen")
+      };
+    }).filter(s =>
+      s.lat !== null && s.lon !== null &&
+      s.lat >= REGIAO.selat && s.lat <= REGIAO.nwlat &&
+      s.lon >= REGIAO.nwlng && s.lon <= REGIAO.selng
+    );
+
+    sensores = novosSensores;
+
+    const validos24h = sensores.filter(s => s.pm25_24h !== null);
+    const media = validos24h.length
+      ? validos24h.reduce((soma, s) => soma + s.pm25_24h, 0) /
+        validos24h.length
+      : null;
+
+    document.getElementById("total-sensores").textContent =
+      sensores.length.toLocaleString("pt-BR");
+
+    document.getElementById("pm25-medio").textContent =
+      media === null ? "--" : numeroBR(media, 1) + " µg/m³";
+
+    document.getElementById("sensores-interpolacao").textContent =
+      validos24h.length.toLocaleString("pt-BR");
+
+    definirStatus(
+      "status-purpleair",
+      "PurpleAir: " + sensores.length.toLocaleString("pt-BR") +
+      " sensores; " + validos24h.length.toLocaleString("pt-BR") +
+      " com média válida de 24 h."
+    );
+  } catch (erro) {
+    console.error("Erro PurpleAir:", erro);
+    definirStatus("status-purpleair", "PurpleAir: " + erro.message);
+  }
+}
+
+
+// ============================================================
+// MAPA 1: INPE
+// ============================================================
+
+async function desenharMapaINPE() {
+  const trace = {
     type: "scattergeo",
     mode: "markers",
     name: "Focos INPE",
-
     lon: focos.map(p => p.lon),
     lat: focos.map(p => p.lat),
 
@@ -811,8 +945,7 @@ function desenharMapaINPE() {
 
     hovertemplate:
       "<b>Foco de fogo</b><br>" +
-      "Latitude: %{lat:.4f}<br>" +
-      "Longitude: %{lon:.4f}<br>" +
+      "Latitude: %{lat:.4f}<br>Longitude: %{lon:.4f}<br>" +
       "%{text}<extra></extra>",
 
     marker: {
@@ -821,21 +954,17 @@ function desenharMapaINPE() {
       opacity: 0.8,
       line: { width: 0.3, color: "#7f1d1d" }
     }
-  }];
+  };
 
   const layout = layoutGeografico();
   layout.uirevision = "inpe-america-sul";
 
-  return Plotly.react("mapa-inpe", dados, layout, {
-    responsive: true,
-    displaylogo: false,
-    scrollZoom: true
-  });
+  await renderizarMapa("mapa-inpe", [trace], layout);
 }
 
 
 // ============================================================
-// 9. MAPA 2: SENSORES PURPLEAIR
+// MAPA 2: PURPLEAIR
 // ============================================================
 
 function corPM25(valor) {
@@ -847,14 +976,14 @@ function corPM25(valor) {
   return "#7a0177";
 }
 
-function desenharMapaPurpleAir() {
+async function desenharMapaPurpleAir() {
   const faixas = [
-    { nome: "≤ 5 µg/m³", cor: "#2ca25f", teste: v => v !== null && v <= 5 },
-    { nome: "> 5 a 15 µg/m³", cor: "#f0d32d", teste: v => v > 5 && v <= 15 },
-    { nome: "> 15 a 25 µg/m³", cor: "#f28e2b", teste: v => v > 15 && v <= 25 },
-    { nome: "> 25 a 50 µg/m³", cor: "#d73027", teste: v => v > 25 && v <= 50 },
-    { nome: "> 50 µg/m³", cor: "#7a0177", teste: v => v > 50 },
-    { nome: "PM2,5 indisponível", cor: "#808080", teste: v => v === null }
+    { nome: "≤ 5 µg/m³", teste: v => v !== null && v <= 5 },
+    { nome: "> 5 a 15 µg/m³", teste: v => v > 5 && v <= 15 },
+    { nome: "> 15 a 25 µg/m³", teste: v => v > 15 && v <= 25 },
+    { nome: "> 25 a 50 µg/m³", teste: v => v > 25 && v <= 50 },
+    { nome: "> 50 µg/m³", teste: v => v > 50 },
+    { nome: "PM2,5 indisponível", teste: v => v === null }
   ];
 
   const dados = faixas.map(faixa => {
@@ -867,31 +996,24 @@ function desenharMapaPurpleAir() {
       lon: grupo.map(s => s.lon),
       lat: grupo.map(s => s.lat),
 
-      text: grupo.map(s => {
-        const referencia = s.pm25_24h !== null
+      text: grupo.map(s => [
+        "<b>" + escaparHTML(s.nome) + "</b>",
+        s.pm25_24h !== null
           ? "Média de 24 h: " + numeroBR(s.pm25_24h, 1) + " µg/m³"
-          : "Média de 24 h indisponível";
-
-        const atual = s.pm25Atual !== null
-          ? numeroBR(s.pm25Atual, 1) + " µg/m³"
-          : "Indisponível";
-
-        return [
-          "<b>" + escaparHTML(s.nome) + "</b>",
-          referencia,
-          "Leitura atual: " + atual,
-          "Umidade: " + valorSeguro(s.umidade),
-          "Temperatura: " + valorSeguro(s.temperatura),
-          "Última leitura: " + formatarUnix(s.lastSeen)
-        ].join("<br>");
-      }),
+          : "Média de 24 h indisponível",
+        "Leitura atual: " +
+          (s.pm25Atual !== null ? numeroBR(s.pm25Atual, 1) + " µg/m³" : "Indisponível"),
+        "Umidade: " + valorSeguro(s.umidade),
+        "Temperatura: " + valorSeguro(s.temperatura),
+        "Última leitura: " + formatarUnix(s.lastSeen)
+      ].join("<br>")),
 
       hovertemplate:
         "%{text}<br>Lat: %{lat:.4f}<br>Lon: %{lon:.4f}<extra></extra>",
 
       marker: {
         size: 9,
-        color: faixa.cor,
+        color: grupo.map(s => corPM25(s.pm25)),
         opacity: 0.9,
         line: { width: 0.7, color: "#263238" }
       }
@@ -908,26 +1030,21 @@ function desenharMapaPurpleAir() {
     xanchor: "left",
     yanchor: "top",
     bgcolor: "rgba(255,255,255,0.9)",
-    font: { size: 11 }
+    font: { size: 10 }
   };
-  layout.margin = { l: 5, r: 5, t: 12, b: 65 };
+  layout.margin = { l: 5, r: 5, t: 10, b: 75 };
 
-  return Plotly.react("mapa-purpleair", dados, layout, {
-    responsive: true,
-    displaylogo: false,
-    scrollZoom: true
-  });
+  await renderizarMapa("mapa-purpleair", dados, layout);
 }
 
 
 // ============================================================
-// 10. IDW: DISTÂNCIA ENTRE DOIS PONTOS EM KM
+// IDW: DISTÂNCIA EM KM
 // ============================================================
 
 function distanciaKm(lon1, lat1, lon2, lat2) {
   const rad = Math.PI / 180;
   const R = 6371;
-
   const dLat = (lat2 - lat1) * rad;
   const dLon = (lon2 - lon1) * rad;
 
@@ -942,7 +1059,7 @@ function distanciaKm(lon1, lat1, lon2, lat2) {
 
 
 // ============================================================
-// 11. IDW: ESTIMAR PM2,5 USANDO SOMENTE MÉDIAS VÁLIDAS DE 24 H
+// IDW: ESTIMATIVA COM MÉDIAS DE 24 HORAS
 // ============================================================
 
 function estimarIDW(lon, lat, sensoresValidos) {
@@ -950,16 +1067,11 @@ function estimarIDW(lon, lat, sensoresValidos) {
 
   for (const s of sensoresValidos) {
     const d = distanciaKm(lon, lat, s.lon, s.lat);
-
-    if (d <= IDW_RAIO_KM) {
-      vizinhos.push({ sensor: s, distancia: d });
-    }
+    if (d <= IDW_RAIO_KM) vizinhos.push({ sensor: s, distancia: d });
   }
 
-  // Não extrapola quando há poucos sensores próximos.
   if (vizinhos.length < IDW_MIN_SENSORES) return null;
 
-  // Se a grade coincide com um sensor, usa diretamente o valor.
   const exato = vizinhos.find(v => v.distancia < 0.1);
   if (exato) return exato.sensor.pm25_24h;
 
@@ -972,13 +1084,12 @@ function estimarIDW(lon, lat, sensoresValidos) {
     somaValores += peso * v.sensor.pm25_24h;
   }
 
-  if (!somaPesos) return null;
-  return somaValores / somaPesos;
+  return somaPesos ? somaValores / somaPesos : null;
 }
 
 
 // ============================================================
-// 12. MAPA 3: GRADE IDW E CLASSES CONAMA
+// MAPA 3: INTERPOLAÇÃO
 // ============================================================
 
 function classificarPM25(valor) {
@@ -988,8 +1099,8 @@ function classificarPM25(valor) {
   return "> 50 µg/m³";
 }
 
-function desenharMapaInterpolado() {
-  const sensoresValidos = sensores.filter(s =>
+async function desenharMapaInterpolado() {
+  const validos = sensores.filter(s =>
     s.pm25_24h !== null &&
     Number.isFinite(s.pm25_24h) &&
     s.pm25_24h >= 0 &&
@@ -998,35 +1109,7 @@ function desenharMapaInterpolado() {
   );
 
   document.getElementById("sensores-interpolacao").textContent =
-    sensoresValidos.length.toLocaleString("pt-BR");
-
-  const div = document.getElementById("mapa-interpolado");
-
-  if (sensoresValidos.length < IDW_MIN_SENSORES) {
-    definirStatus(
-      "status-interpolacao",
-      "Não há sensores suficientes com médias válidas de 24 h para interpolar. " +
-      "Sensores disponíveis: " + sensoresValidos.length + "."
-    );
-
-    return Plotly.react(
-      div,
-      [],
-      {
-        ...layoutGeografico(),
-        annotations: [{
-          text: "Aguardando pelo menos três sensores com PM2,5 de 24 h válido.",
-          xref: "paper",
-          yref: "paper",
-          x: 0.5,
-          y: 0.5,
-          showarrow: false,
-          font: { size: 14, color: "#64736e" }
-        }]
-      },
-      { responsive: true, displaylogo: false }
-    );
-  }
+    validos.length.toLocaleString("pt-BR");
 
   const grupos = {
     "≤ 25 µg/m³": { cor: "#2ca25f", lon: [], lat: [], valor: [] },
@@ -1036,25 +1119,27 @@ function desenharMapaInterpolado() {
 
   let celulasValidas = 0;
 
-  for (let j = 0; j < IDW_NY; j++) {
-    const lat = REGIAO.selat +
-      j * (REGIAO.nwlat - REGIAO.selat) / (IDW_NY - 1);
+  if (validos.length >= IDW_MIN_SENSORES) {
+    for (let j = 0; j < IDW_NY; j++) {
+      const lat = REGIAO.selat +
+        j * (REGIAO.nwlat - REGIAO.selat) / (IDW_NY - 1);
 
-    for (let i = 0; i < IDW_NX; i++) {
-      const lon = REGIAO.nwlng +
-        i * (REGIAO.selng - REGIAO.nwlng) / (IDW_NX - 1);
+      for (let i = 0; i < IDW_NX; i++) {
+        const lon = REGIAO.nwlng +
+          i * (REGIAO.selng - REGIAO.nwlng) / (IDW_NX - 1);
 
-      const valor = estimarIDW(lon, lat, sensoresValidos);
-      if (valor === null) continue;
+        const valor = estimarIDW(lon, lat, validos);
+        if (valor === null) continue;
 
-      const classe = classificarPM25(valor);
-      const grupo = grupos[classe];
-      if (!grupo) continue;
+        const classe = classificarPM25(valor);
+        const grupo = grupos[classe];
+        if (!grupo) continue;
 
-      grupo.lon.push(lon);
-      grupo.lat.push(lat);
-      grupo.valor.push(valor);
-      celulasValidas++;
+        grupo.lon.push(lon);
+        grupo.lat.push(lat);
+        grupo.valor.push(valor);
+        celulasValidas++;
+      }
     }
   }
 
@@ -1067,8 +1152,7 @@ function desenharMapaInterpolado() {
 
     text: grupo.valor.map(v =>
       "PM2,5 estimado: " + numeroBR(v, 1) + " µg/m³<br>" +
-      "Referência: média de 24 h<br>" +
-      "Classe visual: " + nome
+      "Referência: média de 24 horas<br>Classe visual: " + nome
     ),
 
     hovertemplate:
@@ -1083,19 +1167,16 @@ function desenharMapaInterpolado() {
     }
   }));
 
-  // Sobrepõe os sensores utilizados para deixar clara a origem
-  // dos dados que sustentam a estimativa.
   traces.push({
     type: "scattergeo",
     mode: "markers",
     name: "Sensores com média de 24 h",
-    lon: sensoresValidos.map(s => s.lon),
-    lat: sensoresValidos.map(s => s.lat),
+    lon: validos.map(s => s.lon),
+    lat: validos.map(s => s.lat),
 
-    text: sensoresValidos.map(s =>
+    text: validos.map(s =>
       "<b>" + escaparHTML(s.nome) + "</b><br>" +
-      "PM2,5 média de 24 h: " +
-      numeroBR(s.pm25_24h, 1) + " µg/m³"
+      "PM2,5 média de 24 h: " + numeroBR(s.pm25_24h, 1) + " µg/m³"
     ),
 
     hovertemplate:
@@ -1121,52 +1202,72 @@ function desenharMapaInterpolado() {
     bgcolor: "rgba(255,255,255,0.92)",
     font: { size: 11 }
   };
-  layout.margin = { l: 5, r: 5, t: 12, b: 70 };
+  layout.margin = { l: 5, r: 5, t: 10, b: 75 };
+
+  if (validos.length < IDW_MIN_SENSORES) {
+    layout.annotations = [{
+      text: "São necessários pelo menos três sensores com médias válidas de 24 horas.",
+      xref: "paper",
+      yref: "paper",
+      x: 0.5,
+      y: 0.5,
+      showarrow: false,
+      font: { size: 14, color: "#64736e" }
+    }];
+  }
 
   definirStatus(
     "status-interpolacao",
-    "IDW calculado em " + celulasValidas.toLocaleString("pt-BR") +
-    " células; " + sensoresValidos.length.toLocaleString("pt-BR") +
-    " sensores de 24 h válidos. Raio máximo: " + IDW_RAIO_KM +
-    " km; mínimo de " + IDW_MIN_SENSORES +
-    " sensores por célula. Células sem cobertura suficiente foram omitidas."
+    validos.length < IDW_MIN_SENSORES
+      ? "Interpolação não calculada: apenas " + validos.length +
+        " sensores com média válida de 24 horas."
+      : "IDW: " + celulasValidas.toLocaleString("pt-BR") +
+        " células estimadas; " + validos.length.toLocaleString("pt-BR") +
+        " sensores válidos; raio de " + IDW_RAIO_KM +
+        " km e mínimo de " + IDW_MIN_SENSORES + " sensores por célula."
   );
 
-  return Plotly.react("mapa-interpolado", traces, layout, {
-    responsive: true,
-    displaylogo: false,
-    scrollZoom: true
-  });
+  await renderizarMapa("mapa-interpolado", traces, layout);
 }
 
 
 // ============================================================
-// 13. ATUALIZAR OS TRÊS MAPAS
+// ATUALIZAÇÃO GERAL
 // ============================================================
 
 async function atualizarTudo() {
   if (atualizando) return;
-  atualizando = true;
 
+  atualizando = true;
   const botao = document.getElementById("btn-atualizar");
   botao.disabled = true;
 
   try {
-    // Consulta independente: uma falha não cancela a outra fonte.
+    // As consultas são independentes: uma fonte pode falhar sem
+    // cancelar a outra.
     await Promise.allSettled([
       atualizarINPE(),
       atualizarPurpleAir()
     ]);
 
-    await Promise.allSettled([
+    // Tenta desenhar cada mapa independentemente.
+    const resultados = await Promise.allSettled([
       desenharMapaINPE(),
       desenharMapaPurpleAir(),
       desenharMapaInterpolado()
     ]);
 
+    resultados.forEach((resultado, i) => {
+      if (resultado.status === "rejected") {
+        console.error("Falha de renderização no mapa", i + 1, resultado.reason);
+      }
+    });
+
     document.getElementById("ultima-consulta").textContent =
       new Date().toLocaleTimeString("pt-BR");
 
+  } catch (erro) {
+    console.error("Erro na atualização geral:", erro);
   } finally {
     botao.disabled = false;
     atualizando = false;
@@ -1175,19 +1276,35 @@ async function atualizarTudo() {
 
 
 // ============================================================
-// 14. INICIALIZAÇÃO E ATUALIZAÇÃO AUTOMÁTICA
+// INICIALIZAÇÃO
 // ============================================================
 
-desenharMapaINPE();
-desenharMapaPurpleAir();
-desenharMapaInterpolado();
+async function iniciarDashboard() {
+  if (typeof Plotly === "undefined") {
+    for (const id of ["mapa-inpe", "mapa-purpleair", "mapa-interpolado"]) {
+      const el = document.getElementById(id);
+      el.innerHTML =
+        '<div class="erro-plot">Plotly não carregou. Verifique a conexão ' +
+        'ou se a rede está bloqueando cdn.plot.ly.</div>';
+    }
+    definirStatus("status-inpe", "Erro: biblioteca Plotly indisponível.");
+    return;
+  }
 
-atualizarTudo();
+  // Desenha os mapas inicialmente, mesmo antes de obter dados.
+  await Promise.allSettled([
+    desenharMapaINPE(),
+    desenharMapaPurpleAir(),
+    desenharMapaInterpolado()
+  ]);
 
-setInterval(() => {
-  atualizarTudo();
-}, INTERVALO_ATUALIZACAO);
+  await atualizarTudo();
 
+  if (timerAtualizacao) clearInterval(timerAtualizacao);
+  timerAtualizacao = setInterval(atualizarTudo, INTERVALO_ATUALIZACAO);
+}
+
+iniciarDashboard();
 </script>
 </body>
 </html>
