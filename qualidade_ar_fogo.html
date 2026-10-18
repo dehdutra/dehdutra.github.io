@@ -59,7 +59,7 @@
 <div class="container-fluid py-4">
     <h2 class="mb-4 text-center">Dashboard: Queimadas e Qualidade do Ar</h2>
 
-    <!-- Linha 1: Mapas Lado a Lado -->
+    <!-- Linha 1: Mapas 1 e 2 -->
     <div class="row mb-4">
         <!-- Mapa 1: INPE Focos AQUA -->
         <div class="col-lg-6 mb-3">
@@ -80,7 +80,7 @@
 
                 <div class="citation-box mt-3">
                     <strong>Como citar estas informações:</strong><br>
-                    <span>INPE - Instituto Nacional de Pesquisas Espaciais. Monitoramento de Focos de Calor via Satélite AQUA (Passagens AQUA_M-M e AQUA_M-T - Período Diário). Dados de: <span id="citacao-data-focos">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
+                    <span>INPE. Monitoramento de Focos de Calor via Satélite AQUA (Passagens M-M e M-T). Dados coletados por DUTRA, D. J. em: <span id="citacao-data-focos">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
                 </div>
             </div>
         </div>
@@ -104,59 +104,114 @@
 
                 <div class="citation-box mt-3">
                     <strong>Como citar estas informações:</strong><br>
-                    <span>PURPLEAIR. Monitoramento Comunitário de Qualidade do Ar: Concentração de Material Particulado Fine (PM2.5). Dados obtidos em: <span id="citacao-data-purpleair">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
+                    <span>PURPLEAIR. Monitoramento Comunitário de Qualidade do Ar (PM2.5). Dados obtidos por DUTRA, D. J. em: <span id="citacao-data-purpleair">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Linha 2: Mapa 3 (Interpolação focada em Agrupamentos / Clusters OMS) -->
+    <!-- Linha 2: Mapas 3 e 4 -->
     <div class="row mb-4">
-        <div class="col-12">
+        <!-- Mapa 3: Interpolação focada em Agrupamentos (Buffer Reduzido) -->
+        <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="card-title mb-0 text-danger">Mapa 3: Interpolação Focada em Agrupamentos de Sensores (Clusters OMS)</h5>
+                    <h5 class="card-title mb-0 text-danger">Mapa 3: Interpolação por Clusters (Buffer Reduzido)</h5>
                     <span id="status-interpolacao" class="badge bg-secondary status-badge">Aguardando dados...</span>
                 </div>
-                <p class="text-muted small mb-1">Superfície contínua gerada <strong>somente ao redor dos clusters de estações ativas</strong> para destacar zonas críticas sem poluir regiões vazias.</p>
+                <p class="text-muted small mb-1">Superfície contínua restrita ao entorno imediato das estações de monitoramento.</p>
                 
                 <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-2 rounded mb-2 small border">
-                    <div><strong>Método:</strong> IDW Restrito a Agrupamentos Locais</div>
-                    <div><strong>Data/Hora do Dado Base:</strong> <span id="data-interpolacao" class="fw-bold">Carregando...</span></div>
+                    <div><strong>Método:</strong> IDW Local (Buffer 1.2°)</div>
                     <div><strong>Referência:</strong> Diretrizes OMS (2021)</div>
                 </div>
 
                 <div id="mapa-interpolacao" class="map-container"></div>
 
                 <div class="citation-box mt-3">
-                    <strong>Como citar a análise de interpolação:</strong><br>
-                    <span>ANÁLISE DERIVADA. Modelo de Interpolação Espacial Local (IDW por Agrupamento) de Material Particulado (PM2.5) baseado em estações PurpleAir e limiares de impacto à saúde da OMS (2021). Processado em: <span id="citacao-data-interp">...</span>. Acesso em: <span class="data-acesso"></span>.</span>
+                    <strong>Como citar:</strong><br>
+                    <span>DUTRA, D. J. Análise de Interpolação Espacial Local de PM2.5 baseada nas Diretrizes da OMS (2021). Acesso em: <span class="data-acesso"></span>.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mapa 4: Correlação Focos x Poluição OMS -->
+        <div class="col-lg-6 mb-3">
+            <div class="card card-custom p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0 text-primary">Mapa 4: Correlação (Focos de Calor x Risco OMS)</h5>
+                    <span id="status-correlacao" class="badge bg-secondary status-badge">Aguardando cruzamento...</span>
+                </div>
+                <p class="text-muted small mb-1">Cruza os limiares de PM2.5 da OMS com a presença de focos de queimadas na mesma área.</p>
+                
+                <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-2 rounded mb-2 small border">
+                    <div><strong>Análise:</strong> Co-ocorrência Espacial (Fogo vs Fumaça)</div>
+                    <div><strong>Fonte:</strong> INPE + PurpleAir</div>
+                </div>
+
+                <div id="mapa-correlacao" class="map-container"></div>
+
+                <div class="citation-box mt-3">
+                    <strong>Como citar:</strong><br>
+                    <span>DUTRA, D. J. Cruzamento Espacial e Correlação entre Focos de Calor (INPE) e Concentração Crítica de Material Particulado (OMS). Acesso em: <span class="data-acesso"></span>.</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Linha 3: Explicação Técnica -->
+    <!-- Linha 3: Explicação Detalhada e Critérios Claros -->
     <div class="row">
         <div class="col-12">
             <div class="card card-custom explanation-card p-4">
-                <h4 class="text-dark mb-3">Metodologia e Explicação da Análise de Impacto à Saúde</h4>
+                <h4 class="text-dark mb-3">Critérios Metodológicos e Explicação do Mapa de Correlação</h4>
                 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <h5>1. Interpolação Restrita a Agrupamentos (Clusters)</h5>
+                        <h5>1. Critérios de Análise do Mapa 4 (Fogo x Fumaça)</h5>
                         <p class="text-muted small">
-                            Para evitar estimativas vazias em áreas sem cobertura de sensores, o algoritmo identifica os focos de adensamento das estações de monitoramento. A interpolação (IDW) é calculada exclusivamente no entorno imediato desses agrupamentos urbanos/regionais, garantindo maior fidelidade estatística e visual limpa.
+                            Para responder se o ar poluído é gerado no local ou transportado de outras regiões, a aplicação utiliza a seguinte matriz de critérios geespaciais por célula de grade:
                         </p>
+                        <table class="table table-bordered table-sm small mt-2">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Classificação</th>
+                                    <th>Critério de PM2.5 (OMS)</th>
+                                    <th>Presença de Focos na Célula</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong class="text-danger">Crítico + Foco Local</strong></td>
+                                    <td>> 45.0 µg/m³ (Crítico)</td>
+                                    <td>Sim (≥ 1 foco Aqua M-M/M-T)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #660066;">Crítico por Transporte</strong></td>
+                                    <td>> 45.0 µg/m³ (Crítico)</td>
+                                    <td>Não (0 focos locais)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong class="text-warning">Alerta c/ Foco</strong></td>
+                                    <td>15.1 a 45.0 µg/m³ (Alerta)</td>
+                                    <td>Sim (≥ 1 foco)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong class="text-success">Normal / Seguro</strong></td>
+                                    <td>&le; 15.0 µg/m³ (Meta OMS)</td>
+                                    <td>Indiferente</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <h5>2. Limiares de Risco à Saúde (OMS 2021)</h5>
-                        <ul class="small text-muted">
-                            <li><strong class="text-success">Dentro da Meta WHO (&le; 15.0 &micro;g/m&sup3;):</strong> Concentração segura dentro do limite máximo diário.</li>
-                            <li><strong class="text-warning">Alerta / Risco Moderado (15.1 - 45.0 &micro;g/m&sup3;):</strong> Excede o guia diário da OMS. Risco para grupos sensíveis.</li>
-                            <li><strong class="text-danger">ESTADO CRÍTICO (&gt; 45.0 &micro;g/m&sup3;):</strong> Excede em mais de 3x a meta diária. Alto risco à saúde pública.</li>
-                        </ul>
+                        <h5>2. Como Referenciar o Dashboard Completo</h5>
+                        <p class="text-muted small">
+                            Caso necessite citar o painel analítico inteiro em relatórios técnicos, artigos ou documentações de registros institucionais, utilize o seguinte formato padrão:
+                        </p>
+                        <div class="bg-light p-3 rounded border small font-monospace">
+                            DUTRA, D. J. <strong>Dashboard Integrado de Monitoramento de Queimadas e Qualidade do Ar: Análise Espacial e Impacto à Saúde com base nas Diretrizes da OMS.</strong> Versão Web Interativa. Acesso em: <span class="data-acesso"></span>.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -179,10 +234,15 @@
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
     const mapPurpleAir = L.map('mapa-purpleair').setView([-14.235, -51.925], 4);
     const mapInterpolacao = L.map('mapa-interpolacao').setView([-14.235, -51.925], 4);
+    const mapCorrelacao = L.map('mapa-correlacao').setView([-14.235, -51.925], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapFocos);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapPurpleAir);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapInterpolacao);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapCorrelacao);
+
+    window.globalFocos = [];
+    window.globalPurpleAir = [];
 
     function formatarDataAAAAMMDD(d) {
         const ano = d.getFullYear();
@@ -239,6 +299,8 @@
                                         if (!isNaN(lat) && !isNaN(lon)) {
                                             totalAqua++;
                                             const isMM = sat.includes("M-M");
+                                            window.globalFocos.push({ lat, lon, satelite: item.satelite });
+
                                             L.circleMarker([lat, lon], {
                                                 radius: 4,
                                                 fillColor: isMM ? '#3388ff' : '#ff2200',
@@ -255,6 +317,7 @@
                                     dataFocosEl.textContent = fonte.dataBR;
                                     citacaoDataFocosEl.textContent = fonte.dataBR;
                                     sucesso = true;
+                                    tentarGerarMapaCorrelacao();
                                 }
                             }
                         }
@@ -269,7 +332,6 @@
         }
     }
 
-    // Escala completa original do PurpleAir
     function getCorPM25(pm) {
         if (pm <= 12.0) return '#00e400';
         if (pm <= 35.4) return '#ffff00';
@@ -313,7 +375,6 @@
                 const iPm = json.fields.indexOf("pm2.5_10minute");
                 const iNome = json.fields.indexOf("name");
 
-                let pontos = [];
                 json.data.forEach(s => {
                     const lat = s[iLat];
                     const lon = s[iLon];
@@ -321,7 +382,7 @@
                     const nome = s[iNome] || "Sensor";
 
                     if (lat && lon && pm25 !== null && !isNaN(pm25)) {
-                        pontos.push({ lat, lon, pm25, nome });
+                        window.globalPurpleAir.push({ lat, lon, pm25, nome });
 
                         L.circleMarker([lat, lon], {
                             radius: 6,
@@ -334,12 +395,13 @@
                 });
 
                 statusEl.className = "badge bg-success status-badge";
-                statusEl.textContent = `${pontos.length} sensores`;
+                statusEl.textContent = `${window.globalPurpleAir.length} sensores`;
 
-                if (pontos.length > 0) {
-                    setTimeout(() => gerarInterpolacaoPorClusters(pontos, dataHoraStr), 100);
+                if (window.globalPurpleAir.length > 0) {
+                    setTimeout(() => gerarInterpolacaoComBufferReduzido(window.globalPurpleAir), 100);
                     statusInterpEl.className = "badge bg-success status-badge";
-                    statusInterpEl.textContent = "Interpolação de Clusters Concluída";
+                    statusInterpEl.textContent = "Interpolação Concluída";
+                    tentarGerarMapaCorrelacao();
                 }
             }
         } catch (e) {
@@ -351,9 +413,9 @@
         }
     }
 
-    function gerarInterpolacaoPorClusters(pontos, dataHoraRef) {
-        const raioInfluencia = 2.5;
-        const passo = 0.4;
+    function gerarInterpolacaoComBufferReduzido(pontos) {
+        const raioInfluencia = 1.2;
+        const passo = 0.3;
 
         pontos.forEach(p => {
             for (let lat = p.lat - raioInfluencia; lat <= p.lat + raioInfluencia; lat += passo) {
@@ -379,9 +441,9 @@
                         L.rectangle(bounds, {
                             color: "transparent",
                             fillColor: getCorOMS(pmEstimado),
-                            fillOpacity: 0.4,
+                            fillOpacity: 0.45,
                             weight: 0
-                        }).bindPopup(`<b>Cluster Local (IDW)</b><br><b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status OMS:</b> ${pmEstimado <= 15 ? 'Meta OMS' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
+                        }).bindPopup(`<b>Cluster Local (IDW)</b><br><b>PM2.5:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status:</b> ${pmEstimado <= 15 ? 'Meta' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
                     }
                 }
             }
@@ -394,48 +456,115 @@
                 color: '#000',
                 weight: 1,
                 fillOpacity: 0.9
-            }).bindPopup(`<b>${p.nome}</b><br>PM2.5 Real: ${p.pm25}`).addTo(mapInterpolacao);
+            }).bindPopup(`<b>${p.nome}</b><br>PM2.5: ${p.pm25}`).addTo(mapInterpolacao);
+        });
+    }
+
+    function tentarGerarMapaCorrelacao() {
+        if (window.globalFocos.length === 0 || window.globalPurpleAir.length === 0) return;
+
+        const statusCorrelacaoEl = document.getElementById('status-correlacao');
+        statusCorrelacaoEl.className = "badge bg-success status-badge";
+        statusCorrelacaoEl.textContent = "Correlação Gerada";
+
+        const raioInfluencia = 1.2;
+        const passo = 0.4;
+
+        window.globalPurpleAir.forEach(p => {
+            for (let lat = p.lat - raioInfluencia; lat <= p.lat + raioInfluencia; lat += passo) {
+                for (let lon = p.lon - raioInfluencia; lon <= p.lon + raioInfluencia; lon += passo) {
+                    
+                    let somaPesos = 0, somaValores = 0;
+                    window.globalPurpleAir.forEach(outro => {
+                        const dLat = lat - outro.lat, dLon = lon - outro.lon;
+                        const distSq = dLat * dLat + dLon * dLon;
+                        if (distSq <= (raioInfluencia * raioInfluencia)) {
+                            const peso = 1 / (distSq + 0.01);
+                            somaPesos += peso;
+                            somaValores += outro.pm25 * peso;
+                        }
+                    });
+
+                    if (somaPesos > 0) {
+                        const pmEstimado = somaValores / somaPesos;
+                        
+                        let focosNaCelula = 0;
+                        window.globalFocos.forEach(f => {
+                            if (f.lat >= lat && f.lat < lat + passo && f.lon >= lon && f.lon < lon + passo) {
+                                focosNaCelula++;
+                            }
+                        });
+
+                        let corCelula = getCorOMS(pmEstimado);
+                        let rotuloStatus = "Normal/Moderado";
+
+                        if (pmEstimado > 45.0) {
+                            if (focosNaCelula > 0) {
+                                corCelula = '#8b0000';
+                                rotuloStatus = `CRÍTICO COM FOCO LOCAL (${focosNaCelula} focos)`;
+                            } else {
+                                corCelula = '#660066';
+                                rotuloStatus = 'CRÍTICO POR TRANSPORTE (Sem Foco Local)';
+                            }
+                        } else if (focosNaCelula > 0) {
+                            corCelula = '#ff8c00';
+                            rotuloStatus = `Alerta c/ Focos (${focosNaCelula})`;
+                        }
+
+                        const bounds = [[lat, lon], [lat + passo, lon + passo]];
+                        L.rectangle(bounds, {
+                            color: "transparent",
+                            fillColor: corCelula,
+                            fillOpacity: 0.5,
+                            weight: 0
+                        }).bindPopup(`
+                            <b>Análise de Correlação</b><br>
+                            <b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br>
+                            <b>Focos na Célula:</b> ${focosNaCelula}<br>
+                            <b>Condição:</b> ${rotuloStatus}
+                        `).addTo(mapCorrelacao);
+                    }
+                }
+            }
         });
     }
 
     function adicionarLegendas() {
-        // Legenda do Mapa 1 (Focos de Calor - Passagens Satélite Aqua)
         const legendFocos = L.control({ position: 'bottomright' });
         legendFocos.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
-            div.innerHTML = '<strong>Satélite AQUA (Passagens)</strong><br>' +
-                            '<i style="background:#3388ff"></i> AQUA M-M (Manhã)<br>' +
-                            '<i style="background:#ff2200"></i> AQUA M-T (Tarde)<br>';
+            div.innerHTML = '<strong>Satélite AQUA</strong><br><i style="background:#3388ff"></i> M-M (Manhã)<br><i style="background:#ff2200"></i> M-T (Tarde)';
             return div;
         };
         legendFocos.addTo(mapFocos);
 
-        // Legenda do Mapa 2 (PurpleAir)
         const legendPA = L.control({ position: 'bottomright' });
         legendPA.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
-            const faixas = [
-                { cor: '#00e400', rotulo: '0 - 12.0 &micro;g/m&sup3; (Boa)' },
-                { cor: '#ffff00', rotulo: '12.1 - 35.4 &micro;g/m&sup3; (Moderada)' },
-                { cor: '#ff7e00', rotulo: '35.5 - 55.4 &micro;g/m&sup3; (Insalubre p/ Sensíveis)' },
-                { cor: '#ff0000', rotulo: '55.5 - 150.4 &micro;g/m&sup3; (Insalubre)' },
-                { cor: '#8f3f97', rotulo: '150.5 - 250.4 &micro;g/m&sup3; (Muito Insalubre)' },
-                { cor: '#7e0023', rotulo: '&gt; 250.5 &micro;g/m&sup3; (Perigosa)' }
-            ];
-            div.innerHTML = '<strong>Concentração PM2.5</strong><br>';
-            faixas.forEach(item => { div.innerHTML += `<i style="background:${item.cor}"></i> ${item.rotulo}<br>`; });
+            div.innerHTML = '<strong>PM2.5 Pontual</strong><br><i style="background:#00e400"></i> Boa<br><i style="background:#ffff00"></i> Moderada<br><i style="background:#ff7e00"></i> Sensíveis<br><i style="background:#ff0000"></i> Insalubre<br><i style="background:#8f3f97"></i> Muito Ins.<br><i style="background:#7e0023"></i> Perigosa';
             return div;
         };
         legendPA.addTo(mapPurpleAir);
 
-        // Legenda do Mapa 3 (OMS)
         const legendOMS = L.control({ position: 'bottomright' });
         legendOMS.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
-            div.innerHTML = '<strong>Risco OMS (Clusters)</strong><br><i style="background:#28a745"></i> &le; 15 (Meta)<br><i style="background:#ffc107"></i> 15-45 (Alerta)<br><i style="background:#dc3545"></i> &gt; 45 (CRÍTICO)';
+            div.innerHTML = '<strong>Risco OMS</strong><br><i style="background:#28a745"></i> &le; 15 (Meta)<br><i style="background:#ffc107"></i> 15-45 (Alerta)<br><i style="background:#dc3545"></i> &gt; 45 (Crítico)';
             return div;
         };
         legendOMS.addTo(mapInterpolacao);
+
+        const legendCorrelacao = L.control({ position: 'bottomright' });
+        legendCorrelacao.onAdd = function () {
+            const div = L.DomUtil.create('div', 'info legend');
+            div.innerHTML = '<strong>Correlação Fogo x Fumaça</strong><br>' +
+                            '<i style="background:#8b0000"></i> Crítico + Foco Local<br>' +
+                            '<i style="background:#660066"></i> Crítico por Transporte<br>' +
+                            '<i style="background:#ff8c00"></i> Alerta c/ Foco<br>' +
+                            '<i style="background:#28a745"></i> Normal / Seguro';
+            return div;
+        };
+        legendCorrelacao.addTo(mapCorrelacao);
     }
 
     carregarFocosDiarios();
