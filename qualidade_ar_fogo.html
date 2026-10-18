@@ -356,7 +356,7 @@ const SOUTH_AMERICA_ZOOM = 3;
 // PURPLEAIR
 // Insira aqui uma chave válida para testar localmente.
 // Não publique a chave no HTML. Em produção, utilize um backend.
-const PURPLEAIR_API_KEY = "COLOQUE_SUA_CHAVE_AQUI";
+const PURPLEAIR_API_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
 
 const PURPLEAIR_URL = "https://api.purpleair.com/v1/sensors";
 
@@ -1008,7 +1008,7 @@ function paColor(value) {
 async function paFetchSensors() {
   if (
     !PURPLEAIR_API_KEY ||
-    PURPLEAIR_API_KEY === "COLOQUE_SUA_CHAVE_AQUI"
+    PURPLEAIR_API_KEY === "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129"
   ) {
     throw new Error(
       "Configure a chave PurpleAir na variável PURPLEAIR_API_KEY."
