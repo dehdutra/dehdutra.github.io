@@ -82,7 +82,6 @@
 
 <script>
     const PURPLEAIR_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
-    const PROXY_CORS = "https://corsproxy.io/?";
 
     // 1. Inicializar os Mapas
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
@@ -99,28 +98,36 @@
         return `${ano}${mes}${dia}`;
     }
 
-    // 2. Leitura dos Focos Diários do INPE
+    // 2. Leitura Direta dos Dados de Focos (Endpoints Oficiais do BDQueimadas / Dados Abertos)
     async function carregarFocosDiarios() {
         const statusEl = document.getElementById('status-focos');
-        const baseUrl = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/";
         
-        let datasTestar = [];
+        // Fontes oficiais do INPE / Dados Abertos para consumo direto no navegador
+        let fontes = [];
         for (let i = 0; i < 5; i++) {
             let d = new Date();
             d.setDate(d.getDate() - i);
-            datasTestar.push(`${baseUrl}focos_diario_${formatarDataAAAAMMDD(d)}.csv`);
+            const dt = formatarDataAAAAMMDD(d);
+            fontes.push(`https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${dt}.csv`);
+            fontes.push(`https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${dt}.csv`);
         }
 
         let sucesso = false;
 
-        for (const targetUrl of datasTestar) {
+        for (const urlTarget of fontes) {
             if (sucesso) break;
 
             try {
-                const proxyUrl = PROXY_CORS + encodeURIComponent(targetUrl);
-                const response = await fetch(proxyUrl);
+                // Tenta fetch direto sem proxy
+                let response = await fetch(urlTarget, { mode: 'cors' }).catch(() => null);
 
-                if (response.ok) {
+                // Se houver bloqueio de CORS direto do navegador, faz o fallback dinâmico via JSDelivr/CDN proxy
+                if (!response || !response.ok) {
+                    const urlCdn = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlTarget)}`;
+                    response = await fetch(urlCdn).catch(() => null);
+                }
+
+                if (response && response.ok) {
                     const textoCsv = await response.text();
 
                     Papa.parse(textoCsv, {
@@ -165,7 +172,7 @@
                     });
                 }
             } catch (err) {
-                console.warn("Buscando CSV anterior...", err);
+                console.warn("Testando próxima fonte de dados...", err);
             }
         }
 
