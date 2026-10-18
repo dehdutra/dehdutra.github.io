@@ -1,709 +1,1062 @@
-```html
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Focos de Calor | América do Sul</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor de Focos de Calor | América do Sul</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Leaflet: biblioteca do mapa -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
 
-<style>
-:root {
-  --bg:#f3f6f8;
-  --ink:#182832;
-  --muted:#71808b;
-  --accent:#c2410c;
-  --line:#e1e7eb;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  font-family:"DM Sans",sans-serif;
-  color:var(--ink);
-  background:var(--bg);
-}
-header {
-  background:#172d38;
-  color:white;
-  padding:24px clamp(16px,4vw,42px);
-}
-.header-inner {
-  max-width:1600px;
-  margin:auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-}
-.eyebrow {
-  font-size:10px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:1.8px;
-  color:#f3a06d;
-}
-h1 {
-  font:800 clamp(24px,3vw,35px) Manrope,sans-serif;
-  margin:7px 0;
-}
-header p {
-  margin:0;
-  color:#d0dbe1;
-  font-size:13px;
-}
-.live {
-  border:1px solid #526b76;
-  border-radius:24px;
-  padding:9px 13px;
-  font-size:11px;
-  white-space:nowrap;
-}
-.dot {
-  display:inline-block;
-  width:8px;
-  height:8px;
-  background:#5ed69a;
-  border-radius:50%;
-  margin-right:7px;
-}
-main {
-  max-width:1600px;
-  margin:auto;
-  padding:22px clamp(12px,2.5vw,32px) 35px;
-}
-.toolbar {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-bottom:15px;
-}
-.toolbar-group {
-  display:flex;
-  align-items:center;
-  gap:9px;
-  flex-wrap:wrap;
-}
-button,select {
-  font:600 12px "DM Sans",sans-serif;
-  border:1px solid var(--line);
-  background:white;
-  color:var(--ink);
-  border-radius:9px;
-  padding:10px 13px;
-}
-button { cursor:pointer; }
-button.primary {
-  color:white;
-  background:var(--accent);
-  border-color:var(--accent);
-}
-button:disabled { opacity:.6; cursor:wait; }
-.status {
-  padding:12px 14px;
-  border:1px solid var(--line);
-  background:white;
-  color:var(--muted);
-  border-radius:10px;
-  font-size:12px;
-  line-height:1.6;
-  margin-bottom:15px;
-  overflow-wrap:anywhere;
-}
-.status.error {
-  color:#a52c20;
-  background:#fff5f3;
-  border-color:#f1c5bd;
-}
-.status.success {
-  color:#17623f;
-  background:#effaf3;
-  border-color:#ccebd6;
-}
-.summary {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px;
-  margin-bottom:15px;
-}
-.stat {
-  padding:15px 17px;
-  border:1px solid var(--line);
-  background:white;
-  border-radius:12px;
-}
-.stat-label {
-  color:var(--muted);
-  font-size:11px;
-  font-weight:600;
-}
-.stat-value {
-  font:800 clamp(22px,3vw,31px) Manrope,sans-serif;
-  margin-top:6px;
-  overflow-wrap:anywhere;
-}
-.stat-note {
-  font-size:10px;
-  color:var(--muted);
-  margin-top:4px;
-}
-.map-panel {
-  border:1px solid var(--line);
-  background:white;
-  padding:10px;
-  border-radius:13px;
-  box-shadow:0 5px 22px rgba(25,40,55,.05);
-}
-.map-heading {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  padding:9px 8px 13px;
-}
-.map-heading h2 {
-  font:700 15px Manrope,sans-serif;
-  margin:0 0 4px;
-}
-.map-heading p {
-  color:var(--muted);
-  font-size:11px;
-  margin:0;
-}
-#map {
-  height:min(68vh,760px);
-  min-height:420px;
-  width:100%;
-  border-radius:9px;
-  background:#dfe8ec;
-}
-.map-legend {
-  display:flex;
-  align-items:center;
-  gap:15px;
-  flex-wrap:wrap;
-  color:var(--muted);
-  font-size:11px;
-  padding:12px 8px 5px;
-}
-.legend-dot {
-  display:inline-block;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#ef4b24;
-  margin-right:6px;
-  box-shadow:0 0 0 2px #ffe0d5;
-}
-footer {
-  color:var(--muted);
-  font-size:11px;
-  line-height:1.7;
-  padding:16px 3px 0;
-}
-footer a { color:#2359a8; }
-@media(max-width:650px) {
-  .header-inner {
-    align-items:flex-start;
-    flex-direction:column;
-  }
-  .summary { gap:7px; }
-  .stat { padding:12px 10px; }
-  .stat-label { font-size:10px; }
-  .stat-note { font-size:9px; }
-  #map { height:65vh; min-height:380px; }
-}
-</style>
+  <style>
+    :root {
+      --bg: #f3f6fa;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #68758a;
+      --border: #e1e7ef;
+      --accent: #d92d20;
+      --green: #13805c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 24px 28px;
+      background: #142b3b;
+      color: white;
+    }
+
+    .header-content {
+      max-width: 1500px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: #a9c7d8;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(23px, 3vw, 34px);
+      letter-spacing: -0.7px;
+    }
+
+    header p {
+      margin: 9px 0 0;
+      color: #cfdae2;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .live-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border: 1px solid #496170;
+      border-radius: 30px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      background: #58d5a3;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px #58d5a322;
+    }
+
+    main {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      min-height: 108px;
+      padding: 18px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      margin-top: 12px;
+      font-size: clamp(20px, 2.5vw, 29px);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .metric-note {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .map-card {
+      overflow: hidden;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 4px 20px #1720330a;
+    }
+
+    .map-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .map-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .map-subtitle {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    select,
+    button {
+      min-height: 39px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    select {
+      max-width: 100%;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #f1f5f9;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    #map {
+      width: 100%;
+      height: 70vh;
+      min-height: 440px;
+      background: #e8eef2;
+      z-index: 1;
+    }
+
+    .map-status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 18px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      border-top: 1px solid var(--border);
+    }
+
+    .status-indicator {
+      flex: 0 0 auto;
+      width: 8px;
+      height: 8px;
+      background: #94a3b8;
+      border-radius: 50%;
+    }
+
+    .status-indicator.ok {
+      background: var(--green);
+    }
+
+    .status-indicator.error {
+      background: var(--accent);
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      background: #e32636;
+      border: 1px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px #e32636;
+    }
+
+    footer {
+      padding: 18px 4px 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    footer a {
+      color: #235e85;
+    }
+
+    .leaflet-popup-content {
+      line-height: 1.65;
+      font-size: 12px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 20px 16px;
+      }
+
+      main {
+        padding: 14px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+        gap: 9px;
+      }
+
+      .metric {
+        min-height: 86px;
+      }
+
+      .metric-value {
+        margin-top: 7px;
+      }
+
+      .map-toolbar {
+        align-items: stretch;
+      }
+
+      .filters {
+        width: 100%;
+      }
+
+      .filters select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      #map {
+        height: 66vh;
+        min-height: 390px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<header>
-  <div class="header-inner">
-    <div>
-      <div class="eyebrow">Monitoramento de incêndios</div>
-      <h1>Focos de calor na América do Sul</h1>
-      <p>Visualização espacial de detecções de satélite nas últimas 24 horas</p>
-    </div>
-    <div class="live"><span class="dot"></span>Atualização a cada 10 minutos</div>
-  </div>
-</header>
-
-<main>
-  <div class="toolbar">
-    <div class="toolbar-group">
-      <button id="refreshBtn" class="primary">↻ Atualizar focos</button>
-      <button id="southAmericaBtn">América do Sul inteira</button>
-    </div>
-    <div class="toolbar-group">
-      <label for="satelliteSelect" style="font-size:12px;color:#71808b">Satélite</label>
-      <select id="satelliteSelect">
-        <option value="AQUA">AQUA / AQUA_M-T</option>
-        <option value="ALL">Todos os satélites</option>
-      </select>
-    </div>
-  </div>
-
-  <div id="status" class="status">
-    Preparando o mapa e consultando os dados de focos de calor.
-  </div>
-
-  <section class="summary">
-    <div class="stat">
-      <div class="stat-label">Focos nas últimas 24 horas</div>
-      <div class="stat-value" id="total">—</div>
-      <div class="stat-note">Após o filtro de satélite</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Último horário registrado</div>
-      <div class="stat-value" id="latest" style="font-size:20px">—</div>
-      <div class="stat-note">Horário local</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Última atualização</div>
-      <div class="stat-value" id="updated" style="font-size:20px">—</div>
-      <div class="stat-note">Horário local do navegador</div>
-    </div>
-  </section>
-
-  <section class="map-panel">
-    <div class="map-heading">
+  <header>
+    <div class="header-content">
       <div>
-        <h2>Mapa de focos ativos</h2>
-        <p>América do Sul · Fundo cartográfico geográfico · Fonte dos focos: INPE</p>
+        <div class="eyebrow">Monitoramento de fogo ativo</div>
+        <h1>Focos de calor na América do Sul</h1>
+        <p>Visualização espacial dos focos disponibilizados pelo Programa Queimadas do INPE.</p>
+      </div>
+
+      <div class="live-label">
+        <span class="live-dot"></span>
+        Atualização automática a cada 10 min
       </div>
     </div>
+  </header>
 
-    <div id="map"></div>
+  <main>
+    <section class="metrics">
+      <div class="metric">
+        <div class="metric-label">Focos exibidos</div>
+        <div class="metric-value" id="totalFocos">—</div>
+        <div class="metric-note">Registros dentro do período selecionado</div>
+      </div>
 
-    <div class="map-legend">
-      <span><i class="legend-dot"></i>Foco de calor</span>
-      <span>Clique em um ponto para consultar os atributos disponíveis.</span>
-    </div>
-  </section>
+      <div class="metric">
+        <div class="metric-label">Detecção mais recente</div>
+        <div class="metric-value" id="ultimaDeteccao">—</div>
+        <div class="metric-note">Horário informado no arquivo do INPE</div>
+      </div>
 
-  <footer>
-    Fonte dos focos: Programa Queimadas, Instituto Nacional de Pesquisas Espaciais (INPE).
-    Os focos são detecções por satélite e não representam necessariamente incêndios distintos.
-    <br>
-    <a href="https://data.inpe.br/queimadas/dados-abertos/#da-focos" target="_blank" rel="noopener">Dados abertos do INPE</a>
-  </footer>
-</main>
+      <div class="metric">
+        <div class="metric-label">Última consulta</div>
+        <div class="metric-value" id="ultimaAtualizacao">—</div>
+        <div class="metric-note">Horário local do navegador</div>
+      </div>
+    </section>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <section class="map-card">
+      <div class="map-toolbar">
+        <div>
+          <div class="map-title">Distribuição espacial</div>
+          <div class="map-subtitle">
+            Selecione o satélite e o período dos focos.
+          </div>
+        </div>
 
-<script>
-"use strict";
+        <div class="filters">
+          <select id="periodo" aria-label="Período">
+            <option value="24">Últimas 24 horas</option>
+            <option value="6">Últimas 6 horas</option>
+            <option value="72">Últimas 72 horas</option>
+          </select>
 
-/* =====================================================
-   CONFIGURAÇÃO
-   ===================================================== */
+          <select id="satellite" aria-label="Satélite">
+            <option value="todos">Todos os satélites</option>
+            <option value="AQUA">AQUA</option>
+            <option value="TERRA">TERRA</option>
+            <option value="NOAA-20">NOAA-20</option>
+            <option value="NOAA-21">NOAA-21</option>
+            <option value="SUOMI-NPP">SUOMI-NPP</option>
+            <option value="GOES-16">GOES-16</option>
+          </select>
 
-const INPE_DIRECTORY =
-  "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/";
+          <button id="atualizarBtn" type="button">Atualizar agora</button>
+        </div>
+      </div>
 
-const WINDOW_HOURS = 24;
-const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+      <div id="map" aria-label="Mapa de focos de calor da América do Sul"></div>
 
-const app = {
-  points: [],
-  lastUpdate: null,
-  inProgress: false
-};
+      <div class="legend">
+        <span class="legend-dot"></span>
+        Foco de calor detectado
+      </div>
 
-/* =====================================================
-   MAPA DA AMÉRICA DO SUL
-   ===================================================== */
+      <div class="map-status" role="status" aria-live="polite">
+        <span class="status-indicator" id="statusDot"></span>
+        <span id="statusText">Inicializando mapa...</span>
+      </div>
+    </section>
 
-const map = L.map("map", {
-  preferCanvas:true,
-  zoomControl:true
-}).setView([-15,-59],4);
+    <footer>
+      Fonte dos focos: <a href="https://data.inpe.br/queimadas/dados-abertos/" target="_blank" rel="noopener noreferrer">Programa Queimadas do INPE</a>.
+      Os focos representam detecções por satélite, não necessariamente incêndios distintos.
+      A disponibilidade depende dos arquivos e dos serviços externos.
+    </footer>
+  </main>
 
-L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-  {
-    attribution:"© OpenStreetMap contributors © CARTO",
-    subdomains:"abcd",
-    maxZoom:18
-  }
-).addTo(map);
+  <!-- Bibliotecas externas -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-const pointLayer = L.layerGroup().addTo(map);
+  <script>
+    "use strict";
 
-const SOUTH_AMERICA_BOUNDS = L.latLngBounds(
-  L.latLng(-57,-92),
-  L.latLng(14,-25)
-);
+    // =========================================================
+    // 1. CONFIGURAÇÕES
+    // =========================================================
 
-map.fitBounds(SOUTH_AMERICA_BOUNDS);
+    const INPE_DIR =
+      "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/";
 
-/* =====================================================
-   UTILITÁRIOS
-   ===================================================== */
+    const INTERVALO_ATUALIZACAO = 10 * 60 * 1000;
 
-function fmt(value) {
-  return Number(value || 0).toLocaleString("pt-BR");
-}
+    // Busca até 180 arquivos recentes do diretório de 10 minutos.
+    const MAX_ARQUIVOS = 180;
 
-function normalizeText(value) {
-  return String(value ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .trim()
-    .toLowerCase();
-}
+    // =========================================================
+    // 2. ELEMENTOS DA INTERFACE
+    // =========================================================
 
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, ch => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[ch]);
-}
+    const totalEl = document.getElementById("totalFocos");
+    const deteccaoEl = document.getElementById("ultimaDeteccao");
+    const atualizacaoEl = document.getElementById("ultimaAtualizacao");
+    const statusText = document.getElementById("statusText");
+    const statusDot = document.getElementById("statusDot");
+    const satelliteSelect = document.getElementById("satellite");
+    const periodSelect = document.getElementById("periodo");
+    const atualizarBtn = document.getElementById("atualizarBtn");
 
-function setStatus(message,type="") {
-  const el = document.getElementById("status");
-  el.textContent = message;
-  el.className = "status" + (type ? " " + type : "");
-}
+    let focosOriginais = [];
+    let marcadores = null;
+    let carregando = false;
+    let ultimaConsultaBemSucedida = null;
 
-function findValue(row,candidates) {
-  const entries = Object.entries(row || {});
+    // =========================================================
+    // 3. MAPA
+    // =========================================================
 
-  for (const candidate of candidates) {
-    const target = normalizeText(candidate).replace(/[^a-z0-9]/g,"");
+    const map = L.map("map", {
+      zoomControl: true,
+      preferCanvas: true,
+      minZoom: 2
+    });
 
-    const found = entries.find(([key,value]) =>
-      normalizeText(key).replace(/[^a-z0-9]/g,"") === target &&
-      value != null &&
-      String(value).trim() !== ""
-    );
-
-    if (found) return found[1];
-  }
-
-  return null;
-}
-
-/* Datas no formato YYYY-MM-DD HH:mm:ss são interpretadas como UTC. */
-function parseDate(value) {
-  if (value == null || value === "") return null;
-
-  const raw = String(value).trim();
-
-  const match = raw.match(
-    /^(\d{4})[/-](\d{2})[/-](\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/
-  );
-
-  if (match) {
-    return new Date(Date.UTC(
-      Number(match[1]),
-      Number(match[2])-1,
-      Number(match[3]),
-      Number(match[4]),
-      Number(match[5]),
-      Number(match[6] || 0)
-    ));
-  }
-
-  const date = new Date(raw);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-/* =====================================================
-   DESCOBRIR CSVs RECENTES DO INPE
-   ===================================================== */
-
-async function fetchText(url) {
-  const response = await fetch(url,{cache:"no-store"});
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status} ao acessar ${url}`);
-  }
-
-  return response.text();
-}
-
-async function getRecentCsvFiles() {
-  const html = await fetchText(INPE_DIRECTORY);
-  const documentHTML = new DOMParser().parseFromString(html,"text/html");
-
-  const links = Array.from(documentHTML.querySelectorAll("a"))
-    .map(a => a.getAttribute("href"))
-    .filter(Boolean);
-
-  const regex = /focos_10min_(\d{8})_(\d{4})\.csv$/i;
-
-  const now = Date.now();
-  const cutoff = now - (WINDOW_HOURS * 60 + 40) * 60 * 1000;
-
-  const files = links.map(href => {
-    const name = href.split("/").pop();
-    const match = name.match(regex);
-
-    if (!match) return null;
-
-    const stamp = match[1] + match[2];
-
-    const date = new Date(Date.UTC(
-      Number(stamp.slice(0,4)),
-      Number(stamp.slice(4,6))-1,
-      Number(stamp.slice(6,8)),
-      Number(stamp.slice(8,10)),
-      Number(stamp.slice(10,12))
-    ));
-
-    return {
-      name,
-      url:new URL(href,INPE_DIRECTORY).href,
-      date
-    };
-  })
-  .filter(Boolean)
-  .filter(file =>
-    file.date.getTime() >= cutoff &&
-    file.date.getTime() <= now + 10 * 60 * 1000
-  )
-  .sort((a,b)=>b.date-a.date);
-
-  if (!files.length) {
-    throw new Error(
-      "Nenhum CSV recente foi identificado. O diretório do INPE pode ter mudado ou o acesso pode estar bloqueado."
-    );
-  }
-
-  return files;
-}
-
-/* =====================================================
-   LER E FILTRAR OS FOCOS
-   ===================================================== */
-
-async function downloadCsv(url) {
-  const text = await fetchText(url);
-
-  const parsed = Papa.parse(text,{
-    header:true,
-    skipEmptyLines:true,
-    transformHeader:header=>header.trim()
-  });
-
-  if (!parsed.data.length) {
-    throw new Error("O CSV não contém registros.");
-  }
-
-  return parsed.data;
-}
-
-function normalizeHotspots(rows) {
-  const cutoff = Date.now() - WINDOW_HOURS * 60 * 60 * 1000;
-  const selectedSatellite = document.getElementById("satelliteSelect").value;
-
-  const points = [];
-
-  for (const row of rows) {
-    const lat = Number(findValue(row,["latitude","lat"]));
-    const lon = Number(findValue(row,["longitude","lon","long"]));
-
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) continue;
-
-    const rawDate = findValue(row,[
-      "datahora","data_hora","data hora",
-      "date","datetime","data","timestamp"
+    // Enquadramento inicial na América do Sul.
+    map.fitBounds([
+      [-57, -82],
+      [14, -31]
     ]);
 
-    const date = parseDate(rawDate);
-
-    if (!date) continue;
-    if (date.getTime() < cutoff) continue;
-    if (date.getTime() > Date.now() + 5*60*1000) continue;
-
-    const satellite = String(findValue(row,[
-      "satellite","satelite","satélite","satelite_nome"
-    ]) || "").trim();
-
-    if (
-      selectedSatellite === "AQUA" &&
-      !normalizeText(satellite).includes("aqua")
-    ) continue;
-
-    points.push({
-      lat,
-      lon,
-      date,
-      satellite:satellite || "Não informado",
-      country:findValue(row,["pais","país","country"]) || "",
-      state:findValue(row,["estado","uf","state"]) || "",
-      municipality:findValue(row,["municipio","município","municipality"]) || "",
-      frp:findValue(row,["frp"]) || ""
-    });
-  }
-
-  // Elimina duplicatas entre arquivos temporais sobrepostos.
-  const unique = new Map();
-
-  for (const point of points) {
-    const key = [
-      point.lat.toFixed(5),
-      point.lon.toFixed(5),
-      Math.floor(point.date.getTime()/60000),
-      point.satellite
-    ].join("|");
-
-    if (!unique.has(key)) unique.set(key,point);
-  }
-
-  return Array.from(unique.values());
-}
-
-async function fetchHotspots() {
-  const files = await getRecentCsvFiles();
-
-  const results = await Promise.all(
-    files.slice(0,160).map(async file => {
-      try {
-        return await downloadCsv(file.url);
-      } catch (error) {
-        console.warn("Não foi possível ler:",file.name,error);
-        return [];
+    // Duas opções de mapa de fundo.
+    const mapaOSM = L.tileLayer(
+      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }
-    })
-  );
-
-  const rows = results.flat();
-
-  if (!rows.length) {
-    throw new Error(
-      "Os CSVs foram encontrados, mas nenhum pôde ser lido. Verifique o acesso ao servidor do INPE."
     );
-  }
 
-  return normalizeHotspots(rows);
-}
+    const mapaCarto = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      {
+        subdomains: "abcd",
+        maxZoom: 19,
+        attribution:
+          '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/">CARTO</a>'
+      }
+    );
 
-/* =====================================================
-   DESENHAR OS FOCOS NO MAPA
-   ===================================================== */
+    // A camada principal começa ativa.
+    mapaOSM.addTo(map);
 
-function renderPoints(points) {
-  pointLayer.clearLayers();
+    let camadaAtiva = "osm";
+    let tilesCarregados = false;
+    let fallbackExecutado = false;
 
-  const coordinates = [];
-  const canvasRenderer = L.canvas({padding:0.5});
-
-  for (const point of points) {
-    const marker = L.circleMarker([point.lat,point.lon],{
-      renderer:canvasRenderer,
-      radius:4,
-      color:"#9d2b17",
-      weight:0.8,
-      fillColor:"#ef4b24",
-      fillOpacity:0.82
+    mapaOSM.on("tileload", () => {
+      tilesCarregados = true;
     });
 
-    marker.bindPopup(
-      `<strong>Foco de calor</strong><br>`+
-      `Data/hora: ${point.date.toLocaleString("pt-BR")}<br>`+
-      `Satélite: ${escapeHtml(point.satellite)}<br>`+
-      `País: ${escapeHtml(point.country || "Não informado")}<br>`+
-      `Estado: ${escapeHtml(point.state || "Não informado")}<br>`+
-      `Município: ${escapeHtml(point.municipality || "Não informado")}`+
-      (point.frp ? `<br>FRP: ${escapeHtml(point.frp)}` : "")
-    );
+    mapaCarto.on("tileload", () => {
+      tilesCarregados = true;
+    });
 
-    marker.addTo(pointLayer);
-    coordinates.push([point.lat,point.lon]);
-  }
+    // Se o mapa principal falhar, tenta a alternativa.
+    function ativarMapaAlternativo() {
+      if (fallbackExecutado || camadaAtiva !== "osm") return;
 
-  // Mantém a visão regional da América do Sul.
-  // Não aproxima automaticamente para um único foco.
-}
+      fallbackExecutado = true;
+      camadaAtiva = "carto";
+      tilesCarregados = false;
 
-/* =====================================================
-   MÉTRICAS E ATUALIZAÇÃO
-   ===================================================== */
+      if (map.hasLayer(mapaOSM)) {
+        map.removeLayer(mapaOSM);
+      }
 
-function updateMetrics() {
-  document.getElementById("total").textContent = fmt(app.points.length);
+      mapaCarto.addTo(map);
 
-  if (app.points.length) {
-    const latest = app.points.reduce(
-      (max,p)=>p.date > max ? p.date : max,
-      app.points[0].date
-    );
+      statusText.textContent =
+        "Tentando carregar o mapa de fundo alternativo...";
 
-    document.getElementById("latest").textContent =
-      latest.toLocaleTimeString("pt-BR");
-  } else {
-    document.getElementById("latest").textContent = "Nenhum foco";
-  }
+      setTimeout(() => {
+        if (!tilesCarregados) {
+          statusText.textContent =
+            "O mapa de fundo não respondeu. Verifique a conexão e os bloqueios de conteúdo externo.";
+          statusDot.className = "status-indicator error";
+        }
+      }, 9000);
+    }
 
-  document.getElementById("updated").textContent =
-    app.lastUpdate ? app.lastUpdate.toLocaleTimeString("pt-BR") : "—";
-}
+    mapaOSM.on("tileerror", () => {
+      // Aguarda alguns segundos antes de trocar de servidor.
+      setTimeout(() => {
+        if (!tilesCarregados) {
+          ativarMapaAlternativo();
+        }
+      }, 4500);
+    });
 
-async function updateDashboard() {
-  if (app.inProgress) return;
+    setTimeout(() => {
+      if (!tilesCarregados) {
+        ativarMapaAlternativo();
+      }
+    }, 7000);
 
-  app.inProgress = true;
+    // Permite trocar manualmente o mapa de fundo.
+    L.control.layers(
+      {
+        "Mapa OpenStreetMap": mapaOSM,
+        "Mapa alternativo claro": mapaCarto
+      },
+      {},
+      { position: "topright", collapsed: true }
+    ).addTo(map);
 
-  const button = document.getElementById("refreshBtn");
-  button.disabled = true;
-  button.textContent = "Consultando…";
+    map.on("baselayerchange", (event) => {
+      camadaAtiva = event.layer === mapaOSM ? "osm" : "carto";
+      fallbackExecutado = camadaAtiva === "carto";
+      tilesCarregados = false;
 
-  try {
-    setStatus("Consultando os dados de focos de calor do INPE...");
+      statusText.textContent =
+        "Camada de fundo selecionada: " + event.name + ".";
+      statusDot.className = "status-indicator";
+    });
 
-    const points = await fetchHotspots();
+    // Camada independente dos focos.
+    marcadores = L.layerGroup().addTo(map);
 
-    // Atualiza o mapa somente depois de obter os dados.
-    app.points = points;
-    app.lastUpdate = new Date();
+    // =========================================================
+    // 4. STATUS
+    // =========================================================
 
-    renderPoints(app.points);
-    updateMetrics();
+    function setStatus(mensagem, tipo = "") {
+      statusText.textContent = mensagem;
+      statusDot.className =
+        "status-indicator" + (tipo ? " " + tipo : "");
+    }
 
-    setStatus(
-      `Atualização concluída às ${app.lastUpdate.toLocaleTimeString("pt-BR")}. `+
-      `${fmt(app.points.length)} focos encontrados nas últimas 24 horas.`,
-      "success"
-    );
-  } catch (error) {
-    console.error(error);
+    function formatarHora(data) {
+      if (!(data instanceof Date) || isNaN(data.getTime())) {
+        return "—";
+      }
 
-    setStatus(
-      `Não foi possível atualizar: ${error.message} `+
-      `Os últimos dados válidos foram preservados. Se aparecer CORS, será necessário usar um servidor intermediário.`,
-      "error"
-    );
-  } finally {
-    app.inProgress = false;
-    button.disabled = false;
-    button.textContent = "↻ Atualizar focos";
-  }
-}
+      return data.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
 
-document.getElementById("refreshBtn")
-  .addEventListener("click",updateDashboard);
+    function normalizarChave(chave) {
+      return String(chave || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+    }
 
-document.getElementById("southAmericaBtn")
-  .addEventListener("click",()=>map.fitBounds(SOUTH_AMERICA_BOUNDS));
+    function obterCampo(objeto, alternativas) {
+      const chaves = Object.keys(objeto || {});
+      const normalizadas = new Map(
+        chaves.map(chave => [normalizarChave(chave), chave])
+      );
 
-document.getElementById("satelliteSelect")
-  .addEventListener("change",updateDashboard);
+      for (const alternativa of alternativas) {
+        const original = normalizadas.get(normalizarChave(alternativa));
 
-/* Inicialização e atualização periódica */
-updateDashboard();
-setInterval(updateDashboard,REFRESH_INTERVAL_MS);
-</script>
+        if (original !== undefined && objeto[original] !== undefined) {
+          const valor = String(objeto[original]).trim();
+
+          if (valor !== "") return valor;
+        }
+      }
+
+      return "";
+    }
+
+    function numeroValido(valor) {
+      if (valor === null || valor === undefined) return NaN;
+
+      const texto = String(valor).trim().replace(",", ".");
+      if (!texto) return NaN;
+
+      return Number(texto);
+    }
+
+    function interpretarData(valor) {
+      if (!valor) return null;
+
+      const texto = String(valor).trim();
+
+      // Datas ISO ou no formato YYYY-MM-DD HH:mm:ss.
+      const iso = texto.match(
+        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
+      );
+
+      if (iso) {
+        return new Date(
+          Date.UTC(
+            Number(iso[1]),
+            Number(iso[2]) - 1,
+            Number(iso[3]),
+            Number(iso[4]),
+            Number(iso[5]),
+            Number(iso[6] || 0)
+          )
+        );
+      }
+
+      // Tenta interpretar outros formatos conhecidos.
+      const data = new Date(texto);
+
+      if (!isNaN(data.getTime())) return data;
+
+      return null;
+    }
+
+    function normalizarSat(valor) {
+      return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .replace(/[\s_]+/g, "-")
+        .trim();
+    }
+
+    function sateliteCorresponde(valor, filtro) {
+      if (filtro === "todos") return true;
+
+      const sat = normalizarSat(valor);
+      const alvo = normalizarSat(filtro);
+
+      if (alvo === "AQUA") {
+        return sat === "AQUA" || sat.startsWith("AQUA-");
+      }
+
+      if (alvo === "TERRA") {
+        return sat === "TERRA" || sat.startsWith("TERRA-");
+      }
+
+      if (alvo === "NOAA-20") {
+        return sat.includes("NOAA-20") || sat.includes("NOAA20");
+      }
+
+      if (alvo === "NOAA-21") {
+        return sat.includes("NOAA-21") || sat.includes("NOAA21");
+      }
+
+      if (alvo === "SUOMI-NPP") {
+        return sat.includes("SUOMI") || sat.includes("NPP");
+      }
+
+      if (alvo === "GOES-16") {
+        return sat.includes("GOES-16") || sat.includes("GOES16");
+      }
+
+      return sat === alvo;
+    }
+
+    // =========================================================
+    // 5. ENCONTRAR OS ARQUIVOS RECENTES DO INPE
+    // =========================================================
+
+    async function obterListaArquivos() {
+      const resposta = await fetch(INPE_DIR, {
+        cache: "no-store"
+      });
+
+      if (!resposta.ok) {
+        throw new Error(
+          "Não foi possível consultar o diretório do INPE (HTTP " +
+          resposta.status + ")."
+        );
+      }
+
+      const html = await resposta.text();
+
+      // Aceita somente arquivos com nome focos_10min_YYYYMMDD_HHMM.csv.
+      const regex =
+        /href=["']([^"'?#]*focos_10min_\d{8}_\d{4}\.csv)["']/gi;
+
+      const encontrados = new Set();
+      let resultado;
+
+      while ((resultado = regex.exec(html)) !== null) {
+        const nome = resultado[1].split("/").pop();
+
+        if (/^focos_10min_\d{8}_\d{4}\.csv$/i.test(nome)) {
+          encontrados.add(new URL(nome, INPE_DIR).href);
+        }
+      }
+
+      const arquivos = [...encontrados];
+
+      if (arquivos.length === 0) {
+        throw new Error(
+          "O diretório foi acessado, mas não foi possível identificar os arquivos CSV. Pode haver bloqueio de acesso ou mudança no formato do índice."
+        );
+      }
+
+      // Ordena pelo nome do arquivo, que contém data e horário.
+      arquivos.sort((a, b) => b.localeCompare(a));
+
+      return arquivos.slice(0, MAX_ARQUIVOS);
+    }
+
+    // =========================================================
+    // 6. LER CADA CSV
+    // =========================================================
+
+    async function baixarCSV(url) {
+      const resposta = await fetch(url, {
+        cache: "no-store"
+      });
+
+      if (!resposta.ok) {
+        throw new Error("Falha ao baixar " + url.split("/").pop());
+      }
+
+      const texto = await resposta.text();
+
+      // Alguns arquivos podem estar vazios ou conter apenas cabeçalho.
+      if (!texto.trim()) return [];
+
+      return new Promise((resolve, reject) => {
+        Papa.parse(texto, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: h => String(h || "").trim(),
+          complete: resultado => resolve(resultado.data || []),
+          error: erro => reject(erro)
+        });
+      });
+    }
+
+    // =========================================================
+    // 7. TRANSFORMAR REGISTROS EM FOCOS
+    // =========================================================
+
+    function converterRegistro(registro) {
+      const lat = numeroValido(
+        obterCampo(registro, [
+          "latitude", "lat", "y"
+        ])
+      );
+
+      const lon = numeroValido(
+        obterCampo(registro, [
+          "longitude", "lon", "long", "lng", "x"
+        ])
+      );
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        return null;
+      }
+
+      if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        return null;
+      }
+
+      const dataTexto = obterCampo(registro, [
+        "data_hora_gmt",
+        "datahora",
+        "data_hora",
+        "datahora_gmt",
+        "datetime",
+        "date"
+      ]);
+
+      const data = interpretarData(dataTexto);
+
+      const satelite = obterCampo(registro, [
+        "satelite",
+        "satellite",
+        "satelite_nome",
+        "satelite_referencia"
+      ]);
+
+      return {
+        lat,
+        lon,
+        data,
+        dataTexto,
+        satelite: satelite || "Não informado",
+        municipio: obterCampo(registro, ["municipio", "municipality"]),
+        estado: obterCampo(registro, ["estado", "uf", "state"]),
+        pais: obterCampo(registro, ["pais", "country"]),
+        bioma: obterCampo(registro, ["bioma", "biome"]),
+        frp: obterCampo(registro, ["frp"]),
+        confianca: obterCampo(registro, ["confianca", "confidence"]),
+        original: registro
+      };
+    }
+
+    // =========================================================
+    // 8. FILTRAR E DESENHAR OS FOCOS
+    // =========================================================
+
+    function escaparHTML(valor) {
+      return String(valor || "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[caractere]);
+    }
+
+    function aplicarFiltros() {
+      const horas = Number(periodSelect.value);
+      const sateliteEscolhido = satelliteSelect.value;
+      const agora = Date.now();
+      const limite = agora - horas * 60 * 60 * 1000;
+
+      const filtrados = focosOriginais.filter(foco => {
+        if (!sateliteCorresponde(foco.satelite, sateliteEscolhido)) {
+          return false;
+        }
+
+        // Se a data estiver ausente, não é possível confirmar
+        // se o registro pertence ao período selecionado.
+        if (!foco.data || isNaN(foco.data.getTime())) {
+          return false;
+        }
+
+        const instante = foco.data.getTime();
+
+        return instante >= limite && instante <= agora + 5 * 60 * 1000;
+      });
+
+      marcadores.clearLayers();
+
+      const agrupamento = L.featureGroup();
+
+      for (const foco of filtrados) {
+        const marcador = L.circleMarker(
+          [foco.lat, foco.lon],
+          {
+            radius: 4,
+            color: "#ffffff",
+            weight: 0.8,
+            fillColor: "#e32636",
+            fillOpacity: 0.88
+          }
+        );
+
+        const detalhes = [
+          "<b>Foco de calor</b>",
+          "<b>Data/hora (GMT):</b> " +
+            escaparHTML(foco.dataTexto || "Não informada"),
+          "<b>Satélite:</b> " + escaparHTML(foco.satelite),
+          foco.municipio
+            ? "<b>Município:</b> " + escaparHTML(foco.municipio)
+            : "",
+          foco.estado
+            ? "<b>Estado:</b> " + escaparHTML(foco.estado)
+            : "",
+          foco.pais
+            ? "<b>País:</b> " + escaparHTML(foco.pais)
+            : "",
+          foco.bioma
+            ? "<b>Bioma:</b> " + escaparHTML(foco.bioma)
+            : "",
+          foco.frp
+            ? "<b>FRP:</b> " + escaparHTML(foco.frp)
+            : "",
+          "<b>Latitude:</b> " + foco.lat.toFixed(4),
+          "<b>Longitude:</b> " + foco.lon.toFixed(4)
+        ].filter(Boolean).join("<br>");
+
+        marcador.bindPopup(detalhes);
+
+        marcador.addTo(marcadores);
+        agrupamento.addLayer(marcador);
+      }
+
+      totalEl.textContent = filtrados.length.toLocaleString("pt-BR");
+
+      const maisRecente = filtrados.reduce((mais, foco) => {
+        if (!foco.data) return mais;
+        if (!mais || foco.data > mais) return foco.data;
+        return mais;
+      }, null);
+
+      deteccaoEl.textContent = maisRecente
+        ? formatarHora(maisRecente) + " (local)"
+        : "Sem registros";
+
+      // Não aproxima automaticamente a cada atualização.
+      // Mantém a visão geral da América do Sul.
+    }
+
+    // =========================================================
+    // 9. ATUALIZAR DADOS
+    // =========================================================
+
+    async function atualizarDados() {
+      if (carregando) return;
+
+      carregando = true;
+      atualizarBtn.disabled = true;
+      atualizarBtn.textContent = "Consultando...";
+      setStatus("Consultando arquivos recentes do INPE...");
+
+      try {
+        const arquivos = await obterListaArquivos();
+
+        setStatus(
+          "Encontrados " + arquivos.length +
+          " arquivos. Carregando os registros mais recentes..."
+        );
+
+        // Baixa os arquivos em pequenos grupos para evitar
+        // excesso de conexões simultâneas.
+        const registros = [];
+        const erros = [];
+        const tamanhoGrupo = 8;
+
+        for (let i = 0; i < arquivos.length; i += tamanhoGrupo) {
+          const grupo = arquivos.slice(i, i + tamanhoGrupo);
+
+          const resultados = await Promise.all(
+            grupo.map(async url => {
+              try {
+                return await baixarCSV(url);
+              } catch (erro) {
+                erros.push(erro.message || String(erro));
+                return [];
+              }
+            })
+          );
+
+          for (const linhas of resultados) {
+            registros.push(...linhas);
+          }
+
+          setStatus(
+            "Lendo arquivos: " +
+            Math.min(i + tamanhoGrupo, arquivos.length) +
+            " de " + arquivos.length + "..."
+          );
+        }
+
+        const convertidos = registros
+          .map(converterRegistro)
+          .filter(Boolean);
+
+        // Elimina duplicatas simples por coordenada, data e satélite.
+        const unicos = new Map();
+
+        for (const foco of convertidos) {
+          const chave = [
+            foco.lat,
+            foco.lon,
+            foco.data ? foco.data.getTime() : foco.dataTexto,
+            normalizarSat(foco.satelite)
+          ].join("|");
+
+          if (!unicos.has(chave)) {
+            unicos.set(chave, foco);
+          }
+        }
+
+        const novosFocos = [...unicos.values()];
+
+        // Não apaga os dados anteriores se a consulta falhar
+        // completamente ou não encontrar registros válidos.
+        if (novosFocos.length === 0) {
+          throw new Error(
+            "Nenhum registro com latitude e longitude válidas foi encontrado. Verifique o formato dos CSVs e o acesso ao diretório do INPE."
+          );
+        }
+
+        focosOriginais = novosFocos;
+        ultimaConsultaBemSucedida = new Date();
+
+        aplicarFiltros();
+
+        atualizacaoEl.textContent =
+          formatarHora(ultimaConsultaBemSucedida);
+
+        if (erros.length > 0) {
+          setStatus(
+            "Dados atualizados parcialmente. " + erros.length +
+            " arquivo(s) não puderam ser lidos; os registros disponíveis foram exibidos.",
+            ""
+          );
+        } else {
+          setStatus(
+            "Dados atualizados. " + focosOriginais.length.toLocaleString("pt-BR") +
+            " registros válidos carregados.",
+            "ok"
+          );
+        }
+
+      } catch (erro) {
+        console.error("Erro ao atualizar focos:", erro);
+
+        setStatus(
+          "Não foi possível atualizar os focos: " +
+          (erro.message || String(erro)) +
+          ". Os dados anteriores, se existentes, foram preservados.",
+          "error"
+        );
+
+      } finally {
+        carregando = false;
+        atualizarBtn.disabled = false;
+        atualizarBtn.textContent = "Atualizar agora";
+      }
+    }
+
+    // =========================================================
+    // 10. EVENTOS
+    // =========================================================
+
+    satelliteSelect.addEventListener("change", aplicarFiltros);
+    periodSelect.addEventListener("change", aplicarFiltros);
+
+    atualizarBtn.addEventListener("click", atualizarDados);
+
+    // Corrige dimensões caso o mapa tenha sido carregado
+    // enquanto a janela ainda estava ajustando o layout.
+    window.addEventListener("load", () => {
+      setTimeout(() => map.invalidateSize(), 300);
+    });
+
+    window.addEventListener("resize", () => {
+      map.invalidateSize();
+    });
+
+    // Primeira consulta e atualização periódica.
+    atualizarDados();
+    setInterval(atualizarDados, INTERVALO_ATUALIZACAO);
+  </script>
 </body>
 </html>
-```
