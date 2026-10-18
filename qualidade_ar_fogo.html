@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101c2d">
-  <title>Monitoramento de Focos de Calor</title>
+  <title>Monitoramento de Focos de Calor | INPE</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -23,7 +23,7 @@
       --orange: #f97316;
       --green: #159b75;
       --red: #e5484d;
-      --radius: 18px;
+      --radius: 16px;
       --shadow: 0 8px 30px rgba(19,35,58,.07);
     }
 
@@ -38,7 +38,7 @@
 
     .topbar {
       padding: 28px clamp(18px,4vw,52px);
-      color: #fff;
+      color: white;
       background:
         radial-gradient(ellipse at 85% 0%,rgba(65,117,213,.34),transparent 43%),
         linear-gradient(120deg,#101c2d,#172e49 70%,#193b5c);
@@ -46,38 +46,25 @@
 
     .topbar-inner, main {
       max-width: 1600px;
-      margin: 0 auto;
+      margin: auto;
     }
 
     .eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 9px;
       color: #9fc4ff;
       font-size: 11px;
       font-weight: 800;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      letter-spacing: 1.6px;
-    }
-
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #46d6a2;
-      box-shadow: 0 0 0 4px rgba(70,214,162,.13);
     }
 
     h1 {
       margin: 14px 0 9px;
       font-size: clamp(26px,3.2vw,40px);
       line-height: 1.15;
-      letter-spacing: -1px;
     }
 
     .subtitle {
-      max-width: 780px;
-      margin: 0;
+      max-width: 850px;
       color: #c3cfdf;
       font-size: 14px;
       line-height: 1.7;
@@ -86,16 +73,11 @@
     .header-bottom {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-top: 22px;
+      gap: 10px;
+      margin-top: 20px;
     }
 
     .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
       padding: 9px 13px;
       border: 1px solid rgba(255,255,255,.15);
       border-radius: 999px;
@@ -109,7 +91,7 @@
     .section-heading {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
       flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 16px;
@@ -117,7 +99,7 @@
 
     .section-heading h2 {
       margin: 0;
-      font-size: 19px;
+      font-size: 20px;
     }
 
     .section-heading p {
@@ -126,13 +108,16 @@
       font-size: 12px;
     }
 
+    button, select {
+      border-radius: 9px;
+      font: inherit;
+    }
+
     button {
       border: 0;
-      border-radius: 9px;
       padding: 11px 15px;
       background: var(--blue);
       color: white;
-      font: inherit;
       font-size: 12px;
       font-weight: 750;
       cursor: pointer;
@@ -144,7 +129,7 @@
       display: grid;
       grid-template-columns: repeat(4,minmax(0,1fr));
       gap: 15px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .stat {
@@ -165,18 +150,42 @@
       background: var(--accent,var(--blue));
     }
 
-    .stat-label { color: var(--muted); font-size: 12px; font-weight: 650; }
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
 
     .stat-value {
       margin-top: 10px;
       font-size: clamp(24px,2.5vw,34px);
       font-weight: 800;
-      letter-spacing: -1px;
-      font-variant-numeric: tabular-nums;
       overflow-wrap: anywhere;
+      font-variant-numeric: tabular-nums;
     }
 
-    .stat-foot { margin-top: 6px; color: #8793a5; font-size: 11px; }
+    .stat-foot {
+      margin-top: 6px;
+      color: #8793a5;
+      font-size: 11px;
+    }
+
+    .status {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      color: #52647b;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .status.success { border-color: #bce8d8; background: #f2fcf8; color: #16694f; }
+    .status.warning { border-color: #f3dfae; background: #fffaf0; color: #825b12; }
+    .status.error { border-color: #f5c5c5; background: #fff7f7; color: #9c3030; }
 
     .maps-grid {
       display: grid;
@@ -185,10 +194,10 @@
       align-items: stretch;
     }
 
-    .map-card {
+    .map-card, .info-card {
       min-width: 0;
       overflow: hidden;
-      background: var(--panel);
+      background: white;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -202,19 +211,6 @@
       padding: 19px 20px 15px;
     }
 
-    .map-title-group { display: flex; align-items: flex-start; gap: 11px; }
-
-    .map-icon {
-      display: grid;
-      place-items: center;
-      flex: 0 0 38px;
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: #edf3ff;
-      font-size: 19px;
-    }
-
     .map-card h3 { margin: 1px 0 5px; font-size: 15px; }
 
     .map-card-header p {
@@ -225,7 +221,6 @@
     }
 
     .map-tag {
-      flex-shrink: 0;
       padding: 6px 9px;
       border-radius: 8px;
       background: #f0f5fb;
@@ -237,7 +232,7 @@
 
     .map {
       width: 100%;
-      height: 500px;
+      height: 490px;
       background: #edf2f7;
       border-top: 1px solid var(--line);
     }
@@ -254,55 +249,32 @@
       font-size: 11px;
     }
 
-    .legend, .scale { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .legend, .scale {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
 
     .legend-item, .scale-item { display: inline-flex; align-items: center; gap: 5px; }
 
-    .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
 
     .scale-color {
       width: 13px;
       height: 13px;
       border-radius: 3px;
-      border: 1px solid rgba(0,0,0,.05);
     }
 
     .scale-item { font-size: 10px; }
 
-    .status {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 0 0 18px;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: #fff;
-      color: #52647b;
-      font-size: 12px;
-      line-height: 1.65;
-    }
+    .info-card { padding: 20px; }
 
-    .status.error { border-color: #f5c5c5; background: #fff7f7; color: #9c3030; }
-    .status.success { border-color: #bce8d8; background: #f2fcf8; color: #16694f; }
-    .status.warning { border-color: #f3dfae; background: #fffaf0; color: #825b12; }
-
-    .status-icon { font-size: 16px; }
-
-    .details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin-top: 20px;
-    }
-
-    .info-card {
-      padding: 19px 20px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-    }
-
+    .info-card h2 { margin: 0 0 9px; font-size: 19px; }
     .info-card h3 { margin: 0 0 10px; font-size: 13px; }
 
     .info-card p, .info-card li {
@@ -314,7 +286,73 @@
     .info-card p { margin: 0; }
     .info-card ul { margin: 0; padding-left: 18px; }
 
-    .state-popup { min-width: 165px; font-size: 12px; line-height: 1.6; }
+    .details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .history {
+      margin-top: 22px;
+      padding: 22px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .history-intro {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .history-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .history-controls label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .history-controls select {
+      min-width: 240px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+    }
+
+    .history-link {
+      display: inline-block;
+      padding: 11px 14px;
+      border-radius: 9px;
+      background: #edf3ff;
+      color: #245fc7;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    #historicalFrame {
+      display: block;
+      width: 100%;
+      height: 780px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+    }
+
+    .state-popup { min-width: 165px; font-size: 12px; line-height: 1.7; }
     .state-popup strong { font-size: 14px; }
 
     footer {
@@ -336,6 +374,7 @@
       .details { grid-template-columns: 1fr; }
       .map-card-header { padding: 15px; }
       .map-tag { display: none; }
+      #historicalFrame { height: 650px; }
     }
   </style>
 </head>
@@ -343,16 +382,17 @@
 <body>
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="eyebrow"><span class="live-dot"></span> Monitoramento ambiental</div>
+    <div class="eyebrow">● Monitoramento ambiental</div>
     <h1>Focos de calor em tempo quase real</h1>
     <p class="subtitle">
-      Focos detectados pelo satélite de referência do Programa Queimadas do INPE,
-      filtrados pela hora de detecção nos últimos 10 minutos e contabilizados
-      por estado brasileiro.
+      Monitoramento de focos detectados pelo satélite de referência AQUA,
+      com janela móvel das últimas 24 horas, contagem por estado e consulta
+      às estatísticas históricas do Programa Queimadas do INPE.
     </p>
     <div class="header-bottom">
       <div class="chip">🛰️ Fonte: INPE · Programa Queimadas</div>
       <div class="chip">↻ Atualização automática a cada 10 minutos</div>
+      <div class="chip">🕒 Janela móvel: 24 horas</div>
     </div>
   </div>
 </header>
@@ -361,7 +401,7 @@
   <div class="section-heading">
     <div>
       <h2>Resumo dos focos</h2>
-      <p id="periodLabel">Período: últimos 10 minutos</p>
+      <p id="periodLabel">Período: últimas 24 horas</p>
     </div>
     <button id="refreshButton" type="button">↻ Atualizar agora</button>
   </div>
@@ -370,7 +410,7 @@
     <article class="stat" style="--accent:#3979ed">
       <div class="stat-label">Focos na América do Sul</div>
       <div class="stat-value" id="totalHotspots">—</div>
-      <div class="stat-foot">Últimos 10 minutos</div>
+      <div class="stat-foot">Últimas 24 horas</div>
     </article>
     <article class="stat" style="--accent:#f97316">
       <div class="stat-label">Focos dentro dos estados</div>
@@ -380,7 +420,7 @@
     <article class="stat" style="--accent:#159b75">
       <div class="stat-label">Estados com focos</div>
       <div class="stat-value" id="statesWithHotspots">—</div>
-      <div class="stat-foot">Pelo menos um ponto no período</div>
+      <div class="stat-foot">Pelo menos um foco no período</div>
     </article>
     <article class="stat" style="--accent:#8b5cf6">
       <div class="stat-label">Última atualização</div>
@@ -390,42 +430,34 @@
   </section>
 
   <div id="status" class="status" role="status" aria-live="polite">
-    <span class="status-icon">⏳</span>
+    <span>⏳</span>
     <div>Carregando os focos de calor e os limites estaduais...</div>
   </div>
 
   <section class="maps-grid">
     <article class="map-card">
       <div class="map-card-header">
-        <div class="map-title-group">
-          <div class="map-icon">🌎</div>
-          <div>
-            <h3>Focos de calor na América do Sul</h3>
-            <p>Posição dos focos detectados nos últimos 10 minutos.</p>
-          </div>
+        <div>
+          <h3>🌎 Focos de calor na América do Sul</h3>
+          <p>Posição dos focos detectados nas últimas 24 horas.</p>
         </div>
-        <span class="map-tag">Pontos</span>
+        <span class="map-tag">24 horas</span>
       </div>
       <div id="southAmericaMap" class="map"></div>
       <div class="map-footer">
-        <div class="legend">
-          <span class="legend-item">
-            <span class="legend-dot" style="background:#f97316"></span>
-            Foco de calor
-          </span>
-        </div>
+        <span class="legend-item">
+          <span class="legend-dot" style="background:#f97316"></span>
+          Foco de calor
+        </span>
         <span id="southMapCount">0 pontos</span>
       </div>
     </article>
 
     <article class="map-card">
       <div class="map-card-header">
-        <div class="map-title-group">
-          <div class="map-icon">🇧🇷</div>
-          <div>
-            <h3>Focos por estado brasileiro</h3>
-            <p>Contagem dos mesmos pontos dentro dos polígonos estaduais.</p>
-          </div>
+        <div>
+          <h3>🇧🇷 Focos por estado brasileiro</h3>
+          <p>Contagem dos mesmos pontos dentro dos polígonos estaduais.</p>
         </div>
         <span class="map-tag">Estados</span>
       </div>
@@ -439,28 +471,92 @@
           <span class="scale-item"><span class="scale-color" style="background:#de2d26"></span></span>
           <span class="scale-item"><span class="scale-color" style="background:#a50f15"></span>Alto</span>
         </div>
-        <span id="stateMapCount">0 estados</span>
+        <span id="stateMapCount">0 UFs</span>
       </div>
     </article>
   </section>
 
+  <section class="history">
+    <h2 style="margin:0 0 8px;font-size:20px">Histórico mensal de focos de calor</h2>
+    <p class="history-intro">
+      Selecione um estado para consultar a série histórica mensal do satélite
+      de referência. A página oficial do INPE disponibiliza estatísticas desde
+      1998. Para a análise desejada, considere janeiro de 2003 até o último
+      mês disponível. O mês atual pode estar incompleto.
+    </p>
+
+    <div class="history-controls">
+      <div>
+        <label for="historicalState">Estado brasileiro</label>
+        <select id="historicalState">
+          <option value="acre">Acre</option>
+          <option value="alagoas">Alagoas</option>
+          <option value="amapa">Amapá</option>
+          <option value="amazonas">Amazonas</option>
+          <option value="bahia">Bahia</option>
+          <option value="ceara">Ceará</option>
+          <option value="distrito_federal">Distrito Federal</option>
+          <option value="espirito_santo">Espírito Santo</option>
+          <option value="goias">Goiás</option>
+          <option value="maranhao">Maranhão</option>
+          <option value="mato_grosso">Mato Grosso</option>
+          <option value="mato_grosso_do_sul">Mato Grosso do Sul</option>
+          <option value="minas_gerais">Minas Gerais</option>
+          <option value="para" selected>Pará</option>
+          <option value="paraiba">Paraíba</option>
+          <option value="parana">Paraná</option>
+          <option value="pernambuco">Pernambuco</option>
+          <option value="piaui">Piauí</option>
+          <option value="rio_de_janeiro">Rio de Janeiro</option>
+          <option value="rio_grande_do_norte">Rio Grande do Norte</option>
+          <option value="rio_grande_do_sul">Rio Grande do Sul</option>
+          <option value="rondonia">Rondônia</option>
+          <option value="roraima">Roraima</option>
+          <option value="santa_catarina">Santa Catarina</option>
+          <option value="sao_paulo">São Paulo</option>
+          <option value="sergipe">Sergipe</option>
+          <option value="tocantins">Tocantins</option>
+        </select>
+      </div>
+      <a id="historicalLink" class="history-link"
+         href="https://data.inpe.br/queimadas/estatisticas/?item=para&amp;tipo=estados"
+         target="_blank" rel="noopener noreferrer">
+        Abrir estatísticas oficiais ↗
+      </a>
+    </div>
+
+    <iframe id="historicalFrame"
+      title="Estatísticas históricas mensais do INPE"
+      src="https://data.inpe.br/queimadas/estatisticas/?item=para&amp;tipo=estados"
+      loading="lazy"></iframe>
+
+    <p class="history-intro" style="margin-top:12px">
+      Se o site do INPE bloquear a exibição dentro desta página, use o botão
+      para abrir as estatísticas oficiais em uma nova aba.
+    </p>
+  </section>
+
   <section class="details">
     <article class="info-card">
-      <h3>Processamento</h3>
+      <h3>Processamento dos focos</h3>
       <ul>
-        <li>Filtragem pela data/hora de detecção nos últimos 10 minutos.</li>
-        <li>Filtro para o satélite de referência AQUA_M-T, quando identificado dessa forma no CSV.</li>
+        <li>Filtragem pela data/hora de detecção nas últimas 24 horas.</li>
+        <li>Filtro do satélite de referência AQUA, quando identificado no CSV.</li>
+        <li>Deduplicação de registros repetidos entre arquivos.</li>
         <li>Contagem espacial dos pontos dentro dos polígonos estaduais.</li>
-        <li>Os dois mapas são atualizados com a mesma lista filtrada.</li>
+        <li>Os dois mapas utilizam a mesma lista filtrada de focos.</li>
       </ul>
     </article>
     <article class="info-card">
-      <h3>Arquivos e limitações</h3>
-      <p>
-        Os três GeoJSON estaduais precisam estar acessíveis ao navegador.
-        A consulta ao diretório do INPE também depende de acesso de rede e
-        permissão CORS. Se o formato ou os nomes dos CSVs forem diferentes
-        dos esperados, será necessário ajustar a leitura da fonte.
+      <h3>Arquivos estaduais e limitações</h3>
+      <p id="stateFileInfo">
+        Aguardando leitura dos quatro arquivos GeoJSON. Confira se os quatro
+        arquivos estão na mesma pasta do index.html e se seus nomes coincidem
+        com os caminhos configurados no código.
+      </p>
+      <p style="margin-top:10px">
+        A consulta direta ao INPE depende de conectividade e permissão CORS.
+        Se houver bloqueio, execute a página por um servidor local ou hospedado.
       </p>
     </article>
   </section>
@@ -482,16 +578,19 @@
 const INPE_DIRECTORY =
   "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/";
 
-// Os três arquivos devem estar junto do index.html.
-// Se as extensões reais forem .json, ajuste os caminhos.
+// IMPORTANTE:
+// Os quatro arquivos devem estar na mesma pasta deste index.html.
+// Se os nomes reais forem diferentes, ajuste os quatro caminhos.
 const STATE_FILES = [
   "./estados_2024_01.geojson",
   "./estados_2024_02.geojson",
-  "./estados_2024_03.geojson"
+  "./estados_2024_03.geojson",
+  "./estados_2024_04.geojson"
 ];
 
-const MINUTES_TO_DISPLAY = 10;
+const HOURS_TO_DISPLAY = 24;
 const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+const MAX_CSV_FILES = 160;
 
 let stateGeoJSON = null;
 let hotspotLayer = null;
@@ -512,7 +611,8 @@ const brazilMap = L.map("brazilMap", {
 }).setView([-14.5, -52], 4);
 
 const tileOptions = {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   maxZoom: 18
 };
 
@@ -529,13 +629,17 @@ hotspotLayer = L.layerGroup().addTo(southAmericaMap);
 
 function setStatus(message, type = "") {
   const el = document.getElementById("status");
-  const icons = { "": "ℹ️", success: "✓", warning: "⚠️", error: "✕" };
+  const icons = {
+    "": "ℹ️",
+    success: "✓",
+    warning: "⚠️",
+    error: "✕"
+  };
 
   el.className = "status" + (type ? " " + type : "");
   el.replaceChildren();
 
   const icon = document.createElement("span");
-  icon.className = "status-icon";
   icon.textContent = icons[type] || "ℹ️";
 
   const text = document.createElement("div");
@@ -561,10 +665,13 @@ function setMetric(id, value) {
 
 function updatePeriodLabel() {
   const now = new Date();
-  const start = new Date(now.getTime() - MINUTES_TO_DISPLAY * 60 * 1000);
+  const start = new Date(
+    now.getTime() - HOURS_TO_DISPLAY * 60 * 60 * 1000
+  );
 
   document.getElementById("periodLabel").textContent =
-    `Últimos ${MINUTES_TO_DISPLAY} minutos · ${formatDate(start)} a ${formatDate(now)}`;
+    `Últimas ${HOURS_TO_DISPLAY} horas · ` +
+    `${formatDate(start)} a ${formatDate(now)}`;
 }
 
 // ============================================================
@@ -582,7 +689,9 @@ function normalizeKey(value) {
 
 function getField(row, candidates) {
   const keys = Object.keys(row || {});
-  const keyMap = new Map(keys.map(key => [normalizeKey(key), key]));
+  const keyMap = new Map(
+    keys.map(key => [normalizeKey(key), key])
+  );
 
   for (const candidate of candidates) {
     const originalKey = keyMap.get(normalizeKey(candidate));
@@ -594,6 +703,7 @@ function getField(row, candidates) {
 
 function parseCoordinate(value) {
   if (value === null || value === undefined) return NaN;
+
   const raw = String(value).trim().replace(",", ".");
   return raw ? Number(raw) : NaN;
 }
@@ -603,12 +713,13 @@ function parseInpeDate(value) {
 
   const raw = String(value).trim();
 
-  // Formato frequente: YYYY/MM/DD HH:mm:ss
+  // Exemplo: 2026/10/17 14:30:00
   const match = raw.match(
     /^(\d{4})[/-](\d{2})[/-](\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
   );
 
   if (match) {
+    // Horário dos dados tratado como UTC.
     return new Date(Date.UTC(
       Number(match[1]),
       Number(match[2]) - 1,
@@ -626,34 +737,67 @@ function parseInpeDate(value) {
 function isReferenceSatellite(value) {
   const satellite = normalizeKey(value);
 
-  return satellite.includes("aquam") ||
-         satellite === "aqua" ||
+  return satellite === "aqua" ||
+         satellite.includes("aquam") ||
          satellite.includes("aquamod");
 }
 
 // ============================================================
-// 5. CARREGAR OS GEOJSON ESTADUAIS
+// 5. IDENTIFICAR ESTADOS NOS GEOJSON
 // ============================================================
 
 function getStateInfo(feature) {
   const p = feature.properties || {};
 
-  const uf = (
-    p.SIGLA_UF ?? p.sigla_uf ?? p.UF ?? p.uf ??
-    p.SIGLA ?? p.sigla ?? p.abbrev ?? ""
-  ).toString().trim().toUpperCase();
+  const ufRaw =
+    p.SIGLA_UF ?? p.sigla_uf ??
+    p.UF ?? p.uf ??
+    p.SIGLA ?? p.sigla ??
+    p.abbrev ?? p.abbr ??
+    p.UF_SIGLA ?? p.uf_sigla ??
+    "";
 
-  const name = (
-    p.NM_UF ?? p.NOME_UF ?? p.nome_uf ?? p.NOME ??
-    p.nome ?? p.name ?? p.NAME_1 ?? p.estado ??
-    p.NM_ESTADO ?? uf ?? "Estado"
-  ).toString().trim();
+  const nameRaw =
+    p.NM_UF ?? p.NOME_UF ?? p.nome_uf ??
+    p.NOME ?? p.nome ?? p.name ?? p.NAME ??
+    p.NAME_1 ?? p.estado ?? p.ESTADO ??
+    p.NM_ESTADO ?? p.nome_estado ??
+    p.nom_estado ?? p.Estado ??
+    "";
 
-  return { uf, name };
+  const codeRaw =
+    p.CD_UF ?? p.cd_uf ?? p.COD_UF ??
+    p.cod_uf ?? p.GEOCODIGO ?? p.geocodigo ??
+    p.CD_GEOCUF ?? p.codarea ?? "";
+
+  const uf = String(ufRaw).trim().toUpperCase();
+  const name = String(nameRaw).trim();
+  const code = String(codeRaw).trim();
+
+  return { uf, name, code };
+}
+
+function stateIdentity(feature) {
+  const info = getStateInfo(feature);
+
+  if (info.uf && info.uf.length <= 3) {
+    return "UF:" + info.uf;
+  }
+
+  if (info.code) {
+    return "COD:" + info.code;
+  }
+
+  if (info.name) {
+    return "NAME:" + normalizeKey(info.name);
+  }
+
+  // Fallback: somente quando o GeoJSON não tem atributos reconhecíveis.
+  return "GEOM:" + JSON.stringify(feature.geometry);
 }
 
 async function loadStateGeoJSON() {
-  const collections = await Promise.all(
+  const results = await Promise.all(
     STATE_FILES.map(async url => {
       const response = await fetch(url, { cache: "no-cache" });
 
@@ -665,62 +809,91 @@ async function loadStateGeoJSON() {
 
       const data = await response.json();
 
-      if (data.type === "FeatureCollection" && Array.isArray(data.features)) {
-        return data.features;
+      if (data.type === "FeatureCollection" &&
+          Array.isArray(data.features)) {
+        return { url, features: data.features };
       }
 
-      if (data.type === "Feature") return [data];
+      if (data.type === "Feature") {
+        return { url, features: [data] };
+      }
 
       throw new Error(`${url} não contém um GeoJSON válido.`);
     })
   );
 
-  const allFeatures = collections.flat();
-  const unique = [];
-  const seen = new Set();
+  const uniqueByState = new Map();
+  const fileSummary = [];
 
-  for (const feature of allFeatures) {
-    if (!feature || !feature.geometry) continue;
+  for (const result of results) {
+    let valid = 0;
 
-    const p = feature.properties || {};
-    const info = getStateInfo(feature);
-    const identity =
-      info.uf ||
-      p.CD_UF ||
-      p.cd_uf ||
-      p.codarea ||
-      p.CD_GEOCUF ||
-      "";
+    for (const feature of result.features) {
+      if (!feature || !feature.geometry) continue;
 
-    const key = identity
-      ? "id:" + String(identity).trim().toUpperCase()
-      : "geom:" + JSON.stringify(feature.geometry);
+      valid++;
+      const key = stateIdentity(feature);
 
-    if (seen.has(key)) continue;
-    seen.add(key);
-    unique.push(feature);
+      if (!uniqueByState.has(key)) {
+        uniqueByState.set(key, feature);
+      } else {
+        console.warn(
+          "Feição estadual duplicada ignorada:",
+          key,
+          result.url
+        );
+      }
+    }
+
+    fileSummary.push(
+      `${result.url.split("/").pop()}: ${valid} feições válidas`
+    );
   }
 
-  if (!unique.length) {
-    throw new Error("Os GeoJSON não possuem geometrias estaduais válidas.");
+  const features = Array.from(uniqueByState.values());
+
+  if (!features.length) {
+    throw new Error("Nenhuma geometria estadual válida foi encontrada.");
   }
 
   stateGeoJSON = {
     type: "FeatureCollection",
-    features: unique
+    features
   };
 
-  console.info("Feições estaduais carregadas:", unique.length);
+  const recognizedUFs = new Set(
+    features
+      .map(feature => getStateInfo(feature).uf)
+      .filter(uf => /^[A-Z]{2}$/.test(uf))
+  );
+
+  document.getElementById("stateFileInfo").textContent =
+    `Arquivos lidos: ${fileSummary.join(" | ")}. ` +
+    `Feições estaduais únicas: ${features.length}. ` +
+    `UFs reconhecidas pelos atributos: ${recognizedUFs.size} de 27.`;
+
+  console.info("Resumo dos GeoJSON:", fileSummary);
+  console.info("Feições únicas:", features.length);
+  console.info("UFs reconhecidas:", [...recognizedUFs].sort());
+
+  if (recognizedUFs.size < 27) {
+    console.warn(
+      "Foram reconhecidas menos de 27 UFs. Confira os atributos " +
+      "de nome e sigla dos GeoJSON e se todos os estados estão nos arquivos."
+    );
+  }
 
   return stateGeoJSON;
 }
 
 // ============================================================
-// 6. DESCOBRIR ARQUIVOS CSV DO INPE
+// 6. DESCOBRIR OS CSVs MAIS RECENTES
 // ============================================================
 
 async function getRecentCsvFiles() {
-  const response = await fetch(INPE_DIRECTORY, { cache: "no-cache" });
+  const response = await fetch(INPE_DIRECTORY, {
+    cache: "no-cache"
+  });
 
   if (!response.ok) {
     throw new Error(
@@ -739,8 +912,6 @@ async function getRecentCsvFiles() {
       href.split("/").pop().split("?")[0]
     );
 
-    // Padrão de nome usado pelo script.
-    // Se o INPE alterar o padrão, ajuste esta expressão.
     if (/^focos_10min_\d{8}_\d{4}\.csv$/i.test(filename)) {
       filenames.add(filename);
     }
@@ -748,14 +919,15 @@ async function getRecentCsvFiles() {
 
   if (!filenames.size) {
     throw new Error(
-      "Nenhum CSV foi encontrado com o padrão focos_10min_YYYYMMDD_HHMM.csv. " +
-      "Verifique o formato real dos nomes no diretório do INPE."
+      "Nenhum CSV foi encontrado com o padrão " +
+      "focos_10min_YYYYMMDD_HHMM.csv. Confira o diretório do INPE."
     );
   }
 
+  // Arquivos de 10 em 10 minutos: 160 arquivos cobrem cerca de 26 h 40 min.
   return Array.from(filenames)
     .sort((a, b) => b.localeCompare(a))
-    .slice(0, 200)
+    .slice(0, MAX_CSV_FILES)
     .map(filename => INPE_DIRECTORY + filename);
 }
 
@@ -780,7 +952,11 @@ async function fetchCsv(url) {
   });
 
   if (parsed.errors?.length) {
-    console.warn("Avisos ao interpretar CSV:", url, parsed.errors.slice(0, 2));
+    console.warn(
+      "Avisos ao interpretar CSV:",
+      url,
+      parsed.errors.slice(0, 2)
+    );
   }
 
   return parsed.data || [];
@@ -815,12 +991,12 @@ async function fetchWithConcurrency(urls, limit = 8) {
 }
 
 // ============================================================
-// 8. FILTRAR OS ÚLTIMOS 10 MINUTOS
+// 8. FILTRAR OS FOCOS DAS ÚLTIMAS 24 HORAS
 // ============================================================
 
 function normalizeHotspots(rows) {
   const now = Date.now();
-  const cutoff = now - MINUTES_TO_DISPLAY * 60 * 1000;
+  const cutoff = now - HOURS_TO_DISPLAY * 60 * 60 * 1000;
 
   const points = [];
   const seen = new Set();
@@ -839,7 +1015,8 @@ function normalizeHotspots(rows) {
     ).trim();
 
     const dateText = getField(row, [
-      "DataHora", "Data Hora", "datahora", "DateTime"
+      "DataHora", "Data Hora", "datahora",
+      "DateTime", "Data", "Data_UTC"
     ]);
 
     const date = parseInpeDate(dateText);
@@ -848,22 +1025,28 @@ function normalizeHotspots(rows) {
     if (lat < -60 || lat > 20 || lon < -100 || lon > -25) continue;
     if (!date) continue;
 
-    // Janela temporal de 10 minutos.
-    if (date.getTime() < cutoff || date.getTime() > now + 5 * 60 * 1000) {
+    if (date.getTime() < cutoff ||
+        date.getTime() > now + 5 * 60 * 1000) {
       continue;
     }
 
     if (!isReferenceSatellite(satellite)) continue;
 
-    const country = String(getField(row, ["Pais", "País", "Country"])).trim();
-    const state = String(getField(row, ["Estado", "UF", "State"])).trim();
+    const country = String(
+      getField(row, ["Pais", "País", "Country"])
+    ).trim();
+
+    const state = String(
+      getField(row, ["Estado", "UF", "State"])
+    ).trim();
+
     const municipality = String(
       getField(row, ["Municipio", "Município", "Municipality"])
     ).trim();
 
     const frp = parseCoordinate(getField(row, ["FRP", "frp"]));
 
-    // Evita duplicações entre arquivos sobrepostos.
+    // Evita duplicar um mesmo registro encontrado em arquivos sobrepostos.
     const key = [
       normalizeKey(satellite),
       date.toISOString(),
@@ -931,6 +1114,12 @@ function renderHotspotMap(points) {
       popup.appendChild(line);
     }
 
+    if (point.municipality) {
+      const line = document.createElement("div");
+      line.textContent = "Município: " + point.municipality;
+      popup.appendChild(line);
+    }
+
     if (point.frp !== null) {
       const line = document.createElement("div");
       line.textContent = "FRP: " + point.frp;
@@ -962,7 +1151,7 @@ function countPointsInStates(points, geojson) {
     return {
       index,
       feature,
-      name: info.name,
+      name: info.name || info.uf || `Estado ${index + 1}`,
       uf: info.uf,
       count: 0
     };
@@ -1034,7 +1223,9 @@ function renderStateMap(points) {
     }
   }));
 
-  if (stateLayer) stateLayer.remove();
+  if (stateLayer) {
+    stateLayer.remove();
+  }
 
   stateLayer = L.geoJSON({
     type: "FeatureCollection",
@@ -1064,11 +1255,12 @@ function renderStateMap(points) {
       title.textContent = `${name}${uf ? " (" + uf + ")" : ""}`;
 
       const countLine = document.createElement("div");
-      countLine.textContent = `Focos nos últimos 10 minutos: ${formatNumber(count)}`;
+      countLine.textContent =
+        `Focos nas últimas 24 horas: ${formatNumber(count)}`;
 
       popup.append(title, countLine);
-
       layer.bindPopup(popup);
+
       layer.bindTooltip(
         `${name}${uf ? " (" + uf + ")" : ""}: ${formatNumber(count)} focos`,
         { sticky: true }
@@ -1089,7 +1281,9 @@ function renderStateMap(points) {
   }).addTo(brazilMap);
 
   try {
-    brazilMap.fitBounds(stateLayer.getBounds(), { padding: [12, 12] });
+    brazilMap.fitBounds(stateLayer.getBounds(), {
+      padding: [12, 12]
+    });
   } catch (error) {
     console.warn("Não foi possível ajustar o mapa estadual.", error);
   }
@@ -1111,7 +1305,7 @@ function renderStateMap(points) {
 }
 
 // ============================================================
-// 11. ATUALIZAÇÃO PRINCIPAL DOS DOIS MAPAS
+// 11. ATUALIZAÇÃO DOS MAPAS
 // ============================================================
 
 async function updateDashboard() {
@@ -1124,11 +1318,13 @@ async function updateDashboard() {
   button.textContent = "Consultando...";
 
   setStatus(
-    "Consultando o INPE e filtrando os focos detectados nos últimos 10 minutos."
+    "Consultando o INPE e filtrando os focos das últimas 24 horas."
   );
 
   try {
-    if (!stateGeoJSON) await loadStateGeoJSON();
+    if (!stateGeoJSON) {
+      await loadStateGeoJSON();
+    }
 
     const urls = await getRecentCsvFiles();
 
@@ -1146,7 +1342,7 @@ async function updateDashboard() {
 
     const points = normalizeHotspots(rows);
 
-    // Atualiza os dois mapas com exatamente os mesmos pontos.
+    // Os dois mapas usam a mesma lista de focos.
     renderHotspotMap(points);
     const stateResults = renderStateMap(points);
 
@@ -1172,32 +1368,31 @@ async function updateDashboard() {
 
     if (points.length === 0) {
       setStatus(
-        "Consulta concluída, mas nenhum foco do satélite de referência foi " +
-        "encontrado nos últimos 10 minutos. Isso pode indicar ausência de " +
-        "registros no período ou que o identificador do satélite nos CSVs " +
-        "é diferente do esperado.",
+        "Consulta concluída, mas nenhum foco do satélite de referência " +
+        "foi encontrado nas últimas 24 horas. Confira o identificador " +
+        "do satélite, os campos de data/hora e os CSVs recebidos.",
         "warning"
       );
     } else {
       setStatus(
-        `Atualização concluída: ${formatNumber(points.length)} focos detectados ` +
-        `nos últimos 10 minutos. Os dois mapas foram atualizados com a mesma lista.`,
+        `Atualização concluída: ${formatNumber(points.length)} focos ` +
+        `nas últimas 24 horas. Foram carregadas ${stateGeoJSON.features.length} ` +
+        `feições estaduais únicas.`,
         "success"
       );
     }
 
-    console.info("Arquivos consultados:", urls.length);
+    console.info("Arquivos CSV consultados:", urls.length);
     console.info("Linhas CSV lidas:", rows.length);
-    console.info("Focos nos últimos 10 minutos:", points.length);
+    console.info("Focos nas últimas 24 horas:", points.length);
 
   } catch (error) {
     console.error("Erro ao atualizar dashboard:", error);
 
     setStatus(
       "Não foi possível atualizar: " + error.message +
-      " Se houver erro de CORS ou rede, execute o HTML por um servidor. " +
-      "Se houver erro nos arquivos estaduais, confira os nomes, extensões " +
-      "e estrutura dos GeoJSON. A última atualização válida será preservada.",
+      " Confira os nomes dos quatro GeoJSON e execute a página por um servidor " +
+      "se houver bloqueio de rede ou CORS. A última atualização válida será preservada.",
       "error"
     );
 
@@ -1213,7 +1408,27 @@ async function updateDashboard() {
 }
 
 // ============================================================
-// 12. INICIALIZAÇÃO
+// 12. HISTÓRICO POR ESTADO
+// ============================================================
+
+const historicalState = document.getElementById("historicalState");
+const historicalFrame = document.getElementById("historicalFrame");
+const historicalLink = document.getElementById("historicalLink");
+
+function updateHistoricalState() {
+  const url =
+    "https://data.inpe.br/queimadas/estatisticas/?item=" +
+    encodeURIComponent(historicalState.value) +
+    "&tipo=estados";
+
+  historicalFrame.src = url;
+  historicalLink.href = url;
+}
+
+historicalState.addEventListener("change", updateHistoricalState);
+
+// ============================================================
+// 13. INICIALIZAÇÃO E ATUALIZAÇÃO AUTOMÁTICA
 // ============================================================
 
 document.getElementById("refreshButton")
@@ -1223,6 +1438,14 @@ updatePeriodLabel();
 updateDashboard();
 
 setInterval(updateDashboard, REFRESH_INTERVAL_MS);
+
+// Leaflet precisa recalcular o tamanho dos mapas após o carregamento.
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    southAmericaMap.invalidateSize();
+    brazilMap.invalidateSize();
+  }, 300);
+});
 </script>
 </body>
 </html>
