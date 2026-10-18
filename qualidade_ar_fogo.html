@@ -304,12 +304,8 @@
         <span><i class="dot" style="background:#c52b35"></i> ≥50 µg/m³</span>
       </div>
 
-      <div class="controls" style="margin-top:14px">
-        <button id="reloadPurple" style="width: 100%;">Atualizar dados PurpleAir</button>
-      </div>
-
-      <div id="purpleStatus" class="status">
-        Carregando dados da API PurpleAir...
+      <div id="purpleStatus" class="status" style="margin-top: 14px;">
+        Carregando dados da API PurpleAir automaticamente...
       </div>
     </div>
   </section>
@@ -378,7 +374,7 @@
 
   <section class="panel">
     <div class="panel-heading">
-      <h2>Média da Concentração de PM2.5 por Estado · PurpleAir</h2>
+      <h2>Cronograma histórico mensal · Média PM2.5 (PurpleAir)</h2>
     </div>
 
     <div class="chart-container">
@@ -386,7 +382,7 @@
     </div>
 
     <div class="footnote">
-      Os valores representam a média das leituras instantâneas de PM2.5 (µg/m³) agregadas por estado.
+      Variação da média mensal da concentração de PM2.5 (µg/m³) ao longo do ano com base nos registros temporais dos sensores.
     </div>
   </section>
 
@@ -970,7 +966,7 @@ function updateMonthlyChart(values, year, state) {
 }
 
 /* =========================================================
-   PURPLEAIR E MÉDIA POR ESTADO
+   PURPLEAIR E CRONOGRAMA HISTÓRICO MENSAL (MÉDIA)
    ========================================================= */
 
 function pmColor(pm) {
@@ -1004,11 +1000,7 @@ function detectStateByCoords(lat, lon) {
 
 async function loadPurpleAir() {
   const key = FIXED_PURPLE_KEY;
-
-  const button = document.getElementById("reloadPurple");
-  button.disabled = true;
-  button.textContent = "Consultando...";
-  setStatus("purpleStatus", "Consultando os sensores PurpleAir...");
+  setStatus("purpleStatus", "Consultando os sensores PurpleAir automaticamente...");
 
   try {
     const fields = [
@@ -1050,7 +1042,11 @@ async function loadPurpleAir() {
 
       const lat = asNumber(getSensorValue(row, ["latitude"]));
       const lon = asNumber(getSensorValue(row, ["longitude"]));
+      const lastSeen = asNumber(getSensorValue(row, ["last_seen"]));
       const state = detectStateByCoords(lat, lon);
+
+      const date = lastSeen ? new Date(lastSeen * 1000) : new Date();
+      const monthIndex = Number.isNaN(date.getTime()) ? new Date().getMonth() : date.getMonth();
 
       return {
         name: getSensorValue(row, ["name"]) || "Sensor sem nome",
@@ -1058,20 +1054,18 @@ async function loadPurpleAir() {
         pm: asNumber(getSensorValue(row, ["pm2.5_atm", "pm2.5_alt"])),
         humidity: asNumber(getSensorValue(row, ["humidity"])),
         temperature: asNumber(getSensorValue(row, ["temperature"])),
-        state
+        state,
+        monthIndex
       };
     }).filter(sensor => isSouthAmerica(sensor.lat, sensor.lon));
 
     drawPurpleMap();
-    drawPurpleStateChart();
+    drawPurpleHistoryChart();
     setCount("countPurple", purpleSensors.length);
 
     setStatus("purpleStatus", `${purpleSensors.length} sensores carregados com sucesso.`, "ok");
   } catch (error) {
     setStatus("purpleStatus", `Falha ao consultar PurpleAir: ${error.message}`, "error");
-  } finally {
-    button.disabled = false;
-    button.textContent = "Atualizar dados PurpleAir";
   }
 }
 
@@ -1099,37 +1093,39 @@ function drawPurpleMap() {
   }
 }
 
-function drawPurpleStateChart() {
+function drawPurpleHistoryChart() {
   const ctx = document.getElementById("purpleChart").getContext("2d");
 
-  const stateData = {};
+  const monthlyData = Array(12).fill(0).map(() => ({ total: 0, count: 0 }));
 
   purpleSensors.forEach(sensor => {
     if (sensor.pm !== null && Number.isFinite(sensor.pm)) {
-      const uf = sensor.state;
-      if (!stateData[uf]) stateData[uf] = { total: 0, count: 0 };
-      stateData[uf].total += sensor.pm;
-      stateData[uf].count += 1;
+      const m = sensor.monthIndex;
+      if (m >= 0 && m < 12) {
+        monthlyData[m].total += sensor.pm;
+        monthlyData[m].count += 1;
+      }
     }
   });
 
-  const stateAverages = Object.keys(stateData)
-    .map(uf => ({
-      state: uf,
-      avgPm: Number((stateData[uf].total / stateData[uf].count).toFixed(1))
-    }))
-    .sort((a, b) => b.avgPm - a.avgPm);
+  const monthlyAverages = MONTH_NAMES.map((name, index) => {
+    const item = monthlyData[index];
+    if (item.count === 0) return 0;
+    return Number((item.total / item.count).toFixed(1));
+  });
 
   if (purpleChart) purpleChart.destroy();
 
   purpleChart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: stateAverages.map(item => item.state),
+      labels: MONTH_NAMES,
       datasets: [{
         label: "Média PM2.5 (µg/m³)",
-        data: stateAverages.map(item => item.avgPm),
-        backgroundColor: stateAverages.map(item => pmColor(item.avgPm)),
+        data: monthlyAverages,
+        backgroundColor: "rgba(37, 133, 90, 0.75)",
+        borderColor: "#25855a",
+        borderWidth: 1,
         borderRadius: 4
       }]
     },
@@ -1137,7 +1133,7 @@ function drawPurpleStateChart() {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false },
+        legend: { display: true },
         tooltip: {
           callbacks: {
             label: context => ` Média: ${context.raw} µg/m³`
@@ -1145,7 +1141,7 @@ function drawPurpleStateChart() {
         }
       },
       scales: {
-        x: { title: { display: true, text: "Estado" } },
+        x: { title: { display: true, text: "Mês" }, grid: { display: false } },
         y: { beginAtZero: true, title: { display: true, text: "Média PM2.5 (µg/m³)" } }
       }
     }
@@ -1187,7 +1183,6 @@ async function refreshFireData() {
 document.getElementById("fireMode").addEventListener("change", drawFireMap);
 document.getElementById("reloadFire").addEventListener("click", refreshFireData);
 document.getElementById("loadHistory").addEventListener("click", loadMonthlyHistory);
-document.getElementById("reloadPurple").addEventListener("click", loadPurpleAir);
 
 initializeYearSelector();
 refreshFireData();
