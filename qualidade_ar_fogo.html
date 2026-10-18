@@ -3,161 +3,928 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Monitoramento ambiental | INPE e PurpleAir</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoramento Global de Fogo e Qualidade do Ar</title>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#172536;font-family:Arial,sans-serif}
-header{background:#13263e;color:white;padding:20px}main{max-width:1800px;margin:auto;padding:16px}
-.metrics,.maps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
-.metric,.panel,.status{background:white;border:1px solid #dbe3ed;border-radius:9px;overflow:hidden}
-.metric{padding:14px}.metric-label{font-size:12px;color:#64748b}.metric-value{font-size:23px;font-weight:bold;margin-top:8px;overflow-wrap:anywhere}
-.panel h2{font-size:17px;margin:0 0 6px}.panel-head{padding:14px}.panel p,.note{font-size:12px;line-height:1.5;color:#64748b}
-.map{height:440px;background:#dce8ef}.status{padding:12px;font-size:12px;line-height:1.7;overflow-wrap:anywhere;margin-top:12px}
-.error{color:#b91c1c;white-space:pre-wrap}button{background:#2563eb;color:white;border:0;border-radius:6px;padding:11px 16px;cursor:pointer}button:disabled{opacity:.6}
-@media(max-width:800px){.maps,.metrics{grid-template-columns:1fr}.map{height:380px}}
+:root {
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --ink: #172536;
+  --muted: #64748b;
+  --border: #dbe3ed;
+  --blue: #1d4ed8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+}
+header {
+  background: #13263e;
+  color: white;
+  padding: 22px;
+}
+header h1 { margin: 0 0 8px; font-size: 25px; }
+header p { margin: 5px 0; line-height: 1.5; }
+main { max-width: 1800px; margin: auto; padding: 16px; }
+h2 { font-size: 19px; margin: 20px 0 12px; }
+.metrics, .maps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+}
+.metric, .panel, .status {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.metric { padding: 15px; }
+.metric-label { color: var(--muted); font-size: 12px; }
+.metric-value {
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+.panel-head { padding: 14px 16px; }
+.panel-head h3 { margin: 0; font-size: 16px; }
+.panel-head p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 7px 0 0;
+}
+.map { width: 100%; height: 430px; background: #dce8ef; }
+.status { padding: 13px 15px; margin: 12px 0; font-size: 13px; line-height: 1.6; }
+.error { color: #b91c1c; white-space: pre-wrap; overflow-wrap: anywhere; }
+.success { color: #166534; }
+.warning { color: #92400e; }
+.controls {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+}
+.field { flex: 1 1 260px; }
+label { display: block; font-size: 12px; margin-bottom: 6px; }
+input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 11px;
+  font-size: 14px;
+}
+button {
+  background: var(--blue);
+  color: white;
+  border: 0;
+  border-radius: 6px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 13px;
+}
+button:disabled { opacity: .55; cursor: wait; }
+.note { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 10px 0;
+}
+.dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+@media(max-width: 800px) {
+  .maps, .metrics { grid-template-columns: 1fr; }
+  .map { height: 350px; }
+  header h1 { font-size: 21px; }
+}
 </style>
 </head>
+
 <body>
 <header>
-<h1>Monitoramento ambiental da América do Sul</h1>
-<p>INPE · Focos de calor Aqua · PurpleAir · PM₂.₅</p>
-<p>Mapas com enquadramento inicial global. Use o zoom para explorar as regiões.</p>
+  <h1>Monitoramento Global de Fogo e Qualidade do Ar</h1>
+  <p>BDQueimadas / INPE · Focos ativos · PurpleAir · PM₂.₅</p>
+  <p>Mapa-múndi com focos das últimas 24 horas e superfícies espaciais de visualização.</p>
 </header>
+
 <main>
-<button id="refresh">Atualizar dados</button>
-<h2>Focos de calor · INPE</h2>
-<section class="metrics">
-<div class="metric"><div class="metric-label">Focos nas últimas 24 h</div><div class="metric-value" id="n24">—</div></div>
-<div class="metric"><div class="metric-label">Focos nos últimos 60 min</div><div class="metric-value" id="n60">—</div></div>
-<div class="metric"><div class="metric-label">Focos nos últimos 10 min</div><div class="metric-value" id="n10">—</div></div>
-<div class="metric"><div class="metric-label">Detecção mais recente</div><div class="metric-value" id="latest">—</div></div>
-</section>
-<section class="maps">
-<article class="panel"><div class="panel-head"><h2>01 · Focos individuais Aqua</h2><p>Detecções das últimas 24 horas.</p></div><div id="mapFocos" class="map"></div></article>
-<article class="panel"><div class="panel-head"><h2>02 · Densidade dos focos</h2><p>Superfície suavizada dos focos dos últimos 60 minutos.</p></div><div id="mapDensidade" class="map"></div></article>
-</section>
-<div class="status"><b>INPE:</b> <span id="status">Inicializando...</span><div id="fileInfo"></div><div id="error" class="error"></div></div>
-<h2>Qualidade do ar · PurpleAir</h2>
-<section class="metrics">
-<div class="metric"><div class="metric-label">Sensores retornados</div><div class="metric-value" id="paTotal">—</div></div>
-<div class="metric"><div class="metric-label">Sensores válidos e recentes</div><div class="metric-value" id="paValid">—</div></div>
-<div class="metric"><div class="metric-label">PM₂.₅ médio (µg/m³)</div><div class="metric-value" id="paMean">—</div></div>
-<div class="metric"><div class="metric-label">PM₂.₅ máximo (µg/m³)</div><div class="metric-value" id="paMax">—</div></div>
-</section>
-<section class="maps">
-<article class="panel"><div class="panel-head"><h2>03 · Sensores PurpleAir</h2><p>Cor dos pontos conforme a concentração de PM₂.₅.</p></div><div id="mapPA" class="map"></div></article>
-<article class="panel"><div class="panel-head"><h2>04 · Superfície espacial de PM₂.₅</h2><p>Visualização suavizada, não representa medições em locais sem sensores.</p></div><div id="mapPAHeat" class="map"></div></article>
-</section>
-<div class="status"><b>PurpleAir:</b> <span id="paStatus">Aguardando consulta...</span><div id="paUpdated"></div><div id="paError" class="error"></div></div>
-<p class="note">Fontes: INPE e PurpleAir. A consulta PurpleAir está limitada à América do Sul; o mapa-múndi é o enquadramento visual. As superfícies de calor são representações visuais, não medições contínuas.</p>
+  <section class="controls">
+    <div class="field">
+      <label for="purpleKey">Chave da API PurpleAir</label>
+      <input id="purpleKey" type="password" autocomplete="off"
+             placeholder="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129">
+    </div>
+    <button id="btnFire">Atualizar focos INPE</button>
+    <button id="btnAir">Consultar PurpleAir</button>
+    <button id="btnAll">Atualizar tudo</button>
+  </section>
+
+  <h2>Focos de fogo · INPE / BDQueimadas</h2>
+  <section class="metrics">
+    <div class="metric">
+      <div class="metric-label">Focos nas últimas 24 horas</div>
+      <div class="metric-value" id="fire24">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Focos na última hora</div>
+      <div class="metric-value" id="fire60">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Detecção mais recente (GMT)</div>
+      <div class="metric-value" id="fireLatest">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Arquivos INPE processados</div>
+      <div class="metric-value" id="fireFiles">—</div>
+    </div>
+  </section>
+
+  <section class="maps">
+    <article class="panel">
+      <div class="panel-head">
+        <h3>01 · Mapa-múndi: focos das últimas 24 horas</h3>
+        <p>Os pontos representam detecções individuais disponíveis nos CSVs do INPE.</p>
+      </div>
+      <div id="mapFire" class="map"></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <h3>02 · Densidade espacial dos focos da última hora</h3>
+        <p>Mapa de calor suavizado. A intensidade visual não equivale à área queimada.</p>
+      </div>
+      <div id="mapFireHeat" class="map"></div>
+    </article>
+  </section>
+
+  <div class="legend">
+    <span><i class="dot" style="background:#dc2626"></i>Até 10 min</span>
+    <span><i class="dot" style="background:#f97316"></i>10–60 min</span>
+    <span><i class="dot" style="background:#eab308"></i>1–3 h</span>
+    <span><i class="dot" style="background:#2563eb"></i>3–24 h</span>
+  </div>
+
+  <div class="status">
+    <b>Status INPE:</b> <span id="fireStatus">Aguardando consulta.</span>
+    <div id="fireError" class="error"></div>
+  </div>
+
+  <h2>Qualidade do ar · PurpleAir</h2>
+  <section class="metrics">
+    <div class="metric">
+      <div class="metric-label">Sensores retornados</div>
+      <div class="metric-value" id="paTotal">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Sensores com leitura recente</div>
+      <div class="metric-value" id="paRecent">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">PM₂.₅ médio (µg/m³)</div>
+      <div class="metric-value" id="paMean">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">PM₂.₅ máximo (µg/m³)</div>
+      <div class="metric-value" id="paMax">—</div>
+    </div>
+  </section>
+
+  <section class="maps">
+    <article class="panel">
+      <div class="panel-head">
+        <h3>03 · Sensores PurpleAir</h3>
+        <p>Posição dos sensores com leituras válidas de PM₂.₅.</p>
+      </div>
+      <div id="mapPA" class="map"></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <h3>04 · Superfície interpolada de PM₂.₅</h3>
+        <p>Estimativa IDW a partir dos sensores disponíveis na região selecionada.</p>
+      </div>
+      <div id="mapPAHeat" class="map"></div>
+    </article>
+  </section>
+
+  <div class="status">
+    <b>Status PurpleAir:</b> <span id="paStatus">Aguardando consulta.</span>
+    <div id="paError" class="error"></div>
+    <div id="paUpdated"></div>
+  </div>
+
+  <p class="note">
+    Fonte de focos: arquivos CSV do Programa Queimadas do INPE.
+    Fonte de qualidade do ar: API PurpleAir.
+    Os dados PurpleAir deste código estão limitados à América do Sul.
+    A interpolação IDW estima valores entre sensores e não representa medições reais
+    em locais sem sensores. Os dados dependem da disponibilidade e da atualização
+    das fontes externas.
+  </p>
 </main>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
 <script>
 "use strict";
-const $=id=>document.getElementById(id);
-const BASE="https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/";
-const KEY="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
-const PAURL="https://api.purpleair.com/v1/sensors";
-const WORLD=[15,0], WORLD_ZOOM=2;
-const bounds={nwlat:13,nwlng:-82,selat:-57,selng:-32};
-const M10=600000,M60=3600000,M24=86400000;
-let focos=[],sensors=[],inpeBusy=false,paBusy=false,allBusy=false;
-function makeMap(id){
- const m=L.map(id,{center:WORLD,zoom:WORLD_ZOOM,minZoom:1,maxZoom:12,worldCopyJump:false});
- L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{subdomains:"abcd",noWrap:true,attribution:"© OpenStreetMap © CARTO"}).addTo(m);
- return m;
+
+/* =========================================================
+   CONFIGURAÇÕES
+========================================================= */
+
+const INPE_10MIN =
+  "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/";
+
+const PURPLEAIR_API =
+  "https://api.purpleair.com/v1/sensors";
+
+/* Limites geográficos para a consulta PurpleAir.
+   O mapa de fundo continua mostrando o mundo inteiro. */
+const PA_BOUNDS = {
+  nwlat: 13,
+  nwlng: -82,
+  selat: -57,
+  selng: -32
+};
+
+const WORLD_CENTER = [15, 0];
+const WORLD_ZOOM = 2;
+const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
+
+let fireData = [];
+let paData = [];
+let fireBusy = false;
+let paBusy = false;
+
+/* =========================================================
+   FUNÇÕES AUXILIARES
+========================================================= */
+
+const $ = id => document.getElementById(id);
+
+function fmtNumber(n, decimals = 0) {
+  return Number(n).toLocaleString("pt-BR", {
+    maximumFractionDigits: decimals
+  });
 }
-const maps={f:makeMap("mapFocos"),d:makeMap("mapDensidade"),p:makeMap("mapPA"),h:makeMap("mapPAHeat")};
-const markers=L.layerGroup().addTo(maps.f),paMarkers=L.layerGroup().addTo(maps.p);
-const heat=L.heatLayer([],{radius:27,blur:24,minOpacity:.2}).addTo(maps.d);
-const paHeat=L.heatLayer([],{radius:30,blur:25,minOpacity:.18,max:50}).addTo(maps.h);
-const fmt=t=>new Date(t).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
-function date(v){
- if(!v)return null;let s=String(v).trim();
- let m=s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
- if(m)return Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0));
- let t=Date.parse(s);return Number.isFinite(t)?t:null;
+
+function fmtDate(ms) {
+  return new Date(ms).toLocaleString("pt-BR", {
+    timeZone: "UTC",
+    timeZoneName: "short"
+  });
 }
-function number(v){if(v==null||v==="")return null;let n=Number(String(v).replace(",","."));return Number.isFinite(n)?n:null}
-function color(age){return age<=M10?"#dc2626":age<=M60?"#f97316":age<=10800000?"#eab308":age<=21600000?"#16a34a":"#2563eb"}
-async function updateINPE(){
- if(inpeBusy)return;inpeBusy=true;$("error").textContent="";
- try{
-  let r=await fetch(BASE,{cache:"no-store"});if(!r.ok)throw Error("INPE HTTP "+r.status);
-  let html=await r.text(),names=[...new Set(html.match(/focos_10min_\d{8}_\d{4}\.csv/gi)||[])];
-  names.sort().reverse();names=names.slice(0,180);
-  if(!names.length)throw Error("Não foi possível identificar os CSVs na listagem do INPE.");
-  $("fileInfo").textContent="Arquivos selecionados: "+names.length;
-  let all=[];
-  for(let i=0;i<names.length;i+=8){
-   let batch=await Promise.all(names.slice(i,i+8).map(async name=>{
-    try{
-     let res=await fetch(BASE+encodeURIComponent(name),{cache:"no-store"});if(!res.ok)return [];
-     let text=await res.text(),parsed=Papa.parse(text,{header:true,skipEmptyLines:true});
-     return parsed.data.map(row=>{
-      let get=(...keys)=>{let k=Object.keys(row).find(a=>keys.includes(a.trim().toLowerCase()));return k?row[k]:null};
-      let lat=number(get("latitude","lat")),lon=number(get("longitude","lon","long"));
-      let sat=String(get("satelite","satellite")||"").toLowerCase();
-      if(lat==null||lon==null||lat< -90||lat>90||lon< -180||lon>180||!sat.includes("aqua"))return null;
-      let t=date(get("data_hora_gmt","datahora_gmt","data_hora","datetime"));
-      if(t==null){let match=name.match(/focos_10min_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})\.csv/i);if(match)t=Date.UTC(+match[1],+match[2]-1,+match[3],+match[4],+match[5]);}
-      return t==null?null:{lat,lon,t,sat};
-     }).filter(Boolean);
-    }catch(e){return []}
-   }));
-   batch.forEach(x=>all.push(...x));$("status").textContent=`Lendo arquivos ${Math.min(i+8,names.length)}/${names.length}`;
+
+function num(v) {
+  if (v === null || v === undefined || String(v).trim() === "") {
+    return null;
   }
-  let unique=new Map();all.forEach(f=>unique.set([f.lat.toFixed(5),f.lon.toFixed(5),f.t,f.sat].join("|"),f));
-  let now=Date.now();focos=[...unique.values()].filter(f=>now-f.t>=-300000&&now-f.t<=M24);
-  renderINPE();
- }catch(e){$("status").textContent="Falha na consulta INPE";$("error").textContent=e.message;console.error(e)}
- finally{inpeBusy=false}
+  const n = Number(String(v).trim().replace(",", "."));
+  return Number.isFinite(n) ? n : null;
 }
-function renderINPE(){
- let now=Date.now(),recent=focos.filter(f=>now-f.t>=0&&now-f.t<=M24),last60=recent.filter(f=>now-f.t<=M60),last10=recent.filter(f=>now-f.t<=M10);
- $("n24").textContent=recent.length.toLocaleString("pt-BR");$("n60").textContent=last60.length.toLocaleString("pt-BR");$("n10").textContent=last10.length.toLocaleString("pt-BR");
- $("latest").textContent=recent.length?fmt(Math.max(...recent.map(f=>f.t))):"Sem dados";
- markers.clearLayers();recent.forEach(f=>L.circleMarker([f.lat,f.lon],{radius:4,color:color(now-f.t),fillOpacity:.8}).bindPopup(`${f.sat}<br>${fmt(f.t)}<br>${f.lat}, ${f.lon}`).addTo(markers));
- heat.setLatLngs(last60.map(f=>[f.lat,f.lon,1]));$("status").textContent=`${recent.length} focos nas últimas 24 h; ${last60.length} nos últimos 60 min.`;
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[c]);
 }
-function paColor(v){return v<5?"#2166ac":v<10?"#67a9cf":v<15?"#ffffbf":v<25?"#fdae61":v<50?"#d7191c":"#7f0000"}
-async function updatePA(){
- if(paBusy)return;paBusy=true;$("paError").textContent="";
- try{
-  if(!KEY||KEY==="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129")throw Error("Configure a chave PurpleAir na constante KEY.");
-  let fields=["name","latitude","longitude","pm2.5_atm","pm2.5_10minute","pm2.5","last_seen","temperature","humidity"];
-  let q=new URLSearchParams({fields:fields.join(","),location_type:"0",nwlat:bounds.nwlat,nwlng:bounds.nwlng,selat:bounds.selat,selng:bounds.selng});
-  let r=await fetch(PAURL+"?"+q,{headers:{"X-API-Key":KEY},cache:"no-store"});
-  if(!r.ok)throw Error("PurpleAir HTTP "+r.status+" "+(await r.text()).slice(0,180));
-  let j=await r.json(),idx=Object.fromEntries(j.fields.map((f,i)=>[f,i])),now=Date.now()/1000;
-  sensors=j.data.map(row=>{
-   let get=k=>row[idx[k]],lat=number(get("latitude")),lon=number(get("longitude")),seen=number(get("last_seen"));
-   return {name:get("name")||"Sensor",lat,lon,pm:number(get("pm2.5_atm"))??number(get("pm2.5_10minute"))??number(get("pm2.5")),seen,temp:number(get("temperature")),hum:number(get("humidity")),recent:seen!=null&&now-seen>=0&&now-seen<=1800};
-  }).filter(s=>s.lat!=null&&s.lon!=null&&s.lat>=bounds.selat&&s.lat<=bounds.nwlat&&s.lon>=bounds.nwlng&&s.lon<=bounds.selng);
-  renderPA();
- }catch(e){$("paStatus").textContent="Falha na consulta PurpleAir";$("paError").textContent=e.message+" Se houver erro de CORS, use um backend.";console.error(e)}
- finally{paBusy=false}
+
+/* DataHora do INPE é expressa em GMT/UTC. */
+function parseINPEDate(value) {
+  if (!value) return null;
+
+  const s = String(value).trim();
+  const m = s.match(
+    /^(\d{4})[/-](\d{2})[/-](\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/
+  );
+
+  if (m) {
+    return Date.UTC(
+      Number(m[1]), Number(m[2]) - 1, Number(m[3]),
+      Number(m[4]), Number(m[5]), Number(m[6] || 0)
+    );
+  }
+
+  const parsed = Date.parse(s);
+  return Number.isFinite(parsed) ? parsed : null;
 }
-function renderPA(){
- let valid=sensors.filter(s=>s.pm!=null&&s.pm>=0&&s.recent),values=valid.map(s=>s.pm);
- $("paTotal").textContent=sensors.length.toLocaleString("pt-BR");$("paValid").textContent=valid.length.toLocaleString("pt-BR");
- $("paMean").textContent=values.length?(values.reduce((a,b)=>a+b,0)/values.length).toLocaleString("pt-BR",{maximumFractionDigits:1}):"—";
- $("paMax").textContent=values.length?Math.max(...values).toLocaleString("pt-BR",{maximumFractionDigits:1}):"—";
- paMarkers.clearLayers();valid.forEach(s=>L.circleMarker([s.lat,s.lon],{radius:5,color:paColor(s.pm),fillColor:paColor(s.pm),fillOpacity:.85}).bindPopup(`<b>${String(s.name).replace(/[<>&"]/g,"")}</b><br>PM₂.₅: ${s.pm} µg/m³<br>${s.lat}, ${s.lon}`).addTo(paMarkers));
- paHeat.setLatLngs(valid.map(s=>[s.lat,s.lon,Math.min(s.pm,50)]));
- $("paStatus").textContent=`${sensors.length} sensores retornados; ${valid.length} com leituras válidas e recentes.`;$("paUpdated").textContent="Atualizado: "+new Date().toLocaleString("pt-BR");
+
+function colorByAge(age) {
+  if (age <= 10 * 60 * 1000) return "#dc2626";
+  if (age <= HOUR) return "#f97316";
+  if (age <= 3 * HOUR) return "#eab308";
+  return "#2563eb";
 }
-async function updateAll(){
- if(allBusy)return;allBusy=true;$("refresh").disabled=true;
- try{await Promise.all([updateINPE(),updatePA()])}
- finally{$("refresh").disabled=false;allBusy=false;Object.values(maps).forEach(m=>m.invalidateSize())}
+
+function colorByPM(v) {
+  if (v < 5) return "#2166ac";
+  if (v < 10) return "#67a9cf";
+  if (v < 15) return "#ffffbf";
+  if (v < 25) return "#fdae61";
+  if (v < 50) return "#d7191c";
+  return "#7f0000";
 }
-$("refresh").addEventListener("click",updateAll);
-updateAll();setInterval(updateAll,10*60*1000);
-setInterval(()=>{renderINPE();renderPA()},60*1000);
+
+function setError(id, message) {
+  $(id).textContent = message || "";
+}
+
+/* =========================================================
+   CRIAÇÃO DOS MAPAS
+========================================================= */
+
+function makeMap(id) {
+  const map = L.map(id, {
+    center: WORLD_CENTER,
+    zoom: WORLD_ZOOM,
+    minZoom: 1,
+    maxZoom: 12,
+    worldCopyJump: false
+  });
+
+  const carto = L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    {
+      subdomains: "abcd",
+      noWrap: true,
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap &copy; CARTO"
+    }
+  );
+
+  const osm = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      noWrap: true,
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }
+  );
+
+  let fallbackUsed = false;
+
+  carto.on("tileerror", () => {
+    if (fallbackUsed) return;
+    fallbackUsed = true;
+    if (map.hasLayer(carto)) map.removeLayer(carto);
+    if (!map.hasLayer(osm)) osm.addTo(map);
+  });
+
+  carto.addTo(map);
+
+  setTimeout(() => map.invalidateSize(), 250);
+  window.addEventListener("resize", () => map.invalidateSize());
+
+  return map;
+}
+
+const maps = {
+  fire: makeMap("mapFire"),
+  fireHeat: makeMap("mapFireHeat"),
+  pa: makeMap("mapPA"),
+  paHeat: makeMap("mapPAHeat")
+};
+
+const fireLayer = L.layerGroup().addTo(maps.fire);
+const paLayer = L.layerGroup().addTo(maps.pa);
+
+const fireHeatLayer = L.heatLayer([], {
+  radius: 22,
+  blur: 20,
+  maxZoom: 7,
+  minOpacity: 0.22
+}).addTo(maps.fireHeat);
+
+const paHeatLayer = L.heatLayer([], {
+  radius: 24,
+  blur: 22,
+  max: 50,
+  maxZoom: 8,
+  minOpacity: 0.2
+}).addTo(maps.paHeat);
+
+/* =========================================================
+   INPE: DESCOBRIR E LER OS CSVs DOS ÚLTIMOS 26 HORAS
+========================================================= */
+
+function filenameTimestamp(name) {
+  const m = name.match(
+    /focos_10min_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})\.csv$/i
+  );
+  if (!m) return null;
+
+  return Date.UTC(
+    Number(m[1]), Number(m[2]) - 1, Number(m[3]),
+    Number(m[4]), Number(m[5])
+  );
+}
+
+function getRowValue(row, ...names) {
+  const keys = Object.keys(row);
+  for (const name of names) {
+    const found = keys.find(k => k.trim().toLowerCase() === name.toLowerCase());
+    if (found !== undefined) return row[found];
+  }
+  return null;
+}
+
+function parseFireCSV(text, filename) {
+  if (!text || text.trim().length < 25) return [];
+
+  const parsed = Papa.parse(text, {
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: h => h.replace(/^\uFEFF/, "").trim()
+  });
+
+  const fallbackTime = filenameTimestamp(filename);
+
+  return parsed.data.map(row => {
+    const lat = num(getRowValue(row, "Latitude", "lat"));
+    const lon = num(getRowValue(row, "Longitude", "lon", "long"));
+
+    if (
+      lat === null || lon === null ||
+      lat < -90 || lat > 90 ||
+      lon < -180 || lon > 180
+    ) return null;
+
+    const dateValue = getRowValue(
+      row, "DataHora", "view_date", "data_hora_gmt", "datahora"
+    );
+
+    const t = parseINPEDate(dateValue) ?? fallbackTime;
+    if (t === null) return null;
+
+    return {
+      lat,
+      lon,
+      t,
+      sat: getRowValue(row, "Satelite", "satellite") || "Satélite não informado",
+      country: getRowValue(row, "Pais", "country") || "",
+      state: getRowValue(row, "Estado", "state") || "",
+      biome: getRowValue(row, "Bioma", "biome") || "",
+      frp: num(getRowValue(row, "FRP", "frp"))
+    };
+  }).filter(Boolean);
+}
+
+async function fetchText(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} ao acessar ${url}`);
+  }
+  return response.text();
+}
+
+async function updateFire() {
+  if (fireBusy) return;
+  fireBusy = true;
+  $("btnFire").disabled = true;
+  $("btnAll").disabled = true;
+  setError("fireError", "");
+  $("fireStatus").textContent = "Consultando listagem de arquivos do INPE...";
+
+  try {
+    const listing = await fetchText(INPE_10MIN);
+    const doc = new DOMParser().parseFromString(listing, "text/html");
+
+    const names = [...new Set(
+      [...doc.querySelectorAll("a[href]")]
+        .map(a => decodeURIComponent(a.getAttribute("href") || ""))
+        .filter(h => /^focos_10min_\d{8}_\d{4}\.csv$/i.test(h))
+    )];
+
+    const now = Date.now();
+
+    /* Uma margem de 26 horas permite lidar com diferenças
+       entre os horários do nome dos arquivos e as detecções. */
+    const selected = names
+      .map(name => ({ name, t: filenameTimestamp(name) }))
+      .filter(x => x.t !== null && x.t >= now - 26 * HOUR && x.t <= now + 10 * 60 * 1000)
+      .sort((a, b) => a.t - b.t);
+
+    if (!selected.length) {
+      throw new Error(
+        "Nenhum CSV recente foi encontrado na listagem do INPE. " +
+        "Verifique se a fonte está atualizada ou se o navegador bloqueou a requisição."
+      );
+    }
+
+    $("fireStatus").textContent =
+      `Arquivos encontrados: ${selected.length}. Lendo os CSVs...`;
+
+    let collected = [];
+
+    /* Limitar concorrência para não abrir centenas de conexões de uma vez. */
+    const batchSize = 8;
+
+    for (let i = 0; i < selected.length; i += batchSize) {
+      const batch = selected.slice(i, i + batchSize);
+
+      const results = await Promise.all(batch.map(async item => {
+        try {
+          const text = await fetchText(
+            INPE_10MIN + encodeURIComponent(item.name)
+          );
+          return parseFireCSV(text, item.name);
+        } catch (err) {
+          console.warn("Falha no arquivo INPE:", item.name, err);
+          return [];
+        }
+      }));
+
+      results.forEach(rows => collected.push(...rows));
+
+      $("fireStatus").textContent =
+        `Lendo arquivos: ${Math.min(i + batchSize, selected.length)}/${selected.length}`;
+    }
+
+    /* Remover detecções duplicadas. */
+    const unique = new Map();
+
+    for (const f of collected) {
+      const key = [
+        f.lat.toFixed(4), f.lon.toFixed(4), f.t, f.sat
+      ].join("|");
+      unique.set(key, f);
+    }
+
+    const lower = Date.now() - DAY;
+    const upper = Date.now() + 5 * 60 * 1000;
+
+    fireData = [...unique.values()]
+      .filter(f => f.t >= lower && f.t <= upper);
+
+    renderFire();
+
+    $("fireFiles").textContent = fmtNumber(selected.length);
+    $("fireStatus").textContent =
+      `Consulta concluída. ${fmtNumber(fireData.length)} detecções nas últimas 24 horas.`;
+
+    if (!fireData.length) {
+      $("fireStatus").textContent =
+        "Os arquivos foram consultados, mas não há registros dentro da janela de 24 horas.";
+    }
+
+  } catch (err) {
+    console.error(err);
+    $("fireStatus").textContent = "Falha ao consultar os arquivos do INPE.";
+    setError(
+      "fireError",
+      err.message +
+      "\nSe houver erro de CORS, o GitHub Pages não consegue contorná-lo sozinho."
+    );
+  } finally {
+    fireBusy = false;
+    $("btnFire").disabled = false;
+    $("btnAll").disabled = false;
+  }
+}
+
+/* =========================================================
+   PLOTAR FOCOS E DENSIDADE DA ÚLTIMA HORA
+========================================================= */
+
+function renderFire() {
+  const now = Date.now();
+
+  const last24 = fireData.filter(f => now - f.t <= DAY && now >= f.t - 5 * 60 * 1000);
+  const last60 = last24.filter(f => now - f.t <= HOUR);
+
+  $("fire24").textContent = fmtNumber(last24.length);
+  $("fire60").textContent = fmtNumber(last60.length);
+
+  if (last24.length) {
+    $("fireLatest").textContent = fmtDate(
+      Math.max(...last24.map(f => f.t))
+    );
+  } else {
+    $("fireLatest").textContent = "Sem registros";
+  }
+
+  fireLayer.clearLayers();
+
+  last24.forEach(f => {
+    const age = Math.max(0, now - f.t);
+    const marker = L.circleMarker([f.lat, f.lon], {
+      radius: 4,
+      color: colorByAge(age),
+      weight: 1,
+      fillColor: colorByAge(age),
+      fillOpacity: 0.8
+    });
+
+    marker.bindPopup(
+      `<b>Foco de fogo</b><br>` +
+      `Data/hora (GMT): ${escapeHTML(fmtDate(f.t))}<br>` +
+      `Satélite: ${escapeHTML(f.sat)}<br>` +
+      `País: ${escapeHTML(f.country)}<br>` +
+      `Estado: ${escapeHTML(f.state)}<br>` +
+      `Bioma: ${escapeHTML(f.biome)}<br>` +
+      `FRP: ${f.frp === null ? "Não informado" : escapeHTML(f.frp + " MW")}<br>` +
+      `Latitude: ${f.lat}<br>Longitude: ${f.lon}`
+    );
+
+    marker.addTo(fireLayer);
+  });
+
+  /* Kernel de densidade visual para os focos da última hora. */
+  fireHeatLayer.setLatLngs(
+    last60.map(f => [f.lat, f.lon, 1])
+  );
+
+  Object.values(maps).forEach(m => m.invalidateSize());
+}
+
+/* =========================================================
+   PURPLEAIR: CONSULTA DE SENSORES
+========================================================= */
+
+async function updatePA() {
+  if (paBusy) return;
+
+  const key = $("purpleKey").value.trim();
+
+  if (!key) {
+    $("paStatus").textContent = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
+    setError("paError", "");
+    return;
+  }
+
+  paBusy = true;
+  $("btnAir").disabled = true;
+  $("btnAll").disabled = true;
+  setError("paError", "");
+  $("paStatus").textContent = "Consultando sensores PurpleAir...";
+
+  try {
+    const fields = [
+      "name", "latitude", "longitude",
+      "pm2.5_atm", "pm2.5_10minute", "last_seen",
+      "temperature", "humidity"
+    ];
+
+    const url = new URL(PURPLEAIR_API);
+    url.searchParams.set("fields", fields.join(","));
+    url.searchParams.set("nwlat", String(PA_BOUNDS.nwlat));
+    url.searchParams.set("nwlng", String(PA_BOUNDS.nwlng));
+    url.searchParams.set("selat", String(PA_BOUNDS.selat));
+    url.searchParams.set("selng", String(PA_BOUNDS.selng));
+
+    const response = await fetch(url, {
+      headers: { "X-API-Key": key },
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(
+          `A PurpleAir recusou a autorização (HTTP ${response.status}). ` +
+          "Verifique a chave, as permissões e os limites de uso da API."
+        );
+      }
+      throw new Error(`PurpleAir respondeu HTTP ${response.status}.`);
+    }
+
+    const json = await response.json();
+
+    if (!Array.isArray(json.fields) || !Array.isArray(json.data)) {
+      throw new Error("A resposta da PurpleAir não contém os campos esperados.");
+    }
+
+    const index = Object.fromEntries(
+      json.fields.map((field, i) => [field, i])
+    );
+
+    const nowSeconds = Date.now() / 1000;
+
+    paData = json.data.map(row => {
+      const get = field => index[field] === undefined ? null : row[index[field]];
+
+      const lat = num(get("latitude"));
+      const lon = num(get("longitude"));
+      const seen = num(get("last_seen"));
+
+      const pm =
+        num(get("pm2.5_atm")) ??
+        num(get("pm2.5_10minute"));
+
+      return {
+        name: get("name") || "Sensor PurpleAir",
+        lat,
+        lon,
+        pm,
+        seen,
+        temp: num(get("temperature")),
+        humidity: num(get("humidity")),
+        recent: seen !== null && nowSeconds - seen >= 0 &&
+                nowSeconds - seen <= 1800
+      };
+    }).filter(s =>
+      s.lat !== null && s.lon !== null &&
+      s.lat >= PA_BOUNDS.selat && s.lat <= PA_BOUNDS.nwlat &&
+      s.lon >= PA_BOUNDS.nwlng && s.lon <= PA_BOUNDS.selng
+    );
+
+    renderPA();
+
+    $("paStatus").textContent =
+      `Consulta concluída: ${fmtNumber(paData.length)} sensores retornados.`;
+    $("paUpdated").textContent =
+      "Atualização local: " + new Date().toLocaleString("pt-BR");
+
+  } catch (err) {
+    console.error(err);
+    $("paStatus").textContent = "Não foi possível consultar a PurpleAir.";
+
+    const msg = err instanceof TypeError
+      ? "Falha de rede ou possível bloqueio CORS. Confira o Console e a aba Network do navegador."
+      : err.message;
+
+    setError("paError", msg);
+  } finally {
+    paBusy = false;
+    $("btnAir").disabled = false;
+    $("btnAll").disabled = false;
+  }
+}
+
+/* =========================================================
+   INTERPOLAÇÃO IDW DA PURPLEAIR
+========================================================= */
+
+function interpolateIDW(sensors) {
+  const valid = sensors.filter(s =>
+    s.recent && s.pm !== null && s.pm >= 0 && s.pm <= 1000
+  );
+
+  if (valid.length < 3) return [];
+
+  /* Limite para manter o cálculo viável no navegador. */
+  const points = valid.length > 1200
+    ? valid.filter((_, i) => i % Math.ceil(valid.length / 1200) === 0)
+    : valid;
+
+  const result = [];
+  const step = 0.75;
+  const maxDistance = 2.5; // distância angular aproximada, ~275 km
+  const maxPoints = 8;
+
+  for (let lat = PA_BOUNDS.selat; lat <= PA_BOUNDS.nwlat; lat += step) {
+    for (let lon = PA_BOUNDS.nwlng; lon <= PA_BOUNDS.selng; lon += step) {
+      const nearby = [];
+
+      for (const s of points) {
+        const dx = (lon - s.lon) * Math.cos(lat * Math.PI / 180);
+        const dy = lat - s.lat;
+        const d2 = dx * dx + dy * dy;
+
+        if (d2 <= maxDistance * maxDistance) {
+          nearby.push({ d2, pm: s.pm });
+        }
+      }
+
+      if (!nearby.length) continue;
+
+      nearby.sort((a, b) => a.d2 - b.d2);
+      const chosen = nearby.slice(0, maxPoints);
+
+      /* Se houver sensor praticamente no centro do pixel, usar sua leitura. */
+      if (chosen[0].d2 < 0.000001) {
+        result.push([lat, lon, Math.min(chosen[0].pm, 50)]);
+        continue;
+      }
+
+      let weighted = 0;
+      let weights = 0;
+
+      for (const p of chosen) {
+        const w = 1 / p.d2;
+        weighted += p.pm * w;
+        weights += w;
+      }
+
+      const estimate = weighted / weights;
+
+      if (Number.isFinite(estimate)) {
+        result.push([lat, lon, Math.min(Math.max(estimate, 0), 50)]);
+      }
+    }
+  }
+
+  return result;
+}
+
+/* =========================================================
+   PLOTAR SENSORES E SUPERFÍCIE IDW
+========================================================= */
+
+function renderPA() {
+  const valid = paData.filter(s =>
+    s.recent && s.pm !== null && s.pm >= 0 && s.pm <= 1000
+  );
+
+  const values = valid.map(s => s.pm);
+
+  $("paTotal").textContent = fmtNumber(paData.length);
+  $("paRecent").textContent = fmtNumber(valid.length);
+  $("paMean").textContent = values.length
+    ? fmtNumber(values.reduce((a, b) => a + b, 0) / values.length, 1)
+    : "—";
+  $("paMax").textContent = values.length
+    ? fmtNumber(Math.max(...values), 1)
+    : "—";
+
+  paLayer.clearLayers();
+
+  valid.forEach(s => {
+    const c = colorByPM(s.pm);
+
+    L.circleMarker([s.lat, s.lon], {
+      radius: 5,
+      color: c,
+      fillColor: c,
+      weight: 1,
+      fillOpacity: 0.9
+    }).bindPopup(
+      `<b>${escapeHTML(s.name)}</b><br>` +
+      `PM₂.₅: ${fmtNumber(s.pm, 1)} µg/m³<br>` +
+      `Última leitura: ${s.seen === null ? "Não informada" : escapeHTML(fmtDate(s.seen * 1000))}<br>` +
+      `Temperatura: ${s.temp === null ? "—" : escapeHTML(s.temp)}<br>` +
+      `Umidade: ${s.humidity === null ? "—" : escapeHTML(s.humidity)}%<br>` +
+      `Latitude: ${s.lat}<br>Longitude: ${s.lon}`
+    ).addTo(paLayer);
+  });
+
+  /* A interpolação é estimada apenas onde há sensores próximos. */
+  $("paStatus").textContent = "Calculando superfície interpolada IDW...";
+  const idw = interpolateIDW(paData);
+  paHeatLayer.setLatLngs(idw);
+
+  $("paStatus").textContent =
+    `${valid.length} sensores recentes; ${idw.length} pontos interpolados.`;
+
+  if (valid.length < 3) {
+    $("paStatus").textContent +=
+      " São necessários pelo menos 3 sensores recentes para gerar uma superfície.";
+  }
+
+  Object.values(maps).forEach(m => m.invalidateSize());
+}
+
+/* =========================================================
+   BOTÕES E INICIALIZAÇÃO
+========================================================= */
+
+$("btnFire").addEventListener("click", updateFire);
+$("btnAir").addEventListener("click", updatePA);
+
+$("btnAll").addEventListener("click", async () => {
+  await Promise.all([updateFire(), updatePA()]);
+});
+
+/* O mapa-múndi aparece mesmo antes de carregar qualquer dado. */
+window.addEventListener("load", () => {
+  Object.values(maps).forEach(m => {
+    m.setView(WORLD_CENTER, WORLD_ZOOM);
+    m.invalidateSize();
+  });
+
+  updateFire();
+});
+
+/* Atualização automática dos focos a cada 10 minutos.
+   PurpleAir não é consultada automaticamente para evitar
+   chamadas desnecessárias à API. */
+setInterval(() => {
+  if (!document.hidden) updateFire();
+}, 10 * 60 * 1000);
 </script>
 </body>
 </html>
