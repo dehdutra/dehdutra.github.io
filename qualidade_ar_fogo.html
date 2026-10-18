@@ -1,734 +1,265 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monitoramento de Focos de Calor e Qualidade do Ar</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Focos de Calor & Qualidade do Ar</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <style>
-    :root {
-      --bg: #f4f6f9;
-      --card: #ffffff;
-      --text: #1d2733;
-      --muted: #687586;
-      --border: #e1e6ed;
-      --primary: #2459a9;
-      --danger: #d94343;
-      --success: #25855a;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    header {
-      background: #183b69;
-      color: white;
-      padding: 22px 24px;
-    }
-
-    header h1 {
-      margin: 0 0 7px;
-      font-size: clamp(21px, 3vw, 29px);
-    }
-
-    header p {
-      margin: 0;
-      opacity: .88;
-      font-size: 14px;
-    }
-
-    main {
-      max-width: 1500px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .card, .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(20, 40, 70, .045);
-    }
-
-    .card { padding: 17px; }
-
-    .card-label {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .card-value {
-      font-size: clamp(23px, 2.7vw, 32px);
-      font-weight: 700;
-    }
-
-    .card-note {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 7px;
-    }
-
-    .maps {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .panel { padding: 18px; margin-bottom: 18px; }
-
-    .map {
-      height: 430px;
-      width: 100%;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #e9eef3;
-    }
-
-    .panel-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .panel-heading h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: end;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      min-width: 145px;
-    }
-
-    label {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    select, input, button {
-      min-height: 38px;
-      padding: 8px 10px;
-      border: 1px solid #cbd4df;
-      border-radius: 7px;
-      font: inherit;
-      background: white;
-      color: var(--text);
-    }
-
-    button {
-      cursor: pointer;
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-      font-weight: 600;
-    }
-
-    button:disabled { opacity: .6; cursor: wait; }
-
-    .chart-container {
-      position: relative;
-      height: 340px;
-      width: 100%;
-    }
-
-    .status {
-      padding: 10px 12px;
-      margin-top: 10px;
-      border-radius: 7px;
-      background: #f1f5fa;
-      color: #475569;
-      font-size: 12px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-
-    .status.error {
-      background: #fff0f0;
-      color: #9f2525;
-    }
-
-    .status.ok {
-      background: #eaf7ef;
-      color: #176b43;
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 12px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-
-    .dot {
-      width: 11px;
-      height: 11px;
-      display: inline-block;
-      border-radius: 50%;
-    }
-
-    .footnote {
-      font-size: 12px;
-      line-height: 1.5;
-      color: var(--muted);
-      margin-top: 12px;
-    }
-
-    @media (max-width: 900px) {
-      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .maps { grid-template-columns: 1fr; }
-      .map { height: 350px; }
-    }
-
-    @media (max-width: 520px) {
-      main { padding: 12px; }
-      header { padding: 18px 14px; }
-      .cards { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .card { padding: 12px; }
-      .panel { padding: 12px; }
-      .chart-container { height: 300px; }
-    }
-  </style>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .map-container {
+            height: 450px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card-custom {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
-
 <body>
-<header>
-  <h1>Monitoramento de Focos de Calor e Qualidade do Ar</h1>
-  <p>América do Sul · BDQueimadas/INPE e sensores PurpleAir</p>
-</header>
 
-<main>
-  <section class="cards">
-    <div class="card">
-      <div class="card-label">Focos na última hora</div>
-      <div class="card-value" id="countRecent">—</div>
-      <div class="card-note">Satélites Aqua M-M e Aqua M-T</div>
-    </div>
+<div class="container-fluid py-4">
+    <h2 class="mb-4 text-center">Dashboard de Monitoramento: Queimadas e Qualidade do Ar</h2>
 
-    <div class="card">
-      <div class="card-label">Focos no dia anterior</div>
-      <div class="card-value" id="countDaily">—</div>
-      <div class="card-note" id="dailyDate">Aguardando dados</div>
-    </div>
-
-    <div class="card">
-      <div class="card-label">Focos exibidos no mapa</div>
-      <div class="card-value" id="countMapped">—</div>
-      <div class="card-note" id="mapModeNote">Última hora</div>
-    </div>
-
-    <div class="card">
-      <div class="card-label">Sensores PurpleAir</div>
-      <div class="card-value" id="countPurple">—</div>
-      <div class="card-note">Sensores retornados pela API</div>
-    </div>
-  </section>
-
-  <section class="maps">
-    <div class="panel">
-      <div class="panel-heading">
-        <h2>Focos de calor</h2>
-        <span id="fireUpdate" class="card-note">Aguardando atualização</span>
-      </div>
-
-      <div class="controls">
-        <div class="field">
-          <label for="fireMode">Período exibido</label>
-          <select id="fireMode">
-            <option value="recent">Última hora</option>
-            <option value="daily">Dia anterior</option>
-          </select>
+    <!-- Seção de Mapas -->
+    <div class="row mb-4">
+        <!-- Mapa 1: Focos de Calor (INPE) -->
+        <div class="col-lg-6 mb-3">
+            <div class="card card-custom p-3">
+                <h5 class="card-title">Focos de Calor Diários (Satélites AQUA - INPE)</h5>
+                <p class="text-muted small">Mostra focos de queimada filtrados para os satélites AQUA M-M e AQUA M-T na América do Sul.</p>
+                <div id="mapa-focos" class="map-container"></div>
+            </div>
         </div>
-        <button id="reloadFire">Atualizar focos</button>
-      </div>
 
-      <div id="fireMap" class="map"></div>
-      <div class="legend">
-        <span><i class="dot" style="background:#e23b35"></i> Foco de calor</span>
-      </div>
-      <div id="fireStatus" class="status">Carregando arquivos do INPE...</div>
+        <!-- Mapa 2: PurpleAir PM2.5 -->
+        <div class="col-lg-6 mb-3">
+            <div class="card card-custom p-3">
+                <h5 class="card-title">Qualidade do Ar em Tempo Real (PurpleAir - PM2.5)</h5>
+                <p class="text-muted small">Sensores com cores baseadas nos níveis de PM2.5 (&micro;g/m&sup3;).</p>
+                <div id="mapa-purpleair" class="map-container"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="panel">
-      <div class="panel-heading">
-        <h2>Qualidade do ar · PurpleAir</h2>
-        <span class="card-note">PM2.5</span>
-      </div>
-
-      <div id="purpleMap" class="map"></div>
-      <div class="legend">
-        <span><i class="dot" style="background:#25855a"></i> 0–8,9</span>
-        <span><i class="dot" style="background:#e2b82d"></i> 9–24,9</span>
-        <span><i class="dot" style="background:#e67e22"></i> 25–49,9</span>
-        <span><i class="dot" style="background:#c52b35"></i> ≥50 µg/m³</span>
-      </div>
-
-      <div class="controls" style="margin-top:14px">
-        <button id="reloadPurple" style="width: 100%;">Atualizar dados PurpleAir</button>
-      </div>
-
-      <div id="purpleStatus" class="status">
-        Carregando dados da API PurpleAir automaticamente...
-      </div>
+    <!-- Seção do Gráfico Mensal e Relatórios -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-custom p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Relatório de Focos Mensais por Estado (INPE)</h5>
+                    <div class="col-md-3">
+                        <select id="select-estado" class="form-select">
+                            <option value="">Selecione um Estado...</option>
+                        </select>
+                    </div>
+                </div>
+                <canvas id="graficoMensal" style="max-height: 400px;"></canvas>
+            </div>
+        </div>
     </div>
-  </section>
+</div>
 
-  <section class="panel">
-    <div class="panel-heading">
-      <h2>Histórico mensal de focos por estado</h2>
-    </div>
-
-    <div class="controls">
-      <div class="field">
-        <label for="historyYear">Ano</label>
-        <select id="historyYear"></select>
-      </div>
-
-      <div class="field">
-        <label for="historyState">Estado</label>
-        <select id="historyState">
-          <option value="TODOS">Brasil (todos os estados)</option>
-          <option value="AC">Acre (AC)</option>
-          <option value="AL">Alagoas (AL)</option>
-          <option value="AP">Amapá (AP)</option>
-          <option value="AM">Amazonas (AM)</option>
-          <option value="BA">Bahia (BA)</option>
-          <option value="CE">Ceará (CE)</option>
-          <option value="DF">Distrito Federal (DF)</option>
-          <option value="ES">Espírito Santo (ES)</option>
-          <option value="GO">Goiás (GO)</option>
-          <option value="MA">Maranhão (MA)</option>
-          <option value="MT">Mato Grosso (MT)</option>
-          <option value="MS">Mato Grosso do Sul (MS)</option>
-          <option value="MG">Minas Gerais (MG)</option>
-          <option value="PA">Pará (PA)</option>
-          <option value="PB">Paraíba (PB)</option>
-          <option value="PR">Paraná (PR)</option>
-          <option value="PE">Pernambuco (PE)</option>
-          <option value="PI">Piauí (PI)</option>
-          <option value="RJ">Rio de Janeiro (RJ)</option>
-          <option value="RN">Rio Grande do Norte (RN)</option>
-          <option value="RS">Rio Grande do Sul (RS)</option>
-          <option value="RO">Rondônia (RO)</option>
-          <option value="RR">Roraima (RR)</option>
-          <option value="SC">Santa Catarina (SC)</option>
-          <option value="SP">São Paulo (SP)</option>
-          <option value="SE">Sergipe (SE)</option>
-          <option value="TO">Tocantins (TO)</option>
-        </select>
-      </div>
-
-      <button id="loadHistory">Carregar 12 meses</button>
-    </div>
-
-    <div class="chart-container">
-      <canvas id="monthlyChart"></canvas>
-    </div>
-
-    <div id="monthlyStatus" class="status">
-      Selecione o ano e clique em “Carregar 12 meses”.
-    </div>
-
-    <p class="footnote">
-      A série considera os registros dos satélites Aqua M-M e Aqua M-T.
-      Meses sem arquivos ou com falha de download são exibidos como valor zero.
-    </p>
-  </section>
-
-  <p class="footnote">
-    Fonte dos focos: INPE/BDQueimadas. Fonte da qualidade do ar: PurpleAir.
-    A disponibilidade dos dados depende dos servidores de origem e das permissões
-    de acesso do navegador.
-  </p>
-</main>
+<!-- Scripts Necessários -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <script>
-"use strict";
+    // 1. CHAVE PURPLEAIR
+    const PURPLEAIR_READ_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
 
-/* =========================================================
-   CONFIGURAÇÃO
-   ========================================================= */
+    // Inicialização dos Mapas
+    const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
+    const mapPurpleAir = L.map('mapa-purpleair').setView([-14.235, -51.925], 4);
 
-const FIXED_PURPLE_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
+    // Adiciona camada base do OpenStreetMap aos mapas
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(mapFocos);
 
-const INPE = {
-  recentDir:
-    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/10min/",
-  dailyDir:
-    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/",
-  monthlyDir:
-    "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/"
-};
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(mapPurpleAir);
 
-const REFRESH_MS = 10 * 60 * 1000;
-const RECENT_WINDOW_MS = 60 * 60 * 1000;
-const MONTH_NAMES = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez"
-];
+    // --- CARREGAR FOCOS DIÁRIOS DO INPE ---
+    async function carregarFocosDiarios() {
+        // Exemplo de URL base diária do INPE para América do Sul
+        // Dica: ajuste a data do CSV para o dia desejado se necessário
+        const urlCsvDiario = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_br.csv";
 
-const STATE_NAMES = {
-  AC: "ACRE", AL: "ALAGOAS", AP: "AMAPA", AM: "AMAZONAS",
-  BA: "BAHIA", CE: "CEARA", DF: "DISTRITO FEDERAL",
-  ES: "ESPIRITO SANTO", GO: "GOIAS", MA: "MARANHAO",
-  MT: "MATO GROSSO", MS: "MATO GROSSO DO SUL",
-  MG: "MINAS GERAIS", PA: "PARA", PB: "PARAIBA",
-  PR: "PARANA", PE: "PERNAMBUCO", PI: "PIAUI",
-  RJ: "RIO DE JANEIRO", RN: "RIO GRANDE DO NORTE",
-  RS: "RIO GRANDE DO SUL", RO: "RONDONIA",
-  RR: "RORAIMA", SC: "SANTA CATARINA", SP: "SAO PAULO",
-  SE: "SERGIPE", TO: "TOCANTINS"
-};
+        Papa.parse(urlCsvDiario, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                const dados = results.data;
+                dados.forEach(foco => {
+                    // Filtrar pelos satélites Aqua M-M ou Aqua M-T
+                    const satelite = foco.satelite ? foco.satelite.toUpperCase() : "";
+                    if (satelite.includes("AQUA")) {
+                        const lat = parseFloat(foco.lat || foco.latitude);
+                        const lon = parseFloat(foco.lon || foco.longitude);
 
-const STATE_BOUNDS = {
-  AC: { minLat: -11.15, maxLat: -7.11, minLon: -73.99, maxLon: -66.62 },
-  AL: { minLat: -10.50, maxLat: -8.81, minLon: -38.24, maxLon: -35.15 },
-  AM: { minLat: -9.82, maxLat: 2.25, minLon: -73.80, maxLon: -56.10 },
-  AP: { minLat: -1.24, maxLat: 4.48, minLon: -54.87, maxLon: -49.87 },
-  BA: { minLat: -18.35, maxLat: -8.53, minLon: -46.62, maxLon: -37.34 },
-  CE: { minLat: -7.86, maxLat: -2.78, minLon: -41.42, maxLon: -37.25 },
-  DF: { minLat: -16.05, maxLat: -15.50, minLon: -48.28, maxLon: -47.30 },
-  ES: { minLat: -21.30, maxLat: -17.89, minLon: -41.88, maxLon: -39.67 },
-  GO: { minLat: -19.50, maxLat: -12.39, minLon: -53.25, maxLon: -45.90 },
-  MA: { minLat: -10.26, maxLat: -1.05, minLon: -48.75, maxLon: -41.79 },
-  MG: { minLat: -22.92, maxLat: -14.23, minLon: -51.05, maxLon: -39.85 },
-  MS: { minLat: -24.08, maxLat: -17.16, minLon: -58.17, maxLon: -50.92 },
-  MT: { minLat: -18.04, maxLat: -7.35, minLon: -61.63, maxLon: -50.22 },
-  PA: { minLat: -9.84, maxLat: 2.59, minLon: -58.90, maxLon: -46.06 },
-  PB: { minLat: -8.30, maxLat: -6.03, minLon: -38.77, maxLon: -34.79 },
-  PE: { minLat: -9.48, maxLat: -7.38, minLon: -41.35, maxLon: -34.80 },
-  PI: { minLat: -10.93, maxLat: -2.75, minLon: -45.99, maxLon: -40.37 },
-  PR: { minLat: -26.72, maxLat: -22.52, minLon: -54.62, maxLon: -48.03 },
-  RJ: { minLat: -23.37, maxLat: -20.76, minLon: -44.89, maxLon: -40.96 },
-  RN: { minLat: -6.98, maxLat: -4.83, minLon: -38.58, maxLon: -34.97 },
-  RO: { minLat: -13.70, maxLat: -7.97, minLon: -66.81, maxLon: -59.77 },
-  RR: { minLat: -1.58, maxLat: 5.27, minLon: -64.82, maxLon: -59.87 },
-  RS: { minLat: -33.75, maxLat: -27.08, minLon: -57.64, maxLon: -49.69 },
-  SC: { minLat: -29.35, maxLat: -25.96, minLon: -53.84, maxLon: -48.35 },
-  SE: { minLat: -11.57, maxLat: -9.51, minLon: -38.24, maxLon: -36.39 },
-  SP: { minLat: -25.31, maxLat: -19.78, minLon: -53.11, maxLon: -44.16 },
-  TO: { minLat: -13.47, maxLat: -5.16, minLon: -50.74, maxLon: -45.69 }
-};
-
-const STATE_ABBREVIATIONS = Object.fromEntries(
-  Object.entries(STATE_NAMES).map(([uf, name]) => [name, uf])
-);
-
-let recentFires = [];
-let dailyFires = [];
-let purpleSensors = [];
-let monthlyChart = null;
-let fireLayer = null;
-let purpleLayer = null;
-let monthlyCache = new Map();
-
-/* =========================================================
-   MAPAS LEAFLET
-   ========================================================= */
-
-const southAmericaBounds = L.latLngBounds(
-  [-57, -82],
-  [15, -34]
-);
-
-const fireMap = L.map("fireMap", {
-  preferCanvas: true
-}).fitBounds(southAmericaBounds);
-
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 12,
-  attribution: "&copy; OpenStreetMap contributors"
-}).addTo(fireMap);
-
-fireLayer = L.layerGroup().addTo(fireMap);
-
-const purpleMap = L.map("purpleMap", {
-  preferCanvas: true
-}).fitBounds(southAmericaBounds);
-
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 12,
-  attribution: "&copy; OpenStreetMap contributors"
-}).addTo(purpleMap);
-
-purpleLayer = L.layerGroup().addTo(purpleMap);
-
-/* =========================================================
-   FUNÇÕES DE NORMALIZAÇÃO E LEITURA CSV (UTF-8)
-   ========================================================= */
-
-function normalizeKey(value) {
-  return String(value ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "");
-}
-
-function isReferenceAqua(value) {
-  const text = String(value ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase();
-
-  return text.includes("AQUA") && (text.includes("M") || text.includes("T"));
-}
-
-function getValue(row, aliases) {
-  const keys = Object.keys(row || {});
-  for (const alias of aliases) {
-    const wanted = normalizeKey(alias);
-    const actual = keys.find(key => normalizeKey(key) === wanted);
-    if (actual !== undefined && row[actual] !== undefined &&
-        row[actual] !== null && String(row[actual]).trim() !== "") {
-      return row[actual];
-    }
-  }
-  return null;
-}
-
-function parseCSV(text) {
-  const result = Papa.parse(text, {
-    header: true,
-    skipEmptyLines: "greedy",
-    transformHeader: header => String(header).replace(/^\uFEFF/, "").trim()
-  });
-
-  if (!result.meta.fields || result.meta.fields.length === 0) {
-    throw new Error("CSV sem cabeçalho reconhecível.");
-  }
-
-  return { fields: result.meta.fields, data: result.data || [] };
-}
-
-async function fetchText(url, timeoutMs = 45000) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      cache: "no-store",
-      signal: controller.signal
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+                        if (!isNaN(lat) && !isNaN(lon)) {
+                            L.circleMarker([lat, lon], {
+                                radius: 4,
+                                fillColor: '#ff3300',
+                                color: '#990000',
+                                weight: 1,
+                                opacity: 1,
+                                fillOpacity: 0.8
+                            }).bindPopup(`<b>Satélite:</b> ${foco.satelite}<br><b>Data/Hora:</b> ${foco.datahora || foco.data}<br><b>Município/Estado:</b> ${foco.municipio || ''} - ${foco.estado || ''}`)
+                              .addTo(mapFocos);
+                        }
+                    }
+                });
+            },
+            error: function(err) {
+                console.error("Erro ao carregar CSV de focos diários do INPE:", err);
+            }
+        });
     }
 
-    const buffer = await response.arrayBuffer();
-    const decoder = new TextDecoder("utf-8");
-    return decoder.decode(buffer);
-  } finally {
-    clearTimeout(timeout);
-  }
-}
+    // --- CARREGAR SENSORES PURPLEAIR ---
+    function getColorPM25(pm25) {
+        if (pm25 <= 12.0) return '#00e400'; // Bom (Verde)
+        if (pm25 <= 35.4) return '#ffff00'; // Moderado (Amarelo)
+        if (pm25 <= 55.4) return '#ff7e00'; // MPT (Laranja)
+        if (pm25 <= 150.4) return '#ff0000'; // Nocivo (Vermelho)
+        if (pm25 <= 250.4) return '#8f3f97'; // Muito Nocivo (Roxo)
+        return '#7e0023'; // Perigoso (Marrom)
+    }
 
-function setStatus(id, message, kind = "") {
-  const element = document.getElementById(id);
-  element.textContent = message;
-  element.className = "status" + (kind ? " " + kind : "");
-}
+    async function carregarPurpleAir() {
+        const url = "https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5_10minute";
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    "X-API-Key": PURPLEAIR_READ_KEY
+                }
+            });
+            const data = await response.json();
 
-function setCount(id, value) {
-  document.getElementById(id).textContent =
-    Number(value).toLocaleString("pt-BR");
-}
+            if (data && data.data) {
+                data.data.forEach(sensor => {
+                    const lat = sensor[1];
+                    const lon = sensor[2];
+                    const pm25 = sensor[3];
+                    const name = sensor[4] || "Sensor PurpleAir";
 
-function asNumber(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const n = Number(String(value).replace(",", "."));
-  return Number.isFinite(n) ? n : null;
-}
+                    if (lat && lon && pm25 !== null) {
+                        const color = getColorPM25(pm25);
+                        L.circleMarker([lat, lon], {
+                            radius: 6,
+                            fillColor: color,
+                            color: '#000',
+                            weight: 1,
+                            fillOpacity: 0.8
+                        }).bindPopup(`<b>${name}</b><br><b>PM2.5:</b> ${pm25} &micro;g/m&sup3;`)
+                          .addTo(mapPurpleAir);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao buscar dados do PurpleAir:", error);
+        }
+    }
 
-function parseDate(value) {
-  if (!value) return null;
-  let text = String(value).trim();
-  let date = new Date(text);
-  if (!Number.isNaN(date.getTime())) return date;
+    // --- CARREGAR DADOS MENSAIS INPE E GRÁFICO ---
+    let chartMensal;
+    let dadosMensaisEstados = {};
 
-  const match = text.match(
-    /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?\$/
-  );
+    async function carregarDadosMensais() {
+        const urlCsvMensal = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br.csv";
 
-  if (match) {
-    return new Date(
-      Number(match[3]), Number(match[2]) - 1, Number(match[1]),
-      Number(match[4] || 0), Number(match[5] || 0),
-      Number(match[6] || 0)
-    );
-  }
+        Papa.parse(urlCsvMensal, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                // Estruturar dados por estado
+                results.data.forEach(linha => {
+                    const estado = linha.estado || linha.Estado;
+                    if (estado) {
+                        if (!dadosMensaisEstados[estado]) {
+                            dadosMensaisEstados[estado] = [];
+                        }
+                        dadosMensaisEstados[estado].push(linha);
+                    }
+                });
 
-  return null;
-}
+                // Preencher select de estados
+                const select = document.getElementById('select-estado');
+                Object.keys(dadosMensaisEstados).sort().forEach(est => {
+                    const opt = document.createElement('option');
+                    opt.value = est;
+                    opt.innerHTML = est;
+                    select.appendChild(opt);
+                });
 
-function normalizeFire(row) {
-  const satellite = getValue(row, ["Satelite", "Satélite", "satelite", "satellite"]);
-  const lat = asNumber(getValue(row, ["Latitude", "lat", "latitude"]));
-  const lon = asNumber(getValue(row, ["Longitude", "lon", "long", "longitude"]));
-  const dateValue = getValue(row, ["DataHora", "Data_Hora", "datahora", "date", "data"]);
-  const uf = getValue(row, ["Estado", "UF", "sigla_uf", "estado"]);
-  const municipality = getValue(row, ["Municipio", "Município", "municipio"]);
-  const frp = asNumber(getValue(row, ["FRP", "frp"]));
+                // Evento ao alterar estado
+                select.addEventListener('change', (e) => {
+                    atualizarGrafico(e.target.value);
+                });
+            }
+        });
+    }
 
-  return {
-    raw: row,
-    satellite: satellite === null ? "" : String(satellite).trim(),
-    lat,
-    lon,
-    date: parseDate(dateValue),
-    uf: uf === null ? "" : String(uf).trim(),
-    municipality: municipality === null ? "" : String(municipality).trim(),
-    frp
-  };
-}
+    function atualizarGrafico(estado) {
+        if (!estado || !dadosMensaisEstados[estado]) return;
 
-function isSouthAmerica(lat, lon) {
-  return Number.isFinite(lat) && Number.isFinite(lon) &&
-    lat >= -57 && lat <= 15 && lon >= -82 && lon <= -34;
-}
+        const dadosEstado = dadosMensaisEstados[estado];
+        const rotulos = dadosEstado.map(item => item.mes || item.Data || item.ano_mes);
+        const focos = dadosEstado.map(item => parseInt(item.focos || item.numero_focos || 0));
 
-function filterAquaRows(rows) {
-  return rows
-    .map(normalizeFire)
-    .filter(row => isReferenceAqua(row.satellite));
-}
+        const ctx = document.getElementById('graficoMensal').getContext('2d');
 
-function firePopup(fire) {
-  const date = fire.date
-    ? fire.date.toLocaleString("pt-BR")
-    : "Data não informada";
+        if (chartMensal) {
+            chartMensal.destroy();
+        }
 
-  return `
-    <b>Foco de calor</b><br>
-    Satélite: ${escapeHTML(fire.satellite || "Não informado")}<br>
-    Data: ${escapeHTML(date)}<br>
-    Estado: ${escapeHTML(fire.uf || "Não informado")}<br>
-    Município: ${escapeHTML(fire.municipality || "Não informado")}<br>
-    FRP: ${fire.frp === null ? "Não informado" : fire.frp}
-  `;
-}
+        chartMensal = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: rotulos,
+                datasets: [{
+                    label: `Focos Mensais - ${estado}`,
+                    data: focos,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;",
-    '"': "&quot;", "'": "&#39;"
-  })[char]);
-}
+    // Executar chamadas iniciais
+    carregarFocosDiarios();
+    carregarPurpleAir();
+    carregarDadosMensais();
+</script>
 
-/* =========================================================
-   ARQUIVOS RECENTES E DIÁRIOS DO INPE
-   ========================================================= */
-
-async function getDirectoryFiles(directory, pattern) {
-  const html = await fetchText(directory);
-  const doc = new DOMParser().parseFromString(html, "text/html");
-
-  return [...doc.querySelectorAll("a[href]")]
-    .map(a => {
-      try {
-        return new URL(a.getAttribute("href"), directory).href;
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean)
-    .filter(url => pattern.test(decodeURIComponent(url.split("/").pop())));
-}
-
-function filenameDateTime(filename) {
-  const match = filename.match(/focos_10min_(\d{8})_(\d{4})\.csv\$/i);
-  if (!match) return null;
-
-  const y = Number(match[1].slice(0, 4));
-  const m = Number(match[1].slice(4, 6)) - 1;
-  const d = Number(match[1].slice(6, 8));
-  const hh = Number(match[2].slice(0, 2));
-  const mm = Number(match[2].slice(2, 4));
-
-  return new Date(y, m, d, hh, mm);
-}
-
-function previousLocalDay() {
-  const date = new Date();
-  date.setDate(date.getDate() - 1);
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0")
-  ].join("");
-}
-
-async function loadRecentFires() {
-  setStatus("fireStatus", "Buscando arquivos recentes do INPE...");
-
-  const urls = await getDirectoryFiles(
-    INPE.recentDir,
-    /^focos_10min_\d{8}_\d{4}\.csv\$/i
-  );
-
-  const now = Date.now();
-  const earliest = now - 85 * 60 * 1000;
-
-  const candidates = urls
-    .map(url => ({
-      url,
-      date: filenameDateTime(decodeURIComponent(url.split("/").pop()))
-    }))
-    .filter(item => item.date &&
-      item.date.getTime() >= earliest &&
-      item.date.getTime() <= now + 5 * 60 * 1000)
-    .sort((a, b) => b.date - a.date);
-
-  if (!candidates.length) {
-    throw new Error("Nenhum CSV recente foi encontrado no diretório 10min do INPE.");
-  }
-
-  const collected = [];
-  const errors = [];
-
-  for (let i = 0; i < candidates.length; i += 3) {
-    const batch = candidates.slice(i, i + 3);
-    const results = await Promise.allSettled(
-      batch.map(async item => {
-        const csv = parseCSV(await fetchText(item.url));
-        return csv.data;
-      })
-    );
-
-    results.forEach((result, index
+</body>
+</html>
