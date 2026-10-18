@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -309,13 +308,14 @@
         <div class="field" style="flex:1">
           <label for="purpleKey">Chave de leitura da API PurpleAir</label>
           <input id="purpleKey" type="password" autocomplete="off"
+                 value="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129"
                  placeholder="A8B62FCE-CA6E-11F1-9E30-4201AC1DC129">
         </div>
         <button id="reloadPurple">Consultar PurpleAir</button>
       </div>
 
       <div id="purpleStatus" class="status">
-        Insira sua chave e consulte os sensores.
+        Carregando dados da API PurpleAir...
       </div>
     </div>
   </section>
@@ -378,15 +378,13 @@
 
     <p class="footnote">
       A série considera os registros dos satélites Aqua M-M e Aqua M-T.
-      Meses sem registros são exibidos como zero somente quando o CSV foi
-      lido com sucesso. Arquivos que falharem na leitura serão identificados
-      separadamente.
+      Meses sem arquivos ou com falha de download são exibidos como valor zero.
     </p>
   </section>
 
   <section class="panel">
     <div class="panel-heading">
-      <h2>Maiores concentrações de PM2.5 · PurpleAir</h2>
+      <h2>Média da Concentração de PM2.5 por Estado · PurpleAir</h2>
     </div>
 
     <div class="chart-container">
@@ -394,8 +392,7 @@
     </div>
 
     <div class="footnote">
-      Os valores representam as leituras retornadas pela API no momento da consulta.
-      A disponibilidade depende dos sensores e das permissões da chave utilizada.
+      Os valores representam a média das leituras instantâneas de PM2.5 (µg/m³) agregadas por estado.
     </div>
   </section>
 
@@ -412,6 +409,8 @@
 /* =========================================================
    CONFIGURAÇÃO
    ========================================================= */
+
+const DEFAULT_PURPLE_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
 
 const INPE = {
   recentDir:
@@ -442,6 +441,36 @@ const STATE_NAMES = {
   SE: "SERGIPE", TO: "TOCANTINS"
 };
 
+const STATE_BOUNDS = {
+  AC: { minLat: -11.15, maxLat: -7.11, minLon: -73.99, maxLon: -66.62 },
+  AL: { minLat: -10.50, maxLat: -8.81, minLon: -38.24, maxLon: -35.15 },
+  AM: { minLat: -9.82, maxLat: 2.25, minLon: -73.80, maxLon: -56.10 },
+  AP: { minLat: -1.24, maxLat: 4.48, minLon: -54.87, maxLon: -49.87 },
+  BA: { minLat: -18.35, maxLat: -8.53, minLon: -46.62, maxLon: -37.34 },
+  CE: { minLat: -7.86, maxLat: -2.78, minLon: -41.42, maxLon: -37.25 },
+  DF: { minLat: -16.05, maxLat: -15.50, minLon: -48.28, maxLon: -47.30 },
+  ES: { minLat: -21.30, maxLat: -17.89, minLon: -41.88, maxLon: -39.67 },
+  GO: { minLat: -19.50, maxLat: -12.39, minLon: -53.25, maxLon: -45.90 },
+  MA: { minLat: -10.26, maxLat: -1.05, minLon: -48.75, maxLon: -41.79 },
+  MG: { minLat: -22.92, maxLat: -14.23, minLon: -51.05, maxLon: -39.85 },
+  MS: { minLat: -24.08, maxLat: -17.16, minLon: -58.17, maxLon: -50.92 },
+  MT: { minLat: -18.04, maxLat: -7.35, minLon: -61.63, maxLon: -50.22 },
+  PA: { minLat: -9.84, maxLat: 2.59, minLon: -58.90, maxLon: -46.06 },
+  PB: { minLat: -8.30, maxLat: -6.03, minLon: -38.77, maxLon: -34.79 },
+  PE: { minLat: -9.48, maxLat: -7.38, minLon: -41.35, maxLon: -34.80 },
+  PI: { minLat: -10.93, maxLat: -2.75, minLon: -45.99, maxLon: -40.37 },
+  PR: { minLat: -26.72, maxLat: -22.52, minLon: -54.62, maxLon: -48.03 },
+  RJ: { minLat: -23.37, maxLat: -20.76, minLon: -44.89, maxLon: -40.96 },
+  RN: { minLat: -6.98, maxLat: -4.83, minLon: -38.58, maxLon: -34.97 },
+  RO: { minLat: -13.70, maxLat: -7.97, minLon: -66.81, maxLon: -59.77 },
+  RR: { minLat: -1.58, maxLat: 5.27, minLon: -64.82, maxLon: -59.87 },
+  RS: { minLat: -33.75, maxLat: -27.08, minLon: -57.64, maxLon: -49.69 },
+  SC: { minLat: -29.35, maxLat: -25.96, minLon: -53.84, maxLon: -48.35 },
+  SE: { minLat: -11.57, maxLat: -9.51, minLon: -38.24, maxLon: -36.39 },
+  SP: { minLat: -25.31, maxLat: -19.78, minLon: -53.11, maxLon: -44.16 },
+  TO: { minLat: -13.47, maxLat: -5.16, minLon: -50.74, maxLon: -45.69 }
+};
+
 const STATE_ABBREVIATIONS = Object.fromEntries(
   Object.entries(STATE_NAMES).map(([uf, name]) => [name, uf])
 );
@@ -457,7 +486,6 @@ let monthlyCache = new Map();
 
 /* =========================================================
    MAPAS LEAFLET
-   Não são adicionadas fronteiras estaduais.
    ========================================================= */
 
 const southAmericaBounds = L.latLngBounds(
@@ -488,7 +516,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 purpleLayer = L.layerGroup().addTo(purpleMap);
 
 /* =========================================================
-   FUNÇÕES DE NORMALIZAÇÃO E LEITURA CSV
+   FUNÇÕES DE NORMALIZAÇÃO E LEITURA CSV (UTF-8)
    ========================================================= */
 
 function normalizeKey(value) {
@@ -499,10 +527,6 @@ function normalizeKey(value) {
     .replace(/[^A-Z0-9]/g, "");
 }
 
-/*
- * Aceita Aqua_M-M e Aqua_M-T, inclusive quando os separadores
- * aparecem de outra forma no CSV.
- */
 function isReferenceAqua(value) {
   const satellite = String(value ?? "")
     .normalize("NFD")
@@ -512,8 +536,7 @@ function isReferenceAqua(value) {
     .replace(/_+/g, "_")
     .trim();
 
-  return satellite === "AQUA_M_M" ||
-         satellite === "AQUA_M_T";
+  return satellite === "AQUA_M_M" || satellite === "AQUA_M_T";
 }
 
 function getValue(row, aliases) {
@@ -540,11 +563,7 @@ function parseCSV(text) {
     throw new Error("CSV sem cabeçalho reconhecível.");
   }
 
-  if (!result.data || result.data.length === 0) {
-    return { fields: result.meta.fields, data: [] };
-  }
-
-  return { fields: result.meta.fields, data: result.data };
+  return { fields: result.meta.fields, data: result.data || [] };
 }
 
 async function fetchText(url, timeoutMs = 45000) {
@@ -561,7 +580,9 @@ async function fetchText(url, timeoutMs = 45000) {
       throw new Error(`HTTP ${response.status}`);
     }
 
-    return await response.text();
+    const buffer = await response.arrayBuffer();
+    const decoder = new TextDecoder("utf-8");
+    return decoder.decode(buffer);
   } finally {
     clearTimeout(timeout);
   }
@@ -586,16 +607,12 @@ function asNumber(value) {
 
 function parseDate(value) {
   if (!value) return null;
-
   let text = String(value).trim();
-
-  // Alguns arquivos podem trazer formato ISO sem Z.
   let date = new Date(text);
   if (!Number.isNaN(date.getTime())) return date;
 
-  // Formato dd/mm/yyyy HH:mm:ss
   const match = text.match(
-    /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?$/
+    /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?\$/
   );
 
   if (match) {
@@ -610,30 +627,12 @@ function parseDate(value) {
 }
 
 function normalizeFire(row) {
-  const satellite = getValue(row, [
-    "Satelite", "Satélite", "satelite", "satellite"
-  ]);
-
-  const lat = asNumber(getValue(row, [
-    "Latitude", "lat", "latitude"
-  ]));
-
-  const lon = asNumber(getValue(row, [
-    "Longitude", "lon", "long", "longitude"
-  ]));
-
-  const dateValue = getValue(row, [
-    "DataHora", "Data_Hora", "datahora", "date", "data"
-  ]);
-
-  const uf = getValue(row, [
-    "Estado", "UF", "sigla_uf", "estado"
-  ]);
-
-  const municipality = getValue(row, [
-    "Municipio", "Município", "municipio"
-  ]);
-
+  const satellite = getValue(row, ["Satelite", "Satélite", "satelite", "satellite"]);
+  const lat = asNumber(getValue(row, ["Latitude", "lat", "latitude"]));
+  const lon = asNumber(getValue(row, ["Longitude", "lon", "long", "longitude"]));
+  const dateValue = getValue(row, ["DataHora", "Data_Hora", "datahora", "date", "data"]);
+  const uf = getValue(row, ["Estado", "UF", "sigla_uf", "estado"]);
+  const municipality = getValue(row, ["Municipio", "Município", "municipio"]);
   const frp = asNumber(getValue(row, ["FRP", "frp"]));
 
   return {
@@ -702,7 +701,7 @@ async function getDirectoryFiles(directory, pattern) {
 }
 
 function filenameDateTime(filename) {
-  const match = filename.match(/focos_10min_(\d{8})_(\d{4})\.csv$/i);
+  const match = filename.match(/focos_10min_(\d{8})_(\d{4})\.csv\$/i);
   if (!match) return null;
 
   const y = Number(match[1].slice(0, 4));
@@ -729,7 +728,7 @@ async function loadRecentFires() {
 
   const urls = await getDirectoryFiles(
     INPE.recentDir,
-    /^focos_10min_\d{8}_\d{4}\.csv$/i
+    /^focos_10min_\d{8}_\d{4}\.csv\$/i
   );
 
   const now = Date.now();
@@ -746,15 +745,12 @@ async function loadRecentFires() {
     .sort((a, b) => b.date - a.date);
 
   if (!candidates.length) {
-    throw new Error(
-      "Nenhum CSV recente foi encontrado no diretório 10min do INPE."
-    );
+    throw new Error("Nenhum CSV recente foi encontrado no diretório 10min do INPE.");
   }
 
   const collected = [];
   const errors = [];
 
-  // Limita o número de downloads simultâneos.
   for (let i = 0; i < candidates.length; i += 3) {
     const batch = candidates.slice(i, i + 3);
     const results = await Promise.allSettled(
@@ -768,9 +764,7 @@ async function loadRecentFires() {
       if (result.status === "fulfilled") {
         collected.push(...result.value);
       } else {
-        errors.push(
-          `${batch[index].url.split("/").pop()}: ${result.reason.message}`
-        );
+        errors.push(`${batch[index].url.split("/").pop()}: ${result.reason.message}`);
       }
     });
   }
@@ -789,19 +783,9 @@ async function loadRecentFires() {
     "Atualizado: " + new Date().toLocaleTimeString("pt-BR");
 
   if (errors.length) {
-    setStatus(
-      "fireStatus",
-      `Última hora: ${recentFires.length} focos Aqua. ` +
-      `${errors.length} arquivo(s) recente(s) não foram lidos. ` +
-      errors.slice(0, 3).join(" | "),
-      "error"
-    );
+    setStatus("fireStatus", `Última hora: ${recentFires.length} focos Aqua. ` + errors.slice(0, 2).join(" | "), "error");
   } else {
-    setStatus(
-      "fireStatus",
-      `Última hora: ${recentFires.length} focos dos satélites Aqua M-M e Aqua M-T.`,
-      "ok"
-    );
+    setStatus("fireStatus", `Última hora: ${recentFires.length} focos dos satélites Aqua M-M e Aqua M-T.`, "ok");
   }
 
   drawFireMap();
@@ -816,18 +800,15 @@ async function loadDailyFires() {
 
   const urls = await getDirectoryFiles(
     INPE.dailyDir,
-    /^focos_diario_\d{8}\.csv$/i
+    /^focos_diario_\d{8}\.csv\$/i
   );
 
   const target = urls.find(url =>
-    new RegExp(`focos_diario_${day}\\.csv$`, "i")
-      .test(decodeURIComponent(url.split("/").pop()))
+    new RegExp(`focos_diario_${day}\\.csv$`, "i").test(decodeURIComponent(url.split("/").pop()))
   );
 
   if (!target) {
-    throw new Error(
-      `O CSV diário focos_diario_${day}.csv não foi encontrado.`
-    );
+    throw new Error(`O CSV diário focos_diario_${day}.csv não foi encontrado.`);
   }
 
   const csv = parseCSV(await fetchText(target));
@@ -837,13 +818,7 @@ async function loadDailyFires() {
   );
 
   setCount("countDaily", dailyFires.length);
-
-  setStatus(
-    "fireStatus",
-    `Dia anterior: ${dailyFires.length} focos Aqua carregados.`,
-    "ok"
-  );
-
+  setStatus("fireStatus", `Dia anterior: ${dailyFires.length} focos Aqua carregados.`, "ok");
   drawFireMap();
 }
 
@@ -873,9 +848,7 @@ function drawFireMap() {
 }
 
 /* =========================================================
-   HISTÓRICO MENSAL
-   Carrega cada arquivo mensal individualmente.
-   Não depende de baixar um único CSV anual.
+   HISTÓRICO MENSAL (Trata falhas como ZERO)
    ========================================================= */
 
 function monthlyFilename(year, month) {
@@ -888,74 +861,34 @@ function getMonthlyUrl(year, month) {
 
 function normalizeState(value) {
   if (value === null || value === undefined) return "";
-
   const key = normalizeKey(value);
 
   if (STATE_NAMES[key]) return key;
   if (STATE_ABBREVIATIONS[key]) return STATE_ABBREVIATIONS[key];
 
-  // Alguns arquivos podem registrar a sigla dentro de outro campo.
-  if (key.length === 2 && STATE_NAMES[key]) return key;
-
-  const match = Object.entries(STATE_NAMES).find(([, name]) =>
-    normalizeKey(name) === key
-  );
-
+  const match = Object.entries(STATE_NAMES).find(([, name]) => normalizeKey(name) === key);
   return match ? match[0] : "";
 }
 
 function getFireState(row) {
-  const value = getValue(row, [
-    "Estado", "UF", "sigla_uf", "estado", "UnidadeFederativa"
-  ]);
+  const value = getValue(row, ["Estado", "UF", "sigla_uf", "estado", "UnidadeFederativa"]);
   return normalizeState(value);
-}
-
-function isMonthFileForYear(url, year) {
-  const filename = decodeURIComponent(url.split("/").pop());
-  const match = filename.match(/^focos_mensal_br_(\d{4})(\d{2})\.csv$/i);
-  return match && Number(match[1]) === Number(year);
 }
 
 async function loadMonthlyFile(year, month) {
   const cacheKey = `${year}-${String(month).padStart(2, "0")}`;
-
-  if (monthlyCache.has(cacheKey)) {
-    return monthlyCache.get(cacheKey);
-  }
+  if (monthlyCache.has(cacheKey)) return monthlyCache.get(cacheKey);
 
   const url = getMonthlyUrl(year, month);
-  const text = await fetchText(url, 90000);
+  const text = await fetchText(url, 45000);
   const parsed = parseCSV(text);
 
-  /*
-   * Um arquivo vazio pode ser válido, mas um CSV sem campos
-   * essenciais indica que não devemos tratá-lo como zero focos.
-   */
-  const headers = parsed.fields.map(normalizeKey);
-  const satelliteHeader = headers.some(h =>
-    ["SATELITE", "SATELLITE"].includes(h)
-  );
-
-  if (!satelliteHeader) {
-    throw new Error("CSV lido, mas não contém coluna de satélite.");
-  }
-
   const records = parsed.data.filter(row => {
-    const sat = getValue(row, [
-      "Satelite", "Satélite", "satellite"
-    ]);
+    const sat = getValue(row, ["Satelite", "Satélite", "satellite"]);
     return isReferenceAqua(sat);
   });
 
-  const result = {
-    year,
-    month,
-    filename: monthlyFilename(year, month),
-    records,
-    totalAqua: records.length
-  };
-
+  const result = { year, month, filename: monthlyFilename(year, month), records };
   monthlyCache.set(cacheKey, result);
   return result;
 }
@@ -972,101 +905,46 @@ async function loadMonthlyHistory() {
   const successes = [];
   const failures = [];
 
-  setStatus(
-    "monthlyStatus",
-    `Carregando os arquivos mensais de ${year}. Isso pode levar alguns minutos...`
-  );
+  setStatus("monthlyStatus", `Carregando os arquivos mensais de ${year}...`);
 
-  try {
-    /*
-     * Processa sequencialmente para evitar sobrecarregar a conexão
-     * e reduzir falhas de leitura em CSVs grandes.
-     */
-    for (let month = 1; month <= 12; month++) {
-      setStatus(
-        "monthlyStatus",
-        `Lendo ${month}/12: ${monthlyFilename(year, month)}...`
-      );
+  for (let month = 1; month <= 12; month++) {
+    try {
+      const result = await loadMonthlyFile(year, month);
+      let count = 0;
 
-      try {
-        const result = await loadMonthlyFile(year, month);
-        let count = 0;
-
-        for (const row of result.records) {
-          if (selectedState === "TODOS") {
-            count++;
-          } else if (getFireState(row) === selectedState) {
-            count++;
-          }
+      for (const row of result.records) {
+        if (selectedState === "TODOS" || getFireState(row) === selectedState) {
+          count++;
         }
-
-        monthlyCounts[month - 1] = count;
-        successes.push(month);
-      } catch (error) {
-        failures.push({
-          month,
-          filename: monthlyFilename(year, month),
-          message: error && error.message ? error.message : String(error)
-        });
       }
 
-      updateMonthlyChart(
-        monthlyCounts,
-        year,
-        selectedState,
-        successes,
-        failures
-      );
+      monthlyCounts[month - 1] = count;
+      successes.push(month);
+    } catch (error) {
+      // Caso falhe/HTTP 404, atribui 0 e registra falha
+      monthlyCounts[month - 1] = 0;
+      failures.push(MONTH_NAMES[month - 1]);
     }
-
-    updateMonthlyChart(
-      monthlyCounts,
-      year,
-      selectedState,
-      successes,
-      failures
-    );
-
-    const stateLabel = selectedState === "TODOS"
-      ? "Brasil"
-      : selectedState;
-
-    if (failures.length === 0) {
-      setStatus(
-        "monthlyStatus",
-        `Concluído: 12/12 arquivos mensais lidos para ${year}. ` +
-        `Filtro: ${stateLabel}. Satélites incluídos: Aqua M-M e Aqua M-T.`,
-        "ok"
-      );
-    } else {
-      const failureText = failures.map(item =>
-        `${MONTH_NAMES[item.month - 1]} (${item.filename}: ${item.message})`
-      ).join(" | ");
-
-      setStatus(
-        "monthlyStatus",
-        `Atenção: ${successes.length}/12 arquivos mensais lidos para ${year}. ` +
-        `Os meses que falharam não foram tratados como zero. ` +
-        `Falhas: ${failureText}`,
-        "error"
-      );
-    }
-  } finally {
-    button.disabled = false;
-    button.textContent = "Carregar 12 meses";
   }
+
+  updateMonthlyChart(monthlyCounts, year, selectedState);
+
+  const stateLabel = selectedState === "TODOS" ? "Brasil" : selectedState;
+  if (failures.length === 0) {
+    setStatus("monthlyStatus", `Concluído: 12/12 arquivos mensais processados para ${year} (${stateLabel}).`, "ok");
+  } else {
+    setStatus("monthlyStatus", `Processamento concluído para ${year} (${stateLabel}). Meses sem dados/falhas atribuídos como 0: ${failures.join(", ")}.`, "ok");
+  }
+
+  button.disabled = false;
+  button.textContent = "Carregar 12 meses";
 }
 
-function updateMonthlyChart(values, year, state, successes, failures) {
+function updateMonthlyChart(values, year, state) {
   const ctx = document.getElementById("monthlyChart").getContext("2d");
   const stateLabel = state === "TODOS" ? "Brasil" : state;
 
   if (monthlyChart) monthlyChart.destroy();
-
-  const loadedMonths = new Set(successes);
-  const plottedValues = values.map((value, index) =>
-    loadedMonths.has(index + 1) ? value : null
-  );
 
   monthlyChart = new Chart(ctx, {
     type: "bar",
@@ -1074,7 +952,7 @@ function updateMonthlyChart(values, year, state, successes, failures) {
       labels: MONTH_NAMES,
       datasets: [{
         label: `Focos Aqua · ${stateLabel} · ${year}`,
-        data: plottedValues,
+        data: values,
         backgroundColor: "rgba(36, 89, 169, 0.75)",
         borderColor: "#2459a9",
         borderWidth: 1,
@@ -1089,30 +967,20 @@ function updateMonthlyChart(values, year, state, successes, failures) {
         legend: { display: true },
         tooltip: {
           callbacks: {
-            label: context => context.raw === null
-              ? "Mês não carregado"
-              : ` ${Number(context.raw).toLocaleString("pt-BR")} focos`
+            label: context => ` ${Number(context.raw).toLocaleString("pt-BR")} focos`
           }
         }
       },
       scales: {
-        x: {
-          title: { display: true, text: "Mês" },
-          grid: { display: false }
-        },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "Número de focos" },
-          ticks: { precision: 0 }
-        }
+        x: { title: { display: true, text: "Mês" }, grid: { display: false } },
+        y: { beginAtZero: true, title: { display: true, text: "Número de focos" }, ticks: { precision: 0 } }
       }
     }
   });
 }
 
 /* =========================================================
-   PURPLEAIR
-   A consulta é manual para evitar consumo desnecessário da API.
+   PURPLEAIR E MÉDIA POR ESTADO
    ========================================================= */
 
 function pmColor(pm) {
@@ -1134,15 +1002,21 @@ function getSensorValue(sensor, aliases) {
   return null;
 }
 
-async function loadPurpleAir() {
-  const key = document.getElementById("purpleKey").value.trim();
-  const button = document.getElementById("reloadPurple");
-
-  if (!key) {
-    setStatus("purpleStatus", "Insira sua chave de leitura da API PurpleAir.", "error");
-    return;
+function detectStateByCoords(lat, lon) {
+  for (const [uf, bounds] of Object.entries(STATE_BOUNDS)) {
+    if (lat >= bounds.minLat && lat <= bounds.maxLat &&
+        lon >= bounds.minLon && lon <= bounds.maxLon) {
+      return uf;
+    }
   }
+  return "Outros";
+}
 
+async function loadPurpleAir() {
+  let key = document.getElementById("purpleKey").value.trim();
+  if (!key) key = DEFAULT_PURPLE_KEY;
+
+  const button = document.getElementById("reloadPurple");
   button.disabled = true;
   button.textContent = "Consultando...";
   setStatus("purpleStatus", "Consultando os sensores PurpleAir...");
@@ -1165,23 +1039,19 @@ async function loadPurpleAir() {
     });
 
     const url = `https://api.purpleair.com/v1/sensors?${params.toString()}`;
-
     const response = await fetch(url, {
       headers: { "X-API-Key": key },
       cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error(
-        `API PurpleAir retornou HTTP ${response.status}. Verifique a chave, ` +
-        `as permissões e os limites de consulta.`
-      );
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const json = await response.json();
 
     if (!Array.isArray(json.fields) || !Array.isArray(json.data)) {
-      throw new Error("A resposta da API não contém os campos e os dados esperados.");
+      throw new Error("Resposta inválida da API");
     }
 
     purpleSensors = json.data.map(values => {
@@ -1189,37 +1059,27 @@ async function loadPurpleAir() {
         json.fields.map((field, index) => [field, values[index]])
       );
 
+      const lat = asNumber(getSensorValue(row, ["latitude"]));
+      const lon = asNumber(getSensorValue(row, ["longitude"]));
+      const state = detectStateByCoords(lat, lon);
+
       return {
         name: getSensorValue(row, ["name"]) || "Sensor sem nome",
-        lat: asNumber(getSensorValue(row, ["latitude"])),
-        lon: asNumber(getSensorValue(row, ["longitude"])),
+        lat, lon,
         pm: asNumber(getSensorValue(row, ["pm2.5_atm", "pm2.5_alt"])),
         humidity: asNumber(getSensorValue(row, ["humidity"])),
         temperature: asNumber(getSensorValue(row, ["temperature"])),
-        lastSeen: getSensorValue(row, ["last_seen"])
+        state
       };
-    }).filter(sensor =>
-      isSouthAmerica(sensor.lat, sensor.lon)
-    );
+    }).filter(sensor => isSouthAmerica(sensor.lat, sensor.lon));
 
     drawPurpleMap();
-    drawPurpleChart();
+    drawPurpleStateChart();
     setCount("countPurple", purpleSensors.length);
 
-    setStatus(
-      "purpleStatus",
-      `${purpleSensors.length} sensores retornados na área consultada. ` +
-      `Se a consulta falhar por CORS, será necessário utilizar um intermediário seguro.`,
-      "ok"
-    );
+    setStatus("purpleStatus", `${purpleSensors.length} sensores carregados com sucesso.`, "ok");
   } catch (error) {
-    setStatus(
-      "purpleStatus",
-      `Não foi possível consultar o PurpleAir: ${error.message}. ` +
-      `A chave não é armazenada pelo dashboard. Se o erro for CORS, ` +
-      `a consulta precisa passar por um backend ou Worker.`,
-      "error"
-    );
+    setStatus("purpleStatus", `Falha ao consultar PurpleAir: ${error.message}`, "error");
   } finally {
     button.disabled = false;
     button.textContent = "Consultar PurpleAir";
@@ -1241,56 +1101,63 @@ function drawPurpleMap() {
     })
     .bindPopup(`
       <b>${escapeHTML(sensor.name)}</b><br>
+      Estado: ${escapeHTML(sensor.state)}<br>
       PM2.5: ${pm === null ? "Sem leitura" : pm + " µg/m³"}<br>
-      Umidade: ${sensor.humidity === null ? "Não informado" : sensor.humidity + "%"}<br>
-      Temperatura: ${sensor.temperature === null ? "Não informada" : sensor.temperature + " °C"}
+      Umidade: ${sensor.humidity === null ? "N/I" : sensor.humidity + "%"}<br>
+      Temperatura: ${sensor.temperature === null ? "N/I" : sensor.temperature + " °C"}
     `)
     .addTo(purpleLayer);
   }
 }
 
-function drawPurpleChart() {
+function drawPurpleStateChart() {
   const ctx = document.getElementById("purpleChart").getContext("2d");
 
-  const top = [...purpleSensors]
-    .filter(sensor => sensor.pm !== null)
-    .sort((a, b) => b.pm - a.pm)
-    .slice(0, 15);
+  const stateData = {};
+
+  purpleSensors.forEach(sensor => {
+    if (sensor.pm !== null && Number.isFinite(sensor.pm)) {
+      const uf = sensor.state;
+      if (!stateData[uf]) stateData[uf] = { total: 0, count: 0 };
+      stateData[uf].total += sensor.pm;
+      stateData[uf].count += 1;
+    }
+  });
+
+  const stateAverages = Object.keys(stateData)
+    .map(uf => ({
+      state: uf,
+      avgPm: Number((stateData[uf].total / stateData[uf].count).toFixed(1))
+    }))
+    .sort((a, b) => b.avgPm - a.avgPm);
 
   if (purpleChart) purpleChart.destroy();
 
   purpleChart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: top.map(sensor => sensor.name),
+      labels: stateAverages.map(item => item.state),
       datasets: [{
-        label: "PM2.5 (µg/m³)",
-        data: top.map(sensor => sensor.pm),
-        backgroundColor: top.map(sensor => pmColor(sensor.pm)),
-        borderWidth: 0,
+        label: "Média PM2.5 (µg/m³)",
+        data: stateAverages.map(item => item.avgPm),
+        backgroundColor: stateAverages.map(item => pmColor(item.avgPm)),
         borderRadius: 4
       }]
     },
     options: {
-      indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: context => ` ${context.raw} µg/m³`
+            label: context => ` Média: ${context.raw} µg/m³`
           }
         }
       },
       scales: {
-        x: {
-          beginAtZero: true,
-          title: { display: true, text: "PM2.5 (µg/m³)" }
-        },
-        y: {
-          grid: { display: false }
-        }
+        x: { title: { display: true, text: "Estado" } },
+        y: { beginAtZero: true, title: { display: true, text: "Média PM2.5 (µg/m³)" } }
       }
     }
   });
@@ -1318,23 +1185,13 @@ async function refreshFireData() {
   try {
     await loadRecentFires();
   } catch (error) {
-    setStatus(
-      "fireStatus",
-      `Erro ao carregar focos recentes: ${error.message}. ` +
-      `Verifique a conexão e se o servidor INPE permite acesso direto pelo navegador.`,
-      "error"
-    );
+    setStatus("fireStatus", `Erro ao carregar focos recentes: ${error.message}`, "error");
   }
 
   try {
     await loadDailyFires();
   } catch (error) {
-    setStatus(
-      "fireStatus",
-      `Erro ao carregar focos diários: ${error.message}. ` +
-      `Verifique a conexão e se o servidor INPE permite acesso direto pelo navegador.`,
-      "error"
-    );
+    setStatus("fireStatus", `Erro ao carregar focos diários: ${error.message}`, "error");
   }
 }
 
@@ -1345,6 +1202,7 @@ document.getElementById("reloadPurple").addEventListener("click", loadPurpleAir)
 
 initializeYearSelector();
 refreshFireData();
+loadPurpleAir();
 
 setInterval(refreshFireData, REFRESH_MS);
 </script>
