@@ -12,7 +12,7 @@
 
     <style>
         body { background-color: #f8f9fa; }
-        .map-container { height: 450px; width: 100%; border-radius: 8px; }
+        .map-container { height: 480px; width: 100%; border-radius: 8px; }
         .card-custom { border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
         
         /* Legenda Leaflet com faixas de concentração PM2.5 */
@@ -35,6 +35,11 @@
             border-radius: 50%;
             border: 1px solid rgba(0,0,0,0.2);
         }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -44,11 +49,14 @@
 
     <!-- Mapas Lado a Lado -->
     <div class="row mb-4">
-        <!-- Mapa 1: INPE Focos AQUA (Apenas Diário) -->
+        <!-- Mapa 1: INPE Focos AQUA -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
-                <h5 class="card-title">Focos Diários (Satélites AQUA - INPE)</h5>
-                <p class="text-muted small">Pontos de calor detectados na América do Sul.</p>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">Focos Diários (Satélites AQUA - INPE)</h5>
+                    <span id="status-focos" class="badge bg-secondary status-badge">Carregando dados...</span>
+                </div>
+                <p class="text-muted small">Pontos de calor detectados na América do Sul pelo satélite Aqua.</p>
                 <div id="mapa-focos" class="map-container"></div>
             </div>
         </div>
@@ -56,7 +64,10 @@
         <!-- Mapa 2: PurpleAir (Qualidade do Ar) -->
         <div class="col-lg-6 mb-3">
             <div class="card card-custom p-3">
-                <h5 class="card-title">Qualidade do Ar (PurpleAir - PM2.5)</h5>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">Qualidade do Ar (PurpleAir - PM2.5)</h5>
+                    <span id="status-purpleair" class="badge bg-secondary status-badge">Carregando dados...</span>
+                </div>
                 <p class="text-muted small">Sensores coloridos pela concentração de partículas PM2.5.</p>
                 <div id="mapa-purpleair" class="map-container"></div>
             </div>
@@ -71,7 +82,8 @@
 
 <script>
     const PURPLEAIR_KEY = "A8B62FCE-CA6E-11F1-9E30-4201AC1DC129";
-    const PROXY = "https://api.allorigins.win/raw?url=";
+    // Endpoint do CORS Proxy transparente para habilitar acesso dinâmico do INPE pelo navegador
+    const PROXY = "https://corsproxy.io/?";
 
     // 1. Inicializar os Mapas
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
@@ -80,74 +92,90 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapFocos);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapPurpleAir);
 
-    // Formata a data para AAAAMMDD (Ex: 20261018)
-    function formatarData(d) {
+    // Formatar data em AAAAMMDD (ex: 20261018)
+    function formatarDataAAAAMMDD(d) {
         const ano = d.getFullYear();
         const mes = String(d.getMonth() + 1).padStart(2, '0');
         const dia = String(d.getDate()).padStart(2, '0');
         return `${ano}${mes}${dia}`;
     }
 
-    // 2. Plotar Focos Diários do INPE (Busca direta do CSV por data)
+    // 2. Leitura Autônoma do CSV do INPE (Busca retroativa de até 5 dias para o caso de atraso na atualização do servidor)
     async function carregarFocosDiarios() {
+        const statusEl = document.getElementById('status-focos');
         const baseUrl = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/";
         
-        // Gera as URLs dos últimos 4 dias (caso o de hoje ainda não tenha subido no servidor)
-        let datasParaTestar = [];
-        for (let i = 0; i < 4; i++) {
+        let datasTestar = [];
+        for (let i = 0; i < 5; i++) {
             let d = new Date();
             d.setDate(d.getDate() - i);
-            datasParaTestar.push(`${baseUrl}focos_diario_${formatarData(d)}.csv`);
+            datasTestar.push(`${baseUrl}focos_diario_${formatarDataAAAAMMDD(d)}.csv`);
         }
 
-        let carregou = false;
+        let leuComSucesso = false;
 
-        for (const urlCsv of datasParaTestar) {
-            if (carregou) break;
+        for (const targetUrl of datasTestar) {
+            if (leuComSucesso) break;
 
-            await new Promise(resolve => {
-                Papa.parse(PROXY + encodeURIComponent(urlCsv), {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(res) {
-                        // Verifica se retornou dados válidos com a coluna lat
-                        if (res.data && res.data.length > 0 && res.data[0].lat) {
-                            res.data.forEach(item => {
-                                const sat = (item.satelite || '').toUpperCase();
-                                
-                                // Filtra satélite AQUA (ex: AQUA M-M, AQUA M-T, Aqua)
-                                if (sat.includes("AQUA")) {
-                                    const lat = parseFloat(item.lat || item.latitude);
-                                    const lon = parseFloat(item.lon || item.longitude);
+            try {
+                const proxyUrl = PROXY + encodeURIComponent(targetUrl);
+                const response = await fetch(proxyUrl);
 
-                                    if (!isNaN(lat) && !isNaN(lon)) {
-                                        L.circleMarker([lat, lon], {
-                                            radius: 4,
-                                            fillColor: '#ff2200',
-                                            color: '#880000',
-                                            weight: 1,
-                                            fillOpacity: 0.8
-                                        }).bindPopup(`
-                                            <b>Satélite:</b> ${item.satelite}<br>
-                                            <b>Data/Hora:</b> ${item.data_hora_gmt || ''}<br>
-                                            <b>Local:</b> ${item.municipio || ''} - ${item.estado || ''}<br>
-                                            <b>FRP:</b> ${item.frp || 'N/A'}
-                                        `).addTo(mapFocos);
+                if (response.ok) {
+                    const textoCsv = await response.text();
+
+                    Papa.parse(textoCsv, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: function(res) {
+                            if (res.data && res.data.length > 0 && res.data[0].lat) {
+                                let totalAqua = 0;
+
+                                res.data.forEach(item => {
+                                    const sat = (item.satelite || '').toUpperCase();
+                                    
+                                    // Filtra qualquer variação do satélite Aqua
+                                    if (sat.includes("AQUA")) {
+                                        const lat = parseFloat(item.lat || item.latitude);
+                                        const lon = parseFloat(item.lon || item.longitude);
+
+                                        if (!isNaN(lat) && !isNaN(lon)) {
+                                            totalAqua++;
+                                            L.circleMarker([lat, lon], {
+                                                radius: 4,
+                                                fillColor: '#ff2200',
+                                                color: '#880000',
+                                                weight: 1,
+                                                fillOpacity: 0.8
+                                            }).bindPopup(`
+                                                <b>Satélite:</b> ${item.satelite}<br>
+                                                <b>Data/Hora GMT:</b> ${item.data_hora_gmt || ''}<br>
+                                                <b>Local:</b> ${item.municipio || ''} - ${item.estado || ''}<br>
+                                                <b>FRP:</b> ${item.frp || 'N/A'} MW
+                                            `).addTo(mapFocos);
+                                        }
                                     }
-                                }
-                            });
-                            carregou = true;
+                                });
+
+                                statusEl.className = "badge bg-success status-badge";
+                                statusEl.textContent = `${totalAqua} focos AQUA carregados`;
+                                leuComSucesso = true;
+                            }
                         }
-                        resolve();
-                    },
-                    error: () => resolve()
-                });
-            });
+                    });
+                }
+            } catch (err) {
+                console.warn("Tentando data anterior do INPE...", err);
+            }
+        }
+
+        if (!leuComSucesso) {
+            statusEl.className = "badge bg-danger status-badge";
+            statusEl.textContent = "Erro de conexão com o INPE";
         }
     }
 
-    // 3. Cores para o PM2.5 (PurpleAir) - MANTIDO INTEGRO
+    // 3. Cores para o PM2.5 (PurpleAir) - MANTIDO
     function getCorPM25(pm) {
         if (pm <= 12.0) return '#00e400';
         if (pm <= 35.4) return '#ffff00';
@@ -157,8 +185,9 @@
         return '#7e0023';
     }
 
-    // 4. Ler Pontos do PurpleAir (América do Sul) - MANTIDO INTEGRO
+    // 4. Ler Pontos do PurpleAir (América do Sul) - MANTIDO
     async function carregarPurpleAir() {
+        const statusEl = document.getElementById('status-purpleair');
         const url = "https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5_10minute&location_type=0&nwlng=-82.0&nwlat=13.0&selng=-32.0&selat=-56.0";
 
         try {
@@ -171,6 +200,7 @@
                 const iPm = json.fields.indexOf("pm2.5_10minute");
                 const iNome = json.fields.indexOf("name");
 
+                let totalSensores = 0;
                 json.data.forEach(s => {
                     const lat = s[iLat];
                     const lon = s[iLon];
@@ -178,6 +208,7 @@
                     const nome = s[iNome] || "Sensor";
 
                     if (lat && lon && pm25 !== null) {
+                        totalSensores++;
                         L.circleMarker([lat, lon], {
                             radius: 6,
                             fillColor: getCorPM25(pm25),
@@ -187,13 +218,18 @@
                         }).bindPopup(`<b>${nome}</b><br>PM2.5: ${pm25} &micro;g/m&sup3;`).addTo(mapPurpleAir);
                     }
                 });
+
+                statusEl.className = "badge bg-success status-badge";
+                statusEl.textContent = `${totalSensores} sensores ativos`;
             }
         } catch (e) {
             console.error("Erro ao carregar PurpleAir:", e);
+            statusEl.className = "badge bg-danger status-badge";
+            statusEl.textContent = "Erro na API PurpleAir";
         }
     }
 
-    // 5. Legenda de Concentração PM2.5 no PurpleAir - MANTIDO INTEGRO
+    // 5. Legenda do PurpleAir - MANTIDO
     function adicionarLegendaPurpleAir() {
         const legend = L.control({ position: 'bottomright' });
 
@@ -220,7 +256,7 @@
         legend.addTo(mapPurpleAir);
     }
 
-    // Executar chamadas ao carregar a página
+    // Executa no carregamento da página
     carregarFocosDiarios();
     carregarPurpleAir();
     adicionarLegendaPurpleAir();
