@@ -117,7 +117,7 @@
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="card-title mb-0 text-danger">Mapa 3: Interpolação por Clusters (Buffer Reduzido)</h5>
-                    <span id="status-interpolacao" class="badge bg-secondary status-badge">Aguardando dados...</span>
+                    <span id="status-interpolacao" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
                 <p class="text-muted small mb-1">Superfície contínua restrita ao entorno imediato das estações de monitoramento.</p>
                 
@@ -140,7 +140,7 @@
             <div class="card card-custom p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="card-title mb-0 text-primary">Mapa 4: Correlação (Focos de Calor x Risco OMS)</h5>
-                    <span id="status-correlacao" class="badge bg-secondary status-badge">Aguardando cruzamento...</span>
+                    <span id="status-correlacao" class="badge bg-secondary status-badge">Carregando...</span>
                 </div>
                 <p class="text-muted small mb-1">Cruza os limiares de PM2.5 da OMS com a presença de focos de queimadas na mesma área.</p>
                 
@@ -231,6 +231,7 @@
     const dataHoraAcessoStr = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR');
     document.querySelectorAll('.data-acesso').forEach(el => el.textContent = dataHoraAcessoStr);
 
+    // Inicialização dos 4 Mapas
     const mapFocos = L.map('mapa-focos').setView([-14.235, -51.925], 4);
     const mapPurpleAir = L.map('mapa-purpleair').setView([-14.235, -51.925], 4);
     const mapInterpolacao = L.map('mapa-interpolacao').setView([-14.235, -51.925], 4);
@@ -241,8 +242,9 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapInterpolacao);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(mapCorrelacao);
 
-    window.globalFocos = [];
-    window.globalPurpleAir = [];
+    // Armazenamento global dos dados
+    let listaFocos = [];
+    let listaSensores = [];
 
     function formatarDataAAAAMMDD(d) {
         const ano = d.getFullYear();
@@ -256,80 +258,6 @@
         const mes = String(d.getMonth() + 1).padStart(2, '0');
         const ano = d.getFullYear();
         return `${dia}/${mes}/${ano}`;
-    }
-
-    async function carregarFocosDiarios() {
-        const statusEl = document.getElementById('status-focos');
-        const dataFocosEl = document.getElementById('data-focos');
-        const citacaoDataFocosEl = document.getElementById('citacao-data-focos');
-        
-        let fontes = [];
-        for (let i = 0; i < 3; i++) {
-            let d = new Date();
-            d.setDate(d.getDate() - i);
-            const dt = formatarDataAAAAMMDD(d);
-            const dtBR = formatarDataBR(d);
-            
-            fontes.push({ dataBR: dtBR, url: `https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${dt}.csv` });
-            fontes.push({ dataBR: dtBR, url: `https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${dt}.csv` });
-        }
-
-        let sucesso = false;
-        for (const fonte of fontes) {
-            if (sucesso) break;
-            try {
-                let response = await fetch(fonte.url, { mode: 'cors' }).catch(() => null);
-                if (!response || !response.ok) {
-                    response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(fonte.url)}`).catch(() => null);
-                }
-
-                if (response && response.ok) {
-                    const textoCsv = await response.text();
-                    Papa.parse(textoCsv, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: function(res) {
-                            if (res.data && res.data.length > 0) {
-                                let totalAqua = 0;
-                                res.data.forEach(item => {
-                                    const sat = (item.satelite || '').toUpperCase();
-                                    if (sat.includes("AQUA")) {
-                                        const lat = parseFloat(item.lat || item.latitude);
-                                        const lon = parseFloat(item.lon || item.longitude);
-                                        if (!isNaN(lat) && !isNaN(lon)) {
-                                            totalAqua++;
-                                            const isMM = sat.includes("M-M");
-                                            window.globalFocos.push({ lat, lon, satelite: item.satelite });
-
-                                            L.circleMarker([lat, lon], {
-                                                radius: 4,
-                                                fillColor: isMM ? '#3388ff' : '#ff2200',
-                                                color: '#000',
-                                                weight: 1,
-                                                fillOpacity: 0.8
-                                            }).bindPopup(`<b>Satélite:</b> ${item.satelite}<br><b>Data:</b> ${fonte.dataBR}<br><b>Local:</b> ${item.municipio || ''} - ${item.estado || ''}`).addTo(mapFocos);
-                                        }
-                                    }
-                                });
-                                if (totalAqua > 0) {
-                                    statusEl.className = "badge bg-success status-badge";
-                                    statusEl.textContent = `${totalAqua} focos AQUA`;
-                                    dataFocosEl.textContent = fonte.dataBR;
-                                    citacaoDataFocosEl.textContent = fonte.dataBR;
-                                    sucesso = true;
-                                    tentarGerarMapaCorrelacao();
-                                }
-                            }
-                        }
-                    });
-                }
-            } catch (err) { console.warn(err); }
-        }
-        if (!sucesso) {
-            statusEl.className = "badge bg-danger status-badge";
-            statusEl.textContent = "Erro ao carregar INPE";
-            dataFocosEl.textContent = "Indisponível";
-        }
     }
 
     function getCorPM25(pm) {
@@ -347,13 +275,81 @@
         return '#dc3545';                
     }
 
-    async function carregarPurpleAirEInterpolacao() {
+    // 1. Carregar Focos INPE
+    async function carregarFocosDiarios() {
+        const statusEl = document.getElementById('status-focos');
+        const dataFocosEl = document.getElementById('data-focos');
+        const citacaoDataFocosEl = document.getElementById('citacao-data-focos');
+        
+        let fontes = [];
+        for (let i = 0; i < 3; i++) {
+            let d = new Date();
+            d.setDate(d.getDate() - i);
+            const dt = formatarDataAAAAMMDD(d);
+            const dtBR = formatarDataBR(d);
+            fontes.push({ dataBR: dtBR, url: `https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${dt}.csv` });
+            fontes.push({ dataBR: dtBR, url: `https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${dt}.csv` });
+        }
+
+        for (const fonte of fontes) {
+            try {
+                let response = await fetch(fonte.url, { mode: 'cors' }).catch(() => null);
+                if (!response || !response.ok) {
+                    response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(fonte.url)}`).catch(() => null);
+                }
+
+                if (response && response.ok) {
+                    const textoCsv = await response.text();
+                    let res = Papa.parse(textoCsv, { header: true, skipEmptyLines: true });
+                    
+                    if (res.data && res.data.length > 0) {
+                        res.data.forEach(item => {
+                            const sat = (item.satelite || '').toUpperCase();
+                            if (sat.includes("AQUA")) {
+                                const lat = parseFloat(item.lat || item.latitude);
+                                const lon = parseFloat(item.lon || item.longitude);
+                                if (!isNaN(lat) && !isNaN(lon)) {
+                                    const isMM = sat.includes("M-M");
+                                    listaFocos.push({ lat, lon, satelite: item.satelite });
+
+                                    L.circleMarker([lat, lon], {
+                                        radius: 4,
+                                        fillColor: isMM ? '#3388ff' : '#ff2200',
+                                        color: '#000',
+                                        weight: 1,
+                                        fillOpacity: 0.8
+                                    }).bindPopup(`<b>Satélite:</b> ${item.satelite}<br><b>Data:</b> ${fonte.dataBR}<br><b>Local:</b> ${item.municipio || ''} - ${item.estado || ''}`).addTo(mapFocos);
+                                }
+                            }
+                        });
+
+                        if (listaFocos.length > 0) {
+                            statusEl.className = "badge bg-success status-badge";
+                            statusEl.textContent = `${listaFocos.length} focos AQUA`;
+                            dataFocosEl.textContent = fonte.dataBR;
+                            citacaoDataFocosEl.textContent = fonte.dataBR;
+                            break;
+                        }
+                    }
+                }
+            } catch (err) { console.warn(err); }
+        }
+
+        if (listaFocos.length === 0) {
+            statusEl.className = "badge bg-danger status-badge";
+            statusEl.textContent = "Erro ao carregar INPE";
+            dataFocosEl.textContent = "Indisponível";
+        }
+    }
+
+    // 2. Carregar PurpleAir e Gerar Mapas 2, 3 e 4
+    async function carregarPurpleAirEProcessarMapas() {
         const statusEl = document.getElementById('status-purpleair');
         const statusInterpEl = document.getElementById('status-interpolacao');
+        const statusCorrelEl = document.getElementById('status-correlacao');
+
         const dataPAEl = document.getElementById('data-purpleair');
-        const dataInterpEl = document.getElementById('data-interpolacao');
         const citPAEl = document.getElementById('citacao-data-purpleair');
-        const citInterpEl = document.getElementById('citacao-data-interp');
 
         const url = "https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5_10minute&location_type=0&nwlng=-82.0&nwlat=13.0&selng=-32.0&selat=-56.0";
 
@@ -365,9 +361,7 @@
             const dataHoraStr = timeStampAPI.toLocaleDateString('pt-BR') + ' ' + timeStampAPI.toLocaleTimeString('pt-BR');
 
             dataPAEl.textContent = dataHoraStr;
-            dataInterpEl.textContent = dataHoraStr;
             citPAEl.textContent = dataHoraStr;
-            citInterpEl.textContent = dataHoraStr;
 
             if (json && json.data && json.fields) {
                 const iLat = json.fields.indexOf("latitude");
@@ -382,7 +376,7 @@
                     const nome = s[iNome] || "Sensor";
 
                     if (lat && lon && pm25 !== null && !isNaN(pm25)) {
-                        window.globalPurpleAir.push({ lat, lon, pm25, nome });
+                        listaSensores.push({ lat, lon, pm25, nome });
 
                         L.circleMarker([lat, lon], {
                             radius: 6,
@@ -395,13 +389,16 @@
                 });
 
                 statusEl.className = "badge bg-success status-badge";
-                statusEl.textContent = `${window.globalPurpleAir.length} sensores`;
+                statusEl.textContent = `${listaSensores.length} sensores`;
 
-                if (window.globalPurpleAir.length > 0) {
-                    setTimeout(() => gerarInterpolacaoComBufferReduzido(window.globalPurpleAir), 100);
+                if (listaSensores.length > 0) {
+                    gerarMapa3Interpolacao(listaSensores);
                     statusInterpEl.className = "badge bg-success status-badge";
                     statusInterpEl.textContent = "Interpolação Concluída";
-                    tentarGerarMapaCorrelacao();
+
+                    gerarMapa4Correlacao(listaSensores, listaFocos);
+                    statusCorrelEl.className = "badge bg-success status-badge";
+                    statusCorrelEl.textContent = "Correlação Concluída";
                 }
             }
         } catch (e) {
@@ -410,24 +407,25 @@
             statusEl.textContent = "Erro na API";
             statusInterpEl.className = "badge bg-danger status-badge";
             statusInterpEl.textContent = "Erro";
+            statusCorrelEl.className = "badge bg-danger status-badge";
+            statusCorrelEl.textContent = "Erro";
         }
     }
 
-    function gerarInterpolacaoComBufferReduzido(pontos) {
-        const raioInfluencia = 1.2;
+    // Processamento do Mapa 3 (Buffer Reduzido 1.2°)
+    function gerarMapa3Interpolacao(pontos) {
+        const raio = 1.2;
         const passo = 0.3;
 
         pontos.forEach(p => {
-            for (let lat = p.lat - raioInfluencia; lat <= p.lat + raioInfluencia; lat += passo) {
-                for (let lon = p.lon - raioInfluencia; lon <= p.lon + raioInfluencia; lon += passo) {
-                    
+            for (let lat = p.lat - raio; lat <= p.lat + raio; lat += passo) {
+                for (let lon = p.lon - raio; lon <= p.lon + raio; lon += passo) {
                     let somaPesos = 0, somaValores = 0;
 
                     for (let outro of pontos) {
                         const dLat = lat - outro.lat, dLon = lon - outro.lon;
                         const distSq = dLat * dLat + dLon * dLon;
-                        
-                        if (distSq <= (raioInfluencia * raioInfluencia)) {
+                        if (distSq <= (raio * raio)) {
                             const peso = 1 / (distSq + 0.01);
                             somaPesos += peso;
                             somaValores += outro.pm25 * peso;
@@ -443,7 +441,7 @@
                             fillColor: getCorOMS(pmEstimado),
                             fillOpacity: 0.45,
                             weight: 0
-                        }).bindPopup(`<b>Cluster Local (IDW)</b><br><b>PM2.5:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status:</b> ${pmEstimado <= 15 ? 'Meta' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
+                        }).bindPopup(`<b>Cluster Local (IDW)</b><br><b>PM2.5:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br><b>Status:</b> ${pmEstimado <= 15 ? 'Meta OMS' : pmEstimado <= 45 ? 'Alerta' : 'CRÍTICO'}`).addTo(mapInterpolacao);
                     }
                 }
             }
@@ -456,29 +454,24 @@
                 color: '#000',
                 weight: 1,
                 fillOpacity: 0.9
-            }).bindPopup(`<b>${p.nome}</b><br>PM2.5: ${p.pm25}`).addTo(mapInterpolacao);
+            }).bindPopup(`<b>${p.nome}</b><br>PM2.5 Real: ${p.pm25}`).addTo(mapInterpolacao);
         });
     }
 
-    function tentarGerarMapaCorrelacao() {
-        if (window.globalFocos.length === 0 || window.globalPurpleAir.length === 0) return;
-
-        const statusCorrelacaoEl = document.getElementById('status-correlacao');
-        statusCorrelacaoEl.className = "badge bg-success status-badge";
-        statusCorrelacaoEl.textContent = "Correlação Gerada";
-
-        const raioInfluencia = 1.2;
+    // Processamento do Mapa 4 (Co-ocorrência Fogo x Fumaça)
+    function gerarMapa4Correlacao(pontos, focos) {
+        const raio = 1.2;
         const passo = 0.4;
 
-        window.globalPurpleAir.forEach(p => {
-            for (let lat = p.lat - raioInfluencia; lat <= p.lat + raioInfluencia; lat += passo) {
-                for (let lon = p.lon - raioInfluencia; lon <= p.lon + raioInfluencia; lon += passo) {
-                    
+        pontos.forEach(p => {
+            for (let lat = p.lat - raio; lat <= p.lat + raio; lat += passo) {
+                for (let lon = p.lon - raio; lon <= p.lon + raio; lon += passo) {
                     let somaPesos = 0, somaValores = 0;
-                    window.globalPurpleAir.forEach(outro => {
+
+                    pontos.forEach(outro => {
                         const dLat = lat - outro.lat, dLon = lon - outro.lon;
                         const distSq = dLat * dLat + dLon * dLon;
-                        if (distSq <= (raioInfluencia * raioInfluencia)) {
+                        if (distSq <= (raio * raio)) {
                             const peso = 1 / (distSq + 0.01);
                             somaPesos += peso;
                             somaValores += outro.pm25 * peso;
@@ -487,28 +480,28 @@
 
                     if (somaPesos > 0) {
                         const pmEstimado = somaValores / somaPesos;
-                        
+
                         let focosNaCelula = 0;
-                        window.globalFocos.forEach(f => {
+                        focos.forEach(f => {
                             if (f.lat >= lat && f.lat < lat + passo && f.lon >= lon && f.lon < lon + passo) {
                                 focosNaCelula++;
                             }
                         });
 
                         let corCelula = getCorOMS(pmEstimado);
-                        let rotuloStatus = "Normal/Moderado";
+                        let rotulo = "Normal/Seguro";
 
                         if (pmEstimado > 45.0) {
                             if (focosNaCelula > 0) {
                                 corCelula = '#8b0000';
-                                rotuloStatus = `CRÍTICO COM FOCO LOCAL (${focosNaCelula} focos)`;
+                                rotulo = `CRÍTICO COM FOCO LOCAL (${focosNaCelula} focos)`;
                             } else {
                                 corCelula = '#660066';
-                                rotuloStatus = 'CRÍTICO POR TRANSPORTE (Sem Foco Local)';
+                                rotulo = 'CRÍTICO POR TRANSPORTE (0 focos locais)';
                             }
                         } else if (focosNaCelula > 0) {
                             corCelula = '#ff8c00';
-                            rotuloStatus = `Alerta c/ Focos (${focosNaCelula})`;
+                            rotulo = `Alerta c/ Focos (${focosNaCelula} focos)`;
                         }
 
                         const bounds = [[lat, lon], [lat + passo, lon + passo]];
@@ -521,7 +514,7 @@
                             <b>Análise de Correlação</b><br>
                             <b>PM2.5 Estimado:</b> ${pmEstimado.toFixed(1)} &micro;g/m&sup3;<br>
                             <b>Focos na Célula:</b> ${focosNaCelula}<br>
-                            <b>Condição:</b> ${rotuloStatus}
+                            <b>Condição:</b> ${rotulo}
                         `).addTo(mapCorrelacao);
                     }
                 }
@@ -529,6 +522,7 @@
         });
     }
 
+    // Legendas
     function adicionarLegendas() {
         const legendFocos = L.control({ position: 'bottomright' });
         legendFocos.onAdd = function () {
@@ -567,9 +561,14 @@
         legendCorrelacao.addTo(mapCorrelacao);
     }
 
-    carregarFocosDiarios();
-    carregarPurpleAirEInterpolacao();
-    adicionarLegendas();
+    // Execução ordenada
+    async function inicializar() {
+        await carregarFocosDiarios();
+        await carregarPurpleAirEProcessarMapas();
+        adicionarLegendas();
+    }
+
+    inicializar();
 </script>
 
 </body>
