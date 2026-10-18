@@ -2,669 +2,899 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitoramento Ambiental | Fogo e Qualidade do Ar</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monitoramento de Focos de Calor | América do Sul</title>
 
-<link rel="stylesheet"
- href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<style>
-:root {
-  --bg: #f4f7fb;
-  --card: #fff;
-  --text: #172033;
-  --muted: #64748b;
-  --border: #dce3ed;
-  --blue: #1d4ed8;
-}
-* { box-sizing: border-box; }
+  <style>
+    :root {
+      --bg: #101820;
+      --panel: #182630;
+      --border: #30424d;
+      --text: #f2f6f8;
+      --muted: #a8bac5;
+      --orange: #ff8c42;
+      --blue: #50c7e8;
+      --green: #6ed6a0;
+      --red: #ff7777;
+    }
 
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
+    * { box-sizing: border-box; }
 
-header {
-  padding: 24px 20px;
-  background: #10243a;
-  color: white;
-}
-header h1 { margin: 0 0 8px; font-size: clamp(22px, 3vw, 32px); }
-header p { margin: 0; color: #dbeafe; line-height: 1.5; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-main { max-width: 1600px; margin: auto; padding: 20px; }
+    header {
+      padding: 22px;
+      border-bottom: 1px solid var(--border);
+      background: #14212b;
+    }
 
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-}
+    header h1 {
+      font-size: clamp(21px, 3vw, 30px);
+      margin: 0 0 8px;
+    }
 
-button {
-  padding: 11px 16px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--blue);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-button:disabled { opacity: .6; cursor: wait; }
+    header p {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
 
-#atualizacao { color: var(--muted); font-size: 13px; }
+    main {
+      max-width: 1600px;
+      margin: auto;
+      padding: 18px;
+    }
 
-.status-grid, .map-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 22px;
-}
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
 
-.status-card, .map-card {
-  min-width: 0;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-}
+    .card, .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
 
-.status-card { padding: 15px; }
-.status-card strong { display: block; margin-bottom: 7px; }
-.status-value { font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+    .card { padding: 17px; }
 
-.section-title { margin: 28px 0 14px; font-size: 22px; }
+    .card .label {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
 
-.map-heading { padding: 15px 16px 12px; }
-.map-heading h3 { margin: 0 0 7px; font-size: 17px; }
-.map-heading p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .card .number {
+      font-size: clamp(25px, 3vw, 36px);
+      font-weight: 700;
+      margin-top: 9px;
+    }
 
-.map { height: 440px; width: 100%; background: #e8eef4; }
+    .orange { color: var(--orange); }
+    .blue { color: var(--blue); }
+    .green { color: var(--green); }
 
-.map-status {
-  min-height: 36px;
-  padding: 9px 14px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  border-top: 1px solid var(--border);
-  overflow-wrap: anywhere;
-}
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 15px;
+    }
 
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px 14px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.legend span { display: inline-flex; align-items: center; gap: 5px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .map-panel { overflow: hidden; }
 
-footer {
-  padding: 24px 20px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
+    .map-heading {
+      padding: 15px 17px;
+      border-bottom: 1px solid var(--border);
+    }
 
-.leaflet-popup-content { line-height: 1.6; }
+    .map-heading h2, .side h2 {
+      font-size: 17px;
+      margin: 0 0 7px;
+    }
 
-@media (max-width: 850px) {
-  .map-grid, .status-grid { grid-template-columns: 1fr; }
-  .map { height: 380px; }
-  main { padding: 12px; }
-}
-</style>
+    .map-heading p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    #map {
+      height: min(72vh, 760px);
+      min-height: 440px;
+      width: 100%;
+      background: #dbe5e8;
+    }
+
+    .side {
+      padding: 16px;
+      align-self: start;
+    }
+
+    .layer-control {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-control label {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      line-height: 1.45;
+      cursor: pointer;
+    }
+
+    .layer-control input {
+      margin-top: 3px;
+      accent-color: var(--orange);
+    }
+
+    .layer-description {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 5px 0 0 24px;
+      line-height: 1.5;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      background: #d8eaf1;
+      color: #12212a;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 11px;
+      background: #101c24;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+    }
+
+    .status.error { color: #ffaaaa; }
+    .status.ok { color: #a4efc2; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 13px 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    footer {
+      padding: 18px 0 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    a { color: #78d4f0; }
+
+    .leaflet-popup-content {
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+      #map { height: 60vh; min-height: 400px; }
+    }
+  </style>
 </head>
 
 <body>
 <header>
-  <h1>Monitoramento Ambiental da América do Sul</h1>
-  <p>Focos de calor do INPE e qualidade do ar monitorada pela PurpleAir.</p>
+  <h1>Monitoramento de Focos de Calor</h1>
+  <p>América do Sul · BDQueimadas / INPE · Mapa interativo</p>
 </header>
 
 <main>
-  <div class="toolbar">
-    <button id="atualizarBtn" type="button">Atualizar dados</button>
-    <span id="atualizacao">Aguardando consulta...</span>
-  </div>
-
-  <div class="status-grid">
-    <div class="status-card">
-      <strong>INPE · Arquivo de 10 minutos</strong>
-      <div class="status-value" id="statusINPE">Aguardando consulta.</div>
+  <section class="cards">
+    <div class="card">
+      <div class="label">Focos na última hora</div>
+      <div class="number orange" id="countRecent">—</div>
     </div>
-    <div class="status-card">
-      <strong>INPE · Arquivo diário</strong>
-      <div class="status-value" id="statusINPEDiario">Aguardando consulta.</div>
+
+    <div class="card">
+      <div class="label">Focos do dia anterior</div>
+      <div class="number blue" id="countDaily">—</div>
     </div>
-    <div class="status-card">
-      <strong>PurpleAir · PM2.5 de 24 horas</strong>
-      <div class="status-value" id="statusPA24">Aguardando consulta.</div>
+
+    <div class="card">
+      <div class="label">Última verificação do dashboard</div>
+      <div class="number green" id="lastUpdate"
+           style="font-size:19px">Aguardando</div>
     </div>
-    <div class="status-card">
-      <strong>PurpleAir · Sensores recentes</strong>
-      <div class="status-value" id="statusPA1">Aguardando consulta.</div>
+  </section>
+
+  <section class="layout">
+    <div class="panel map-panel">
+      <div class="map-heading">
+        <h2>Distribuição espacial dos focos</h2>
+        <p>
+          Ative ou desative cada camada. Clique em um ponto
+          para consultar os atributos disponíveis no CSV.
+        </p>
+      </div>
+
+      <div id="map"></div>
+
+      <div class="legend">
+        <span><i class="dot" style="background:#ff8c42"></i>Última hora</span>
+        <span><i class="dot" style="background:#168bd2"></i>Dia anterior</span>
+      </div>
     </div>
-  </div>
 
-  <h2 class="section-title">Focos de calor · INPE</h2>
-  <div class="map-grid">
-    <section class="map-card">
-      <div class="map-heading">
-        <h3>Focos no último arquivo de 10 minutos</h3>
-        <p>Localização dos focos presentes no arquivo mais recente retornado pelo serviço.</p>
-      </div>
-      <div id="mapaINPE24" class="map"></div>
-      <div class="legend">
-        <span><i class="dot" style="background:#16a34a"></i> Até 10 min</span>
-        <span><i class="dot" style="background:#eab308"></i> 10–60 min</span>
-        <span><i class="dot" style="background:#f97316"></i> 1–6 h</span>
-        <span><i class="dot" style="background:#dc2626"></i> Mais de 6 h ou horário indisponível</span>
-      </div>
-      <div id="mapaINPE24Status" class="map-status">Aguardando dados.</div>
-    </section>
+    <aside class="panel side">
+      <h2>Camadas e controles</h2>
 
-    <section class="map-card">
-      <div class="map-heading">
-        <h3>Concentração de focos no arquivo diário</h3>
-        <p>Mapa de calor baseado nos registros do CSV diário da América do Sul.</p>
+      <div class="layer-control">
+        <label>
+          <input type="checkbox" id="toggleRecent" checked>
+          <span><strong>Focos da última hora</strong></span>
+        </label>
+        <div class="layer-description">
+          Arquivos de 10 minutos, filtrados pelo horário de referência
+          quando o CSV fornece essa informação.
+        </div>
       </div>
-      <div id="mapaINPE1" class="map"></div>
-      <div class="legend">
-        <span>Menor concentração</span>
-        <span style="color:#dc2626">●</span>
-        <span>Maior concentração</span>
-      </div>
-      <div id="mapaINPE1Status" class="map-status">Aguardando dados.</div>
-    </section>
-  </div>
 
-  <h2 class="section-title">Qualidade do ar · PurpleAir</h2>
-  <div class="map-grid">
-    <section class="map-card">
-      <div class="map-heading">
-        <h3>PM2.5 · Média móvel de 24 horas</h3>
-        <p>Valores reportados pelos sensores disponíveis. Os círculos representam medições, não uma interpolação.</p>
+      <div class="layer-control">
+        <label>
+          <input type="checkbox" id="toggleDaily" checked>
+          <span><strong>Focos do dia anterior</strong></span>
+        </label>
+        <div class="layer-description" id="dailyDate">
+          Data do arquivo: aguardando consulta.
+        </div>
       </div>
-      <div id="mapaPA24" class="map"></div>
-      <div class="legend">
-        <span><i class="dot" style="background:#22c55e"></i> 0–8,9 µg/m³</span>
-        <span><i class="dot" style="background:#eab308"></i> 9–24,9 µg/m³</span>
-        <span><i class="dot" style="background:#f97316"></i> 25–49,9 µg/m³</span>
-        <span><i class="dot" style="background:#dc2626"></i> ≥ 50 µg/m³</span>
-      </div>
-      <div id="mapaPA24Status" class="map-status">Aguardando dados.</div>
-    </section>
 
-    <section class="map-card">
-      <div class="map-heading">
-        <h3>PM2.5 · Leitura mais recente</h3>
-        <p>Sensores com registro recente. O horário da medição é apresentado no marcador.</p>
+      <button id="refreshButton">Atualizar dados agora</button>
+
+      <div class="status" id="recentStatus">
+        Focos recentes: aguardando consulta.
       </div>
-      <div id="mapaPA1" class="map"></div>
-      <div class="legend">
-        <span><i class="dot" style="background:#22c55e"></i> 0–8,9 µg/m³</span>
-        <span><i class="dot" style="background:#eab308"></i> 9–24,9 µg/m³</span>
-        <span><i class="dot" style="background:#f97316"></i> 25–49,9 µg/m³</span>
-        <span><i class="dot" style="background:#dc2626"></i> ≥ 50 µg/m³</span>
+
+      <div class="status" id="dailyStatus">
+        Focos diários: aguardando consulta.
       </div>
-      <div id="mapaPA1Status" class="map-status">Aguardando dados.</div>
-    </section>
-  </div>
+
+      <div class="status" id="generalStatus">
+        Inicializando mapa...
+      </div>
+    </aside>
+  </section>
+
+  <footer>
+    Fonte: <a target="_blank" rel="noopener"
+      href="https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/">
+      BDQueimadas / INPE
+    </a>.<br>
+    Os focos de calor são detecções por satélite e não equivalem,
+    necessariamente, ao número de incêndios distintos.<br>
+    A atualização depende da disponibilidade dos arquivos e do acesso
+    permitido pelo servidor de origem.
+  </footer>
 </main>
 
-<footer>
-  Fontes: Programa Queimadas/INPE e PurpleAir.
-  Horários de leitura são convertidos para o fuso de Brasília quando aplicável.
-  A cobertura depende da disponibilidade e da atualização das fontes.
-  <br>Mapa-base © OpenStreetMap contributors.
-</footer>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
-"use strict";
+(() => {
+  "use strict";
 
-/* =========================================================
-   CONFIGURAÇÃO
-   Publique o Worker antes de preencher esta URL.
-   Não coloque a chave PurpleAir neste arquivo.
-   ========================================================= */
+  // ==========================================================
+  // CONFIGURAÇÃO
+  // ==========================================================
 
-const API_BASE = "COLOQUE_AQUI_A_URL_DO_WORKER";
-const FUSO = "America/Sao_Paulo";
-const CENTRO = [-14.2, -51.9];
-const BOUNDS = L.latLngBounds([ -56, -82 ], [ 13, -32 ]);
+  const BASE = "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/";
 
-let ocupado = false;
+  const RECENT_DIR = BASE + "10min/";
+  const DAILY_DIR = BASE + "diario/America_Sul/";
 
-const mapas = {};
-const camadas = {};
+  const REFRESH_MS = 10 * 60 * 1000;
+  const RECENT_WINDOW_MS = 60 * 60 * 1000;
+  const FETCH_TIMEOUT_MS = 25000;
 
-function criarMapa(id) {
-  const mapa = L.map(id, {
-    center: CENTRO,
-    zoom: 4,
-    minZoom: 3,
-    maxZoom: 13
-  });
+  // Se o INPE bloquear CORS, informe aqui a URL de um proxy
+  // seu, autorizado e configurado para encaminhar os arquivos.
+  // Exemplo de formato: "https://seu-proxy.example/arquivo?url="
+  // Deixe vazio para tentar acessar o INPE diretamente.
+  const PROXY_PREFIX = "";
+
+  // ==========================================================
+  // MAPA
+  // ==========================================================
+
+  const map = L.map("map", {
+    preferCanvas: true
+  }).setView([-15, -58], 3.5);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "&copy; OpenStreetMap contributors"
-  }).addTo(mapa);
+    maxZoom: 12,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
 
-  mapa.fitBounds(BOUNDS, { padding: [8, 8] });
-  return mapa;
-}
+  const recentLayer = L.layerGroup().addTo(map);
+  const dailyLayer = L.layerGroup().addTo(map);
 
-mapas.inpe10 = criarMapa("mapaINPE24");
-mapas.inpeDia = criarMapa("mapaINPE1");
-mapas.pa24 = criarMapa("mapaPA24");
-mapas.paAtual = criarMapa("mapaPA1");
+  const renderer = L.canvas({ padding: 0.5 });
 
-for (const chave of Object.keys(mapas)) {
-  camadas[chave] = L.layerGroup().addTo(mapas[chave]);
-}
+  // ==========================================================
+  // ESTADO
+  // ==========================================================
 
-const calorDiario = L.heatLayer([], {
-  radius: 20,
-  blur: 15,
-  maxZoom: 8,
-  max: 1
-}).addTo(mapas.inpeDia);
+  let busy = false;
+  let recentPoints = [];
+  let dailyPoints = [];
+  let lastRecentSuccess = null;
+  let lastDailySuccess = null;
 
-function texto(id, valor) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = valor;
-}
+  const $ = id => document.getElementById(id);
 
-function numero(v) {
-  if (v === null || v === undefined || v === "") return NaN;
-  const n = Number(String(v).replace(",", "."));
-  return Number.isFinite(n) ? n : NaN;
-}
+  const fmtNumber = n =>
+    Number(n).toLocaleString("pt-BR");
 
-function formatarNumero(v, casas = 1) {
-  return Number(v).toLocaleString("pt-BR", {
-    maximumFractionDigits: casas
-  });
-}
+  const fmtDate = d =>
+    new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "medium",
+      timeZone: "America/Sao_Paulo"
+    }).format(d);
 
-function dataHora(v) {
-  if (v === null || v === undefined || v === "") return "Indisponível";
-  let d;
-
-  // Unix em segundos ou milissegundos.
-  if (typeof v === "number" || /^\d+(\.\d+)?$/.test(String(v))) {
-    let n = Number(v);
-    if (n > 1e12) n /= 1000;
-    d = new Date(n * 1000);
-  } else {
-    d = new Date(v);
+  function setStatus(id, text, type = "") {
+    const el = $(id);
+    el.textContent = text;
+    el.className = "status" + (type ? " " + type : "");
   }
 
-  if (!Number.isFinite(d.getTime())) return String(v);
-
-  return d.toLocaleString("pt-BR", {
-    timeZone: FUSO,
-    dateStyle: "short",
-    timeStyle: "short"
-  });
-}
-
-function dentroDaAmericaDoSul(lat, lon) {
-  return Number.isFinite(lat) && Number.isFinite(lon) &&
-    lat >= -56 && lat <= 13 && lon >= -82 && lon <= -32;
-}
-
-function escaparHTML(v) {
-  return String(v ?? "").replace(/[&<>"']/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[c]);
-}
-
-function corPM25(v) {
-  if (!Number.isFinite(v) || v < 0) return "#64748b";
-  if (v < 9) return "#22c55e";
-  if (v < 25) return "#eab308";
-  if (v < 50) return "#f97316";
-  return "#dc2626";
-}
-
-function corIdade(minutos) {
-  if (!Number.isFinite(minutos) || minutos < 0) return "#dc2626";
-  if (minutos <= 10) return "#16a34a";
-  if (minutos <= 60) return "#eab308";
-  if (minutos <= 360) return "#f97316";
-  return "#dc2626";
-}
-
-async function buscarJSON(url) {
-  const resposta = await fetch(url, {
-    cache: "no-store",
-    headers: { Accept: "application/json" }
-  });
-
-  const dados = await resposta.json().catch(() => ({}));
-
-  if (!resposta.ok) {
-    throw new Error(dados.erro || dados.detail ||
-      `Erro HTTP ${resposta.status}`);
+  function fileDate(d) {
+    return [
+      d.getFullYear(),
+      String(d.getMonth() + 1).padStart(2, "0"),
+      String(d.getDate()).padStart(2, "0")
+    ].join("");
   }
 
-  return dados;
-}
+  function localYesterday() {
+    // Usa a data civil brasileira, sem depender da zona horária
+    // configurada no computador.
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Sao_Paulo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
 
-/* CSV: respeita vírgulas e quebras de linha dentro de aspas. */
-function interpretarCSV(csv) {
-  const linhas = [];
-  let linha = [], campo = "", aspas = false;
+    const p = {};
+    parts.forEach(x => p[x.type] = x.value);
 
-  for (let i = 0; i < csv.length; i++) {
-    const c = csv[i];
+    const d = new Date(Date.UTC(
+      Number(p.year), Number(p.month) - 1, Number(p.day) - 1
+    ));
 
-    if (c === '"') {
-      if (aspas && csv[i + 1] === '"') {
-        campo += '"';
-        i++;
-      } else {
-        aspas = !aspas;
-      }
-    } else if (c === "," && !aspas) {
-      linha.push(campo.trim());
-      campo = "";
-    } else if ((c === "\n" || c === "\r") && !aspas) {
-      if (c === "\r" && csv[i + 1] === "\n") i++;
-      linha.push(campo.trim());
-      if (linha.some(x => x !== "")) linhas.push(linha);
-      linha = [];
-      campo = "";
-    } else {
-      campo += c;
-    }
+    return fileDate(d);
   }
 
-  if (campo.length || linha.length) {
-    linha.push(campo.trim());
-    linhas.push(linha);
+  function proxyUrl(url) {
+    return PROXY_PREFIX ? PROXY_PREFIX + encodeURIComponent(url) : url;
   }
 
-  if (linhas.length < 2) return [];
-
-  const cabecalho = linhas.shift().map(x =>
-    x.replace(/^\uFEFF/, "").trim().toLowerCase()
-  );
-
-  return linhas.map(valores => {
-    const obj = {};
-    cabecalho.forEach((nome, i) => obj[nome] = valores[i] ?? "");
-    return obj;
-  });
-}
-
-function primeiroCampo(obj, nomes) {
-  for (const nome of nomes) {
-    if (obj[nome] !== undefined && obj[nome] !== "") return obj[nome];
-  }
-  return null;
-}
-
-function normalizarFoco(f) {
-  const lat = numero(primeiroCampo(f, [
-    "latitude", "lat", "y"
-  ]));
-  const lon = numero(primeiroCampo(f, [
-    "longitude", "lon", "long", "longitud", "x"
-  ]));
-
-  const data = primeiroCampo(f, [
-    "datahora", "data_hora", "data hora", "data", "datetime",
-    "date", "satelite_data"
-  ]);
-
-  const satelite = primeiroCampo(f, [
-    "satelite", "satellite", "satelite_referencia"
-  ]);
-
-  return { bruto: f, lat, lon, data, satelite };
-}
-
-async function carregarINPE(tipo) {
-  const dados = await buscarJSON(
-    `${API_BASE}/api/inpe?tipo=${encodeURIComponent(tipo)}`
-  );
-
-  const focos = interpretarCSV(dados.csv || "")
-    .map(normalizarFoco)
-    .filter(f => dentroDaAmericaDoSul(f.lat, f.lon));
-
-  return { ...dados, focos };
-}
-
-function desenharFocos10(focos) {
-  camadas.inpe10.clearLayers();
-
-  const agora = Date.now();
-
-  focos.forEach(f => {
-    const instante = f.data ? new Date(f.data).getTime() : NaN;
-    const idade = Number.isFinite(instante)
-      ? (agora - instante) / 60000
-      : NaN;
-
-    const marcador = L.circleMarker([f.lat, f.lon], {
-      radius: 5,
-      color: corIdade(idade),
-      fillColor: corIdade(idade),
-      fillOpacity: .8,
-      weight: 1
-    });
-
-    marcador.bindPopup(
-      `<strong>Foco de calor · INPE</strong><br>` +
-      `Data/hora: ${escaparHTML(f.data || "Indisponível")}<br>` +
-      `Satélite: ${escaparHTML(f.satelite || "Não informado")}<br>` +
-      `Latitude: ${f.lat.toFixed(4)}<br>` +
-      `Longitude: ${f.lon.toFixed(4)}`
+  async function fetchText(url) {
+    const controller = new AbortController();
+    const timeout = setTimeout(
+      () => controller.abort(), FETCH_TIMEOUT_MS
     );
 
-    marcador.addTo(camadas.inpe10);
-  });
+    try {
+      const response = await fetch(proxyUrl(url), {
+        cache: "no-store",
+        signal: controller.signal
+      });
 
-  texto("mapaINPE24Status",
-    `${focos.length.toLocaleString("pt-BR")} registros com coordenadas válidas na América do Sul.`);
-}
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status);
+      }
 
-function desenharFocosDiarios(focos) {
-  calorDiario.setLatLngs(focos.map(f => [f.lat, f.lon, 1]));
+      return await response.text();
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
 
-  texto("mapaINPE1Status",
-    `${focos.length.toLocaleString("pt-BR")} registros diários válidos. O mapa de calor mostra a distribuição dos registros, não uma contagem agregada por célula.`);
-}
+  // ==========================================================
+  // LEITURA DO ÍNDICE HTML DO SERVIDOR
+  // ==========================================================
 
-function normalizarSensor(s) {
-  const lat = numero(s.latitude);
-  const lon = numero(s.longitude);
+  function extractFiles(html, regex) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const links = [...doc.querySelectorAll("a[href]")];
 
-  const atual = numero(
-    s["pm2.5_atm"] ?? s["pm2.5"] ?? s["pm2.5_cf_1"]
-  );
+    return [...new Set(links
+      .map(a => {
+        try {
+          return new URL(a.getAttribute("href"), RECENT_DIR).href;
+        } catch {
+          return "";
+        }
+      })
+      .filter(url => regex.test(decodeURIComponent(url.split("/").pop() || ""))) )];
+  }
 
-  const media24 = numero(
-    s["pm2.5_24hour"] ?? s["pm2.5_24hour_atm"]
-  );
+  function parseRecentFilename(url) {
+    const name = decodeURIComponent(url.split("/").pop() || "");
+    const match = name.match(/focos_10min_(\d{8})_(\d{4})\.csv$/i);
+    if (!match) return null;
 
-  const ultima = numero(s.last_seen);
+    const y = +match[1].slice(0, 4);
+    const m = +match[1].slice(4, 6) - 1;
+    const d = +match[1].slice(6, 8);
+    const hh = +match[2].slice(0, 2);
+    const mm = +match[2].slice(2, 4);
 
-  return {
-    ...s,
-    lat,
-    lon,
-    pm25Atual: atual,
-    pm2524: media24,
-    ultima
-  };
-}
+    // Os nomes dos arquivos usam a data operacional do INPE.
+    // Para selecionar arquivos, comparamos a data nominal e
+    // mantemos uma margem de 24h para cobrir diferenças de fuso.
+    return new Date(Date.UTC(y, m, d, hh, mm));
+  }
 
-function desenharSensores(sensores) {
-  camadas.pa24.clearLayers();
-  camadas.paAtual.clearLayers();
+  function chooseRecentFiles(urls) {
+    const now = Date.now();
 
-  const validos = sensores.filter(s =>
-    dentroDaAmericaDoSul(s.lat, s.lon)
-  );
+    return urls
+      .map(url => ({ url, date: parseRecentFilename(url) }))
+      .filter(x => x.date && x.date.getTime() <= now + 5 * 60 * 1000)
+      .sort((a, b) => b.date - a.date)
+      .slice(0, 6)
+      .map(x => x.url);
+  }
 
-  let n24 = 0, nAtual = 0;
+  // ==========================================================
+  // CSV: CABEÇALHOS E VALORES
+  // ==========================================================
 
-  validos.forEach(s => {
-    const nome = escaparHTML(s.name || "Sensor sem nome");
-    const hora = dataHora(s.ultima);
+  function normalizeKey(s) {
+    return String(s || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]/g, "");
+  }
 
-    if (Number.isFinite(s.pm2524) && s.pm2524 >= 0) {
-      n24++;
+  function findField(row, candidates) {
+    const keys = Object.keys(row);
+    const normalized = new Map(keys.map(k => [normalizeKey(k), k]));
 
-      L.circleMarker([s.lat, s.lon], {
-        radius: 6,
-        color: corPM25(s.pm2524),
-        fillColor: corPM25(s.pm2524),
-        fillOpacity: .82,
-        weight: 1
-      }).bindPopup(
-        `<strong>${nome}</strong><br>` +
-        `PM2.5 · média de 24 h: ${formatarNumero(s.pm2524)} µg/m³<br>` +
-        `Última atualização: ${hora}`
-      ).addTo(camadas.pa24);
+    for (const candidate of candidates) {
+      const found = normalized.get(normalizeKey(candidate));
+      if (found !== undefined) return row[found];
     }
 
-    if (Number.isFinite(s.pm25Atual) && s.pm25Atual >= 0) {
-      nAtual++;
-
-      L.circleMarker([s.lat, s.lon], {
-        radius: 6,
-        color: corPM25(s.pm25Atual),
-        fillColor: corPM25(s.pm25Atual),
-        fillOpacity: .82,
-        weight: 1
-      }).bindPopup(
-        `<strong>${nome}</strong><br>` +
-        `PM2.5 atual: ${formatarNumero(s.pm25Atual)} µg/m³<br>` +
-        `Última atualização: ${hora}`
-      ).addTo(camadas.paAtual);
+    for (const k of keys) {
+      const nk = normalizeKey(k);
+      if (candidates.some(c => nk.includes(normalizeKey(c)))) {
+        return row[k];
+      }
     }
-  });
 
-  texto("mapaPA24Status",
-    `${n24.toLocaleString("pt-BR")} sensores com média de 24 h válida na área.`);
-  texto("mapaPA1Status",
-    `${nAtual.toLocaleString("pt-BR")} sensores com leitura atual válida na área.`);
-
-  return { validos, n24, nAtual };
-}
-
-async function atualizar() {
-  if (ocupado) return;
-
-  if (!API_BASE.startsWith("https://") ||
-      API_BASE.includes("COLOQUE_AQUI")) {
-    texto("atualizacao",
-      "Configure primeiro a URL HTTPS do Worker no código.");
-    return;
+    return null;
   }
 
-  ocupado = true;
-  const botao = document.getElementById("atualizarBtn");
-  botao.disabled = true;
-  botao.textContent = "Consultando...";
-  texto("atualizacao", "Consultando INPE e PurpleAir...");
+  function toNumber(value) {
+    if (value === null || value === undefined) return NaN;
 
-  const tarefas = await Promise.allSettled([
-    carregarINPE("10min"),
-    carregarINPE("diario"),
-    buscarJSON(`${API_BASE}/api/purpleair`)
-  ]);
+    let s = String(value).trim().replace(/^"|"$/g, "");
+    if (!s) return NaN;
 
-  let sucessos = 0;
+    // Coordenadas normalmente usam ponto decimal.
+    // Só converte vírgula decimal quando não há ponto.
+    if (s.includes(",") && !s.includes(".")) {
+      s = s.replace(",", ".");
+    } else {
+      s = s.replace(/,/g, "");
+    }
 
-  if (tarefas[0].status === "fulfilled") {
-    const d = tarefas[0].value;
-    desenharFocos10(d.focos);
-    texto("statusINPE",
-      `${d.arquivo || "Arquivo consultado"} · ${d.focos.length} focos válidos · consulta: ${dataHora(d.atualizado_em)}`);
-    sucessos++;
-  } else {
-    texto("statusINPE", `Falha: ${tarefas[0].reason.message}`);
-    texto("mapaINPE24Status", `Erro ao carregar dados: ${tarefas[0].reason.message}`);
+    return Number(s);
   }
 
-  if (tarefas[1].status === "fulfilled") {
-    const d = tarefas[1].value;
-    desenharFocosDiarios(d.focos);
-    texto("statusINPEDiario",
-      `${d.arquivo || "Arquivo consultado"} · ${d.focos.length} focos válidos · consulta: ${dataHora(d.atualizado_em)}`);
-    sucessos++;
-  } else {
-    texto("statusINPEDiario", `Falha: ${tarefas[1].reason.message}`);
-    texto("mapaINPE1Status", `Erro ao carregar dados: ${tarefas[1].reason.message}`);
+  function parseDateValue(value) {
+    if (!value) return null;
+
+    const s = String(value).trim();
+
+    // Datas ISO ou formatos reconhecidos pelo navegador.
+    const iso = Date.parse(s);
+    if (Number.isFinite(iso)) return new Date(iso);
+
+    // Formato comum: DD/MM/YYYY HH:mm:ss
+    const m = s.match(
+      /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?$/
+    );
+
+    if (m) {
+      return new Date(
+        Number(m[3]), Number(m[2]) - 1, Number(m[1]),
+        Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0)
+      );
+    }
+
+    return null;
   }
 
-  if (tarefas[2].status === "fulfilled") {
-    const d = tarefas[2].value;
-    const sensores = (d.sensores || []).map(normalizarSensor);
-    const r = desenharSensores(sensores);
+  function parseCSV(text) {
+    if (!text || !text.trim()) return [];
 
-    texto("statusPA24",
-      `${r.n24} sensores com média de 24 h válida. Consulta: ${dataHora(d.atualizado_em)}`);
-    texto("statusPA1",
-      `${r.nAtual} sensores com leitura atual válida. Consulta: ${dataHora(d.atualizado_em)}`);
-    sucessos++;
-  } else {
-    texto("statusPA24", `Falha: ${tarefas[2].reason.message}`);
-    texto("statusPA1", `Falha: ${tarefas[2].reason.message}`);
-    texto("mapaPA24Status", `Erro ao carregar PurpleAir: ${tarefas[2].reason.message}`);
-    texto("mapaPA1Status", `Erro ao carregar PurpleAir: ${tarefas[2].reason.message}`);
+    // Arquivos muito pequenos podem conter apenas cabeçalho,
+    // sem detecções. PapaParse também trata aspas e separadores.
+    const result = Papa.parse(text.trim(), {
+      header: true,
+      skipEmptyLines: "greedy",
+      transformHeader: h => h.trim().replace(/^\uFEFF/, "")
+    });
+
+    if (!result.meta.fields || result.meta.fields.length === 0) {
+      return [];
+    }
+
+    return result.data.filter(row =>
+      Object.values(row).some(v => String(v ?? "").trim() !== "")
+    );
   }
 
-  texto("atualizacao",
-    `${sucessos}/3 consultas concluídas · ${new Date().toLocaleString("pt-BR", { timeZone: FUSO })}`);
+  function normalizeRows(rows, sourceFile, sourceType) {
+    const output = [];
 
-  ocupado = false;
-  botao.disabled = false;
-  botao.textContent = "Atualizar dados";
+    for (const row of rows) {
+      const lat = toNumber(findField(row, [
+        "latitude", "lat", "y"
+      ]));
 
-  setTimeout(() => {
-    Object.values(mapas).forEach(m => m.invalidateSize());
-  }, 100);
-}
+      const lon = toNumber(findField(row, [
+        "longitude", "lon", "long", "x"
+      ]));
 
-document.getElementById("atualizarBtn").addEventListener("click", atualizar);
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+      if (lat < -60 || lat > 15 || lon < -95 || lon > -25) continue;
 
-window.addEventListener("load", () => {
-  Object.values(mapas).forEach(m => m.invalidateSize());
-  atualizar();
-});
+      const dateRaw = findField(row, [
+        "datahora", "datahoragmt", "datahorautc",
+        "datahoralocal", "data", "datetime", "acq_datetime"
+      ]);
 
-window.addEventListener("resize", () => {
-  Object.values(mapas).forEach(m => m.invalidateSize());
-});
+      const date = parseDateValue(dateRaw);
 
-// Atualiza automaticamente a cada 10 minutos.
-setInterval(() => {
-  if (!document.hidden) atualizar();
-}, 10 * 60 * 1000);
+      output.push({
+        lat,
+        lon,
+        date,
+        dateRaw: dateRaw == null ? "" : String(dateRaw),
+        satellite: findField(row, [
+          "satelite", "satellite"
+        ]),
+        instrument: findField(row, [
+          "instrumento", "instrument"
+        ]),
+        confidence: findField(row, [
+          "frp", "potenciafogo", "confianca", "confidence"
+        ]),
+        municipality: findField(row, [
+          "municipio", "municipality"
+        ]),
+        state: findField(row, [
+          "estado", "uf", "state"
+        ]),
+        country: findField(row, [
+          "pais", "country"
+        ]),
+        biome: findField(row, [
+          "bioma", "biome"
+        ]),
+        sourceFile,
+        sourceType
+      });
+    }
+
+    return output;
+  }
+
+  function deduplicate(points) {
+    const seen = new Set();
+    const result = [];
+
+    for (const p of points) {
+      // Inclui a data/hora se disponível para não fundir
+      // detecções distintas no mesmo local em horários diferentes.
+      const timeKey = p.date
+        ? Math.floor(p.date.getTime() / 60000)
+        : p.dateRaw;
+
+      const key = [
+        p.lat.toFixed(5),
+        p.lon.toFixed(5),
+        timeKey
+      ].join("|");
+
+      if (seen.has(key)) continue;
+
+      seen.add(key);
+      result.push(p);
+    }
+
+    return result;
+  }
+
+  // ==========================================================
+  // RENDERIZAÇÃO
+  // ==========================================================
+
+  function popupHTML(p) {
+    const safe = value => {
+      const span = document.createElement("span");
+      span.textContent = value == null || value === ""
+        ? "Não informado"
+        : String(value);
+      return span.innerHTML;
+    };
+
+    return `
+      <strong>Foco de calor</strong><br>
+      <b>Data/hora:</b> ${safe(p.dateRaw || (p.date && fmtDate(p.date)))}<br>
+      <b>País:</b> ${safe(p.country)}<br>
+      <b>Estado:</b> ${safe(p.state)}<br>
+      <b>Município:</b> ${safe(p.municipality)}<br>
+      <b>Satélite:</b> ${safe(p.satellite)}<br>
+      <b>Instrumento:</b> ${safe(p.instrument)}<br>
+      <b>FRP/confiança:</b> ${safe(p.confidence)}<br>
+      <b>Coordenadas:</b> ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}
+    `;
+  }
+
+  function drawLayer(layer, points, color) {
+    layer.clearLayers();
+
+    for (const p of points) {
+      L.circleMarker([p.lat, p.lon], {
+        renderer,
+        radius: 4,
+        color,
+        weight: 1,
+        opacity: 0.9,
+        fillColor: color,
+        fillOpacity: 0.75
+      }).bindPopup(popupHTML(p), { maxWidth: 300 })
+        .addTo(layer);
+    }
+  }
+
+  function updateVisibility() {
+    if ($("toggleRecent").checked) {
+      if (!map.hasLayer(recentLayer)) recentLayer.addTo(map);
+    } else {
+      map.removeLayer(recentLayer);
+    }
+
+    if ($("toggleDaily").checked) {
+      if (!map.hasLayer(dailyLayer)) dailyLayer.addTo(map);
+    } else {
+      map.removeLayer(dailyLayer);
+    }
+  }
+
+  $("toggleRecent").addEventListener("change", updateVisibility);
+  $("toggleDaily").addEventListener("change", updateVisibility);
+
+  // ==========================================================
+  // ÚLTIMA HORA
+  // ==========================================================
+
+  async function loadRecent() {
+    setStatus("recentStatus", "Consultando índice dos arquivos de 10 minutos...");
+
+    const html = await fetchText(RECENT_DIR);
+    const files = extractFiles(
+      html,
+      /^focos_10min_\d{8}_\d{4}\.csv$/i
+    );
+
+    const selected = chooseRecentFiles(files);
+
+    if (!selected.length) {
+      throw new Error("Nenhum arquivo recente foi localizado no índice.");
+    }
+
+    const now = Date.now();
+    const minimum = now - RECENT_WINDOW_MS;
+
+    const texts = await Promise.all(selected.map(async url => {
+      try {
+        return { url, text: await fetchText(url), error: null };
+      } catch (error) {
+        return { url, text: "", error };
+      }
+    }));
+
+    const errors = texts.filter(x => x.error);
+    const parsed = [];
+
+    for (const item of texts) {
+      if (item.error || !item.text.trim()) continue;
+
+      const rows = parseCSV(item.text);
+      const normalized = normalizeRows(rows, item.url, "10min");
+
+      for (const p of normalized) {
+        // Evita apresentar focos antigos como se fossem atuais.
+        // Quando não há timestamp interpretável, mantém o registro,
+        // mas o status informa que a janela é aproximada.
+        if (p.date) {
+          if (p.date.getTime() < minimum || p.date.getTime() > now + 5 * 60 * 1000) {
+            continue;
+          }
+        }
+
+        parsed.push(p);
+      }
+    }
+
+    if (errors.length === selected.length) {
+      throw new Error("Não foi possível baixar nenhum dos arquivos recentes.");
+    }
+
+    recentPoints = deduplicate(parsed);
+    drawLayer(recentLayer, recentPoints, "#ff8c42");
+    updateVisibility();
+
+    $("countRecent").textContent = fmtNumber(recentPoints.length);
+
+    lastRecentSuccess = new Date();
+
+    setStatus(
+      "recentStatus",
+      `${recentPoints.length.toLocaleString("pt-BR")} focos válidos; ` +
+      `${selected.length} arquivos consultados; ` +
+      `${errors.length} falhas de download. Janela nominal: última hora.`,
+      errors.length ? "" : "ok"
+    );
+  }
+
+  // ==========================================================
+  // DIA ANTERIOR: AMÉRICA DO SUL
+  // ==========================================================
+
+  async function loadDaily() {
+    const date = localYesterday();
+    const filename = `focos_diario_${date}.csv`;
+    const url = DAILY_DIR + filename;
+
+    $("dailyDate").textContent = "Arquivo solicitado: " + filename;
+    setStatus("dailyStatus", "Baixando dados diários continentais...");
+
+    const text = await fetchText(url);
+
+    if (!text.trim()) {
+      dailyPoints = [];
+      drawLayer(dailyLayer, [], "#168bd2");
+      $("countDaily").textContent = "0";
+      lastDailySuccess = new Date();
+      setStatus("dailyStatus", "Arquivo vazio: nenhum registro retornado.", "ok");
+      return;
+    }
+
+    const rows = parseCSV(text);
+    dailyPoints = deduplicate(
+      normalizeRows(rows, url, "diario")
+    );
+
+    drawLayer(dailyLayer, dailyPoints, "#168bd2");
+    updateVisibility();
+
+    $("countDaily").textContent = fmtNumber(dailyPoints.length);
+
+    lastDailySuccess = new Date();
+
+    setStatus(
+      "dailyStatus",
+      `${fmtNumber(dailyPoints.length)} focos válidos no arquivo diário ${date}.`,
+      "ok"
+    );
+  }
+
+  // ==========================================================
+  // ATUALIZAÇÃO E TRATAMENTO DE FALHAS
+  // ==========================================================
+
+  async function refreshAll() {
+    if (busy) return;
+
+    busy = true;
+    $("refreshButton").disabled = true;
+    $("refreshButton").textContent = "Atualizando...";
+
+    const tasks = await Promise.allSettled([
+      loadRecent(),
+      loadDaily()
+    ]);
+
+    const failures = [];
+
+    if (tasks[0].status === "rejected") {
+      failures.push("Última hora: " + tasks[0].reason.message);
+      setStatus("recentStatus", failures[failures.length - 1], "error");
+    }
+
+    if (tasks[1].status === "rejected") {
+      failures.push("Dia anterior: " + tasks[1].reason.message);
+      setStatus("dailyStatus", failures[failures.length - 1], "error");
+    }
+
+    $("lastUpdate").textContent = fmtDate(new Date());
+
+    if (failures.length) {
+      setStatus(
+        "generalStatus",
+        "Uma ou mais fontes falharam. Confira os diretórios do INPE e a política CORS. " +
+        failures.join(" | "),
+        "error"
+      );
+    } else {
+      setStatus(
+        "generalStatus",
+        "Consulta concluída. Última hora: " +
+        (lastRecentSuccess ? fmtDate(lastRecentSuccess) : "sem sucesso") +
+        ". Diário: " +
+        (lastDailySuccess ? fmtDate(lastDailySuccess) : "sem sucesso") + ".",
+        "ok"
+      );
+    }
+
+    $("refreshButton").disabled = false;
+    $("refreshButton").textContent = "Atualizar dados agora";
+    busy = false;
+  }
+
+  $("refreshButton").addEventListener("click", refreshAll);
+
+  refreshAll();
+  setInterval(refreshAll, REFRESH_MS);
+})();
 </script>
 </body>
 </html>
