@@ -528,15 +528,13 @@ function normalizeKey(value) {
 }
 
 function isReferenceAqua(value) {
-  const satellite = String(value ?? "")
+  const text = String(value ?? "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase()
-    .replace(/[\s-]+/g, "_")
-    .replace(/_+/g, "_")
-    .trim();
+    .toUpperCase();
 
-  return satellite === "AQUA_M_M" || satellite === "AQUA_M_T";
+  // Verifica de forma ampla se contém a palavra AQUA e referência M
+  return text.includes("AQUA") && (text.includes("M") || text.includes("T"));
 }
 
 function getValue(row, aliases) {
@@ -921,7 +919,6 @@ async function loadMonthlyHistory() {
       monthlyCounts[month - 1] = count;
       successes.push(month);
     } catch (error) {
-      // Caso falhe/HTTP 404, atribui 0 e registra falha
       monthlyCounts[month - 1] = 0;
       failures.push(MONTH_NAMES[month - 1]);
     }
