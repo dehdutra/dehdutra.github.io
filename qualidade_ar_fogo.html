@@ -10,122 +10,207 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
-body{background:#f8f9fa}
-.map-container{height:480px;width:100%;border-radius:8px}
-.card-custom{border:none;box-shadow:0 2px 5px #0000001a;margin-bottom:20px}
-.info.legend{background:#fffffff2;padding:10px 14px;font-size:12px;line-height:20px;box-shadow:0 0 15px #0003;border-radius:6px;color:#222}
-.info.legend i{width:14px;height:14px;float:left;margin-right:8px;margin-top:3px;border-radius:50%;border:1px solid #0003}
-.status-badge{font-size:.75rem;padding:4px 8px}
-.citation-box{font-size:.75rem;background:#f1f3f5;border-left:3px solid #0d6efd;padding:8px 12px;margin-top:12px;border-radius:0 4px 4px 0}
-.explanation-card{border-left:4px solid #dc3545;background:white}
+body{background:#f5f7fa;color:#212529}
+h2{font-weight:700}
+.card-map{height:100%;border:0;box-shadow:0 2px 10px #00000012}
+.map-container{height:430px;width:100%;border-radius:6px;background:#e9ecef}
+.map-wrap{position:relative}
+.map-message{
+ display:none;position:absolute;z-index:1000;top:12px;left:50%;
+ transform:translateX(-50%);width:min(92%,440px);
+ padding:12px 15px;background:#fffF;border:1px solid #ced4da;
+ border-radius:8px;box-shadow:0 2px 10px #0002;
+ text-align:center;font-size:13px
+}
+.map-message.visible{display:block}
+.status-badge{font-size:.75rem;white-space:normal}
+.small-note{font-size:.8rem;color:#6c757d}
+.citation-box{font-size:.75rem;background:#f1f3f5;border-left:3px solid #0d6efd;padding:9px 12px;margin-top:12px}
+.legend{background:#fffE;padding:9px 12px;line-height:20px;border-radius:5px;box-shadow:0 0 10px #0002;font-size:12px}
+.legend i{width:13px;height:13px;float:left;margin-right:7px;margin-top:3px;border:1px solid #0002}
+.progress{height:7px}
+#log-status{max-height:180px;overflow:auto;font-size:12px}
 </style>
 </head>
 
 <body>
-<div class="container-fluid py-4">
-<h2 class="text-center mb-4">Dashboard: Queimadas e Qualidade do Ar</h2>
+<div class="container-fluid px-3 px-lg-4 py-4">
 
-<div class="alert alert-warning small">
-<strong>Estado das fontes:</strong>
-os dados são consultados durante a execução. Uma falha de API não será substituída por dados inventados ou apresentados como atuais. O HTTP 402 da PurpleAir exige verificação de cobrança e permissões da conta.
-</div>
+<header class="mb-4">
+  <h2 class="text-center">Dashboard: Focos de Calor e Qualidade do Ar</h2>
+  <p class="text-center text-muted mb-0">
+    Monitoramento de focos de calor e PM2.5 no Brasil
+  </p>
+</header>
 
-<div class="row mb-4">
-
-<div class="col-lg-6 mb-3">
-<div class="card card-custom p-3">
-<div class="d-flex justify-content-between align-items-center mb-2">
-<h5 class="mb-0">Focos diários AQUA - INPE</h5>
-<span id="status-focos" class="badge bg-secondary status-badge">Carregando...</span>
-</div>
-<p class="text-muted small">Focos de calor detectados pelo satélite AQUA.</p>
-<div class="bg-light p-2 rounded mb-2 small border">
-<strong>Data:</strong> <span id="data-focos">Carregando...</span>
-</div>
-<div id="mapa-focos" class="map-container"></div>
-<div class="citation-box">
-INPE. Monitoramento de Focos de Calor via Satélite AQUA.
-Dados coletados por DUTRA, D. J. em
-<span id="citacao-data-focos">...</span>.
-Acesso em <span class="data-acesso"></span>.
-</div>
-</div>
+<div class="alert alert-info small">
+  <strong>Como interpretar:</strong> os quatro mapas são independentes na apresentação.
+  Os mapas 3 e 4 exigem dados válidos de PM2.5 para gerar resultados.
+  Se uma fonte falhar, o painel informa o motivo, sem criar dados artificiais.
 </div>
 
-<div class="col-lg-6 mb-3">
-<div class="card card-custom p-3">
-<div class="d-flex justify-content-between align-items-center mb-2">
-<h5 class="mb-0">Qualidade do Ar - PurpleAir PM2.5</h5>
-<span id="status-purpleair" class="badge bg-secondary status-badge">Carregando...</span>
-</div>
-<p class="text-muted small">Concentração pontual de PM2.5 nos sensores.</p>
-<div class="bg-light p-2 rounded mb-2 small border">
-<strong>Data/hora:</strong> <span id="data-purpleair">Carregando...</span>
-</div>
-<div id="mapa-purpleair" class="map-container"></div>
-<div class="citation-box">
-PURPLEAIR. Monitoramento Comunitário de Qualidade do Ar.
-Dados obtidos por DUTRA, D. J. em
-<span id="citacao-data-purpleair">...</span>.
-Acesso em <span class="data-acesso"></span>.
-</div>
-</div>
-</div>
+<div class="row g-4">
+
+  <!-- MAPA 1 -->
+  <div class="col-12 col-xl-6">
+    <div class="card card-map">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <div>
+            <h5>Mapa 1. Focos de calor AQUA</h5>
+            <div class="small-note">Fonte: INPE, CSV diário</div>
+          </div>
+          <span id="status-focos" class="badge bg-secondary status-badge">Aguardando</span>
+        </div>
+
+        <div class="small mb-2">
+          <strong>Data dos dados:</strong>
+          <span id="data-focos">Consultando...</span>
+        </div>
+
+        <div class="map-wrap">
+          <div id="mapa-focos" class="map-container"></div>
+          <div id="mensagem-mapa-focos" class="map-message"></div>
+        </div>
+
+        <div class="citation-box">
+          Fonte: Instituto Nacional de Pesquisas Espaciais (INPE), dados de focos de calor.
+          Consulta realizada em <span class="data-acesso"></span>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAPA 2 -->
+  <div class="col-12 col-xl-6">
+    <div class="card card-map">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <div>
+            <h5>Mapa 2. Sensores PurpleAir</h5>
+            <div class="small-note">PM2.5 observado pelos sensores</div>
+          </div>
+          <span id="status-purpleair" class="badge bg-secondary status-badge">Aguardando</span>
+        </div>
+
+        <div class="small mb-2">
+          <strong>Data/hora:</strong>
+          <span id="data-purpleair">Consultando...</span>
+        </div>
+
+        <div class="map-wrap">
+          <div id="mapa-purpleair" class="map-container"></div>
+          <div id="mensagem-mapa-purpleair" class="map-message"></div>
+        </div>
+
+        <div class="citation-box">
+          Fonte: PurpleAir API. PM2.5 em µg/m³.
+          Consulta realizada em <span class="data-acesso"></span>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAPA 3 -->
+  <div class="col-12 col-xl-6">
+    <div class="card card-map">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <div>
+            <h5>Mapa 3. Interpolação espacial IDW</h5>
+            <div class="small-note">Estimativa espacial com base nos sensores válidos</div>
+          </div>
+          <span id="status-interpolacao" class="badge bg-secondary status-badge">Aguardando</span>
+        </div>
+
+        <div class="progress mb-2">
+          <div id="progresso-mapa3" class="progress-bar" style="width:0%"></div>
+        </div>
+
+        <div class="map-wrap">
+          <div id="mapa-interpolacao" class="map-container"></div>
+          <div id="mensagem-mapa-interpolacao" class="map-message"></div>
+        </div>
+
+        <div class="citation-box">
+          Método: interpolação por ponderação pelo inverso da distância (IDW).
+          A estimativa não substitui medições observadas.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAPA 4 -->
+  <div class="col-12 col-xl-6">
+    <div class="card card-map">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <div>
+            <h5>Mapa 4. Cruzamento espacial: focos e PM2.5</h5>
+            <div class="small-note">Associação espacial exploratória, não causal</div>
+          </div>
+          <span id="status-correlacao" class="badge bg-secondary status-badge">Aguardando</span>
+        </div>
+
+        <div class="progress mb-2">
+          <div id="progresso-mapa4" class="progress-bar" style="width:0%"></div>
+        </div>
+
+        <div class="map-wrap">
+          <div id="mapa-correlacao" class="map-container"></div>
+          <div id="mensagem-mapa-correlacao" class="map-message"></div>
+        </div>
+
+        <div class="citation-box">
+          O cruzamento espacial não comprova que os focos observados causaram
+          as concentrações de PM2.5. A ausência de foco detectado não comprova
+          transporte de fumaça.
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<div class="row mb-4">
+<!-- METODOLOGIA -->
+<div class="card mt-4 border-0 shadow-sm">
+  <div class="card-body">
+    <h5>Critérios de interpretação</h5>
+    <p class="small-note">
+      Os limiares abaixo são critérios operacionais de visualização deste painel,
+      não uma declaração de conformidade regulatória.
+    </p>
 
-<div class="col-lg-6 mb-3">
-<div class="card card-custom p-3">
-<div class="d-flex justify-content-between align-items-center mb-2">
-<h5 class="text-danger mb-0">Mapa 3: Interpolação IDW local</h5>
-<span id="status-interpolacao" class="badge bg-secondary status-badge">Aguardando...</span>
-</div>
-<p class="text-muted small">Estimativa espacial no entorno dos sensores disponíveis.</p>
-<div id="mapa-interpolacao" class="map-container"></div>
-<div class="citation-box">
-Interpolação espacial exploratória de PM2.5.
-Acesso em <span class="data-acesso"></span>.
-</div>
-</div>
-</div>
-
-<div class="col-lg-6 mb-3">
-<div class="card card-custom p-3">
-<div class="d-flex justify-content-between align-items-center mb-2">
-<h5 class="text-primary mb-0">Mapa 4: Focos x PM2.5</h5>
-<span id="status-correlacao" class="badge bg-secondary status-badge">Aguardando...</span>
-</div>
-<p class="text-muted small">Cruzamento espacial exploratório entre focos e PM2.5 estimado.</p>
-<div id="mapa-correlacao" class="map-container"></div>
-<div class="citation-box">
-A ausência de foco detectado não comprova transporte de fumaça.
-Acesso em <span class="data-acesso"></span>.
-</div>
-</div>
-</div>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Cor</th><th>PM2.5 estimado</th><th>Focos detectados na célula</th><th>Interpretação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span style="color:#198754">● Verde</span></td><td>≤ 15 µg/m³</td><td>Qualquer</td><td>Baixa concentração segundo o critério operacional</td></tr>
+          <tr><td><span style="color:#d39e00">● Amarelo</span></td><td>&gt; 15 a 45 µg/m³</td><td>Qualquer</td><td>Concentração intermediária</td></tr>
+          <tr><td><span style="color:#fd7e14">● Laranja</span></td><td>&gt; 15 a 45 µg/m³</td><td>Sim</td><td>Concentração intermediária com foco na célula</td></tr>
+          <tr><td><span style="color:#8b0000">● Vermelho escuro</span></td><td>&gt; 45 µg/m³</td><td>Sim</td><td>Concentração elevada com foco na célula</td></tr>
+          <tr><td><span style="color:#660066">● Roxo</span></td><td>&gt; 45 µg/m³</td><td>Não detectado</td><td>Concentração elevada sem foco detectado na célula</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<div class="card card-custom explanation-card p-4">
-<h4>Critérios metodológicos</h4>
-<p class="small text-muted">
-Os limiares abaixo são critérios operacionais deste painel.
-Não demonstram causalidade nem identificam sozinhos a origem da fumaça.
-</p>
-<table class="table table-bordered table-sm small">
-<thead><tr><th>Classificação</th><th>PM2.5</th><th>Focos na célula</th></tr></thead>
-<tbody>
-<tr><td class="text-danger">Crítico + foco local</td><td>&gt; 45 µg/m³</td><td>Sim</td></tr>
-<tr><td style="color:#660066">Crítico sem foco detectado</td><td>&gt; 45 µg/m³</td><td>Não detectado</td></tr>
-<tr><td class="text-warning">Alerta com foco</td><td>&gt; 15 a 45 µg/m³</td><td>Sim</td></tr>
-<tr><td class="text-success">Meta operacional</td><td>&le; 15 µg/m³</td><td>Indiferente</td></tr>
-</tbody>
-</table>
-<p class="small">
-DUTRA, D. J. Dashboard Integrado de Monitoramento de Queimadas e Qualidade do Ar.
-Versão Web Interativa. Acesso em <span class="data-acesso"></span>.
-</p>
+<!-- DIAGNÓSTICO -->
+<div class="card mt-4 border-0 shadow-sm">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Diagnóstico das fontes</h5>
+      <button class="btn btn-sm btn-outline-primary" id="btn-atualizar">Atualizar dados</button>
+    </div>
+    <div id="log-status" class="mt-3"></div>
+  </div>
 </div>
+
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -134,652 +219,745 @@ Versão Web Interativa. Acesso em <span class="data-acesso"></span>.
 <script>
 'use strict';
 
-/* ==========================================================
+/* ============================================================
    CONFIGURAÇÃO
-   Atenção: uma chave inserida no HTML público fica exposta.
-   O ideal é transferir a chamada PurpleAir para um backend.
-   ========================================================== */
+   Atenção: em GitHub Pages, a chave inserida no JavaScript
+   fica pública. Para produção, mova a chamada para um backend.
+   ============================================================ */
 
 const PURPLEAIR_KEY = 'B656FA3D-CBBD-11F1-9E30-4201AC1DC129';
 
-const CONFIG = {
-    timeout: 20000,
-    raioIDW: 1.2,
-    passoMapa3: 0.3,
-    passoMapa4: 0.4,
-    maxCelulasMapa3: 1800,
-    maxCelulasMapa4: 1300,
-    tamanhoIndice: 1.2
+const CFG = {
+  timeoutMs: 18000,
+  raioIDW: 1.2,
+  passoMapa3: 0.30,
+  passoMapa4: 0.40,
+  maxCelulasMapa3: 1800,
+  maxCelulasMapa4: 1300,
+  tamanhoIndice: 1.2,
+  diasINPEParaTentar: 4
 };
 
-const dataAcesso = new Date().toLocaleString('pt-BR');
+const agora = new Date();
 document.querySelectorAll('.data-acesso').forEach(
-    e => e.textContent = dataAcesso
+  e => e.textContent = agora.toLocaleString('pt-BR')
 );
 
-const renderer = L.canvas({padding: 0.5});
-const centroBrasil = [-14.235, -51.925];
+const renderer = L.canvas({padding:0.5});
+const centroBrasil = [-14.235,-51.925];
 
 function criarMapa(id) {
-    const mapa = L.map(id, {preferCanvas:true}).setView(centroBrasil, 4);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        updateWhenIdle: true,
-        keepBuffer: 2
-    }).addTo(mapa);
-    return mapa;
+  const mapa = L.map(id,{preferCanvas:true}).setView(centroBrasil,4);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; OpenStreetMap contributors',
+    maxZoom:18,
+    updateWhenIdle:true
+  }).addTo(mapa);
+
+  return mapa;
 }
 
+/* Os quatro mapas são criados independentemente. */
 const mapFocos = criarMapa('mapa-focos');
-const mapPurpleAir = criarMapa('mapa-purpleair');
-const mapInterpolacao = criarMapa('mapa-interpolacao');
-const mapCorrelacao = criarMapa('mapa-correlacao');
+const mapPurple = criarMapa('mapa-purpleair');
+const mapIDW = criarMapa('mapa-interpolacao');
+const mapCruza = criarMapa('mapa-correlacao');
 
-let listaFocos = [];
-let listaSensores = [];
+let focos = [];
+let sensores = [];
+let camadaFocos = null;
+let camadaSensores = null;
+let camadaIDW = null;
+let camadaCruza = null;
+let execucao = 0;
 
-function status(id, classe, mensagem) {
-    const el = document.getElementById(id);
-    el.className = `badge ${classe} status-badge`;
-    el.textContent = mensagem;
+function log(mensagem) {
+  const el = document.getElementById('log-status');
+  const linha = document.createElement('div');
+  linha.textContent = `[${new Date().toLocaleTimeString('pt-BR')}] ${mensagem}`;
+  el.prepend(linha);
 }
 
-function dataYMD(d) {
-    return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+function setStatus(id,texto,tipo='secondary') {
+  const el = document.getElementById(id);
+  el.className = `badge bg-${tipo} status-badge`;
+  el.textContent = texto;
+}
+
+function mostrarMensagem(id,texto) {
+  const el = document.getElementById(id);
+  el.textContent = texto;
+  el.classList.add('visible');
+}
+
+function esconderMensagem(id) {
+  const el = document.getElementById(id);
+  el.textContent = '';
+  el.classList.remove('visible');
+}
+
+function progresso(id,pct) {
+  document.getElementById(id).style.width = `${Math.max(0,Math.min(100,pct))}%`;
+}
+
+function removerCamada(mapa,camada) {
+  if (camada && mapa.hasLayer(camada)) mapa.removeLayer(camada);
+}
+
+function ymd(d) {
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
 }
 
 function dataBR(d) {
-    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 }
 
-function corPM25(pm) {
-    if (pm <= 12) return '#00e400';
-    if (pm <= 35.4) return '#ffff00';
-    if (pm <= 55.4) return '#ff7e00';
-    if (pm <= 150.4) return '#ff0000';
-    if (pm <= 250.4) return '#8f3f97';
-    return '#7e0023';
+async function fetchComTimeout(url,opcoes={},timeout=CFG.timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(),timeout);
+
+  try {
+    return await fetch(url,{...opcoes,signal:controller.signal});
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
-function corOMS(pm) {
-    if (pm <= 15) return '#28a745';
-    if (pm <= 45) return '#ffc107';
-    return '#dc3545';
-}
-
-async function fetchTimeout(url, options = {}, timeout = CONFIG.timeout) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
-    try {
-        return await fetch(url, {...options, signal:controller.signal});
-    } finally {
-        clearTimeout(timer);
+function campo(row,nomes) {
+  const chaves = Object.keys(row);
+  for (const nome of nomes) {
+    const encontrada = chaves.find(k=>k.trim().toLowerCase()===nome.toLowerCase());
+    if (encontrada !== undefined && row[encontrada] != null && row[encontrada] !== '') {
+      return row[encontrada];
     }
+  }
+  return null;
 }
 
-function limparCamadaAnterior(mapa) {
-    mapa.eachLayer(layer => {
-        if (layer instanceof L.LayerGroup) mapa.removeLayer(layer);
-    });
-}
+/* ============================================================
+   MAPA 1: INPE
+   ============================================================ */
 
-/* ==========================================================
-   MAPA 1 — INPE
-   Primeiro tenta o arquivo oficial; depois tenta o proxy.
-   Um proxy público é uma alternativa best-effort, não garantia.
-   ========================================================== */
+async function buscarTextoCSV(url) {
+  let erroDireto;
 
-async function obterCSV(url) {
-    let erroDireto;
-
-    try {
-        const r = await fetchTimeout(url, {cache:'no-store'}, 10000);
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return await r.text();
-    } catch (e) {
-        erroDireto = e;
-        console.warn('Acesso direto ao INPE falhou:', e.message);
-    }
-
-    const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-    const r = await fetchTimeout(proxy, {cache:'no-store'}, 15000);
-
-    if (!r.ok) {
-        throw new Error(`Origem/CORS: ${erroDireto.message}; proxy HTTP ${r.status}`);
-    }
-
+  try {
+    const r = await fetchComTimeout(url,{cache:'no-store'},10000);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const texto = await r.text();
-
-    if (!texto || texto.trim().startsWith('<')) {
-        throw new Error('A resposta não parece ser um CSV válido.');
-    }
-
+    if (texto.trim().startsWith('<')) throw new Error('Resposta HTML em vez de CSV');
     return texto;
+  } catch (e) {
+    erroDireto = e;
+    log(`Acesso direto ao INPE falhou: ${e.message}`);
+  }
+
+  /* Alternativa pública de melhor esforço. Não é serviço garantido. */
+  const proxyURL = 'https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+  const r = await fetchComTimeout(proxyURL,{cache:'no-store'},15000);
+
+  if (!r.ok) {
+    throw new Error(`Falha na origem (${erroDireto.message}) e no proxy (HTTP ${r.status})`);
+  }
+
+  const texto = await r.text();
+  if (!texto.trim() || texto.trim().startsWith('<')) {
+    throw new Error('O proxy não retornou um CSV válido');
+  }
+
+  return texto;
 }
 
-function campoLinha(row, nomes) {
-    const keys = Object.keys(row);
-    for (const nome of nomes) {
-        const key = keys.find(k => k.trim().toLowerCase() === nome.toLowerCase());
-        if (key !== undefined && row[key] !== '' && row[key] != null) {
-            return row[key];
-        }
-    }
-    return null;
-}
+function converterCSVParaFocos(texto,data) {
+  const resultado = Papa.parse(texto,{header:true,skipEmptyLines:true});
+  if (!resultado.data || resultado.data.length===0) {
+    throw new Error('CSV vazio');
+  }
 
-function interpretarCSV(texto, data) {
-    const parsed = Papa.parse(texto, {header:true, skipEmptyLines:true});
+  const saida = [];
 
-    if (!parsed.data || !parsed.data.length) {
-        throw new Error('CSV sem linhas de dados.');
-    }
+  for (const row of resultado.data) {
+    const sat = String(campo(row,['satelite','satellite'])||'').toUpperCase();
+    if (!sat.includes('AQUA')) continue;
 
-    const focos = [];
+    const lat = Number(campo(row,['lat','latitude']));
+    const lon = Number(campo(row,['lon','longitude','long']));
 
-    parsed.data.forEach(row => {
-        const sat = String(campoLinha(row, ['satelite','satellite']) || '').toUpperCase();
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    if (lat < -60 || lat > 15 || lon < -85 || lon > -30) continue;
 
-        if (!sat.includes('AQUA')) return;
-
-        const lat = Number(campoLinha(row, ['lat','latitude']));
-        const lon = Number(campoLinha(row, ['lon','longitude','long']));
-
-        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-        if (lat < -60 || lat > 15 || lon < -85 || lon > -30) return;
-
-        focos.push({
-            lat, lon, satelite:sat, dataBR:data,
-            municipio:campoLinha(row,['municipio']) || '',
-            estado:campoLinha(row,['estado','uf']) || ''
-        });
+    saida.push({
+      lat,lon,satelite:sat,data,
+      municipio:campo(row,['municipio'])||'',
+      estado:campo(row,['estado','uf'])||''
     });
+  }
 
-    return focos;
+  return saida;
 }
 
-async function carregarFocosDiarios() {
-    status('status-focos','bg-secondary','Consultando INPE...');
+async function carregarFocos() {
+  setStatus('status-focos','Consultando INPE...','secondary');
+  mostrarMensagem('mensagem-mapa-focos','Consultando arquivos diários do INPE...');
+  document.getElementById('data-focos').textContent='Consultando...';
 
-    const bases = [
-        data => `https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${data}.csv`,
-        data => `https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${data}.csv`
-    ];
+  const urls = [
+    d=>`https://terrabrasilis.dpi.inpe.br/queimadas/dados-abertos/focos/diario/focos_diario_br_${d}.csv`,
+    d=>`https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/America_Sul/focos_diario_${d}.csv`
+  ];
 
-    for (let dia = 0; dia < 4; dia++) {
-        const d = new Date();
-        d.setDate(d.getDate() - dia);
+  let ultimoErro = 'Arquivo diário não localizado';
 
-        const ymd = dataYMD(d);
-        const br = dataBR(d);
+  for (let dia=0;dia<CFG.diasINPEParaTentar;dia++) {
+    const d = new Date();
+    d.setDate(d.getDate()-dia);
+    const data = dataBR(d);
+    const codigo = ymd(d);
 
-        for (const construirURL of bases) {
-            const url = construirURL(ymd);
+    for (const construirURL of urls) {
+      try {
+        const url = construirURL(codigo);
+        const texto = await buscarTextoCSV(url);
+        const novosFocos = converterCSVParaFocos(texto,data);
 
-            try {
-                const texto = await obterCSV(url);
-                const focos = interpretarCSV(texto, br);
+        focos = novosFocos;
+        removerCamada(mapFocos,camadaFocos);
+        camadaFocos = L.layerGroup();
 
-                // Um CSV válido pode conter zero focos AQUA.
-                listaFocos = focos;
-                limparCamadaAnterior(mapFocos);
+        focos.forEach(f=>{
+          const cor = f.satelite.includes('M-M') ? '#3388ff' : '#ff2200';
 
-                const layer = L.layerGroup();
+          L.circleMarker([f.lat,f.lon],{
+            renderer,radius:4,color:'#202020',weight:0.7,
+            fillColor:cor,fillOpacity:0.85
+          }).bindPopup(
+            `<b>Satélite:</b> ${f.satelite}<br>`+
+            `<b>Data:</b> ${f.data}<br>`+
+            `<b>Município:</b> ${String(f.municipio).replace(/[<>]/g,'')}<br>`+
+            `<b>Estado:</b> ${String(f.estado).replace(/[<>]/g,'')}`
+          ).addTo(camadaFocos);
+        });
 
-                focos.forEach(f => {
-                    const cor = f.satelite.includes('M-M') ? '#3388ff' : '#ff2200';
+        camadaFocos.addTo(mapFocos);
+        document.getElementById('data-focos').textContent=data;
+        esconderMensagem('mensagem-mapa-focos');
 
-                    L.circleMarker([f.lat,f.lon], {
-                        renderer, radius:4, fillColor:cor,
-                        color:'#000', weight:1, fillOpacity:0.8
-                    }).bindPopup(
-                        `<b>Satélite:</b> ${f.satelite}<br>` +
-                        `<b>Data:</b> ${f.dataBR}<br>` +
-                        `<b>Local:</b> ${f.municipio} - ${f.estado}`
-                    ).addTo(layer);
-                });
+        setStatus('status-focos',`${focos.length} focos AQUA`,focos.length?'success':'warning');
+        log(`INPE: CSV lido para ${data}; ${focos.length} focos AQUA válidos.`);
+        return true;
 
-                layer.addTo(mapFocos);
-                document.getElementById('data-focos').textContent = br;
-                document.getElementById('citacao-data-focos').textContent = br;
-
-                status('status-focos',
-                    focos.length ? 'bg-success' : 'bg-warning text-dark',
-                    `${focos.length} focos AQUA`);
-
-                console.info('INPE carregado:', {
-                    arquivo:url, focosAQUA:focos.length
-                });
-
-                return;
-
-            } catch (e) {
-                console.warn('Falha ao obter dados INPE:', url, e.message);
-            }
-        }
+      } catch (e) {
+        ultimoErro = e.message;
+        log(`INPE ${codigo}: ${e.message}`);
+      }
     }
+  }
 
-    status('status-focos','bg-danger','INPE/CORS indisponível');
-    document.getElementById('data-focos').textContent = 'Indisponível';
-    document.getElementById('citacao-data-focos').textContent = 'Indisponível';
+  focos = [];
+  setStatus('status-focos','Fonte indisponível','danger');
+  document.getElementById('data-focos').textContent='Indisponível';
+  mostrarMensagem('mensagem-mapa-focos',
+    `Não foi possível obter os dados do INPE. Possíveis causas: CORS, arquivo indisponível ou falha do proxy. Detalhe: ${ultimoErro}`);
+
+  return false;
 }
 
-/* ==========================================================
-   MAPA 2 — PURPLEAIR
-   Trata HTTP 402 separadamente. Não repete automaticamente
-   uma chamada que já informou que pagamento é exigido.
-   ========================================================== */
+/* ============================================================
+   MAPA 2: PURPLEAIR
+   ============================================================ */
+
+function mensagemErroPurpleAir(e) {
+  const msg = String(e.message||e);
+
+  if (msg.includes('HTTP 402')) {
+    return 'A PurpleAir respondeu HTTP 402: pagamento ou saldo necessário. Verifique o saldo, a cobrança e as permissões da chave no painel da API.';
+  }
+  if (msg.includes('HTTP 401')) return 'A API recusou a chave (HTTP 401). Verifique se ela é válida e está ativa.';
+  if (msg.includes('HTTP 403')) return 'A API recusou a operação (HTTP 403). Verifique as permissões e os campos solicitados.';
+  if (msg.includes('HTTP 429')) return 'Limite de requisições atingido (HTTP 429).';
+  if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+    return 'A consulta falhou no navegador. Pode ser CORS, rede ou indisponibilidade da API.';
+  }
+  return `Não foi possível carregar os sensores: ${msg}`;
+}
 
 async function carregarPurpleAir() {
-    status('status-purpleair','bg-secondary','Consultando API...');
+  setStatus('status-purpleair','Consultando API...','secondary');
+  mostrarMensagem('mensagem-mapa-purpleair','Consultando sensores PurpleAir...');
+  document.getElementById('data-purpleair').textContent='Consultando...';
 
-    const params = new URLSearchParams({
-        fields:'name,latitude,longitude,pm2.5_10minute',
-        location_type:'0',
-        nwlat:'13',
-        nwlng:'-82',
-        selat:'-56',
-        selng:'-32'
+  const params = new URLSearchParams({
+    fields:'name,latitude,longitude,pm2.5_10minute',
+    location_type:'0',
+    nwlat:'13',
+    nwlng:'-82',
+    selat:'-56',
+    selng:'-32'
+  });
+
+  const url='https://api.purpleair.com/v1/sensors?'+params.toString();
+
+  try {
+    const r = await fetchComTimeout(url,{
+      method:'GET',
+      headers:{
+        'X-API-Key':PURPLEAIR_KEY,
+        'Accept':'application/json'
+      }
     });
 
-    const url = 'https://api.purpleair.com/v1/sensors?' + params.toString();
+    const texto = await r.text();
+    let json;
+    try { json=JSON.parse(texto); }
+    catch { throw new Error(`Resposta não JSON (HTTP ${r.status})`); }
 
-    try {
-        const resp = await fetchTimeout(url, {
-            method:'GET',
-            headers:{
-                'X-API-Key':PURPLEAIR_KEY,
-                'Accept':'application/json'
-            }
-        }, CONFIG.timeout);
-
-        const texto = await resp.text();
-        let json;
-
-        try {
-            json = JSON.parse(texto);
-        } catch {
-            throw new Error(`Resposta não JSON; HTTP ${resp.status}.`);
-        }
-
-        if (resp.status === 402) {
-            const mensagem = json.description || 'Pagamento exigido para esta consulta.';
-            status('status-purpleair','bg-danger','HTTP 402: pagamento exigido');
-            throw new Error(`PurpleAir HTTP 402: ${mensagem}`);
-        }
-
-        if (resp.status === 401) {
-            throw new Error('HTTP 401: chave inválida ou não autorizada.');
-        }
-
-        if (resp.status === 403) {
-            throw new Error('HTTP 403: acesso ou permissão negados.');
-        }
-
-        if (resp.status === 429) {
-            throw new Error('HTTP 429: limite de requisições atingido.');
-        }
-
-        if (!resp.ok) {
-            throw new Error(`PurpleAir HTTP ${resp.status}: ${json.description || json.error || texto.slice(0,200)}`);
-        }
-
-        if (!Array.isArray(json.fields) || !Array.isArray(json.data)) {
-            throw new Error('Formato inesperado: fields/data ausentes.');
-        }
-
-        const iLat = json.fields.indexOf('latitude');
-        const iLon = json.fields.indexOf('longitude');
-        const iPM = json.fields.indexOf('pm2.5_10minute');
-        const iNome = json.fields.indexOf('name');
-
-        if (iLat < 0 || iLon < 0 || iPM < 0) {
-            throw new Error('A API não retornou os campos de coordenadas e PM2.5 solicitados.');
-        }
-
-        const sensores = [];
-
-        json.data.forEach(s => {
-            const lat = Number(s[iLat]);
-            const lon = Number(s[iLon]);
-            const valor = s[iPM];
-            const pm = Number(valor);
-
-            if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-            if (valor === null || valor === '' || !Number.isFinite(pm) || pm < 0) return;
-
-            if (lat < -56 || lat > 13 || lon < -82 || lon > -32) return;
-
-            sensores.push({
-                lat, lon, pm25:pm,
-                nome:String(s[iNome] || 'Sensor')
-            });
-        });
-
-        listaSensores = sensores;
-        limparCamadaAnterior(mapPurpleAir);
-
-        const layer = L.layerGroup();
-
-        sensores.forEach(s => {
-            L.circleMarker([s.lat,s.lon], {
-                renderer, radius:5,
-                fillColor:corPM25(s.pm25),
-                color:'#000', weight:1, fillOpacity:0.85
-            }).bindPopup(
-                `<b>${s.nome.replace(/[<>]/g,'')}</b><br>` +
-                `PM2.5: ${s.pm25.toFixed(1)} µg/m³`
-            ).addTo(layer);
-        });
-
-        layer.addTo(mapPurpleAir);
-
-        const dataAPI = json.time_stamp
-            ? new Date(json.time_stamp * 1000)
-            : new Date();
-
-        const dataTexto = dataAPI.toLocaleString('pt-BR');
-
-        document.getElementById('data-purpleair').textContent = dataTexto;
-        document.getElementById('citacao-data-purpleair').textContent = dataTexto;
-
-        status('status-purpleair',
-            sensores.length ? 'bg-success' : 'bg-warning text-dark',
-            `${sensores.length} sensores`);
-
-        console.info('PurpleAir carregada:', {
-            sensores:sensores.length,
-            timestamp:json.time_stamp,
-            campos:json.fields
-        });
-
-    } catch (e) {
-        console.error('Erro PurpleAir:',e);
-
-        document.getElementById('data-purpleair').textContent = 'Indisponível';
-        document.getElementById('citacao-data-purpleair').textContent = 'Indisponível';
-
-        if (!String(e.message).includes('HTTP 402')) {
-            const mensagem = String(e.message);
-
-            if (mensagem.includes('401')) {
-                status('status-purpleair','bg-danger','Chave não autorizada');
-            } else if (mensagem.includes('403')) {
-                status('status-purpleair','bg-danger','Acesso negado');
-            } else if (mensagem.includes('429')) {
-                status('status-purpleair','bg-warning text-dark','Limite da API');
-            } else if (mensagem.includes('Failed to fetch') ||
-                       mensagem.includes('NetworkError')) {
-                status('status-purpleair','bg-danger','Rede/CORS');
-            } else {
-                status('status-purpleair','bg-danger','Falha na API');
-            }
-        }
+    if (r.status===402) {
+      throw new Error(`HTTP 402: ${json.description||json.error||'pagamento exigido'}`);
     }
-}
+    if (r.status===401) throw new Error('HTTP 401: chave inválida ou não autorizada');
+    if (r.status===403) throw new Error('HTTP 403: acesso negado');
+    if (r.status===429) throw new Error('HTTP 429: limite de requisições atingido');
+    if (!r.ok) throw new Error(`HTTP ${r.status}: ${json.description||json.error||'erro na API'}`);
 
-/* ==========================================================
-   ÍNDICE ESPACIAL E IDW
-   ========================================================== */
+    if (!Array.isArray(json.fields)||!Array.isArray(json.data)) {
+      throw new Error('Formato da resposta PurpleAir inesperado');
+    }
 
-function criarIndice(pontos, tamanho=CONFIG.tamanhoIndice) {
-    const bins = new Map();
-    const chave = (lat,lon) => `${Math.floor(lat/tamanho)}|${Math.floor(lon/tamanho)}`;
-
-    pontos.forEach(p => {
-        const k = chave(p.lat,p.lon);
-        if (!bins.has(k)) bins.set(k,[]);
-        bins.get(k).push(p);
-    });
-
-    return {
-        buscar(lat,lon,raio) {
-            const out = [];
-            const y0 = Math.floor((lat-raio)/tamanho);
-            const y1 = Math.floor((lat+raio)/tamanho);
-            const x0 = Math.floor((lon-raio)/tamanho);
-            const x1 = Math.floor((lon+raio)/tamanho);
-
-            for (let y=y0;y<=y1;y++) {
-                for (let x=x0;x<=x1;x++) {
-                    const grupo = bins.get(`${y}|${x}`);
-                    if (grupo) out.push(...grupo);
-                }
-            }
-            return out;
-        }
+    const ix = {
+      nome:json.fields.indexOf('name'),
+      lat:json.fields.indexOf('latitude'),
+      lon:json.fields.indexOf('longitude'),
+      pm:json.fields.indexOf('pm2.5_10minute')
     };
-}
 
-function estimarIDW(lat,lon,indice,raio) {
-    let somaPesos=0, somaValores=0;
-
-    for (const p of indice.buscar(lat,lon,raio)) {
-        const dy=lat-p.lat;
-        const dx=(lon-p.lon)*Math.cos(lat*Math.PI/180);
-        const dist2=dy*dy+dx*dx;
-
-        if (dist2<=raio*raio) {
-            const peso=1/(dist2+0.01);
-            somaPesos+=peso;
-            somaValores+=p.pm25*peso;
-        }
+    if (ix.lat<0||ix.lon<0||ix.pm<0) {
+      throw new Error('A resposta não contém os campos necessários para o mapa');
     }
 
-    return somaPesos ? somaValores/somaPesos : null;
-}
+    const novosSensores=[];
 
-function gerarCelulas(pontos,passo,raio,maxCelulas) {
-    const celulas = new Map();
+    for (const s of json.data) {
+      const lat=Number(s[ix.lat]);
+      const lon=Number(s[ix.lon]);
+      const bruto=s[ix.pm];
+      const pm=Number(bruto);
 
-    pontos.forEach(p => {
-        const y0=Math.floor((p.lat-raio)/passo)*passo;
-        const y1=Math.floor((p.lat+raio)/passo)*passo;
-        const x0=Math.floor((p.lon-raio)/passo)*passo;
-        const x1=Math.floor((p.lon+raio)/passo)*passo;
+      if (!Number.isFinite(lat)||!Number.isFinite(lon)) continue;
+      if (bruto===null||bruto===''||!Number.isFinite(pm)||pm<0) continue;
+      if (lat < -56||lat > 13||lon < -82||lon > -32) continue;
 
-        for (let y=y0;y<=y1+1e-9;y+=passo) {
-            for (let x=x0;x<=x1+1e-9;x+=passo) {
-                const lat=Number(y.toFixed(4));
-                const lon=Number(x.toFixed(4));
-                const dy=p.lat-(lat+passo/2);
-                const dx=(p.lon-(lon+passo/2))*Math.cos(p.lat*Math.PI/180);
+      novosSensores.push({
+        lat,lon,pm25:pm,
+        nome:String(ix.nome>=0?s[ix.nome]||'Sensor':'Sensor')
+      });
+    }
 
-                if (dy*dy+dx*dx<=raio*raio) {
-                    celulas.set(`${lat}|${lon}`,{lat,lon});
-                }
-            }
-        }
+    sensores=novosSensores;
+    removerCamada(mapPurple,camadaSensores);
+    camadaSensores=L.layerGroup();
+
+    sensores.forEach(s=>{
+      L.circleMarker([s.lat,s.lon],{
+        renderer,radius:5,color:'#333',weight:0.8,
+        fillColor:corSensor(s.pm25),fillOpacity:0.85
+      }).bindPopup(
+        `<b>${s.nome.replace(/[<>]/g,'')}</b><br>PM2.5: ${s.pm25.toFixed(1)} µg/m³`
+      ).addTo(camadaSensores);
     });
 
-    let arr=[...celulas.values()];
+    camadaSensores.addTo(mapPurple);
 
-    if (arr.length>maxCelulas) {
-        const salto=Math.ceil(arr.length/maxCelulas);
-        arr=arr.filter((_,i)=>i%salto===0);
-        console.warn('Grade reduzida para manter o mapa responsivo:',arr.length);
-    }
+    const timestamp=json.time_stamp
+      ? new Date(json.time_stamp*1000)
+      : new Date();
 
-    return arr;
+    document.getElementById('data-purpleair').textContent=timestamp.toLocaleString('pt-BR');
+    esconderMensagem('mensagem-mapa-purpleair');
+
+    setStatus('status-purpleair',`${sensores.length} sensores`,sensores.length?'success':'warning');
+    log(`PurpleAir: ${sensores.length} sensores com coordenadas e PM2.5 válidos.`);
+
+    return true;
+
+  } catch (e) {
+    sensores=[];
+    removerCamada(mapPurple,camadaSensores);
+    camadaSensores=null;
+
+    const texto=mensagemErroPurpleAir(e);
+    setStatus('status-purpleair','Falha na fonte','danger');
+    document.getElementById('data-purpleair').textContent='Indisponível';
+    mostrarMensagem('mensagem-mapa-purpleair',texto);
+    log(`PurpleAir: ${texto}`);
+
+    return false;
+  }
 }
 
-function contarFocos(lat,lon,passo,indice) {
-    const centroLat=lat+passo/2;
-    const centroLon=lon+passo/2;
-
-    return indice.buscar(centroLat,centroLon,passo*1.5).filter(f =>
-        f.lat>=lat && f.lat<lat+passo &&
-        f.lon>=lon && f.lon<lon+passo
-    ).length;
+function corSensor(pm) {
+  if(pm<=15)return '#28a745';
+  if(pm<=45)return '#ffc107';
+  if(pm<=100)return '#fd7e14';
+  return '#dc3545';
 }
 
-/* ==========================================================
-   MAPA 3 — IDW
-   ========================================================== */
+/* ============================================================
+   FUNÇÕES ESPACIAIS PARA MAPAS 3 E 4
+   ============================================================ */
 
-async function processarMapa3() {
-    if (!listaSensores.length) {
-        status('status-interpolacao','bg-warning text-dark','Sem dados PurpleAir');
-        return;
+function criarIndice(pontos,tamanho=CFG.tamanhoIndice) {
+  const bins=new Map();
+
+  pontos.forEach(p=>{
+    const ky=Math.floor(p.lat/tamanho);
+    const kx=Math.floor(p.lon/tamanho);
+    const k=`${ky}|${kx}`;
+    if(!bins.has(k))bins.set(k,[]);
+    bins.get(k).push(p);
+  });
+
+  return {
+    buscar(lat,lon,raio) {
+      const saida=[];
+      const y0=Math.floor((lat-raio)/tamanho);
+      const y1=Math.floor((lat+raio)/tamanho);
+      const x0=Math.floor((lon-raio)/tamanho);
+      const x1=Math.floor((lon+raio)/tamanho);
+
+      for(let y=y0;y<=y1;y++){
+        for(let x=x0;x<=x1;x++){
+          const grupo=bins.get(`${y}|${x}`);
+          if(grupo)saida.push(...grupo);
+        }
+      }
+      return saida;
     }
-
-    status('status-interpolacao','bg-secondary','Preparando grade...');
-
-    const indice=criarIndice(listaSensores);
-    const passo=CONFIG.passoMapa3;
-    const celulas=gerarCelulas(listaSensores,passo,CONFIG.raioIDW,CONFIG.maxCelulasMapa3);
-    const layer=L.layerGroup();
-
-    for (let i=0;i<celulas.length;i+=100) {
-        celulas.slice(i,i+100).forEach(c => {
-            const pm=estimarIDW(c.lat+passo/2,c.lon+passo/2,indice,CONFIG.raioIDW);
-            if (pm===null) return;
-
-            L.rectangle(
-                [[c.lat,c.lon],[c.lat+passo,c.lon+passo]],
-                {renderer,color:'transparent',fillColor:corOMS(pm),fillOpacity:.45,weight:0}
-            ).bindPopup(
-                `<b>Interpolação IDW</b><br>PM2.5 estimado: ${pm.toFixed(1)} µg/m³<br>`+
-                `Classe: ${pm<=15?'Meta operacional':pm<=45?'Alerta':'Crítico'}`
-            ).addTo(layer);
-        });
-
-        status('status-interpolacao','bg-secondary',
-            `Calculando IDW: ${Math.round(Math.min(i+100,celulas.length)/celulas.length*100)}%`);
-
-        await new Promise(resolve=>setTimeout(resolve,0));
-    }
-
-    listaSensores.forEach(p => {
-        L.circleMarker([p.lat,p.lon],{
-            renderer,radius:3,fillColor:'#fff',color:'#000',weight:1,fillOpacity:.9
-        }).bindPopup(
-            `${p.nome.replace(/[<>]/g,'')}<br>PM2.5 observado: ${p.pm25.toFixed(1)} µg/m³`
-        ).addTo(layer);
-    });
-
-    layer.addTo(mapInterpolacao);
-    status('status-interpolacao','bg-success',`Concluído: ${celulas.length} células`);
+  };
 }
 
-/* ==========================================================
-   MAPA 4 — FOCOS X PM2.5
-   ========================================================== */
+function idw(lat,lon,indice,raio) {
+  let numerador=0,denominador=0;
 
-async function processarMapa4() {
-    if (!listaSensores.length || !listaFocos.length) {
-        status('status-correlacao','bg-warning text-dark','Dados insuficientes');
-        return;
-    }
+  for(const p of indice.buscar(lat,lon,raio)){
+    const dy=lat-p.lat;
+    const dx=(lon-p.lon)*Math.cos(lat*Math.PI/180);
+    const dist2=dy*dy+dx*dx;
 
-    status('status-correlacao','bg-secondary','Preparando cruzamento...');
+    if(dist2>raio*raio)continue;
 
-    const indiceSensores=criarIndice(listaSensores);
-    const indiceFocos=criarIndice(listaFocos);
-    const passo=CONFIG.passoMapa4;
-    const celulas=gerarCelulas(listaSensores,passo,CONFIG.raioIDW,CONFIG.maxCelulasMapa4);
-    const layer=L.layerGroup();
+    const peso=1/(dist2+0.0001);
+    numerador+=peso*p.pm25;
+    denominador+=peso;
+  }
 
-    for (let i=0;i<celulas.length;i+=100) {
-        celulas.slice(i,i+100).forEach(c => {
-            const pm=estimarIDW(c.lat+passo/2,c.lon+passo/2,indiceSensores,CONFIG.raioIDW);
-            if (pm===null) return;
-
-            const nFocos=contarFocos(c.lat,c.lon,passo,indiceFocos);
-            let cor=corOMS(pm);
-            let classe='Meta operacional';
-
-            if (pm>45) {
-                cor=nFocos?'#8b0000':'#660066';
-                classe=nFocos
-                    ? `CRÍTICO COM FOCO LOCAL (${nFocos})`
-                    : 'CRÍTICO SEM FOCO DETECTADO';
-            } else if (pm>15 && nFocos>0) {
-                cor='#ff8c00';
-                classe=`ALERTA COM FOCO (${nFocos})`;
-            } else if (pm>15) {
-                classe='Alerta';
-            }
-
-            L.rectangle(
-                [[c.lat,c.lon],[c.lat+passo,c.lon+passo]],
-                {renderer,color:'transparent',fillColor:cor,fillOpacity:.5,weight:0}
-            ).bindPopup(
-                `<b>Análise espacial exploratória</b><br>`+
-                `PM2.5 estimado: ${pm.toFixed(1)} µg/m³<br>`+
-                `Focos na célula: ${nFocos}<br>Classe: ${classe}<br>`+
-                `<small>A ausência de foco detectado não comprova transporte de fumaça.</small>`
-            ).addTo(layer);
-        });
-
-        status('status-correlacao','bg-secondary',
-            `Cruzamento: ${Math.round(Math.min(i+100,celulas.length)/celulas.length*100)}%`);
-
-        await new Promise(resolve=>setTimeout(resolve,0));
-    }
-
-    layer.addTo(mapCorrelacao);
-    status('status-correlacao','bg-success',`Concluído: ${celulas.length} células`);
+  return denominador ? numerador/denominador : null;
 }
 
-/* ==========================================================
-   LEGENDAS E INICIALIZAÇÃO
-   ========================================================== */
+function criarGrade(pontos,passo,raio,maxCelulas) {
+  const grade=new Map();
 
-function adicionarLegenda(mapa,html) {
-    const control=L.control({position:'bottomright'});
-    control.onAdd=function() {
-        const div=L.DomUtil.create('div','info legend');
-        div.innerHTML=html;
-        L.DomEvent.disableClickPropagation(div);
-        return div;
-    };
-    control.addTo(mapa);
+  pontos.forEach(p=>{
+    const ymin=Math.floor((p.lat-raio)/passo)*passo;
+    const ymax=Math.floor((p.lat+raio)/passo)*passo;
+    const xmin=Math.floor((p.lon-raio)/passo)*passo;
+    const xmax=Math.floor((p.lon+raio)/passo)*passo;
+
+    for(let y=ymin;y<=ymax+1e-8;y+=passo){
+      for(let x=xmin;x<=xmax+1e-8;x+=passo){
+        const lat=Number(y.toFixed(4));
+        const lon=Number(x.toFixed(4));
+        const cy=lat+passo/2;
+        const cx=lon+passo/2;
+        const dy=p.lat-cy;
+        const dx=(p.lon-cx)*Math.cos(p.lat*Math.PI/180);
+
+        if(dy*dy+dx*dx<=raio*raio){
+          grade.set(`${lat}|${lon}`,{lat,lon});
+        }
+      }
+    }
+  });
+
+  let arr=[...grade.values()];
+
+  if(arr.length>maxCelulas){
+    const stride=Math.ceil(arr.length/maxCelulas);
+    arr=arr.filter((_,i)=>i%stride===0);
+  }
+
+  return arr;
+}
+
+function corClasse(pm) {
+  if(pm<=15)return '#28a745';
+  if(pm<=45)return '#ffc107';
+  return '#dc3545';
+}
+
+function contarFocosNaCelula(c,passo,indice) {
+  const latCentro=c.lat+passo/2;
+  const lonCentro=c.lon+passo/2;
+
+  return indice.buscar(latCentro,lonCentro,passo*1.5).filter(f=>
+    f.lat>=c.lat && f.lat<c.lat+passo &&
+    f.lon>=c.lon && f.lon<c.lon+passo
+  ).length;
+}
+
+/* ============================================================
+   MAPA 3: IDW
+   ============================================================ */
+
+async function processarMapa3(token) {
+  removerCamada(mapIDW,camadaIDW);
+  camadaIDW=null;
+  progresso('progresso-mapa3',0);
+
+  if(token!==execucao)return;
+
+  if(!sensores.length){
+    setStatus('status-interpolacao','Sem dados PM2.5','warning');
+    mostrarMensagem(
+      'mensagem-mapa-interpolacao',
+      'A interpolação IDW não pode ser calculada porque não há medições válidas da PurpleAir. Verifique o estado da API no Mapa 2.'
+    );
+    log('Mapa 3: sem dados de sensores; nenhuma interpolação foi inventada.');
+    return;
+  }
+
+  esconderMensagem('mensagem-mapa-interpolacao');
+  setStatus('status-interpolacao','Preparando IDW...','secondary');
+
+  const indice=criarIndice(sensores);
+  const grade=criarGrade(sensores,CFG.passoMapa3,CFG.raioIDW,CFG.maxCelulasMapa3);
+  camadaIDW=L.layerGroup();
+
+  if(!grade.length){
+    setStatus('status-interpolacao','Sem células','warning');
+    mostrarMensagem('mensagem-mapa-interpolacao','Não foi possível formar células de interpolação a partir dos sensores.');
+    return;
+  }
+
+  for(let i=0;i<grade.length;i++){
+    if(token!==execucao)return;
+
+    const c=grade[i];
+    const pm=idw(c.lat+CFG.passoMapa3/2,c.lon+CFG.passoMapa3/2,indice,CFG.raioIDW);
+
+    if(pm!==null){
+      L.rectangle(
+        [[c.lat,c.lon],[c.lat+CFG.passoMapa3,c.lon+CFG.passoMapa3]],
+        {
+          renderer,color:'transparent',weight:0,
+          fillColor:corClasse(pm),fillOpacity:.48
+        }
+      ).bindPopup(
+        `<b>Estimativa IDW</b><br>`+
+        `PM2.5 estimado: ${pm.toFixed(1)} µg/m³<br>`+
+        `Classe operacional: ${pm<=15?'≤ 15':pm<=45?'15 a 45':'> 45'} µg/m³`
+      ).addTo(camadaIDW);
+    }
+
+    if(i%50===0 || i===grade.length-1){
+      const pct=Math.round((i+1)/grade.length*100);
+      progresso('progresso-mapa3',pct);
+      setStatus('status-interpolacao',`IDW ${pct}%`,'secondary');
+      await new Promise(resolve=>setTimeout(resolve,0));
+    }
+  }
+
+  if(token!==execucao)return;
+
+  camadaIDW.addTo(mapIDW);
+  setStatus('status-interpolacao',`${grade.length} células`,'success');
+  log(`Mapa 3: interpolação IDW concluída; ${grade.length} células processadas.`);
+}
+
+/* ============================================================
+   MAPA 4: CRUZAMENTO ESPACIAL
+   ============================================================ */
+
+async function processarMapa4(token) {
+  removerCamada(mapCruza,camadaCruza);
+  camadaCruza=null;
+  progresso('progresso-mapa4',0);
+
+  if(token!==execucao)return;
+
+  if(!sensores.length || !focos.length){
+    setStatus('status-correlacao','Dados insuficientes','warning');
+
+    let motivo='Não foi possível realizar o cruzamento espacial. ';
+    if(!sensores.length && !focos.length){
+      motivo+='Estão indisponíveis tanto os sensores de PM2.5 quanto os focos do INPE.';
+    } else if(!sensores.length){
+      motivo+='A fonte PurpleAir não forneceu medições válidas de PM2.5.';
+    } else {
+      motivo+='A fonte INPE não forneceu focos de calor válidos para o período consultado.';
+    }
+
+    mostrarMensagem('mensagem-mapa-correlacao',motivo);
+    log('Mapa 4: cruzamento não executado por falta de uma ou mais fontes.');
+    return;
+  }
+
+  esconderMensagem('mensagem-mapa-correlacao');
+  setStatus('status-correlacao','Preparando cruzamento...','secondary');
+
+  const indiceSensores=criarIndice(sensores);
+  const indiceFocos=criarIndice(focos);
+  const grade=criarGrade(sensores,CFG.passoMapa4,CFG.raioIDW,CFG.maxCelulasMapa4);
+  camadaCruza=L.layerGroup();
+
+  if(!grade.length){
+    setStatus('status-correlacao','Sem células','warning');
+    mostrarMensagem('mensagem-mapa-correlacao','Não foi possível formar células para o cruzamento espacial.');
+    return;
+  }
+
+  for(let i=0;i<grade.length;i++){
+    if(token!==execucao)return;
+
+    const c=grade[i];
+    const pm=idw(c.lat+CFG.passoMapa4/2,c.lon+CFG.passoMapa4/2,indiceSensores,CFG.raioIDW);
+
+    if(pm!==null){
+      const n=contarFocosNaCelula(c,CFG.passoMapa4,indiceFocos);
+      let cor=corClasse(pm);
+      let classe=pm<=15?'Meta operacional':pm<=45?'Concentração intermediária':'Concentração elevada';
+
+      if(pm>45 && n>0){
+        cor='#8b0000';
+        classe=`Concentração elevada com foco detectado (${n})`;
+      } else if(pm>45 && n===0){
+        cor='#660066';
+        classe='Concentração elevada sem foco detectado na célula';
+      } else if(pm>15 && n>0){
+        cor='#fd7e14';
+        classe=`Concentração intermediária com foco detectado (${n})`;
+      }
+
+      L.rectangle(
+        [[c.lat,c.lon],[c.lat+CFG.passoMapa4,c.lon+CFG.passoMapa4]],
+        {
+          renderer,color:'transparent',weight:0,
+          fillColor:cor,fillOpacity:.5
+        }
+      ).bindPopup(
+        `<b>Cruzamento espacial exploratório</b><br>`+
+        `PM2.5 estimado: ${pm.toFixed(1)} µg/m³<br>`+
+        `Focos detectados na célula: ${n}<br>`+
+        `Interpretação: ${classe}<br>`+
+        `<small>Associação espacial não comprova causalidade ou transporte de fumaça.</small>`
+      ).addTo(camadaCruza);
+    }
+
+    if(i%50===0 || i===grade.length-1){
+      const pct=Math.round((i+1)/grade.length*100);
+      progresso('progresso-mapa4',pct);
+      setStatus('status-correlacao',`Cruzamento ${pct}%`,'secondary');
+      await new Promise(resolve=>setTimeout(resolve,0));
+    }
+  }
+
+  if(token!==execucao)return;
+
+  camadaCruza.addTo(mapCruza);
+  setStatus('status-correlacao',`${grade.length} células`,'success');
+  log(`Mapa 4: cruzamento concluído; ${grade.length} células processadas.`);
+}
+
+/* ============================================================
+   LEGENDAS
+   ============================================================ */
+
+function legenda(mapa,html) {
+  const control=L.control({position:'bottomright'});
+  control.onAdd=()=>{
+    const div=L.DomUtil.create('div','legend');
+    div.innerHTML=html;
+    L.DomEvent.disableClickPropagation(div);
+    return div;
+  };
+  control.addTo(mapa);
 }
 
 function adicionarLegendas() {
-    adicionarLegenda(mapFocos,
-        '<strong>Satélite AQUA</strong><br>'+
-        '<i style="background:#3388ff"></i> M-M<br>'+
-        '<i style="background:#ff2200"></i> M-T');
+  legenda(mapFocos,
+    '<b>Focos AQUA</b><br>'+
+    '<i style="background:#3388ff"></i> M-M<br>'+
+    '<i style="background:#ff2200"></i> M-T');
 
-    adicionarLegenda(mapPurpleAir,
-        '<strong>PM2.5</strong><br>'+
-        '<i style="background:#00e400"></i> Baixa<br>'+
-        '<i style="background:#ffff00"></i> Moderada<br>'+
-        '<i style="background:#ff7e00"></i> Elevada<br>'+
-        '<i style="background:#ff0000"></i> Alta<br>'+
-        '<i style="background:#8f3f97"></i> Muito alta');
+  legenda(mapPurple,
+    '<b>PM2.5 observado</b><br>'+
+    '<i style="background:#28a745"></i> ≤ 15<br>'+
+    '<i style="background:#ffc107"></i> 15–45<br>'+
+    '<i style="background:#fd7e14"></i> 45–100<br>'+
+    '<i style="background:#dc3545"></i> > 100 µg/m³');
 
-    adicionarLegenda(mapInterpolacao,
-        '<strong>PM2.5 estimado</strong><br>'+
-        '<i style="background:#28a745"></i> ≤ 15<br>'+
-        '<i style="background:#ffc107"></i> 15–45<br>'+
-        '<i style="background:#dc3545"></i> > 45');
+  legenda(mapIDW,
+    '<b>PM2.5 estimado</b><br>'+
+    '<i style="background:#28a745"></i> ≤ 15<br>'+
+    '<i style="background:#ffc107"></i> 15–45<br>'+
+    '<i style="background:#dc3545"></i> > 45 µg/m³');
 
-    adicionarLegenda(mapCorrelacao,
-        '<strong>Fogo x PM2.5</strong><br>'+
-        '<i style="background:#8b0000"></i> Crítico + foco<br>'+
-        '<i style="background:#660066"></i> Crítico sem foco<br>'+
-        '<i style="background:#ff8c00"></i> Alerta com foco<br>'+
-        '<i style="background:#28a745"></i> Meta operacional');
+  legenda(mapCruza,
+    '<b>Focos x PM2.5</b><br>'+
+    '<i style="background:#8b0000"></i> Elevado + foco<br>'+
+    '<i style="background:#660066"></i> Elevado sem foco detectado<br>'+
+    '<i style="background:#fd7e14"></i> Intermediário + foco<br>'+
+    '<i style="background:#28a745"></i> ≤ 15 µg/m³');
 }
 
-async function inicializarDashboard() {
-    adicionarLegendas();
+/* ============================================================
+   ATUALIZAÇÃO
+   Cada fonte é tratada separadamente.
+   A falha de uma não interrompe a consulta da outra.
+   ============================================================ */
 
-    await Promise.allSettled([
-        carregarFocosDiarios(),
-        carregarPurpleAir()
-    ]);
+async function atualizarDashboard() {
+  execucao++;
+  const token=execucao;
 
-    await Promise.allSettled([
-        processarMapa3(),
-        processarMapa4()
-    ]);
+  document.getElementById('btn-atualizar').disabled=true;
+
+  log('Iniciando atualização independente das fontes.');
+
+  /* As duas fontes primárias são consultadas em paralelo. */
+  await Promise.allSettled([
+    carregarFocos(),
+    carregarPurpleAir()
+  ]);
+
+  if(token!==execucao)return;
+
+  /* Ambos os mapas derivados são tentados sempre. */
+  await Promise.allSettled([
+    processarMapa3(token),
+    processarMapa4(token)
+  ]);
+
+  if(token===execucao){
+    log('Ciclo de atualização concluído. Confira o estado individual de cada mapa.');
+    document.getElementById('btn-atualizar').disabled=false;
+
+    /* Leaflet precisa recalcular o tamanho após o layout. */
+    [mapFocos,mapPurple,mapIDW,mapCruza].forEach(m=>m.invalidateSize());
+  }
 }
 
-inicializarDashboard();
+document.getElementById('btn-atualizar').addEventListener('click',atualizarDashboard);
+
+adicionarLegendas();
+
+/* Os quatro mapas aparecem imediatamente, mesmo antes das fontes responderem. */
+mostrarMensagem('mensagem-mapa-focos','Carregando os focos de calor...');
+mostrarMensagem('mensagem-mapa-purpleair','Carregando os sensores de qualidade do ar...');
+mostrarMensagem('mensagem-mapa-interpolacao','Aguardando os dados dos sensores para gerar a interpolação IDW...');
+mostrarMensagem('mensagem-mapa-correlacao','Aguardando os dados do INPE e da PurpleAir para o cruzamento espacial...');
+
+atualizarDashboard();
 </script>
 </body>
 </html>
